@@ -1,0 +1,109 @@
+syntax = "proto3";
+package vulcanize.bond.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "vulcanize/bond/v1beta1/bond.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/bond/types";
+
+// Query defines the gRPC querier service for bond module
+service Query {
+  // Params queries bonds module params.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/ethermint/bond/v1/params";
+  }
+
+  // Bonds queries bonds list.
+  rpc Bonds(QueryGetBondsRequest) returns (QueryGetBondsResponse) {
+    option (google.api.http).get = "/ethermint/bond/v1/bonds";
+  }
+
+  // GetBondById
+  rpc GetBondById(QueryGetBondByIdRequest) returns (QueryGetBondByIdResponse){
+    option (google.api.http).get = "/ethermint/bond/v1/bonds/{id}";
+  }
+
+  // Get Bonds List by Owner
+  rpc GetBondsByOwner(QueryGetBondsByOwnerRequest) returns (QueryGetBondsByOwnerResponse){
+    option (google.api.http).get = "/ethermint/bond/v1/bonds_by_owner";
+  }
+
+  // Get Bonds module balance
+  rpc GetBondsModuleBalance(QueryGetBondModuleBalanceRequest) returns (QueryGetBondModuleBalanceResponse){
+    option (google.api.http).get = "/ethermint/bond/v1/balance";
+  }
+}
+
+// QueryParamsRequest is request for query the bond module params
+message QueryParamsRequest{
+}
+
+// QueryParamsResponse returns response type  of bond module params
+message QueryParamsResponse{
+  Params params = 1  [
+    (gogoproto.moretags) = "json:\"params\" yaml:\"params\""
+  ];
+}
+
+// QueryGetBondById queries a bond by bond-id.
+message QueryGetBondsRequest{
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryGetBondsResponse is response type for get the bonds by bond-id
+message QueryGetBondsResponse{
+  repeated Bond bonds = 1 [
+    (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
+  ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetBondById
+message QueryGetBondByIdRequest{
+  string id = 1  [
+    (gogoproto.moretags) = "json:\"id\" yaml:\"id\""
+  ];
+}
+
+// QueryGetBondByIdResponse returns QueryGetBondById query response
+message QueryGetBondByIdResponse{
+  Bond bond = 1 [
+    (gogoproto.moretags) = "json:\"bond\" yaml:\"bond\""
+  ];
+}
+
+// QueryGetBondsByOwnerRequest is request type for Query/GetBondsByOwner RPC Method
+message QueryGetBondsByOwnerRequest{
+  string owner = 1;
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetBondsByOwnerResponse is response type for Query/GetBondsByOwner RPC Method
+message QueryGetBondsByOwnerResponse {
+  repeated Bond bonds = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
+  ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetBondModuleBalanceRequest is request type for bond module balance rpc method
+message QueryGetBondModuleBalanceRequest{
+
+}
+
+// QueryGetBondModuleBalanceResponse is the response type for bond module balance rpc method
+message QueryGetBondModuleBalanceResponse{
+  repeated cosmos.base.v1beta1.Coin balance = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "json:\"coins\" yaml:\"coins\""
+  ];
+}

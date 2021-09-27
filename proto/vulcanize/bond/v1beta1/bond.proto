@@ -1,0 +1,29 @@
+syntax = "proto3";
+package vulcanize.bond.v1beta1;
+
+option go_package = "github.com/tharsis/ethermint/x/bond/types";
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+// Params defines the bond module parameters
+message Params {
+  // max_bond_amount is maximum amount to bond
+  cosmos.base.v1beta1.Coin max_bond_amount = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"max_bond_amount\" yaml:\"max_bond_amount\""
+  ];
+}
+
+// Bond represents funds deposited by an account for record rent payments.
+message Bond {
+  // id is unique identifier of the bond
+  string id = 1;
+  // owner of the bond
+  string owner = 2;
+  // balance of the bond
+  repeated cosmos.base.v1beta1.Coin balance = 3 [
+    (gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "json:\"balance\" yaml:\"balance\""
+  ];
+}
