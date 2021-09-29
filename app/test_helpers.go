@@ -2,6 +2,8 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
@@ -57,4 +59,16 @@ func Setup(isCheckTx bool) *EthermintApp {
 	}
 
 	return app
+}
+
+// CreateRandomAccounts will generate random accounts
+func CreateRandomAccounts(accNum int) []sdk.AccAddress {
+	// createRandomAccounts is a strategy used by addTestAddrs() in order to generated addresses in random order.
+	testAddrs := make([]sdk.AccAddress, accNum)
+	for i := 0; i < accNum; i++ {
+		pk := ed25519.GenPrivKey().PubKey()
+		testAddrs[i] = sdk.AccAddress(pk.Address())
+	}
+
+	return testAddrs
 }

@@ -48,6 +48,7 @@ func AddTxFlags(cmd *cobra.Command) *cobra.Command {
 	cmd.PersistentFlags().Float64(flags.FlagGasAdjustment, flags.DefaultGasAdjustment, "adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored ")
 	cmd.PersistentFlags().StringP(flags.FlagBroadcastMode, "b", flags.BroadcastSync, "Transaction broadcasting mode (sync|async|block)")
 	cmd.PersistentFlags().String(flags.FlagKeyringBackend, keyring.BackendOS, "Select keyring's backend")
+	cmd.PersistentFlags().BoolP(flags.FlagSkipConfirmation, "y", false, "Skip tx broadcasting prompt confirmation")
 
 	// --gas can accept integers and "simulate"
 	// cmd.PersistentFlags().Var(&flags.GasFlagVar, "gas", fmt.Sprintf(

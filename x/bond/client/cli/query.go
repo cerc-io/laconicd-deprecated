@@ -52,7 +52,7 @@ $ %s query %s params
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.Params(cmd.Context(), &types.QueryParamRequest{})
+			res, err := queryClient.Params(cmd.Context(), &types.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
@@ -136,7 +136,7 @@ $ %s query bond get {BOND ID}
 // GetBondListByOwnerCmd queries the bond list by owner.
 func GetBondListByOwnerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "query-by-owner [address]",
+		Use:   "by-owner [address]",
 		Short: "Query bonds by owner.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get bond list by owner.

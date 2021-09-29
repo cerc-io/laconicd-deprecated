@@ -13,27 +13,27 @@ option go_package = "github.com/tharsis/ethermint/x/bond/types";
 service Query {
   // Params queries bonds module params.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/ethermint/bond/v1/params";
+    option (google.api.http).get = "/vulcanize/bond/v1beta1/params";
   }
 
   // Bonds queries bonds list.
   rpc Bonds(QueryGetBondsRequest) returns (QueryGetBondsResponse) {
-    option (google.api.http).get = "/ethermint/bond/v1/bonds";
+    option (google.api.http).get = "/vulcanize/bond/v1beta1/bonds";
   }
 
   // GetBondById
   rpc GetBondById(QueryGetBondByIdRequest) returns (QueryGetBondByIdResponse){
-    option (google.api.http).get = "/ethermint/bond/v1/bonds/{id}";
+    option (google.api.http).get = "/vulcanize/bond/v1beta1/bonds/{id}";
   }
 
   // Get Bonds List by Owner
   rpc GetBondsByOwner(QueryGetBondsByOwnerRequest) returns (QueryGetBondsByOwnerResponse){
-    option (google.api.http).get = "/ethermint/bond/v1/bonds_by_owner";
+    option (google.api.http).get = "/vulcanize/bond/v1beta1/by-owner/{owner}";
   }
 
   // Get Bonds module balance
   rpc GetBondsModuleBalance(QueryGetBondModuleBalanceRequest) returns (QueryGetBondModuleBalanceResponse){
-    option (google.api.http).get = "/ethermint/bond/v1/balance";
+    option (google.api.http).get = "/vulcanize/bond/v1beta1/balance";
   }
 }
 

@@ -139,7 +139,7 @@ $ ./build/ethermintd q bond balance -o json | jq .
 
 # Get Bonds By Owner
 ```
-$ ./build/ethermintd q bond query-by-owner ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk -o json | jq .
+$ ./build/ethermintd q bond by-owner ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk -o json | jq .
 {
   "bonds": [
     {

@@ -96,7 +96,7 @@
     - [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse)
     - [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest)
     - [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse)
-    - [QueryParamRequest](#vulcanize.bond.v1beta1.QueryParamRequest)
+    - [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse)
   
     - [Query](#vulcanize.bond.v1beta1.Query)
@@ -1297,7 +1297,7 @@ QueryGetBondModuleBalanceRequest is request type for bond module balance rpc met
 <a name="vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse"></a>
 
 ### QueryGetBondModuleBalanceResponse
-QueryGetBondModuleBalanceResponse is response type for bond module balance rpc method
+QueryGetBondModuleBalanceResponse is the response type for bond module balance rpc method
 
 
 | Field | Type | Label | Description |
@@ -1312,7 +1312,7 @@ QueryGetBondModuleBalanceResponse is response type for bond module balance rpc m
 <a name="vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest"></a>
 
 ### QueryGetBondsByOwnerRequest
-QueryGetBondsByOwnerRequest is request tyep for Query/GetBondsByOwner RPC Method
+QueryGetBondsByOwnerRequest is request type for Query/GetBondsByOwner RPC Method
 
 
 | Field | Type | Label | Description |
@@ -1344,7 +1344,7 @@ QueryGetBondsByOwnerResponse is response type for Query/GetBondsByOwner RPC Meth
 <a name="vulcanize.bond.v1beta1.QueryGetBondsRequest"></a>
 
 ### QueryGetBondsRequest
-QueryGetBonds
+QueryGetBondById queries a bond by bond-id.
 
 
 | Field | Type | Label | Description |
@@ -1359,7 +1359,7 @@ QueryGetBonds
 <a name="vulcanize.bond.v1beta1.QueryGetBondsResponse"></a>
 
 ### QueryGetBondsResponse
-QueryGetBondsResponse
+QueryGetBondsResponse is response type for get the bonds by bond-id
 
 
 | Field | Type | Label | Description |
@@ -1372,10 +1372,10 @@ QueryGetBondsResponse
 
 
 
-<a name="vulcanize.bond.v1beta1.QueryParamRequest"></a>
+<a name="vulcanize.bond.v1beta1.QueryParamsRequest"></a>
 
-### QueryParamRequest
-QueryParamRequest is request for query the bond module params
+### QueryParamsRequest
+QueryParamsRequest is request for query the bond module params
 
 
 
@@ -1410,11 +1410,11 @@ Query defines the gRPC querier service for bond module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Params` | [QueryParamRequest](#vulcanize.bond.v1beta1.QueryParamRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Bonds queries bonds list. | GET|/ethermint/bond/v1/params|
-| `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/ethermint/bond/v1/bonds|
-| `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/ethermint/bond/v1/bonds/{id}|
-| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/ethermint/bond/v1/bonds_by_owner|
-| `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/ethermint/bond/v1/balance|
+| `Params` | [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Params queries bonds module params. | GET|/vulcanize/bond/v1beta1/params|
+| `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/vulcanize/bond/v1beta1/bonds|
+| `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
+| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/vulcanize/bond/v1beta1/by-owner/{owner}|
+| `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/vulcanize/bond/v1beta1/balance|
 
  <!-- end services -->
 
@@ -1446,7 +1446,7 @@ MsgCancelBond defines a SDK message for the cancel the bond.
 <a name="vulcanize.bond.v1beta1.MsgCancelBondResponse"></a>
 
 ### MsgCancelBondResponse
-MsgCancelBondResponse defines the MsgCancelBond response type.
+MsgCancelBondResponse defines the Msg/CancelBond response type.
 
 
 
@@ -1531,7 +1531,7 @@ MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
 <a name="vulcanize.bond.v1beta1.MsgWithdrawBondResponse"></a>
 
 ### MsgWithdrawBondResponse
-MsgWithdrawBondResponse defines the MsgWithdrawBond response type.
+MsgWithdrawBondResponse defines the Msg/WithdrawBond response type.
 
 
 

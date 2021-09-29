@@ -11,7 +11,7 @@ func (k Keeper) GetMaxBondAmount(ctx sdk.Context) (res sdk.Coin) {
 	return
 }
 
-// GetParams - Get all parameter as as types.Params.
+// GetParams - Get all parameter as types.Params.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	getMaxBondAmount := k.GetMaxBondAmount(ctx)
 	return types.Params{MaxBondAmount: getMaxBondAmount}

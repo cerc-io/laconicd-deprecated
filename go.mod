@@ -34,7 +34,7 @@ require (
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f // indirect
 	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
-	google.golang.org/genproto v0.0.0-20210921142501-181ce0d877f6
+	google.golang.org/genproto v0.0.0-20210928142010-c7af6a1a74c9
 	google.golang.org/grpc v1.40.0
 	gopkg.in/yaml.v2 v2.4.0
 )
