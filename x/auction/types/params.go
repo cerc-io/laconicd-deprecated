@@ -30,7 +30,7 @@ var (
 	ParamStoreKeyMinimumBid      = []byte("MinimumBid")
 )
 
-var _ types.ParamSet = Params{}
+var _ types.ParamSet = &Params{}
 
 func NewParams() Params {
 	return DefaultParams()
@@ -42,7 +42,7 @@ func ParamKeyTable() types.KeyTable {
 }
 
 // ParamSetPairs - implements params.ParamSet
-func (p Params) ParamSetPairs() types.ParamSetPairs {
+func (p *Params) ParamSetPairs() types.ParamSetPairs {
 	return types.ParamSetPairs{
 		types.NewParamSetPair(ParamStoreKeyCommitsDuration, &p.CommitsDuration, validateCommitsDuration),
 		types.NewParamSetPair(ParamStoreKeyRevealsDuration, &p.RevealsDuration, validateRevealsDuration),
