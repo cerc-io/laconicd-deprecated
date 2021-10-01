@@ -80,6 +80,43 @@
 - [ethermint/types/v1/web3.proto](#ethermint/types/v1/web3.proto)
     - [ExtensionOptionsWeb3Tx](#ethermint.types.v1.ExtensionOptionsWeb3Tx)
   
+- [vulcanize/auction/v1beta1/types.proto](#vulcanize/auction/v1beta1/types.proto)
+    - [Auction](#vulcanize.auction.v1beta1.Auction)
+    - [Auctions](#vulcanize.auction.v1beta1.Auctions)
+    - [Bid](#vulcanize.auction.v1beta1.Bid)
+    - [Params](#vulcanize.auction.v1beta1.Params)
+  
+- [vulcanize/auction/v1beta1/genesis.proto](#vulcanize/auction/v1beta1/genesis.proto)
+    - [GenesisState](#vulcanize.auction.v1beta1.GenesisState)
+  
+- [vulcanize/auction/v1beta1/query.proto](#vulcanize/auction/v1beta1/query.proto)
+    - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
+    - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
+    - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
+    - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
+    - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
+    - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
+    - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
+    - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
+    - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
+    - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
+    - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
+    - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
+    - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
+    - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
+  
+    - [Query](#vulcanize.auction.v1beta1.Query)
+  
+- [vulcanize/auction/v1beta1/tx.proto](#vulcanize/auction/v1beta1/tx.proto)
+    - [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid)
+    - [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse)
+    - [MsgCreateAuction](#vulcanize.auction.v1beta1.MsgCreateAuction)
+    - [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse)
+    - [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid)
+    - [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse)
+  
+    - [Msg](#vulcanize.auction.v1beta1.Msg)
+  
 - [vulcanize/bond/v1beta1/bond.proto](#vulcanize/bond/v1beta1/bond.proto)
     - [Bond](#vulcanize.bond.v1beta1.Bond)
     - [Params](#vulcanize.bond.v1beta1.Params)
@@ -1162,6 +1199,498 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
  <!-- end enums -->
 
  <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/types.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/types.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.Auction"></a>
+
+### Auction
+Auction represents a sealed-bid on-chain auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `status` | [string](#string) |  |  |
+| `owner_address` | [string](#string) |  | Address of the creator of the auction |
+| `create_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the auction was created |
+| `commits_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the commits phase concluded |
+| `reveals_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the reveals phase concluded |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit and reveal fees must both be paid when committing a bid Reveal fee is returned only if the bid is revealed |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount for a valid commit |
+| `winner_address` | [string](#string) |  | Address of the winner |
+| `winning_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Winning bid, i.e., the highest bid |
+| `winning_price` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Amount the winner pays, i.e. the second highest auction |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.Auctions"></a>
+
+### Auctions
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.Bid"></a>
+
+### Bid
+Bid represents a sealed bid (commit) made during the auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  |  |
+| `bidder_address` | [string](#string) |  |  |
+| `status` | [string](#string) |  |  |
+| `commit_hash` | [string](#string) |  |  |
+| `commit_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `reveal_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `bid_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.Params"></a>
+
+### Params
+Params defines the auction module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the reveals phase in seconds |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/genesis.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the genesis state of the auction module
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
+| `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/query.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionRequest"></a>
+
+### AuctionRequest
+AuctionRequest is the format for querying a specific auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  | Auction ID |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionResponse"></a>
+
+### AuctionResponse
+AuctionResponse returns the details of the queried auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByBidderRequest"></a>
+
+### AuctionsByBidderRequest
+AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bidder_address` | [string](#string) |  | Address of the bidder |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByBidderResponse"></a>
+
+### AuctionsByBidderResponse
+AuctionsByBidderResponse returns all auctions containing a bidder
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsRequest"></a>
+
+### AuctionsRequest
+AuctionsRequest is the format for querying all the auctions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsResponse"></a>
+
+### AuctionsResponse
+AuctionsResponse returns the list of all auctions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BalanceRequest"></a>
+
+### BalanceRequest
+BalanceRequest is the format to fetch all balances
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BalanceResponse"></a>
+
+### BalanceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | Set of all balances within the auction |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidRequest"></a>
+
+### BidRequest
+BidRequest is the format for querying a specific bid in an auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `bidder` | [string](#string) |  | Bidder address |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidResponse"></a>
+
+### BidResponse
+BidResponse returns the details of the queried bid
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Bid details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidsRequest"></a>
+
+### BidsRequest
+BidsRequest is the format for querying all bids in an auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidsResponse"></a>
+
+### BidsResponse
+BidsResponse returns details of all bids in an auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bids` | [Bid](#vulcanize.auction.v1beta1.Bid) | repeated | List of bids in the auction |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the format to query the parameters of the auction module
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse returns parameters of the auction module
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.auction.v1beta1.Query"></a>
+
+### Query
+Query defines the gRPC querier interface for the auction module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Auctions` | [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest) | [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse) | Auctions queries all auctions | GET|/vulcanize/auction/v1beta1/auctions|
+| `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
+| `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
+| `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
+| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/auctions/{bidder_address}|
+| `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
+| `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/tx.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCommitBid"></a>
+
+### MsgCommitBid
+CommitBid defines the message to commit a bid
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `commit_hash` | [string](#string) |  | Commit Hash |
+| `signer` | [string](#string) |  | Address of the signer |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCommitBidResponse"></a>
+
+### MsgCommitBidResponse
+MsgCommitBidResponse returns the state of the auction after the bid creation
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCreateAuction"></a>
+
+### MsgCreateAuction
+MsgCreateAuction defines a create auction message
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the reveals phase in seconds |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
+| `signer` | [string](#string) |  | Address of the signer |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCreateAuctionResponse"></a>
+
+### MsgCreateAuctionResponse
+MsgCreateAuctionResponse returns the details of the created auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgRevealBid"></a>
+
+### MsgRevealBid
+RevealBid defines the message to reveal a bid
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `reveal` | [string](#string) |  | Commit Hash |
+| `signer` | [string](#string) |  | Address of the signer |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgRevealBidResponse"></a>
+
+### MsgRevealBidResponse
+MsgRevealBidResponse returns the state of the auction after the bid reveal
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.auction.v1beta1.Msg"></a>
+
+### Msg
+Tx defines the gRPC tx interface
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateAuction` | [MsgCreateAuction](#vulcanize.auction.v1beta1.MsgCreateAuction) | [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse) | CreateAuction is the command for creating an auction | |
+| `CommitBid` | [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid) | [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse) | CommitBid is the command for committing a bid | |
+| `RevealBid` | [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid) | [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse) | RevealBid is the command for revealing a bid | |
 
  <!-- end services -->
 
