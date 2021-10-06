@@ -63,9 +63,3 @@ func (bid Bid) GetCommitTime() string {
 func (bid Bid) GetRevealTime() string {
 	return string(sdk.FormatTimeBytes(bid.RevealTime))
 }
-
-// AuctionBidInfo is used in the block changeset.
-type AuctionBidInfo struct {
-	AuctionID     string
-	BidderAddress string
-}
