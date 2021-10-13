@@ -76,7 +76,7 @@ func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string)
 		}
 
 		authority.AuctionId = ""
-		SetNameAuthority(ctx, store, k.cdc, name, authority)
+		SetNameAuthority(ctx, store, k.cdc, name, &authority)
 
 		// Forget about this auction now, we no longer need it.
 		removeAuctionToAuthorityMapping(store, auctionID)

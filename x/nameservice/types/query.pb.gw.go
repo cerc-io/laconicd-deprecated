@@ -319,26 +319,19 @@ func local_request_Query_Whois_0(ctx context.Context, marshaler runtime.Marshale
 
 }
 
+var (
+	filter_Query_LookupWrn_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
 func request_Query_LookupWrn_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryLookupWrn
 	var metadata runtime.ServerMetadata
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["wrn"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wrn")
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
-	protoReq.Wrn, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wrn", err)
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_LookupWrn_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.LookupWrn(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -350,22 +343,11 @@ func local_request_Query_LookupWrn_0(ctx context.Context, marshaler runtime.Mars
 	var protoReq QueryLookupWrn
 	var metadata runtime.ServerMetadata
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["wrn"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wrn")
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
-	protoReq.Wrn, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wrn", err)
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_LookupWrn_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := server.LookupWrn(ctx, &protoReq)
@@ -373,26 +355,19 @@ func local_request_Query_LookupWrn_0(ctx context.Context, marshaler runtime.Mars
 
 }
 
+var (
+	filter_Query_ResolveWrn_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+)
+
 func request_Query_ResolveWrn_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq QueryResolveWrn
 	var metadata runtime.ServerMetadata
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["wrn"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wrn")
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
-	protoReq.Wrn, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wrn", err)
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ResolveWrn_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := client.ResolveWrn(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -404,22 +379,11 @@ func local_request_Query_ResolveWrn_0(ctx context.Context, marshaler runtime.Mar
 	var protoReq QueryResolveWrn
 	var metadata runtime.ServerMetadata
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["wrn"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "wrn")
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-
-	protoReq.Wrn, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "wrn", err)
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Query_ResolveWrn_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	msg, err := server.ResolveWrn(ctx, &protoReq)
@@ -990,27 +954,27 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "records"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "records"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetRecord_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "records", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetRecord_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "records", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetRecordByBondId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "records-by-bond-id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetRecordByBondId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "records-by-bond-id", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetNameServiceModuleBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "balance"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetNameServiceModuleBalance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "balance"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ListNameRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "names"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ListNameRecords_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "names"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Whois_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "whois", "name"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Whois_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"vulcanize", "nameservice", "v1beta1", "whois", "name"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_LookupWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "lookup", "wrn"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_LookupWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "lookup"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ResolveWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"ethermint", "nameservice", "v1", "resolve", "wrn"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ResolveWrn_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "resolve"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetRecordExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "record-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetRecordExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "record-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GetAuthorityExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "nameservice", "v1", "authority-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GetAuthorityExpiryQueue_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"vulcanize", "nameservice", "v1beta1", "authority-expiry"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

@@ -58,7 +58,7 @@ func (q Querier) ListNameRecords(c context.Context, _ *types.QueryListNameRecord
 func (q Querier) Whois(c context.Context, request *types.QueryWhoisRequest) (*types.QueryWhoisResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	nameAuthority := q.Keeper.GetNameAuthority(ctx, request.GetName())
-	return &types.QueryWhoisResponse{NameAuthority: *nameAuthority}, nil
+	return &types.QueryWhoisResponse{NameAuthority: nameAuthority}, nil
 }
 
 func (q Querier) LookupWrn(c context.Context, req *types.QueryLookupWrn) (*types.QueryLookupWrnResponse, error) {

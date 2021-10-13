@@ -147,9 +147,9 @@
     - [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse)
     - [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond)
     - [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse)
-  
+
     - [Msg](#vulcanize.bond.v1beta1.Msg)
-  
+
 - [vulcanize/nameservice/v1beta1/nameservice.proto](#vulcanize/nameservice/v1beta1/nameservice.proto)
     - [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo)
     - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
@@ -161,10 +161,10 @@
     - [Params](#vulcanize.nameservice.v1beta1.Params)
     - [Record](#vulcanize.nameservice.v1beta1.Record)
     - [Signature](#vulcanize.nameservice.v1beta1.Signature)
-  
+
 - [vulcanize/nameservice/v1beta1/genesis.proto](#vulcanize/nameservice/v1beta1/genesis.proto)
     - [GenesisState](#vulcanize.nameservice.v1beta1.GenesisState)
-  
+
 - [vulcanize/nameservice/v1beta1/query.proto](#vulcanize/nameservice/v1beta1/query.proto)
     - [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance)
     - [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord)
@@ -191,8 +191,8 @@
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
     - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
 
-      - [Query](#vulcanize.nameservice.v1beta1.Query)
-  
+    - [Query](#vulcanize.nameservice.v1beta1.Query)
+
 - [vulcanize/nameservice/v1beta1/tx.proto](#vulcanize/nameservice/v1beta1/tx.proto)
     - [MsgAssociateBond](#vulcanize.nameservice.v1beta1.MsgAssociateBond)
     - [MsgAssociateBondResponse](#vulcanize.nameservice.v1beta1.MsgAssociateBondResponse)
@@ -2445,6 +2445,7 @@ QueryGetAuthorityExpiryQueue
 ### QueryGetAuthorityExpiryQueueResponse
 QueryGetAuthorityExpiryQueueResponse
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `authorities` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
@@ -2474,6 +2475,7 @@ QueryGetRecordExpiryQueue
 
 ### QueryGetRecordExpiryQueueResponse
 QueryGetRecordExpiryQueueResponse
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2534,8 +2536,8 @@ QueryListRecordsRequest is request type for nameservice records list
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
 
 ### QueryListRecordsResponse
-QueryListRecordsResponse is response type for nameservice records list
 
+QueryListRecordsResponse is response type for nameservice records list
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2718,17 +2720,17 @@ Query defines the gRPC querier service for nameservice module
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Params queries the nameservice module params. | GET|/ethermint/nameservice/v1/params|
-| `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/ethermint/nameservice/v1/records|
-| `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/ethermint/nameservice/v1/records/{id}|
-| `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/ethermint/nameservice/v1/records-by-bond-id/{id}|
-| `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/ethermint/nameservice/v1/balance|
-| `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/ethermint/nameservice/v1/names|
-| `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/ethermint/nameservice/v1/whois/{name}|
-| `LookupWrn` | [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn) | [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse) | LookupWrn | GET|/ethermint/nameservice/v1/lookup/{wrn}|
-| `ResolveWrn` | [QueryResolveWrn](#vulcanize.nameservice.v1beta1.QueryResolveWrn) | [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse) | ResolveWrn | GET|/ethermint/nameservice/v1/resolve/{wrn}|
-| `GetRecordExpiryQueue` | [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue) | [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse) | GetRecordExpiryQueue | GET|/ethermint/nameservice/v1/record-expiry|
-| `GetAuthorityExpiryQueue` | [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue) | [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse) | GetAuthorityExpiryQueue | GET|/ethermint/nameservice/v1/authority-expiry|
+| `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Params queries the nameservice module params. | GET|/vulcanize/nameservice/v1beta1/params|
+| `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/vulcanize/nameservice/v1beta1/records|
+| `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/vulcanize/nameservice/v1beta1/records/{id}|
+| `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}|
+| `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/vulcanize/nameservice/v1beta1/balance|
+| `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/vulcanize/nameservice/v1beta1/names|
+| `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/vulcanize/nameservice/v1beta1/whois/{name}|
+| `LookupWrn` | [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn) | [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse) | LookupWrn | GET|/vulcanize/nameservice/v1beta1/lookup|
+| `ResolveWrn` | [QueryResolveWrn](#vulcanize.nameservice.v1beta1.QueryResolveWrn) | [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse) | ResolveWrn | GET|/vulcanize/nameservice/v1beta1/resolve|
+| `GetRecordExpiryQueue` | [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue) | [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse) | GetRecordExpiryQueue | GET|/vulcanize/nameservice/v1beta1/record-expiry|
+| `GetAuthorityExpiryQueue` | [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue) | [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse) | GetAuthorityExpiryQueue | GET|/vulcanize/nameservice/v1beta1/authority-expiry|
 
  <!-- end services -->
 

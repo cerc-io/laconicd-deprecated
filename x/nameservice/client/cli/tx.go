@@ -60,7 +60,7 @@ $ %s tx %s set [payload file path] [bond-id]
 				return err
 			}
 
-			payload, err := getPayloadFromFile(args[0])
+			payload, err := GetPayloadFromFile(args[0])
 			if err != nil {
 				return err
 			}
@@ -370,8 +370,8 @@ $ %s tx %s delete-name [wrn]
 	return cmd
 }
 
-// Load payload object from YAML file.
-func getPayloadFromFile(filePath string) (*types.PayloadType, error) {
+//GetPayloadFromFile  Load payload object from YAML file.
+func GetPayloadFromFile(filePath string) (*types.PayloadType, error) {
 	var payload types.PayloadType
 
 	data, err := ioutil.ReadFile(filePath)

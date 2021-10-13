@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
@@ -134,8 +133,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 	itr := sdk.KVStorePrefixIterator(store, PrefixExpiryTimeToRecordsIndex)
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
-		var record []string
-		err := json.Unmarshal(itr.Value(), &record)
+		record, err := helpers.BytesArrToStringArr(itr.Value())
 		if err != nil {
 			return records
 		}

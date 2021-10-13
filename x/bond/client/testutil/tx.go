@@ -22,7 +22,8 @@ func (s *IntegrationTestSuite) TestTxCreateBond() {
 		{
 			"without deposit",
 			[]string{
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
@@ -33,8 +34,10 @@ func (s *IntegrationTestSuite) TestTxCreateBond() {
 			"create bond",
 			[]string{
 				fmt.Sprintf("10%s", s.cfg.BondDenom),
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
 			},
@@ -54,6 +57,7 @@ func (s *IntegrationTestSuite) TestTxCreateBond() {
 				sr.NoError(err)
 				var d sdk.TxResponse
 				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
+				sr.Nil(err)
 				sr.NoError(err)
 				sr.Zero(d.Code)
 			}
@@ -74,7 +78,8 @@ func (s *IntegrationTestSuite) TestTxRefillBond() {
 		{
 			"without refill amount and bond id",
 			[]string{
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
@@ -86,7 +91,8 @@ func (s *IntegrationTestSuite) TestTxRefillBond() {
 			"refill bond",
 			[]string{
 				fmt.Sprintf("10%s", s.cfg.BondDenom),
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
@@ -157,7 +163,8 @@ func (s *IntegrationTestSuite) TestTxWithdrawAmountFromBond() {
 		{
 			"without withdraw amount and bond id",
 			[]string{
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
@@ -169,7 +176,8 @@ func (s *IntegrationTestSuite) TestTxWithdrawAmountFromBond() {
 			"withdraw amount from bond",
 			[]string{
 				fmt.Sprintf("10%s", s.cfg.BondDenom),
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
@@ -240,7 +248,8 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 		{
 			"without bond id",
 			[]string{
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
@@ -251,7 +260,8 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 		{
 			"cancel bond",
 			[]string{
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.accountName),
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),

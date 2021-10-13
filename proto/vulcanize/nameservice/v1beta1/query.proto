@@ -13,47 +13,47 @@ option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
 service Query {
   // Params queries the nameservice module params.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/ethermint/nameservice/v1/params";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/params";
   }
   // List records
   rpc ListRecords(QueryListRecordsRequest) returns (QueryListRecordsResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/records";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/records";
   }
   // Get record by id
   rpc GetRecord(QueryRecordByIdRequest) returns (QueryRecordByIdResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/records/{id}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/records/{id}";
   }
   // Get records by bond id
   rpc GetRecordByBondId(QueryRecordByBondIdRequest) returns (QueryRecordByBondIdResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/records-by-bond-id/{id}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}";
   }
   // Get nameservice module balance
   rpc GetNameServiceModuleBalance(GetNameServiceModuleBalanceRequest) returns (GetNameServiceModuleBalanceResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/balance";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/balance";
   }
   // List name records
   rpc ListNameRecords(QueryListNameRecordsRequest) returns (QueryListNameRecordsResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/names";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/names";
   }
   // Whois method retrieve the name authority info
   rpc Whois(QueryWhoisRequest) returns (QueryWhoisResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/whois/{name}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/whois/{name}";
   }
   // LookupWrn
   rpc LookupWrn(QueryLookupWrn) returns (QueryLookupWrnResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/lookup/{wrn}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/lookup";
   }
   // ResolveWrn
   rpc ResolveWrn(QueryResolveWrn) returns (QueryResolveWrnResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/resolve/{wrn}";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/resolve";
   }
   // GetRecordExpiryQueue
   rpc GetRecordExpiryQueue(QueryGetRecordExpiryQueue) returns (QueryGetRecordExpiryQueueResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/record-expiry";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/record-expiry";
   }
   // GetAuthorityExpiryQueue
   rpc GetAuthorityExpiryQueue(QueryGetAuthorityExpiryQueue) returns (QueryGetAuthorityExpiryQueueResponse){
-    option (google.api.http).get = "/ethermint/nameservice/v1/authority-expiry";
+    option (google.api.http).get = "/vulcanize/nameservice/v1beta1/authority-expiry";
   }
 }
 

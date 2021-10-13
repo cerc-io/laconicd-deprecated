@@ -59,6 +59,7 @@ func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKe
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
+
 	return Keeper{
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
