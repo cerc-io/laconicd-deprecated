@@ -32,6 +32,9 @@ var prefixOwnerToAuctionsIndex = []byte{0x01}
 // PrefixAuctionBidsIndex is the prefix for the (auction, bidder) -> Bid index in the KVStore.
 var PrefixAuctionBidsIndex = []byte{0x02}
 
+// PrefixBidderToAuctionsIndex is the prefix for the Bidder -> [Auction] index in the KVStore.
+var PrefixBidderToAuctionsIndex = []byte{0x03}
+
 // Keeper maintains the link to storage and exposes getter/setter methods for the various parts of the state machine
 type Keeper struct {
 	accountKeeper auth.AccountKeeper
@@ -87,6 +90,10 @@ func GetOwnerToAuctionsIndexKey(owner string, auctionID string) []byte {
 	return append(append(prefixOwnerToAuctionsIndex, []byte(owner)...), []byte(auctionID)...)
 }
 
+func GetBidderToAuctionsIndexKey(bidder string, auctionID string) []byte {
+	return append(append(PrefixBidderToAuctionsIndex, []byte(bidder)...), []byte(auctionID)...)
+}
+
 func GetBidIndexKey(auctionID string, bidder string) []byte {
 	return append(GetAuctionBidsIndexPrefix(auctionID), []byte(bidder)...)
 }
@@ -114,6 +121,7 @@ func (k Keeper) SaveAuction(ctx sdk.Context, auction *types.Auction) {
 func (k Keeper) SaveBid(ctx sdk.Context, bid *types.Bid) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(GetBidIndexKey(bid.AuctionId, bid.BidderAddress), k.cdc.MustMarshal(bid))
+	store.Set(GetBidderToAuctionsIndexKey(bid.BidderAddress, bid.AuctionId), []byte{})
 
 	// Notify interested parties.
 	for _, keeper := range k.usageKeepers {
@@ -124,6 +132,7 @@ func (k Keeper) SaveBid(ctx sdk.Context, bid *types.Bid) {
 func (k Keeper) DeleteBid(ctx sdk.Context, bid types.Bid) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(GetBidIndexKey(bid.AuctionId, bid.BidderAddress))
+	store.Delete(GetOwnerToAuctionsIndexKey(bid.BidderAddress, bid.AuctionId))
 }
 
 // HasAuction - checks if a auction by the given Id exists.
@@ -169,7 +178,7 @@ func (k Keeper) GetAuction(ctx sdk.Context, id string) *types.Auction {
 // GetBids gets the auction bids.
 func (k Keeper) GetBids(ctx sdk.Context, id string) []*types.Bid {
 	store := ctx.KVStore(k.storeKey)
-	var bids []*types.Bid
+	bids := []*types.Bid{}
 	itr := sdk.KVStorePrefixIterator(store, GetAuctionBidsIndexPrefix(id))
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
@@ -215,7 +224,7 @@ func (k Keeper) ListAuctions(ctx sdk.Context) []types.Auction {
 
 // QueryAuctionsByOwner - query auctions by owner.
 func (k Keeper) QueryAuctionsByOwner(ctx sdk.Context, ownerAddress string) []types.Auction {
-	var auctions []types.Auction
+	auctions := []types.Auction{}
 
 	ownerPrefix := append(prefixOwnerToAuctionsIndex, []byte(ownerAddress)...)
 	store := ctx.KVStore(k.storeKey)
@@ -223,6 +232,27 @@ func (k Keeper) QueryAuctionsByOwner(ctx sdk.Context, ownerAddress string) []typ
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		auctionID := itr.Key()[len(ownerPrefix):]
+		bz := store.Get(append(PrefixIDToAuctionIndex, auctionID...))
+		if bz != nil {
+			var obj types.Auction
+			k.cdc.MustUnmarshal(bz, &obj)
+			auctions = append(auctions, obj)
+		}
+	}
+
+	return auctions
+}
+
+// QueryAuctionsByBidder - query auctions by bidder
+func (k Keeper) QueryAuctionsByBidder(ctx sdk.Context, bidderAddress string) []types.Auction {
+	auctions := []types.Auction{}
+
+	bidderPrefix := append(PrefixBidderToAuctionsIndex, []byte(bidderAddress)...)
+	store := ctx.KVStore(k.storeKey)
+	itr := sdk.KVStorePrefixIterator(store, []byte(bidderPrefix))
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		auctionID := itr.Key()[len(bidderPrefix):]
 		bz := store.Get(append(PrefixIDToAuctionIndex, auctionID...))
 		if bz != nil {
 			var obj types.Auction
@@ -303,7 +333,7 @@ func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*typ
 	return &auction, nil
 }
 
-func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Auction, error) {
+func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Bid, error) {
 	if !k.HasAuction(ctx, msg.AuctionId) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Auction not found.")
 	}
@@ -349,7 +379,7 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Aucti
 
 	k.SaveBid(ctx, &bid)
 
-	return auction, nil
+	return &bid, nil
 }
 
 // RevealBid reeals a bid comitted earlier.

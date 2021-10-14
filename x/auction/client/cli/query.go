@@ -27,6 +27,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdGetBid(),
 		GetCmdGetBids(),
 		GetCmdAuctionsByBidder(),
+		GetCmdAuctionsByOwner(),
 		GetCmdQueryParams(),
 		GetCmdBalance(),
 	)
@@ -148,6 +149,34 @@ func GetCmdGetAuction() *cobra.Command {
 // GetCmdAuctionsByBidder queries auctions by bidder.
 func GetCmdAuctionsByBidder() *cobra.Command {
 	cmd := &cobra.Command{
+		Use:   "query-by-bidder [address]",
+		Short: "Query auctions by bidder.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			address := args[0]
+
+			queryClient := types.NewQueryClient(clientCtx)
+			res, err := queryClient.AuctionsByBidder(cmd.Context(), &types.AuctionsByBidderRequest{BidderAddress: address})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdAuctionsByOwner queries auctions by owner
+func GetCmdAuctionsByOwner() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "query-by-owner [address]",
 		Short: "Query auctions by owner/creator.",
 		Args:  cobra.ExactArgs(1),
@@ -160,7 +189,7 @@ func GetCmdAuctionsByBidder() *cobra.Command {
 			address := args[0]
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.AuctionsByBidder(cmd.Context(), &types.AuctionsByBidderRequest{BidderAddress: address})
+			res, err := queryClient.AuctionsByOwner(cmd.Context(), &types.AuctionsByOwnerRequest{OwnerAddress: address})
 			if err != nil {
 				return err
 			}

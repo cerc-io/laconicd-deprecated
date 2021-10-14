@@ -76,7 +76,7 @@ func (s msgServer) CommitBid(c context.Context, msg *types.MsgCommitBid) (*types
 		),
 	})
 
-	return &types.MsgCommitBidResponse{Auction: resp}, nil
+	return &types.MsgCommitBidResponse{Bid: resp}, nil
 }
 
 //RevealBid is the command for revealing a bid

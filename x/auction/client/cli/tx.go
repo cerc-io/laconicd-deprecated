@@ -29,7 +29,6 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// TODO(ashwin): Add Tx commands.
 	auctionTxCmd.AddCommand(
 		GetCmdCreateAuction(),
 		GetCmdCommitBid(),
@@ -92,7 +91,7 @@ func GetCmdCreateAuction() *cobra.Command {
 		},
 	}
 
-	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -171,8 +170,6 @@ func GetCmdRevealBid() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
-			// TODO(ashwin): Before revealing, check if auction is in reveal phase.
 
 			msg := types.NewMsgRevealBid(auctionID, hex.EncodeToString(revealBytes), clientCtx.GetFromAddress())
 			err = msg.ValidateBasic()

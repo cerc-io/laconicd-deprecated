@@ -73,6 +73,18 @@ message AuctionsByBidderResponse {
     Auctions auctions = 1;
 }
 
+// AuctionsByOwnerRequest is the format for querying all auctions created by an owner
+message AuctionsByOwnerRequest {
+    // Address of the owner
+    string owner_address = 1;
+}
+
+// AuctionsByOwnerResponse returns all auctions created by an owner
+message AuctionsByOwnerResponse {
+    // List of auctions
+    Auctions auctions = 1;
+}
+
 // QueryParamsRequest is the format to query the parameters of the auction module
 message QueryParamsRequest {
 }
@@ -117,7 +129,12 @@ service Query {
 
     // AuctionsByBidder queries auctions by bidder
     rpc AuctionsByBidder(AuctionsByBidderRequest) returns (AuctionsByBidderResponse) {
-        option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions/{bidder_address}";
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/by-bidder/{bidder_address}";
+    }
+
+    // AuctionsByOwner queries auctions by owner
+    rpc AuctionsByOwner(AuctionsByOwnerRequest) returns (AuctionsByOwnerResponse) {
+        option (google.api.http).get = "/vulcanize/auction/v1beta1/by-owner/{owner_address}";
     }
 
     // QueryParams implements the params query command

@@ -94,8 +94,8 @@ message MsgRevealBid {
 message MsgCommitBidResponse {
     option (gogoproto.goproto_getters) = false;
     // Auction details
-    Auction auction = 1 [
-        (gogoproto.moretags) = "json:\"auction\" yaml:\"auction\""
+    Bid bid = 1 [
+        (gogoproto.moretags) = "json:\"bid\" yaml:\"bid\""
     ];
 }
 
