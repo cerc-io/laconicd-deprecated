@@ -71,44 +71,44 @@
     - [QueryBlockGasResponse](#ethermint.feemarket.v1.QueryBlockGasResponse)
     - [QueryParamsRequest](#ethermint.feemarket.v1.QueryParamsRequest)
     - [QueryParamsResponse](#ethermint.feemarket.v1.QueryParamsResponse)
-  
+
     - [Query](#ethermint.feemarket.v1.Query)
-  
+
 - [ethermint/types/v1/account.proto](#ethermint/types/v1/account.proto)
     - [EthAccount](#ethermint.types.v1.EthAccount)
-  
+
 - [ethermint/types/v1/web3.proto](#ethermint/types/v1/web3.proto)
     - [ExtensionOptionsWeb3Tx](#ethermint.types.v1.ExtensionOptionsWeb3Tx)
-  
+
 - [vulcanize/auction/v1beta1/types.proto](#vulcanize/auction/v1beta1/types.proto)
     - [Auction](#vulcanize.auction.v1beta1.Auction)
     - [Auctions](#vulcanize.auction.v1beta1.Auctions)
     - [Bid](#vulcanize.auction.v1beta1.Bid)
     - [Params](#vulcanize.auction.v1beta1.Params)
-  
+
 - [vulcanize/auction/v1beta1/genesis.proto](#vulcanize/auction/v1beta1/genesis.proto)
     - [GenesisState](#vulcanize.auction.v1beta1.GenesisState)
-  
+
 - [vulcanize/auction/v1beta1/query.proto](#vulcanize/auction/v1beta1/query.proto)
-    - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
-    - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
-    - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
-    - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
-    - [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest)
-    - [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse)
-    - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
-    - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
-    - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
-    - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
-    - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
-    - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
-    - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
-    - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
-    - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
-    - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
-  
-    - [Query](#vulcanize.auction.v1beta1.Query)
-  
+  - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
+  - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
+  - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
+  - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
+  - [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest)
+  - [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse)
+  - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
+  - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
+  - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
+  - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
+  - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
+  - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
+  - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
+  - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
+  - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
+  - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
+
+  - [Query](#vulcanize.auction.v1beta1.Query)
+
 - [vulcanize/auction/v1beta1/tx.proto](#vulcanize/auction/v1beta1/tx.proto)
     - [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid)
     - [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse)
@@ -116,16 +116,16 @@
     - [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse)
     - [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid)
     - [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse)
-  
+
     - [Msg](#vulcanize.auction.v1beta1.Msg)
-  
+
 - [vulcanize/bond/v1beta1/bond.proto](#vulcanize/bond/v1beta1/bond.proto)
     - [Bond](#vulcanize.bond.v1beta1.Bond)
     - [Params](#vulcanize.bond.v1beta1.Params)
-  
+
 - [vulcanize/bond/v1beta1/genesis.proto](#vulcanize/bond/v1beta1/genesis.proto)
     - [GenesisState](#vulcanize.bond.v1beta1.GenesisState)
-  
+
 - [vulcanize/bond/v1beta1/query.proto](#vulcanize/bond/v1beta1/query.proto)
     - [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest)
     - [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse)
@@ -192,9 +192,9 @@
     - [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
     - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
-  
+
     - [Query](#vulcanize.nameservice.v1beta1.Query)
-  
+
 - [vulcanize/nameservice/v1beta1/tx.proto](#vulcanize/nameservice/v1beta1/tx.proto)
     - [MsgAssociateBond](#vulcanize.nameservice.v1beta1.MsgAssociateBond)
     - [MsgAssociateBondResponse](#vulcanize.nameservice.v1beta1.MsgAssociateBondResponse)
@@ -217,9 +217,9 @@
     - [MsgSetRecord](#vulcanize.nameservice.v1beta1.MsgSetRecord)
     - [MsgSetRecordResponse](#vulcanize.nameservice.v1beta1.MsgSetRecordResponse)
     - [Payload](#vulcanize.nameservice.v1beta1.Payload)
-  
+
     - [Msg](#vulcanize.nameservice.v1beta1.Msg)
-  
+
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -1252,17 +1252,11 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 
 ### ExtensionOptionsWeb3Tx
 
-
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `typed_data_chain_id` | [uint64](#uint64) |  | typed data chain id used only in EIP712 Domain and should match Ethereum network ID in a Web3 provider (e.g. Metamask). |
 | `fee_payer` | [string](#string) |  | fee payer is an account address for the fee payer. It will be validated during EIP712 signature checking. |
 | `fee_payer_sig` | [bytes](#bytes) |  | fee payer sig is a signature data from the fee paying account, allows to perform fee delegation when using EIP712 Domain. |
-
-
-
-
 
  <!-- end messages -->
 
@@ -1302,31 +1296,19 @@ Auction represents a sealed-bid on-chain auction
 | `winning_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Winning bid, i.e., the highest bid |
 | `winning_price` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Amount the winner pays, i.e. the second highest auction |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.Auctions"></a>
 
 ### Auctions
-
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.Bid"></a>
 
 ### Bid
-Bid represents a sealed bid (commit) made during the auction
 
+Bid represents a sealed bid (commit) made during the auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1340,16 +1322,11 @@ Bid represents a sealed bid (commit) made during the auction
 | `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
 | `bid_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.Params"></a>
 
 ### Params
-Params defines the auction module parameters
 
+Params defines the auction module parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1358,10 +1335,6 @@ Params defines the auction module parameters
 | `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
 | `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
 | `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
-
-
-
-
 
  <!-- end messages -->
 
@@ -1383,17 +1356,13 @@ Params defines the auction module parameters
 <a name="vulcanize.auction.v1beta1.GenesisState"></a>
 
 ### GenesisState
-GenesisState defines the genesis state of the auction module
 
+GenesisState defines the genesis state of the auction module
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
 | `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
-
-
-
-
 
  <!-- end messages -->
 
@@ -1410,238 +1379,157 @@ GenesisState defines the genesis state of the auction module
 
 ## vulcanize/auction/v1beta1/query.proto
 
-
-
 <a name="vulcanize.auction.v1beta1.AuctionRequest"></a>
 
 ### AuctionRequest
-AuctionRequest is the format for querying a specific auction
 
+AuctionRequest is the format for querying a specific auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  | Auction ID |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.AuctionResponse"></a>
 
 ### AuctionResponse
-AuctionResponse returns the details of the queried auction
 
+AuctionResponse returns the details of the queried auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.AuctionsByBidderRequest"></a>
 
 ### AuctionsByBidderRequest
-AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
 
+AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `bidder_address` | [string](#string) |  | Address of the bidder |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.AuctionsByBidderResponse"></a>
 
 ### AuctionsByBidderResponse
-AuctionsByBidderResponse returns all auctions containing a bidder
 
+AuctionsByBidderResponse returns all auctions containing a bidder
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.AuctionsByOwnerRequest"></a>
 
 ### AuctionsByOwnerRequest
-AuctionsByOwnerRequest is the format for querying all auctions created by an owner
 
+AuctionsByOwnerRequest is the format for querying all auctions created by an owner
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `owner_address` | [string](#string) |  | Address of the owner |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.AuctionsByOwnerResponse"></a>
 
 ### AuctionsByOwnerResponse
-AuctionsByOwnerResponse returns all auctions created by an owner
 
+AuctionsByOwnerResponse returns all auctions created by an owner
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
-
-
-
-
-
 
 <a name="vulcanize.auction.v1beta1.AuctionsRequest"></a>
 
 ### AuctionsRequest
-AuctionsRequest is the format for querying all the auctions
 
+AuctionsRequest is the format for querying all the auctions
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.AuctionsResponse"></a>
 
 ### AuctionsResponse
-AuctionsResponse returns the list of all auctions
 
+AuctionsResponse returns the list of all auctions
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.BalanceRequest"></a>
 
 ### BalanceRequest
+
 BalanceRequest is the format to fetch all balances
-
-
-
-
-
 
 <a name="vulcanize.auction.v1beta1.BalanceResponse"></a>
 
 ### BalanceResponse
 
-
-
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | Set of all balances within the auction |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.BidRequest"></a>
 
 ### BidRequest
-BidRequest is the format for querying a specific bid in an auction
 
+BidRequest is the format for querying a specific bid in an auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction_id` | [string](#string) |  | Auction ID |
 | `bidder` | [string](#string) |  | Bidder address |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.BidResponse"></a>
 
 ### BidResponse
-BidResponse returns the details of the queried bid
 
+BidResponse returns the details of the queried bid
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Bid details |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.BidsRequest"></a>
 
 ### BidsRequest
-BidsRequest is the format for querying all bids in an auction
 
+BidsRequest is the format for querying all bids in an auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction_id` | [string](#string) |  | Auction ID |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.BidsResponse"></a>
 
 ### BidsResponse
-BidsResponse returns details of all bids in an auction
 
+BidsResponse returns details of all bids in an auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `bids` | [Bid](#vulcanize.auction.v1beta1.Bid) | repeated | List of bids in the auction |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
+
 QueryParamsRequest is the format to query the parameters of the auction module
-
-
-
-
-
 
 <a name="vulcanize.auction.v1beta1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-QueryParamsResponse returns parameters of the auction module
 
+QueryParamsResponse returns parameters of the auction module
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
-
-
-
-
 
  <!-- end messages -->
 
@@ -1680,8 +1568,8 @@ Query defines the gRPC querier interface for the auction module
 <a name="vulcanize.auction.v1beta1.MsgCommitBid"></a>
 
 ### MsgCommitBid
-CommitBid defines the message to commit a bid
 
+CommitBid defines the message to commit a bid
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1689,31 +1577,21 @@ CommitBid defines the message to commit a bid
 | `commit_hash` | [string](#string) |  | Commit Hash |
 | `signer` | [string](#string) |  | Address of the signer |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.MsgCommitBidResponse"></a>
 
 ### MsgCommitBidResponse
-MsgCommitBidResponse returns the state of the auction after the bid creation
 
+MsgCommitBidResponse returns the state of the auction after the bid creation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Auction details |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.MsgCreateAuction"></a>
 
 ### MsgCreateAuction
-MsgCreateAuction defines a create auction message
 
+MsgCreateAuction defines a create auction message
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1724,31 +1602,21 @@ MsgCreateAuction defines a create auction message
 | `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
 | `signer` | [string](#string) |  | Address of the signer |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.MsgCreateAuctionResponse"></a>
 
 ### MsgCreateAuctionResponse
-MsgCreateAuctionResponse returns the details of the created auction
 
+MsgCreateAuctionResponse returns the details of the created auction
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.MsgRevealBid"></a>
 
 ### MsgRevealBid
-RevealBid defines the message to reveal a bid
 
+RevealBid defines the message to reveal a bid
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1756,24 +1624,15 @@ RevealBid defines the message to reveal a bid
 | `reveal` | [string](#string) |  | Commit Hash |
 | `signer` | [string](#string) |  | Address of the signer |
 
-
-
-
-
-
 <a name="vulcanize.auction.v1beta1.MsgRevealBidResponse"></a>
 
 ### MsgRevealBidResponse
-MsgRevealBidResponse returns the state of the auction after the bid reveal
 
+MsgRevealBidResponse returns the state of the auction after the bid reveal
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
-
-
-
-
 
  <!-- end messages -->
 
@@ -2195,45 +2054,33 @@ Msg defines the bond Msg service.
 
 ## vulcanize/nameservice/v1beta1/nameservice.proto
 
-
-
 <a name="vulcanize.nameservice.v1beta1.AuctionBidInfo"></a>
 
 ### AuctionBidInfo
-AuctionBidInfo
 
+AuctionBidInfo
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `auction_id` | [string](#string) |  |  |
 | `bidder_address` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.AuthorityEntry"></a>
 
 ### AuthorityEntry
-AuthorityEntry defines the nameservice module AuthorityEntries
 
+AuthorityEntry defines the nameservice module AuthorityEntries
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [string](#string) |  |  |
 | `entry` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.BlockChangeSet"></a>
 
 ### BlockChangeSet
-BlockChangeSet
 
+BlockChangeSet
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2244,16 +2091,11 @@ BlockChangeSet
 | `authorities` | [string](#string) | repeated |  |
 | `names` | [string](#string) | repeated |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.NameAuthority"></a>
 
 ### NameAuthority
-NameAuthority
 
+NameAuthority
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2265,64 +2107,44 @@ NameAuthority
 | `bond_id` | [string](#string) |  |  |
 | `expiry_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.NameEntry"></a>
 
 ### NameEntry
-NameEntry
 
+NameEntry
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [string](#string) |  |  |
 | `entry` | [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.NameRecord"></a>
 
 ### NameRecord
-NameRecord
 
+NameRecord
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `latest` | [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry) |  |  |
 | `history` | [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry) | repeated |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.NameRecordEntry"></a>
 
 ### NameRecordEntry
-NameRecordEntry
 
+NameRecordEntry
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `height` | [uint64](#uint64) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.Params"></a>
 
 ### Params
-Params defines the nameservice module parameters
 
+Params defines the nameservice module parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2338,16 +2160,11 @@ Params defines the nameservice module parameters
 | `authority_auction_reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
 | `authority_auction_minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.Record"></a>
 
 ### Record
-Params defines the nameservice module records
 
+Params defines the nameservice module records
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2359,25 +2176,16 @@ Params defines the nameservice module records
 | `owners` | [string](#string) | repeated |  |
 | `attributes` | [bytes](#bytes) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.Signature"></a>
 
 ### Signature
-Signature
 
+Signature
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `sig` | [string](#string) |  |  |
 | `pub_key` | [string](#string) |  |  |
-
-
-
-
 
  <!-- end messages -->
 
@@ -2394,13 +2202,11 @@ Signature
 
 ## vulcanize/nameservice/v1beta1/genesis.proto
 
-
-
 <a name="vulcanize.nameservice.v1beta1.GenesisState"></a>
 
 ### GenesisState
-GenesisState defines the nameservice module's genesis state.
 
+GenesisState defines the nameservice module's genesis state.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2408,10 +2214,6 @@ GenesisState defines the nameservice module's genesis state.
 | `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated | records |
 | `authorities` | [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry) | repeated | authorities |
 | `names` | [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry) | repeated | names |
-
-
-
-
 
  <!-- end messages -->
 
@@ -2428,172 +2230,116 @@ GenesisState defines the nameservice module's genesis state.
 
 ## vulcanize/nameservice/v1beta1/query.proto
 
-
-
 <a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
 
 ### AccountBalance
-AccountBalance is nameservice module account balance
 
+AccountBalance is nameservice module account balance
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `account_name` | [string](#string) |  |  |
 | `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.ExpiryQueueRecord"></a>
 
 ### ExpiryQueueRecord
-ExpiryQueueRecord
 
+ExpiryQueueRecord
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `value` | [string](#string) | repeated |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest"></a>
 
 ### GetNameServiceModuleBalanceRequest
+
 GetNameServiceModuleBalanceRequest is request type for nameservice module accounts balance
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse"></a>
 
 ### GetNameServiceModuleBalanceResponse
-GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
 
+GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `balances` | [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance) | repeated |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue"></a>
 
 ### QueryGetAuthorityExpiryQueue
-QueryGetAuthorityExpiryQueue
 
+QueryGetAuthorityExpiryQueue
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse"></a>
 
 ### QueryGetAuthorityExpiryQueueResponse
-QueryGetAuthorityExpiryQueueResponse
 
+QueryGetAuthorityExpiryQueueResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `authorities` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue"></a>
 
 ### QueryGetRecordExpiryQueue
-QueryGetRecordExpiryQueue
 
+QueryGetRecordExpiryQueue
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse"></a>
 
 ### QueryGetRecordExpiryQueueResponse
-QueryGetRecordExpiryQueueResponse
 
+QueryGetRecordExpiryQueueResponse
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `records` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest"></a>
 
 ### QueryListNameRecordsRequest
-QueryListNameRecordsRequest is request type for nameservice names records
 
+QueryListNameRecordsRequest is request type for nameservice names records
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse"></a>
 
 ### QueryListNameRecordsResponse
-QueryListNameRecordsResponse is response type for nameservice names records
 
+QueryListNameRecordsResponse is response type for nameservice names records
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `names` | [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest"></a>
 
 ### QueryListRecordsRequest
-QueryListRecordsRequest is request type for nameservice records list
 
+QueryListRecordsRequest is request type for nameservice records list
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
 
@@ -2606,186 +2352,123 @@ QueryListRecordsResponse is response type for nameservice records list
 | `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrn"></a>
 
 ### QueryLookupWrn
-QueryLookupWrn is request type for LookupWrn
 
+QueryLookupWrn is request type for LookupWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `wrn` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryLookupWrnResponse"></a>
 
 ### QueryLookupWrnResponse
-QueryLookupWrnResponse is response type for QueryLookupWrn
 
+QueryLookupWrnResponse is response type for QueryLookupWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
+
 QueryParamsRequest is request type for nameservice params
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.QueryParamsResponse"></a>
 
 ### QueryParamsResponse
-QueryParamsResponse is response type for nameservice params
 
+QueryParamsResponse is response type for nameservice params
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#vulcanize.nameservice.v1beta1.Params) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
 
 ### QueryRecordByBondIdRequest
-QueryRecordByBondIdRequest is request type for get the records by bond-id
 
+QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
 
 ### QueryRecordByBondIdResponse
-QueryRecordByBondIdResponse is response type for records list by bond-id
 
+QueryRecordByBondIdResponse is response type for records list by bond-id
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByIdRequest"></a>
 
 ### QueryRecordByIdRequest
-QueryRecordByIdRequest is request type for nameservice records by id
 
+QueryRecordByIdRequest is request type for nameservice records by id
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryRecordByIdResponse"></a>
 
 ### QueryRecordByIdResponse
-QueryRecordByIdResponse is response type for nameservice records by id
 
+QueryRecordByIdResponse is response type for nameservice records by id
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `record` | [Record](#vulcanize.nameservice.v1beta1.Record) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryResolveWrn"></a>
 
 ### QueryResolveWrn
-QueryResolveWrn is request type for ResolveWrn
 
+QueryResolveWrn is request type for ResolveWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `wrn` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryResolveWrnResponse"></a>
 
 ### QueryResolveWrnResponse
-QueryResolveWrnResponse is response type for QueryResolveWrn
 
+QueryResolveWrnResponse is response type for QueryResolveWrn
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `record` | [Record](#vulcanize.nameservice.v1beta1.Record) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryWhoisRequest"></a>
 
 ### QueryWhoisRequest
-QueryWhoisRequest is request type for Get NameAuthority
 
+QueryWhoisRequest is request type for Get NameAuthority
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.QueryWhoisResponse"></a>
 
 ### QueryWhoisResponse
-QueryWhoisResponse is response type for whois request
 
+QueryWhoisResponse is response type for whois request
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `name_authority` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
-
-
-
-
 
  <!-- end messages -->
 
@@ -2822,13 +2505,11 @@ Query defines the gRPC querier service for nameservice module
 
 ## vulcanize/nameservice/v1beta1/tx.proto
 
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgAssociateBond"></a>
 
 ### MsgAssociateBond
-MsgAssociateBond
 
+MsgAssociateBond
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2836,104 +2517,68 @@ MsgAssociateBond
 | `bond_id` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgAssociateBondResponse"></a>
 
 ### MsgAssociateBondResponse
+
 MsgAssociateBondResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgDeleteNameAuthority"></a>
 
 ### MsgDeleteNameAuthority
-MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
 
+MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `wrn` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgDeleteNameAuthorityResponse"></a>
 
 ### MsgDeleteNameAuthorityResponse
+
 MsgDeleteNameAuthorityResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgDissociateBond"></a>
 
 ### MsgDissociateBond
-MsgDissociateBond is SDK message for Msg/DissociateBond
 
+MsgDissociateBond is SDK message for Msg/DissociateBond
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `record_id` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgDissociateBondResponse"></a>
 
 ### MsgDissociateBondResponse
+
 MsgDissociateBondResponse is response type for MsgDissociateBond
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgDissociateRecords"></a>
 
 ### MsgDissociateRecords
-MsgDissociateRecords is SDK message for Msg/DissociateRecords
 
+MsgDissociateRecords is SDK message for Msg/DissociateRecords
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `bond_id` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgDissociateRecordsResponse"></a>
 
 ### MsgDissociateRecordsResponse
+
 MsgDissociateRecordsResponse is response type for MsgDissociateRecords
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgReAssociateRecords"></a>
 
 ### MsgReAssociateRecords
-MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
 
+MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2941,52 +2586,34 @@ MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
 | `old_bond_id` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgReAssociateRecordsResponse"></a>
 
 ### MsgReAssociateRecordsResponse
+
 MsgReAssociateRecordsResponse is response type for MsgReAssociateRecords
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgRenewRecord"></a>
 
 ### MsgRenewRecord
-MsgRenewRecord is SDK message for Renew a record
 
+MsgRenewRecord is SDK message for Renew a record
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `record_id` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgRenewRecordResponse"></a>
 
 ### MsgRenewRecordResponse
+
 MsgRenewRecordResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgReserveAuthority"></a>
 
 ### MsgReserveAuthority
-MsgReserveName
 
+MsgReserveName
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -2994,26 +2621,17 @@ MsgReserveName
 | `signer` | [string](#string) |  |  |
 | `owner` | [string](#string) |  | if creating a sub-authority. |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgReserveAuthorityResponse"></a>
 
 ### MsgReserveAuthorityResponse
+
 MsgReserveNameResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgSetAuthorityBond"></a>
 
 ### MsgSetAuthorityBond
-MsgSetAuthorityBond is SDK message for SetAuthorityBond
 
+MsgSetAuthorityBond is SDK message for SetAuthorityBond
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -3021,26 +2639,17 @@ MsgSetAuthorityBond is SDK message for SetAuthorityBond
 | `bond_id` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgSetAuthorityBondResponse"></a>
 
 ### MsgSetAuthorityBondResponse
+
 MsgSetAuthorityBondResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgSetName"></a>
 
 ### MsgSetName
-MsgSetName
 
+MsgSetName
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -3048,26 +2657,17 @@ MsgSetName
 | `cid` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgSetNameResponse"></a>
 
 ### MsgSetNameResponse
+
 MsgSetNameResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.MsgSetRecord"></a>
 
 ### MsgSetRecord
-MsgSetRecord
 
+MsgSetRecord
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -3075,35 +2675,22 @@ MsgSetRecord
 | `signer` | [string](#string) |  |  |
 | `payload` | [Payload](#vulcanize.nameservice.v1beta1.Payload) |  |  |
 
-
-
-
-
-
 <a name="vulcanize.nameservice.v1beta1.MsgSetRecordResponse"></a>
 
 ### MsgSetRecordResponse
+
 MsgSetRecordResponse
-
-
-
-
-
 
 <a name="vulcanize.nameservice.v1beta1.Payload"></a>
 
 ### Payload
-Payload
 
+Payload
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `record` | [Record](#vulcanize.nameservice.v1beta1.Record) |  |  |
 | `signatures` | [Signature](#vulcanize.nameservice.v1beta1.Signature) | repeated |  |
-
-
-
-
 
  <!-- end messages -->
 
@@ -3132,25 +2719,29 @@ Msg
 
  <!-- end services -->
 
-
-
 ## Scalar Value Types
 
-| .proto Type | Notes | C++ | Java | Python | Go | C# | PHP | Ruby |
-| ----------- | ----- | --- | ---- | ------ | -- | -- | --- | ---- |
-| <a name="double" /> double |  | double | double | float | float64 | double | float | Float |
-| <a name="float" /> float |  | float | float | float | float32 | float | float | Float |
-| <a name="int32" /> int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
-| <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer | Bignum or Fixnum (as required) |
-| <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) |
-| <a name="sint32" /> sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
-| <a name="sint64" /> sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="fixed32" /> fixed32 | Always four bytes. More efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or Fixnum (as required) |
-| <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum |
-| <a name="sfixed32" /> sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
-| <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string | Bignum |
-| <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
-| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
-| <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
+| .proto Type | Notes | C++ | Java | Python | Go | C# | PHP | Ruby | | ----------- | ----- | --- | ---- | ------ | -- |
+-- | --- | ---- | | <a name="double" /> double | | double | double | float | float64 | double | float | Float |
+| <a name="float" /> float | | float | float | float | float32 | float | float | Float | | <a name="int32" /> int32 |
+Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative
+values, use sint32 instead. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a name="int64" /> int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is
+likely to have negative values, use sint64 instead. | int64 | long | int/long | int64 | long | integer/string | Bignum |
+| <a name="uint32" /> uint32 | Uses variable-length encoding. | uint32 | int | int/long | uint32 | uint | integer |
+Bignum or Fixnum (as required) | | <a name="uint64" /> uint64 | Uses variable-length encoding. | uint64 | long |
+int/long | uint64 | ulong | integer/string | Bignum or Fixnum (as required) | | <a name="sint32" /> sint32 | Uses
+variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s. | int32
+| int | int | int32 | int | integer | Bignum or Fixnum (as required) | | <a name="sint64" /> sint64 | Uses
+variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s. | int64
+| long | int/long | int64 | long | integer/string | Bignum | | <a name="fixed32" /> fixed32 | Always four bytes. More
+efficient than uint32 if values are often greater than 2^28. | uint32 | int | int | uint32 | uint | integer | Bignum or
+Fixnum (as required) | | <a name="fixed64" /> fixed64 | Always eight bytes. More efficient than uint64 if values are
+often greater than 2^56. | uint64 | long | int/long | uint64 | ulong | integer/string | Bignum | | <a name="sfixed32" />
+sfixed32 | Always four bytes. | int32 | int | int | int32 | int | integer | Bignum or Fixnum (as required) |
+| <a name="sfixed64" /> sfixed64 | Always eight bytes. | int64 | long | int/long | int64 | long | integer/string |
+Bignum | | <a name="bool" /> bool | | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
+| <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String |
+str/unicode | string | string | string | String (UTF-8) | | <a name="bytes" /> bytes | May contain any arbitrary
+sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
 

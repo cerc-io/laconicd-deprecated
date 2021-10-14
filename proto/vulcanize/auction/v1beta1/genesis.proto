@@ -8,8 +8,8 @@ option go_package = "github.com/tharsis/ethermint/x/auction/types";
 
 // GenesisState defines the genesis state of the auction module
 message GenesisState {
-    Params params = 1 [(gogoproto.nullable) = false];
-    repeated Auction auctions = 2 [
-        (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
-    ];
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Auction auctions = 2 [
+    (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
+  ];
 }

@@ -10,126 +10,126 @@ option go_package = "github.com/tharsis/ethermint/x/auction/types";
 
 // Params defines the auction module parameters
 message Params {
-    option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.goproto_stringer) = false;
 
-    // Duration of the commits phase in seconds
-    google.protobuf.Duration commits_duration = 1 [
-        (gogoproto.nullable) = false,
-        (gogoproto.stdduration) = true,
-        (gogoproto.moretags) = "json:\"commits_duration\" yaml:\"commits_duration\""
-    ];
-    // Duration of the reveals phase in seconds
-    google.protobuf.Duration reveals_duration = 2 [
-        (gogoproto.nullable) = false,
-        (gogoproto.stdduration) = true,
-        (gogoproto.moretags) = "json:\"reveals_duration\" yaml:\"reveals_duration\""
-    ];
-    // Commit fees
-    cosmos.base.v1beta1.Coin commit_fee = 3 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
-    ];
-    // Reveal fees
-    cosmos.base.v1beta1.Coin reveal_fee = 4 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
-    ];
-    // Minimum acceptable bid amount
-    cosmos.base.v1beta1.Coin minimum_bid = 5 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"minimum_bid\" yaml:\"minimum_bid\""
-    ];
+  // Duration of the commits phase in seconds
+  google.protobuf.Duration commits_duration = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (gogoproto.moretags) = "json:\"commits_duration\" yaml:\"commits_duration\""
+  ];
+  // Duration of the reveals phase in seconds
+  google.protobuf.Duration reveals_duration = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration) = true,
+    (gogoproto.moretags) = "json:\"reveals_duration\" yaml:\"reveals_duration\""
+  ];
+  // Commit fees
+  cosmos.base.v1beta1.Coin commit_fee = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
+  ];
+  // Reveal fees
+  cosmos.base.v1beta1.Coin reveal_fee = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
+  ];
+  // Minimum acceptable bid amount
+  cosmos.base.v1beta1.Coin minimum_bid = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"minimum_bid\" yaml:\"minimum_bid\""
+  ];
 }
 
 // Auction represents a sealed-bid on-chain auction
 message Auction {
-    option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_getters) = false;
 
-    string id = 1;
-    string status = 2;
-    // Address of the creator of the auction
-    string owner_address = 3;
-    // Timestamp at which the auction was created
-    google.protobuf.Timestamp create_time = 4 [
-        (gogoproto.stdtime) = true,
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"create_time\" yaml:\"create_time\""
-    ];
-    // Timestamp at which the commits phase concluded
-    google.protobuf.Timestamp commits_end_time = 5 [
-        (gogoproto.stdtime) = true,
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"commits_end_time\" yaml:\"commits_end_time\""
-    ];
-    // Timestamp at which the reveals phase concluded
-    google.protobuf.Timestamp reveals_end_time = 6 [
-        (gogoproto.stdtime) = true,
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"reveals_end_time\" yaml:\"reveals_end_time\""
-    ];
-    // Commit and reveal fees must both be paid when committing a bid
-    // Reveal fee is returned only if the bid is revealed
-    cosmos.base.v1beta1.Coin commit_fee = 7 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
-    ];
-    cosmos.base.v1beta1.Coin reveal_fee = 8 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
-    ];
-    // Minimum acceptable bid amount for a valid commit
-    cosmos.base.v1beta1.Coin minimum_bid = 9 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"minimum_bid\" yaml:\"minimum_bid\""
-    ];
-    // Address of the winner
-    string winner_address = 10;
-    // Winning bid, i.e., the highest bid
-    cosmos.base.v1beta1.Coin winning_bid = 11 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"winning_bid\" yaml:\"winning_bid\""
-    ];
-    // Amount the winner pays, i.e. the second highest auction
-    cosmos.base.v1beta1.Coin winning_price = 12 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"winning_price\" yaml:\"winning_price\""
-    ];
+  string id = 1;
+  string status = 2;
+  // Address of the creator of the auction
+  string owner_address = 3;
+  // Timestamp at which the auction was created
+  google.protobuf.Timestamp create_time = 4 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"create_time\" yaml:\"create_time\""
+  ];
+  // Timestamp at which the commits phase concluded
+  google.protobuf.Timestamp commits_end_time = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"commits_end_time\" yaml:\"commits_end_time\""
+  ];
+  // Timestamp at which the reveals phase concluded
+  google.protobuf.Timestamp reveals_end_time = 6 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"reveals_end_time\" yaml:\"reveals_end_time\""
+  ];
+  // Commit and reveal fees must both be paid when committing a bid
+  // Reveal fee is returned only if the bid is revealed
+  cosmos.base.v1beta1.Coin commit_fee = 7 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
+  ];
+  cosmos.base.v1beta1.Coin reveal_fee = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
+  ];
+  // Minimum acceptable bid amount for a valid commit
+  cosmos.base.v1beta1.Coin minimum_bid = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"minimum_bid\" yaml:\"minimum_bid\""
+  ];
+  // Address of the winner
+  string winner_address = 10;
+  // Winning bid, i.e., the highest bid
+  cosmos.base.v1beta1.Coin winning_bid = 11 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"winning_bid\" yaml:\"winning_bid\""
+  ];
+  // Amount the winner pays, i.e. the second highest auction
+  cosmos.base.v1beta1.Coin winning_price = 12 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"winning_price\" yaml:\"winning_price\""
+  ];
 }
 
 message Auctions {
-    option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_getters) = false;
 
-    repeated Auction auctions = 1 [(gogoproto.nullable) = false];
+  repeated Auction auctions = 1 [(gogoproto.nullable) = false];
 }
 
 // Bid represents a sealed bid (commit) made during the auction
 message Bid {
-    option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_getters) = false;
 
-    string auction_id = 1;
-    string bidder_address = 2;
-    string status = 3;
-    string commit_hash = 4;
-    google.protobuf.Timestamp commit_time = 5 [
-        (gogoproto.stdtime) = true,
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"commit_time\" yaml:\"commit_time\""
-    ];
-    cosmos.base.v1beta1.Coin commit_fee = 6 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
-    ];
-    google.protobuf.Timestamp reveal_time = 7 [
-        (gogoproto.stdtime) = true,
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"reveal_time\" yaml:\"reveal_time\""
-    ];
-    cosmos.base.v1beta1.Coin reveal_fee = 8 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
-    ];
-    cosmos.base.v1beta1.Coin bid_amount = 9 [
-        (gogoproto.nullable) = false,
-        (gogoproto.moretags) = "json:\"bid_amount\" yaml:\"bid_amount\""
-    ];;
+  string auction_id = 1;
+  string bidder_address = 2;
+  string status = 3;
+  string commit_hash = 4;
+  google.protobuf.Timestamp commit_time = 5 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"commit_time\" yaml:\"commit_time\""
+  ];
+  cosmos.base.v1beta1.Coin commit_fee = 6 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"commit_fee\" yaml:\"commit_fee\""
+  ];
+  google.protobuf.Timestamp reveal_time = 7 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"reveal_time\" yaml:\"reveal_time\""
+  ];
+  cosmos.base.v1beta1.Coin reveal_fee = 8 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"reveal_fee\" yaml:\"reveal_fee\""
+  ];
+  cosmos.base.v1beta1.Coin bid_amount = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"bid_amount\" yaml:\"bid_amount\""
+  ];;
 }

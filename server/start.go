@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/tharsis/ethermint/gql"
 	"io"
 	"net/http"
 	"os"
@@ -399,6 +400,9 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 			return err
 		}
 	}
+
+	// Start the GQL Server
+	go gql.Server(clientCtx)
 
 	defer func() {
 		if tmNode.IsRunning() {

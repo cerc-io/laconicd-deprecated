@@ -3,6 +3,7 @@
 ## Build the Chain
 
 The following command builds the Ethermint daemon and places the binary in the `build` directory
+
 ```
 make build
 
@@ -13,28 +14,29 @@ make build
 The following steps need to be followed only before running the chain for the first time.
 
 1. Add the root key:
-	```
-	./build/ethermintd keys add root
-	```
-	Keep a note of the keyring passphrase if you set it.
+   ```
+   ./build/ethermintd keys add root
+   ```
+   Keep a note of the keyring passphrase if you set it.
 2. Init the chain:
-	```
-	./build/ethermintd init test-moniker --chain-id ethermint_9000-1
-	```
+   ```
+   ./build/ethermintd init test-moniker --chain-id ethermint_9000-1
+   ```
 3. Add genesis account:
-	```
-	./build/ethermintd add-genesis-account $(./build/ethermintd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
-	```
+   ```
+   ./build/ethermintd add-genesis-account $(./build/ethermintd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
+   ```
 4. Make a genesis tx:
-	```
-	./build/ethermintd gentx root 1000000000000000000stake --chain-id ethermint_9000-1 
-	```
+   ```
+   ./build/ethermintd gentx root 1000000000000000000stake --chain-id ethermint_9000-1 
+   ```
 5. Collect gentxs:
-	```
-	./build/ethermintd collect-gentxs
-	```
+   ```
+   ./build/ethermintd collect-gentxs
+   ```
 
 The chain can now be started using:
+
 ```
 ./build/ethermintd start
 ```
@@ -42,6 +44,7 @@ The chain can now be started using:
 ## Querying the Params
 
 The following command will dislay the default params for the `auction` module:
+
 ```
 # ./build/ethermintd q auction params -o json | jq
 

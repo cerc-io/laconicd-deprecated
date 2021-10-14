@@ -78,6 +78,27 @@ func (bondID BondID) Generate() string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+// MatchBonds - get all matching bonds.
+func (k Keeper) MatchBonds(ctx sdk.Context, matchFn func(*types.Bond) bool) []*types.Bond {
+	var bonds []*types.Bond
+
+	store := ctx.KVStore(k.storeKey)
+	itr := sdk.KVStorePrefixIterator(store, prefixIDToBondIndex)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		bz := store.Get(itr.Key())
+		if bz != nil {
+			var obj types.Bond
+			k.cdc.MustUnmarshal(bz, &obj)
+			if matchFn(&obj) {
+				bonds = append(bonds, &obj)
+			}
+		}
+	}
+
+	return bonds
+}
+
 // CreateBond creates a new bond.
 func (k Keeper) CreateBond(ctx sdk.Context, ownerAddress sdk.AccAddress, coins sdk.Coins) (*types.Bond, error) {
 	// Check if account has funds.

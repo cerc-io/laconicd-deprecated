@@ -120,6 +120,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	// add rosetta
 	rootCmd.AddCommand(sdkserver.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
 
+	// Add flags for GQL server.
+	rootCmd = srvflags.AddGQLFlags(rootCmd)
+
 	return rootCmd, encodingConfig
 }
 
@@ -228,6 +231,8 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DB, traceStore io.Writer,
 		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent))),
 	)
 
+	// Start
+	//go gql.Server(ethermintApp.BaseApp, ethermintApp.AppCodec(), ethermintApp.AccountKeeper, ethermintApp.BondKeeper)
 	return ethermintApp
 }
 
