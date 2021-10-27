@@ -1,6 +1,6 @@
 # Testnet
 
-## Setup Local ethermint multi node
+## Setup local ethermint multi node testnet
 
 ```shell
 $ bash multinode_testnet.sh 
