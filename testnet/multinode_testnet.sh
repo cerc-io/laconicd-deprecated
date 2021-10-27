@@ -7,6 +7,35 @@ echo "Installing the require tools "
 sudo apt-get install git curl build-essential make nohup jq -y
 echo "Done Installing the tools"
 
+command_exists() {
+  type "$1" &>/dev/null
+}
+
+if command_exists go; then
+  echo "Golang is already installed"
+else
+  echo "Installing golang dependencies"
+  wget https://golang.org/dl/go1.17.2.linux-amd64.tar.gz
+  rm -rf /usr/local/go && tar -C /usr/local -xzf go1.17.2.linux-amd64.tar.gz
+
+  echo "Updating the profile"
+  export GOPATH=$HOME/go
+  export GOROOT=/usr/local/go
+  export GOBIN=$GOPATH/bin
+  export PATH=$PATH:/usr/local/go/bin:$GOBIN
+
+  echo "" >>~/.profile
+  echo 'export GOPATH=$HOME/go' >>~/.profile
+  echo 'export GOROOT=/usr/local/go' >>~/.profile
+  echo 'export GOBIN=$GOPATH/bin' >>~/.profile
+  echo 'export PATH=$PATH:/usr/local/go/bin:$GOBIN' >>~/.profile
+
+  source ~/.profile
+  mkdir -p "$GOBIN"
+  mkdir -p $GOPATH/src/github.com
+  go version
+fi
+
 # chain env variables
 export DAEMON_HOME=~/.testethermint
 export CHAINID=ethermint_9000-1
