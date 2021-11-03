@@ -106,7 +106,7 @@ Use `curl` to download the genesis file
 **Replace your **genesis** file with published genesis file**
 
 ```shell
-curl http://167.172.173.94:26657/genesis > .ethermintd/config/genesis.json
+curl http://167.172.173.94:26657/genesis | jq .result.genesis > ~/.ethermintd/config/genesis.json
 ```
 
 Verify sha256 hash of genesis file with the below command
