@@ -27,10 +27,11 @@ Hardware
 sudo rm -rf /usr/local/go
 ```
 
-1.2) Install latest/required Go version (installing `go1.16.7`)
+1.2) Install latest/required Go version (installing `go1.17.2`)
 
 ```
-curl https://dl.google.com/go/go1.16.7.linux-amd64.tar.gz | sudo tar -C/usr/local -zxvf -
+curl https://golang.org/dl/go1.17.2.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.17.2.linux-amd64.tar.gz
 ```
 
 1.3) Update env variables to include `go`
@@ -87,7 +88,7 @@ server_name: ethermintd
 **Not required if you have already initialized before**
 
 ```
-ethermintd init <your-node-moniker> --chain-id ethermint_9000-1
+ethermintd init <your-node-moniker> --chain-id ethermint_81337-1
 ```
 
 On running the above command, node will be initialized with default configuration. (config files will be saved in node's
@@ -117,15 +118,15 @@ recover accounts at a later point in time.
 ## 7) Add Genesis Account
 
 ```
-ethermintd add-genesis-account <key-name> 50000000uwire
+ethermintd add-genesis-account <key-name> 4500000000000000agnt
 ```
 
 ## 8) Create Your `gentx`
 
 ```
-ethermintd gentx <key-name> 50000000uwire \
+ethermintd gentx <key-name> 4500000000000000agnt \
   --pubkey=$(ethermintd tendermint show-validator) \
-  --chain-id="ethermint_9000-1" \
+  --chain-id="ethermint_81337-1" \
   --moniker="my-moniker" \
   --website="https://yourweb.site" \
   --details="description of my validator" \
@@ -151,7 +152,7 @@ NOTE: (Do NOT use space in the file name)
 To submit the gentx file, follow the below process:
 
 - Fork the [testnets]() repository
-- Upload your gentx file in `ethermint_9000-1/gentxs` folder
+- Upload your gentx file in `ethermint_81337-1/config/gentxs` folder
 - Submit Pull Request to [testnets]() with name `ADD <your-moniker> gentx`
 
 ---

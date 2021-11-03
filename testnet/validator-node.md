@@ -11,7 +11,7 @@
 ### 2. Create Account & Get test tokens
 
 ```
-ethermintd keys add <key-name>
+ethermintd keys add <key-name> --keyring-backend test
 ```
 
 NOTE: Save `mnemonic` and related account details (public key). You will need to use the need mnemonic/private key to
@@ -19,7 +19,10 @@ recover accounts at a later point in time.
 
 ##### Get Test tokens from faucet
 
-- TBU
+- Open this link : http://167.172.173.94:1314/ and paste your account
+- 1 gnt = 10^18 agnt
+- Each Transaction you will get 500gnt
+- Total Tokens 5000gnt for account
 
 ### 3.Create Validator
 
@@ -32,20 +35,22 @@ recover accounts at a later point in time.
 
 `Note:`  Only execute below transaction after complete sync of your full node
 
+Please replace `key_name` with your key name and `moniker` also
+
 ```
 ethermintd tx staking create-validator \
-  --amount=1000000uwire \
+  --amount=4500000000000000000000agnt \
   --pubkey=$(ethermintd tendermint show-validator) \
   --moniker="my-moniker" \
   --website="https://myweb.site" \
   --details="description of your validator" \
-  --chain-id="flixnet-2" \
+  --chain-id="ethermint_81337-1" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1" \
   --gas="auto" \
   --gas-adjustment="1.2" \
-  --gas-prices="0.025uwire" \
+  --gas-prices="0.025agnt" \
   --from=<key_name>
 ```
