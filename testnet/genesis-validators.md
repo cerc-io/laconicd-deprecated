@@ -30,7 +30,7 @@ sudo rm -rf /usr/local/go
 1.2) Install latest/required Go version (installing `go1.17.2`)
 
 ```
-curl https://golang.org/dl/go1.17.2.linux-amd64.tar.gz
+curl -O https://golang.org/dl/go1.17.2.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.17.2.linux-amd64.tar.gz
 ```
 
@@ -56,7 +56,7 @@ go version
 ### 2) Install required software packages
 
 ```
-sudo apt-get install git curl build-essential make jq -y
+sudo apt-get update && sudo apt-get install git curl build-essential make jq -y
 ```
 
 ### 3) Install `ethermint`
@@ -94,7 +94,7 @@ ethermintd init <your-node-moniker> --chain-id ethermint_81337-1
 On running the above command, node will be initialized with default configuration. (config files will be saved in node's
 default home directory (~/.ethermintd/config)
 
-NOTE: Backup node and validator keys . You will need to use these keys at a later point in time.
+NOTE: Backup node and validator keys. You will need to use these keys at a later point in time.
 
 ---
 
@@ -118,7 +118,7 @@ recover accounts at a later point in time.
 ## 7) Add Genesis Account
 
 ```
-ethermintd add-genesis-account <key-name> 4500000000000000agnt
+ethermintd add-genesis-account <key-name> 4500000000000000agnt --keyring-backend os
 ```
 
 ## 8) Create Your `gentx`
