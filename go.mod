@@ -29,7 +29,6 @@ require (
 	github.com/rs/zerolog v1.25.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.8.1
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969
 	github.com/stretchr/testify v1.7.0
@@ -53,14 +52,10 @@ require (
 	github.com/99designs/keyring v1.1.6 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
 	github.com/DataDog/zstd v1.4.8 // indirect
-	github.com/Masterminds/goutils v1.1.1 // indirect
-	github.com/Masterminds/semver v1.5.0 // indirect
-	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/VictoriaMetrics/fastcache v1.5.7 // indirect
 	github.com/Workiva/go-datastructures v1.0.52 // indirect
 	github.com/agnivade/levenshtein v1.1.0 // indirect
-	github.com/aokoli/goutils v1.1.1 // indirect
 	github.com/armon/go-metrics v0.3.9 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
@@ -81,7 +76,6 @@ require (
 	github.com/dvsekhvalnov/jose2go v0.0.0-20200901110807-248326c1351b // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25 // indirect
-	github.com/envoyproxy/protoc-gen-validate v0.6.1 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20190607065134-2772fd86a8ff // indirect
@@ -106,9 +100,7 @@ require (
 	github.com/hdevalence/ed25519consensus v0.0.0-20210204194344-59a8610d2b87 // indirect
 	github.com/holiman/bloomfilter/v2 v2.0.3 // indirect
 	github.com/holiman/uint256 v1.1.1 // indirect
-	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/huin/goupnp v1.0.1-0.20210310174557-0ca763054c88 // indirect
-	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/ipfs/go-block-format v0.0.2 // indirect
 	github.com/ipfs/go-cid v0.0.3 // indirect
@@ -127,13 +119,11 @@ require (
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1 // indirect
 	github.com/minio/highwayhash v1.0.1 // indirect
 	github.com/minio/sha256-simd v0.1.1-0.20190913151208-6de447530771 // indirect
-	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/mr-tron/base58 v1.1.2 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/multiformats/go-base32 v0.0.3 // indirect
 	github.com/multiformats/go-multibase v0.0.1 // indirect
-	github.com/mwitkow/go-proto-validators v0.3.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
@@ -144,7 +134,6 @@ require (
 	github.com/prometheus/common v0.29.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/prometheus/tsdb v0.7.1 // indirect
-	github.com/pseudomuto/protoc-gen-doc v1.5.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rjeczalik/notify v0.9.1 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
@@ -152,6 +141,7 @@ require (
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20210305035536-64b5b1c73954 // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
@@ -177,3 +167,5 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
+
+replace github.com/cosmos/cosmos-sdk => github.com/vulcanize/cosmos-sdk v0.45.0-smt-alpha
