@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/palantir/stacktrace"
+	authante "github.com/tharsis/ethermint/x/auth/ante"
 
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 

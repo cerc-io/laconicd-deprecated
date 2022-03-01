@@ -3,6 +3,8 @@ package app
 import (
 	"encoding/json"
 
+	"github.com/cosmos/cosmos-sdk/server"
+
 	"github.com/cosmos/cosmos-sdk/db"
 	types2 "github.com/cosmos/cosmos-sdk/store/types"
 	types3 "github.com/cosmos/cosmos-sdk/store/v2"
@@ -101,7 +103,6 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/tharsis/ethermint/client/docs/statik"
 
-	"github.com/tharsis/ethermint/app/ante"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 	ethermint "github.com/tharsis/ethermint/types"
 
@@ -614,13 +615,8 @@ func NewEthermintApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	// use Ethermint's custom AnteHandler
-	app.SetTxHandler(
-		ante.NewAnteHandler(
-			app.AccountKeeper, app.BankKeeper, app.EvmKeeper, app.FeeGrantKeeper, app.IBCKeeper.ChannelKeeper,
-			encodingConfig.TxConfig.SignModeHandler(),
-		),
-	)
+	// TODO: use Ethermint's custom AnteHandler
+	app.setTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
 
 	app.SetEndBlocker(app.EndBlocker)
 
@@ -628,6 +624,39 @@ func NewEthermintApp(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 
 	return app
+}
+
+func (app *EthermintApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string) {
+	indexEvents := map[string]struct{}{}
+	for _, e := range indexEventsStr {
+		indexEvents[e] = struct{}{}
+	}
+	// need to sub in custom tx handler
+	/*
+		app.SetTxHandler(
+				ante.NewAnteHandler(
+					app.AccountKeeper, app.BankKeeper, app.EvmKeeper, app.FeeGrantKeeper, app.IBCKeeper.ChannelKeeper,
+					encodingConfig.TxConfig.SignModeHandler(),
+				),
+			)
+	*/
+	txHandler, err := middleware.NewDefaultTxHandler(middleware.TxHandlerOptions{
+		Debug:            app.Trace(),
+		IndexEvents:      indexEvents,
+		LegacyRouter:     app.legacyRouter,
+		MsgServiceRouter: app.msgSvcRouter,
+		AccountKeeper:    app.AccountKeeper,
+		BankKeeper:       app.BankKeeper,
+		FeegrantKeeper:   app.FeeGrantKeeper,
+		SignModeHandler:  txConfig.SignModeHandler(),
+		SigGasConsumer:   middleware.DefaultSigVerificationGasConsumer,
+		TxDecoder:        txConfig.TxDecoder(),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetTxHandler(txHandler)
 }
 
 // Name returns the name of the App

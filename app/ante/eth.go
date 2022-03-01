@@ -4,9 +4,10 @@ import (
 	"errors"
 	"math/big"
 
+	authante "github.com/tharsis/ethermint/x/auth/ante"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/palantir/stacktrace"
 
 	ethermint "github.com/tharsis/ethermint/types"
@@ -28,7 +29,7 @@ type EVMKeeper interface {
 	GetParams(ctx sdk.Context) evmtypes.Params
 	WithContext(ctx sdk.Context)
 	ResetRefundTransient(ctx sdk.Context)
-	NewEVM(msg core.Message, config *params.ChainConfig, params evmtypes.Params, coinbase common.Address, tracer vm.Tracer) *vm.EVM
+	NewEVM(msg core.Message, config *params.ChainConfig, params evmtypes.Params, coinbase common.Address, tracer vm.EVMLogger) *vm.EVM
 	GetCodeHash(addr common.Address) common.Hash
 }
 
