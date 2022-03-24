@@ -1,11 +1,13 @@
 package evm
 
 import (
+	"bytes"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	ethermint "github.com/tharsis/ethermint/types"
@@ -20,7 +22,6 @@ func InitGenesis(
 	accountKeeper types.AccountKeeper,
 	data types.GenesisState,
 ) []abci.ValidatorUpdate {
-	k.WithContext(ctx)
 	k.WithChainID(ctx)
 
 	k.SetParams(ctx, data.Params)
@@ -39,19 +40,25 @@ func InitGenesis(
 			panic(fmt.Errorf("account not found for address %s", account.Address))
 		}
 
-		_, ok := acc.(*ethermint.EthAccount)
+		ethAcct, ok := acc.(ethermint.EthAccountI)
 		if !ok {
 			panic(
-				fmt.Errorf("account %s must be an %T type, got %T",
-					account.Address, &ethermint.EthAccount{}, acc,
+				fmt.Errorf("account %s must be an EthAccount interface, got %T",
+					account.Address, acc,
 				),
 			)
 		}
 
-		k.SetCode(address, common.Hex2Bytes(account.Code))
+		code := common.Hex2Bytes(account.Code)
+		codeHash := crypto.Keccak256Hash(code)
+		if !bytes.Equal(ethAcct.GetCodeHash().Bytes(), codeHash.Bytes()) {
+			panic("code don't match codeHash")
+		}
+
+		k.SetCode(ctx, codeHash.Bytes(), code)
 
 		for _, storage := range account.Storage {
-			k.SetState(address, common.HexToHash(storage.Key), common.HexToHash(storage.Value))
+			k.SetState(ctx, address, common.HexToHash(storage.Key), common.HexToHash(storage.Value).Bytes())
 		}
 	}
 
@@ -60,11 +67,9 @@ func InitGenesis(
 
 // ExportGenesis exports genesis state of the EVM module
 func ExportGenesis(ctx sdk.Context, k *keeper.Keeper, ak types.AccountKeeper) *types.GenesisState {
-	k.WithContext(ctx)
-
 	var ethGenAccounts []types.GenesisAccount
 	ak.IterateAccounts(ctx, func(account authtypes.AccountI) bool {
-		ethAccount, ok := account.(*ethermint.EthAccount)
+		ethAccount, ok := account.(ethermint.EthAccountI)
 		if !ok {
 			// ignore non EthAccounts
 			return false
@@ -72,14 +77,11 @@ func ExportGenesis(ctx sdk.Context, k *keeper.Keeper, ak types.AccountKeeper) *t
 
 		addr := ethAccount.EthAddress()
 
-		storage, err := k.GetAccountStorage(ctx, addr)
-		if err != nil {
-			panic(err)
-		}
+		storage := k.GetAccountStorage(ctx, addr)
 
 		genAccount := types.GenesisAccount{
 			Address: addr.String(),
-			Code:    common.Bytes2Hex(k.GetCode(addr)),
+			Code:    common.Bytes2Hex(k.GetCode(ctx, ethAccount.GetCodeHash())),
 			Storage: storage,
 		}
 

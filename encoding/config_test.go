@@ -18,7 +18,7 @@ func TestTxEncoding(t *testing.T) {
 	addr, key := tests.NewAddrKey()
 	signer := tests.NewSigner(key)
 
-	msg := evmtypes.NewTxContract(big.NewInt(1), 1, big.NewInt(10), 100000, big.NewInt(1), []byte{}, nil)
+	msg := evmtypes.NewTxContract(big.NewInt(1), 1, big.NewInt(10), 100000, nil, big.NewInt(1), big.NewInt(1), []byte{}, nil)
 	msg.From = addr.Hex()
 
 	ethSigner := ethtypes.LatestSignerForChainID(big.NewInt(1))
@@ -27,13 +27,8 @@ func TestTxEncoding(t *testing.T) {
 
 	cfg := encoding.MakeConfig(app.ModuleBasics)
 
-	bz, err := cfg.TxConfig.TxEncoder()(msg)
-	require.NoError(t, err, "encoding failed")
-
-	tx, err := cfg.TxConfig.TxDecoder()(bz)
-	require.NoError(t, err, "decoding failed")
-	require.IsType(t, &evmtypes.MsgEthereumTx{}, tx)
-	require.Equal(t, msg.Data, tx.(*evmtypes.MsgEthereumTx).Data)
+	_, err = cfg.TxConfig.TxEncoder()(msg)
+	require.Error(t, err, "encoding failed")
 
 	// FIXME: transaction hashing is hardcoded on Terndermint:
 	// See https://github.com/tendermint/tendermint/issues/6539 for reference

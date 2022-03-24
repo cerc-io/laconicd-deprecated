@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 const (
@@ -30,15 +29,10 @@ const (
 
 // prefix bytes for the EVM transient store
 const (
-	prefixTransientSuicided = iota + 1
-	prefixTransientBloom
+	prefixTransientBloom = iota + 1
 	prefixTransientTxIndex
-	prefixTransientRefund
-	prefixTransientAccessListAddress
-	prefixTransientAccessListSlot
-	prefixTransientTxHash
 	prefixTransientLogSize
-	prefixTransientTxLogs
+	prefixTransientGasUsed
 )
 
 // KVStore key prefixes
@@ -49,15 +43,10 @@ var (
 
 // Transient Store key prefixes
 var (
-	KeyPrefixTransientSuicided          = []byte{prefixTransientSuicided}
-	KeyPrefixTransientBloom             = []byte{prefixTransientBloom}
-	KeyPrefixTransientTxIndex           = []byte{prefixTransientTxIndex}
-	KeyPrefixTransientRefund            = []byte{prefixTransientRefund}
-	KeyPrefixTransientAccessListAddress = []byte{prefixTransientAccessListAddress}
-	KeyPrefixTransientAccessListSlot    = []byte{prefixTransientAccessListSlot}
-	KeyPrefixTransientTxHash            = []byte{prefixTransientTxHash}
-	KeyPrefixTransientLogSize           = []byte{prefixTransientLogSize}
-	KeyPrefixTransientTxLogs            = []byte{prefixTransientTxLogs}
+	KeyPrefixTransientBloom   = []byte{prefixTransientBloom}
+	KeyPrefixTransientTxIndex = []byte{prefixTransientTxIndex}
+	KeyPrefixTransientLogSize = []byte{prefixTransientLogSize}
+	KeyPrefixTransientGasUsed = []byte{prefixTransientGasUsed}
 )
 
 // AddressStoragePrefix returns a prefix to iterate over a given account storage.
@@ -68,18 +57,4 @@ func AddressStoragePrefix(address common.Address) []byte {
 // StateKey defines the full key under which an account state is stored.
 func StateKey(address common.Address, key []byte) []byte {
 	return append(AddressStoragePrefix(address), key...)
-}
-
-// KeyAddressStorage returns the key hash to access a given account state. The composite key
-// (address + hash) is hashed using Keccak256.
-func KeyAddressStorage(address common.Address, hash common.Hash) common.Hash {
-	prefix := address.Bytes()
-	key := hash.Bytes()
-
-	compositeKey := make([]byte, len(prefix)+len(key))
-
-	copy(compositeKey, prefix)
-	copy(compositeKey[len(prefix):], key)
-
-	return crypto.Keccak256Hash(compositeKey)
 }

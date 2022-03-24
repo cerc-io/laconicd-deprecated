@@ -12,7 +12,6 @@
     - [AccessTuple](#ethermint.evm.v1.AccessTuple)
     - [ChainConfig](#ethermint.evm.v1.ChainConfig)
     - [Log](#ethermint.evm.v1.Log)
-    - [LogConfig](#ethermint.evm.v1.LogConfig)
     - [Params](#ethermint.evm.v1.Params)
     - [State](#ethermint.evm.v1.State)
     - [TraceConfig](#ethermint.evm.v1.TraceConfig)
@@ -46,9 +45,10 @@
     - [QueryCosmosAccountResponse](#ethermint.evm.v1.QueryCosmosAccountResponse)
     - [QueryParamsRequest](#ethermint.evm.v1.QueryParamsRequest)
     - [QueryParamsResponse](#ethermint.evm.v1.QueryParamsResponse)
-    - [QueryStaticCallResponse](#ethermint.evm.v1.QueryStaticCallResponse)
     - [QueryStorageRequest](#ethermint.evm.v1.QueryStorageRequest)
     - [QueryStorageResponse](#ethermint.evm.v1.QueryStorageResponse)
+    - [QueryTraceBlockRequest](#ethermint.evm.v1.QueryTraceBlockRequest)
+    - [QueryTraceBlockResponse](#ethermint.evm.v1.QueryTraceBlockResponse)
     - [QueryTraceTxRequest](#ethermint.evm.v1.QueryTraceTxRequest)
     - [QueryTraceTxResponse](#ethermint.evm.v1.QueryTraceTxResponse)
     - [QueryTxLogsRequest](#ethermint.evm.v1.QueryTxLogsRequest)
@@ -178,8 +178,9 @@ instead of *big.Int.
 | `istanbul_block` | [string](#string) |  | Istanbul switch block (nil no fork, 0 = already on istanbul) |
 | `muir_glacier_block` | [string](#string) |  | Eip-2384 (bomb delay) switch block (nil no fork, 0 = already activated) |
 | `berlin_block` | [string](#string) |  | Berlin switch block (nil = no fork, 0 = already on berlin) |
-| `catalyst_block` | [string](#string) |  | Catalyst switch block (nil = no fork, 0 = already on catalyst) |
 | `london_block` | [string](#string) |  | London switch block (nil = no fork, 0 = already on london) |
+| `arrow_glacier_block` | [string](#string) |  | Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already activated) |
+| `merge_fork_block` | [string](#string) |  | EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in merge proceedings) |
 
 
 
@@ -205,27 +206,6 @@ the node.
 | `block_hash` | [string](#string) |  | hash of the block in which the transaction was included |
 | `index` | [uint64](#uint64) |  | index of the log in the block |
 | `removed` | [bool](#bool) |  | The Removed field is true if this log was reverted due to a chain reorganisation. You must pay attention to this field if you receive logs through a filter query. |
-
-
-
-
-
-
-<a name="ethermint.evm.v1.LogConfig"></a>
-
-### LogConfig
-LogConfig are the configuration options for structured logger the EVM
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `disable_memory` | [bool](#bool) |  | disable memory capture |
-| `disable_stack` | [bool](#bool) |  | disable stack capture |
-| `disable_storage` | [bool](#bool) |  | disable storage capture |
-| `disable_return_data` | [bool](#bool) |  | disable return data capture |
-| `debug` | [bool](#bool) |  | print output during capture end |
-| `limit` | [int32](#int32) |  | maximum length of output, but zero means unlimited |
-| `overrides` | [ChainConfig](#ethermint.evm.v1.ChainConfig) |  | Chain overrides, can be used to execute a trace using future fork rules |
 
 
 
@@ -278,7 +258,13 @@ TraceConfig holds extra parameters to trace functions.
 | `tracer` | [string](#string) |  | custom javascript tracer |
 | `timeout` | [string](#string) |  | overrides the default timeout of 5 seconds for JavaScript-based tracing calls |
 | `reexec` | [uint64](#uint64) |  | number of blocks the tracer is willing to go back |
-| `log_config` | [LogConfig](#ethermint.evm.v1.LogConfig) |  | configuration options for structured logger the EVM |
+| `disable_stack` | [bool](#bool) |  | disable stack capture |
+| `disable_storage` | [bool](#bool) |  | disable storage capture |
+| `debug` | [bool](#bool) |  | print output during capture end |
+| `limit` | [int32](#int32) |  | maximum length of output, but zero means unlimited |
+| `overrides` | [ChainConfig](#ethermint.evm.v1.ChainConfig) |  | Chain overrides, can be used to execute a trace using future fork rules |
+| `enable_memory` | [bool](#bool) |  | enable memory capture |
+| `enable_return_data` | [bool](#bool) |  | enable return data capture |
 
 
 
@@ -367,7 +353,7 @@ GenesisState defines the evm module's genesis state.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `accounts` | [GenesisAccount](#ethermint.evm.v1.GenesisAccount) | repeated | accounts is an array containing the ethereum genesis accounts. |
-| `params` | [Params](#ethermint.evm.v1.Params) |  | params defines all the paramaters of the module. |
+| `params` | [Params](#ethermint.evm.v1.Params) |  | params defines all the parameters of the module. |
 
 
 
@@ -526,7 +512,7 @@ Msg defines the evm Msg service.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `EthereumTx` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) | [MsgEthereumTxResponse](#ethermint.evm.v1.MsgEthereumTxResponse) | EthereumTx defines a method submitting Ethereum transactions. | |
+| `EthereumTx` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) | [MsgEthereumTxResponse](#ethermint.evm.v1.MsgEthereumTxResponse) | EthereumTx defines a method submitting Ethereum transactions. | POST|/ethermint/evm/v1/ethereum_tx|
 
  <!-- end services -->
 
@@ -722,21 +708,6 @@ QueryParamsResponse defines the response type for querying x/evm parameters.
 
 
 
-<a name="ethermint.evm.v1.QueryStaticCallResponse"></a>
-
-### QueryStaticCallResponse
-QueryStaticCallRequest defines static call response
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `data` | [bytes](#bytes) |  |  |
-
-
-
-
-
-
 <a name="ethermint.evm.v1.QueryStorageRequest"></a>
 
 ### QueryStorageRequest
@@ -769,6 +740,40 @@ method.
 
 
 
+<a name="ethermint.evm.v1.QueryTraceBlockRequest"></a>
+
+### QueryTraceBlockRequest
+QueryTraceBlockRequest defines TraceTx request
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `txs` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) | repeated | txs messages in the block |
+| `trace_config` | [TraceConfig](#ethermint.evm.v1.TraceConfig) |  | TraceConfig holds extra parameters to trace functions. |
+| `block_number` | [int64](#int64) |  | block number |
+| `block_hash` | [string](#string) |  | block hex hash |
+| `block_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | block time |
+
+
+
+
+
+
+<a name="ethermint.evm.v1.QueryTraceBlockResponse"></a>
+
+### QueryTraceBlockResponse
+QueryTraceBlockResponse defines TraceBlock response
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `data` | [bytes](#bytes) |  |  |
+
+
+
+
+
+
 <a name="ethermint.evm.v1.QueryTraceTxRequest"></a>
 
 ### QueryTraceTxRequest
@@ -780,6 +785,10 @@ QueryTraceTxRequest defines TraceTx request
 | `msg` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) |  | msgEthereumTx for the requested transaction |
 | `tx_index` | [uint64](#uint64) |  | transaction index |
 | `trace_config` | [TraceConfig](#ethermint.evm.v1.TraceConfig) |  | TraceConfig holds extra parameters to trace functions. |
+| `predecessors` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) | repeated | the predecessor transactions included in the same block need to be replayed first to get correct context for tracing. |
+| `block_number` | [int64](#int64) |  | block number of requested transaction |
+| `block_hash` | [string](#string) |  | block hex hash of requested transaction |
+| `block_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | block time of requested transaction |
 
 
 
@@ -890,6 +899,7 @@ Query defines the gRPC querier service.
 | `EthCall` | [EthCallRequest](#ethermint.evm.v1.EthCallRequest) | [MsgEthereumTxResponse](#ethermint.evm.v1.MsgEthereumTxResponse) | EthCall implements the `eth_call` rpc api | GET|/ethermint/evm/v1/eth_call|
 | `EstimateGas` | [EthCallRequest](#ethermint.evm.v1.EthCallRequest) | [EstimateGasResponse](#ethermint.evm.v1.EstimateGasResponse) | EstimateGas implements the `eth_estimateGas` rpc api | GET|/ethermint/evm/v1/estimate_gas|
 | `TraceTx` | [QueryTraceTxRequest](#ethermint.evm.v1.QueryTraceTxRequest) | [QueryTraceTxResponse](#ethermint.evm.v1.QueryTraceTxResponse) | TraceTx implements the `debug_traceTransaction` rpc api | GET|/ethermint/evm/v1/trace_tx|
+| `TraceBlock` | [QueryTraceBlockRequest](#ethermint.evm.v1.QueryTraceBlockRequest) | [QueryTraceBlockResponse](#ethermint.evm.v1.QueryTraceBlockResponse) | TraceBlock implements the `debug_traceBlockByNumber` and `debug_traceBlockByHash` rpc api | GET|/ethermint/evm/v1/trace_block|
 
  <!-- end services -->
 
@@ -913,8 +923,8 @@ Params defines the EVM module parameters
 | `no_base_fee` | [bool](#bool) |  | no base fee forces the EIP-1559 base fee to 0 (needed for 0 price calls) |
 | `base_fee_change_denominator` | [uint32](#uint32) |  | base fee change denominator bounds the amount the base fee can change between blocks. |
 | `elasticity_multiplier` | [uint32](#uint32) |  | elasticity multiplier bounds the maximum gas limit an EIP-1559 block may have. |
-| `initial_base_fee` | [int64](#int64) |  | initial base fee for EIP-1559 blocks. |
 | `enable_height` | [int64](#int64) |  | height at which the base fee calculation is enabled. |
+| `base_fee` | [string](#string) |  | base fee for EIP-1559 blocks. |
 
 
 
@@ -946,7 +956,6 @@ GenesisState defines the feemarket module's genesis state.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#ethermint.feemarket.v1.Params) |  | params defines all the paramaters of the module. |
-| `base_fee` | [string](#string) |  | base fee is the exported value from previous software version. Zero by default. |
 | `block_gas` | [uint64](#uint64) |  | block gas is the amount of gas used on the last block before the upgrade. Zero by default. |
 
 

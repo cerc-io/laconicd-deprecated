@@ -40,7 +40,6 @@ func TestChainConfigValidate(t *testing.T) {
 				MuirGlacierBlock:    newIntPtr(0),
 				BerlinBlock:         newIntPtr(0),
 				LondonBlock:         newIntPtr(0),
-				CatalystBlock:       newIntPtr(0),
 			},
 			false,
 		},
@@ -60,7 +59,6 @@ func TestChainConfigValidate(t *testing.T) {
 				MuirGlacierBlock:    nil,
 				BerlinBlock:         nil,
 				LondonBlock:         nil,
-				CatalystBlock:       nil,
 			},
 			false,
 		},
@@ -238,11 +236,9 @@ func TestChainConfigValidate(t *testing.T) {
 			},
 			true,
 		},
-
 		{
-			"invalid CatalystBlock",
+			"invalid fork order - skip HomesteadBlock",
 			ChainConfig{
-				HomesteadBlock:      newIntPtr(0),
 				DAOForkBlock:        newIntPtr(0),
 				EIP150Block:         newIntPtr(0),
 				EIP150Hash:          defaultEIP150Hash,
@@ -253,8 +249,8 @@ func TestChainConfigValidate(t *testing.T) {
 				PetersburgBlock:     newIntPtr(0),
 				IstanbulBlock:       newIntPtr(0),
 				MuirGlacierBlock:    newIntPtr(0),
+				BerlinBlock:         newIntPtr(0),
 				LondonBlock:         newIntPtr(0),
-				CatalystBlock:       newIntPtr(-1),
 			},
 			true,
 		},

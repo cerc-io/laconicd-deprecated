@@ -5,13 +5,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
+
 	"github.com/tharsis/ethermint/types"
 )
 
-// nolint: deadcode, unused
-func newDynamicFeeTx(tx *ethtypes.Transaction) *DynamicFeeTx {
+func newDynamicFeeTx(tx *ethtypes.Transaction) (*DynamicFeeTx, error) {
 	txData := &DynamicFeeTx{
 		Nonce:    tx.Nonce(),
 		Data:     tx.Data(),
@@ -19,25 +21,33 @@ func newDynamicFeeTx(tx *ethtypes.Transaction) *DynamicFeeTx {
 	}
 
 	v, r, s := tx.RawSignatureValues()
-	if tx.To() != nil {
-		txData.To = tx.To().Hex()
+	if to := tx.To(); to != nil {
+		txData.To = to.Hex()
 	}
 
 	if tx.Value() != nil {
-		amountInt := sdk.NewIntFromBigInt(tx.Value())
+		amountInt, err := SafeNewIntFromBigInt(tx.Value())
+		if err != nil {
+			return nil, err
+		}
 		txData.Amount = &amountInt
 	}
-	// TODO:
 
-	// if tx.GasFeeCap() != nil {
-	// 	gasFeeCapInt := sdk.NewIntFromBigInt(tx.GasFeeCap())
-	// 	txData.GasFeeCap = &gasFeeCapInt
-	// }
+	if tx.GasFeeCap() != nil {
+		gasFeeCapInt, err := SafeNewIntFromBigInt(tx.GasFeeCap())
+		if err != nil {
+			return nil, err
+		}
+		txData.GasFeeCap = &gasFeeCapInt
+	}
 
-	// if tx.GasTipCap() != nil {
-	// 	gasTipCapInt := sdk.NewIntFromBigInt(tx.GasTipCap())
-	// 	txData.GasTipCap = &gasTipCapInt
-	// }
+	if tx.GasTipCap() != nil {
+		gasTipCapInt, err := SafeNewIntFromBigInt(tx.GasTipCap())
+		if err != nil {
+			return nil, err
+		}
+		txData.GasTipCap = &gasTipCapInt
+	}
 
 	if tx.AccessList() != nil {
 		al := tx.AccessList()
@@ -45,14 +55,12 @@ func newDynamicFeeTx(tx *ethtypes.Transaction) *DynamicFeeTx {
 	}
 
 	txData.SetSignatureValues(tx.ChainId(), v, r, s)
-	return txData
+	return txData, nil
 }
 
 // TxType returns the tx type
 func (tx *DynamicFeeTx) TxType() uint8 {
-	// TODO
-	return 0
-	// return ethtypes.DynamicFeeTxType
+	return ethtypes.DynamicFeeTxType
 }
 
 // Copy returns an instance with the same field values
@@ -105,7 +113,7 @@ func (tx *DynamicFeeTx) GetGasPrice() *big.Int {
 	return tx.GetGasFeeCap()
 }
 
-// GetGasTipCap returns the gas price field.
+// GetGasTipCap returns the gas tip cap field.
 func (tx *DynamicFeeTx) GetGasTipCap() *big.Int {
 	if tx.GasTipCap == nil {
 		return nil
@@ -113,7 +121,7 @@ func (tx *DynamicFeeTx) GetGasTipCap() *big.Int {
 	return tx.GasTipCap.BigInt()
 }
 
-// GetGasFeeCap returns the gas price field.
+// GetGasFeeCap returns the gas fee cap field.
 func (tx *DynamicFeeTx) GetGasFeeCap() *big.Int {
 	if tx.GasFeeCap == nil {
 		return nil
@@ -145,23 +153,21 @@ func (tx *DynamicFeeTx) GetTo() *common.Address {
 // AsEthereumData returns an DynamicFeeTx transaction tx from the proto-formatted
 // TxData defined on the Cosmos EVM.
 func (tx *DynamicFeeTx) AsEthereumData() ethtypes.TxData {
-	return nil
-	// TODO:
-	// v, r, s := tx.GetRawSignatureValues()
-	// return &ethtypes.DynamicFeeTx{
-	// 	ChainID:    tx.GetChainID(),
-	// 	Nonce:      tx.GetNonce(),
-	// 	GasTipCap:  tx.GetGasTipCap(),
-	// 	GasFeeCap:  tx.GetGasFeeCap(),
-	// 	Gas:        tx.GetGas(),
-	// 	To:         tx.GetTo(),
-	// 	Value:      tx.GetValue(),
-	// 	Data:       tx.GetData(),
-	// 	AccessList: tx.GetAccessList(),
-	// 	V:          v,
-	// 	R:          r,
-	// 	S:          s,
-	// }
+	v, r, s := tx.GetRawSignatureValues()
+	return &ethtypes.DynamicFeeTx{
+		ChainID:    tx.GetChainID(),
+		Nonce:      tx.GetNonce(),
+		GasTipCap:  tx.GetGasTipCap(),
+		GasFeeCap:  tx.GetGasFeeCap(),
+		Gas:        tx.GetGas(),
+		To:         tx.GetTo(),
+		Value:      tx.GetValue(),
+		Data:       tx.GetData(),
+		AccessList: tx.GetAccessList(),
+		V:          v,
+		R:          r,
+		S:          s,
+	}
 }
 
 // GetRawSignatureValues returns the V, R, S signature values of the transaction.
@@ -205,6 +211,14 @@ func (tx DynamicFeeTx) Validate() error {
 		return sdkerrors.Wrapf(ErrInvalidGasCap, "gas fee cap cannot be negative %s", tx.GasFeeCap)
 	}
 
+	if !IsValidInt256(tx.GetGasTipCap()) {
+		return sdkerrors.Wrap(ErrInvalidGasCap, "out of bound")
+	}
+
+	if !IsValidInt256(tx.GetGasFeeCap()) {
+		return sdkerrors.Wrap(ErrInvalidGasCap, "out of bound")
+	}
+
 	if tx.GasFeeCap.LT(*tx.GasTipCap) {
 		return sdkerrors.Wrapf(
 			ErrInvalidGasCap, "max priority fee per gas higher than max fee per gas (%s > %s)",
@@ -212,10 +226,17 @@ func (tx DynamicFeeTx) Validate() error {
 		)
 	}
 
+	if !IsValidInt256(tx.Fee()) {
+		return sdkerrors.Wrap(ErrInvalidGasFee, "out of bound")
+	}
+
 	amount := tx.GetValue()
 	// Amount can be 0
 	if amount != nil && amount.Sign() == -1 {
 		return sdkerrors.Wrapf(ErrInvalidAmount, "amount cannot be negative %s", amount)
+	}
+	if !IsValidInt256(amount) {
+		return sdkerrors.Wrap(ErrInvalidAmount, "out of bound")
 	}
 
 	if tx.To != "" {
@@ -234,12 +255,27 @@ func (tx DynamicFeeTx) Validate() error {
 	return nil
 }
 
-// Fee panics as it requires the base fee amount to calculate
+// Fee returns gasprice * gaslimit.
 func (tx DynamicFeeTx) Fee() *big.Int {
-	panic("fee can only be called manually by providing the base fee")
+	return fee(tx.GetGasFeeCap(), tx.GasLimit)
 }
 
 // Cost returns amount + gasprice * gaslimit.
 func (tx DynamicFeeTx) Cost() *big.Int {
-	panic("cost can only be called manually by providing the base fee")
+	return cost(tx.Fee(), tx.GetValue())
+}
+
+// GetEffectiveGasPrice returns the effective gas price
+func (tx *DynamicFeeTx) GetEffectiveGasPrice(baseFee *big.Int) *big.Int {
+	return math.BigMin(new(big.Int).Add(tx.GasTipCap.BigInt(), baseFee), tx.GasFeeCap.BigInt())
+}
+
+// EffectiveFee returns effective_gasprice * gaslimit.
+func (tx DynamicFeeTx) EffectiveFee(baseFee *big.Int) *big.Int {
+	return fee(tx.GetEffectiveGasPrice(baseFee), tx.GasLimit)
+}
+
+// EffectiveCost returns amount + effective_gasprice * gaslimit.
+func (tx DynamicFeeTx) EffectiveCost(baseFee *big.Int) *big.Int {
+	return cost(tx.EffectiveFee(baseFee), tx.GetValue())
 }

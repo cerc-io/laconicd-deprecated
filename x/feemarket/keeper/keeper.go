@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"math/big"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -64,27 +62,4 @@ func (k Keeper) SetBlockGasUsed(ctx sdk.Context, gas uint64) {
 	store := ctx.KVStore(k.storeKey)
 	gasBz := sdk.Uint64ToBigEndian(gas)
 	store.Set(types.KeyPrefixBlockGasUsed, gasBz)
-}
-
-// ----------------------------------------------------------------------------
-// Parent Base Fee
-// Required by EIP1559 base fee calculation.
-// ----------------------------------------------------------------------------
-
-// GetBlockGasUsed returns the last block gas used value from the store.
-func (k Keeper) GetBaseFee(ctx sdk.Context) *big.Int {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.KeyPrefixBaseFee)
-	if len(bz) == 0 {
-		return nil
-	}
-
-	return new(big.Int).SetBytes(bz)
-}
-
-// SetBlockGasUsed gets the current block gas consumed to the store.
-// CONTRACT: this should be only called during EndBlock.
-func (k Keeper) SetBaseFee(ctx sdk.Context, baseFee *big.Int) {
-	store := ctx.KVStore(k.storeKey)
-	store.Set(types.KeyPrefixBaseFee, baseFee.Bytes())
 }

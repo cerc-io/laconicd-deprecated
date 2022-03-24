@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
+	"math/big"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/ethereum/go-ethereum/params"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -24,12 +25,13 @@ var (
 	ParamStoreKeyEnableCall   = []byte("EnableCall")
 	ParamStoreKeyExtraEIPs    = []byte("EnableExtraEIPs")
 	ParamStoreKeyChainConfig  = []byte("ChainConfig")
-	ParamStoreKeyNoBaseFee    = []byte("NoBaseFee")
 
-	// AvailableExtraEIPs define the list of all EIPs that can be enabled by the EVM interpreter. These EIPs are applied in
-	// order and can override the instruction sets from the latest hard fork enabled by the ChainConfig. For more info
-	// check: https://github.com/ethereum/go-ethereum/blob/v1.10.4/core/vm/interpreter.go#L122
-	AvailableExtraEIPs = []int64{1344, 1884, 2200, 2929}
+	// AvailableExtraEIPs define the list of all EIPs that can be enabled by the
+	// EVM interpreter. These EIPs are applied in order and can override the
+	// instruction sets from the latest hard fork enabled by the ChainConfig. For
+	// more info check:
+	// https://github.com/ethereum/go-ethereum/blob/master/core/vm/interpreter.go#L97
+	AvailableExtraEIPs = []int64{1344, 1884, 2200, 2929, 3198, 3529}
 )
 
 // ParamKeyTable returns the parameter key table.
@@ -58,12 +60,6 @@ func DefaultParams() Params {
 		ChainConfig:  DefaultChainConfig(),
 		ExtraEIPs:    nil,
 	}
-}
-
-// String implements the fmt.Stringer interface
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
 }
 
 // ParamSetPairs returns the parameter set pairs.
@@ -138,4 +134,9 @@ func validateChainConfig(i interface{}) error {
 	}
 
 	return cfg.Validate()
+}
+
+// IsLondon returns if london hardfork is enabled.
+func IsLondon(ethConfig *params.ChainConfig, height int64) bool {
+	return ethConfig.IsLondon(big.NewInt(height))
 }

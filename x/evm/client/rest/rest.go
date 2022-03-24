@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"math/big"
 	"net/http"
 	"strings"
 
@@ -14,7 +16,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 
-	rpctypes "github.com/tharsis/ethermint/ethereum/rpc/types"
+	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
+	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -79,15 +82,35 @@ func getEthTransactionByHash(clientCtx client.Context, hashHex string) ([]byte, 
 		return nil, err
 	}
 
+	client := feemarkettypes.NewQueryClient(clientCtx)
+	res, err := client.BaseFee(context.Background(), &feemarkettypes.QueryBaseFeeRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	var baseFee *big.Int
+	if res.BaseFee != nil {
+		baseFee = res.BaseFee.BigInt()
+	}
+
 	blockHash := common.BytesToHash(block.Block.Header.Hash())
 
-	ethTx, err := rpctypes.RawTxToEthTx(clientCtx, tx.Tx)
+	ethTxs, err := rpctypes.RawTxToEthTx(clientCtx, tx.Tx)
 	if err != nil {
 		return nil, err
 	}
 
 	height := uint64(tx.Height)
-	rpcTx := rpctypes.NewTransaction(ethTx.AsTransaction(), blockHash, height, uint64(tx.Index))
 
-	return json.Marshal(rpcTx)
+	for _, ethTx := range ethTxs {
+		if common.HexToHash(ethTx.Hash) == common.BytesToHash(hash) {
+			rpcTx, err := rpctypes.NewRPCTransaction(ethTx.AsTransaction(), blockHash, height, uint64(tx.Index), baseFee)
+			if err != nil {
+				return nil, err
+			}
+			return json.Marshal(rpcTx)
+		}
+	}
+
+	return nil, errors.New("eth tx not found")
 }

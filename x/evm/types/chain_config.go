@@ -15,22 +15,26 @@ import (
 // All the negative or nil values are converted to nil
 func (cc ChainConfig) EthereumConfig(chainID *big.Int) *params.ChainConfig {
 	return &params.ChainConfig{
-		ChainID:             chainID,
-		HomesteadBlock:      getBlockValue(cc.HomesteadBlock),
-		DAOForkBlock:        getBlockValue(cc.DAOForkBlock),
-		DAOForkSupport:      cc.DAOForkSupport,
-		EIP150Block:         getBlockValue(cc.EIP150Block),
-		EIP150Hash:          common.HexToHash(cc.EIP150Hash),
-		EIP155Block:         getBlockValue(cc.EIP155Block),
-		EIP158Block:         getBlockValue(cc.EIP158Block),
-		ByzantiumBlock:      getBlockValue(cc.ByzantiumBlock),
-		ConstantinopleBlock: getBlockValue(cc.ConstantinopleBlock),
-		PetersburgBlock:     getBlockValue(cc.PetersburgBlock),
-		IstanbulBlock:       getBlockValue(cc.IstanbulBlock),
-		MuirGlacierBlock:    getBlockValue(cc.MuirGlacierBlock),
-		BerlinBlock:         getBlockValue(cc.BerlinBlock),
-		// LondonBlock:         getBlockValue(cc.LondonBlock), // TODO: uncomment
-		CatalystBlock: getBlockValue(cc.CatalystBlock),
+		ChainID:                 chainID,
+		HomesteadBlock:          getBlockValue(cc.HomesteadBlock),
+		DAOForkBlock:            getBlockValue(cc.DAOForkBlock),
+		DAOForkSupport:          cc.DAOForkSupport,
+		EIP150Block:             getBlockValue(cc.EIP150Block),
+		EIP150Hash:              common.HexToHash(cc.EIP150Hash),
+		EIP155Block:             getBlockValue(cc.EIP155Block),
+		EIP158Block:             getBlockValue(cc.EIP158Block),
+		ByzantiumBlock:          getBlockValue(cc.ByzantiumBlock),
+		ConstantinopleBlock:     getBlockValue(cc.ConstantinopleBlock),
+		PetersburgBlock:         getBlockValue(cc.PetersburgBlock),
+		IstanbulBlock:           getBlockValue(cc.IstanbulBlock),
+		MuirGlacierBlock:        getBlockValue(cc.MuirGlacierBlock),
+		BerlinBlock:             getBlockValue(cc.BerlinBlock),
+		LondonBlock:             getBlockValue(cc.LondonBlock),
+		ArrowGlacierBlock:       getBlockValue(cc.ArrowGlacierBlock),
+		MergeForkBlock:          getBlockValue(cc.MergeForkBlock),
+		TerminalTotalDifficulty: nil,
+		Ethash:                  nil,
+		Clique:                  nil,
 	}
 }
 
@@ -48,6 +52,8 @@ func DefaultChainConfig() ChainConfig {
 	muirGlacierBlock := sdk.ZeroInt()
 	berlinBlock := sdk.ZeroInt()
 	londonBlock := sdk.ZeroInt()
+	arrowGlacierBlock := sdk.ZeroInt()
+	mergeForkBlock := sdk.ZeroInt()
 
 	return ChainConfig{
 		HomesteadBlock:      &homesteadBlock,
@@ -64,7 +70,8 @@ func DefaultChainConfig() ChainConfig {
 		MuirGlacierBlock:    &muirGlacierBlock,
 		BerlinBlock:         &berlinBlock,
 		LondonBlock:         &londonBlock,
-		CatalystBlock:       nil,
+		ArrowGlacierBlock:   &arrowGlacierBlock,
+		MergeForkBlock:      &mergeForkBlock,
 	}
 }
 
@@ -118,8 +125,11 @@ func (cc ChainConfig) Validate() error {
 	if err := validateBlock(cc.LondonBlock); err != nil {
 		return sdkerrors.Wrap(err, "londonBlock")
 	}
-	if err := validateBlock(cc.CatalystBlock); err != nil {
-		return sdkerrors.Wrap(err, "catalystBlock")
+	if err := validateBlock(cc.ArrowGlacierBlock); err != nil {
+		return sdkerrors.Wrap(err, "arrowGlacierBlock")
+	}
+	if err := validateBlock(cc.MergeForkBlock); err != nil {
+		return sdkerrors.Wrap(err, "mergeForkBlock")
 	}
 
 	// NOTE: chain ID is not needed to check config order
@@ -131,7 +141,7 @@ func (cc ChainConfig) Validate() error {
 
 func validateHash(hex string) error {
 	if hex != "" && strings.TrimSpace(hex) == "" {
-		return sdkerrors.Wrapf(ErrInvalidChainConfig, "hash cannot be blank")
+		return sdkerrors.Wrap(ErrInvalidChainConfig, "hash cannot be blank")
 	}
 
 	return nil

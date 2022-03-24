@@ -25,11 +25,14 @@ const (
 	codeErrCallDisabled
 	codeErrInvalidAmount
 	codeErrInvalidGasPrice
+	codeErrInvalidGasFee
 	codeErrVMExecution
 	codeErrInvalidRefund
 	codeErrInconsistentGas
 	codeErrInvalidGasCap
 	codeErrInvalidBaseFee
+	codeErrGasOverflow
+	codeErrInvalidAccount
 )
 
 var ErrPostTxProcessing = errors.New("failed to execute post processing")
@@ -71,6 +74,9 @@ var (
 	// ErrInvalidGasPrice returns an error if an invalid gas price is provided to the tx.
 	ErrInvalidGasPrice = sdkerrors.Register(ModuleName, codeErrInvalidGasPrice, "invalid gas price")
 
+	// ErrInvalidGasFee returns an error if the tx gas fee is out of bound.
+	ErrInvalidGasFee = sdkerrors.Register(ModuleName, codeErrInvalidGasFee, "invalid gas fee")
+
 	// ErrVMExecution returns an error resulting from an error in EVM execution.
 	ErrVMExecution = sdkerrors.Register(ModuleName, codeErrVMExecution, "evm transaction execution failed")
 
@@ -85,6 +91,12 @@ var (
 
 	// ErrInvalidBaseFee returns an error if a the base fee cap value is invalid
 	ErrInvalidBaseFee = sdkerrors.Register(ModuleName, codeErrInvalidBaseFee, "invalid base fee")
+
+	// ErrGasOverflow returns an error if gas computation overlow/underflow
+	ErrGasOverflow = sdkerrors.Register(ModuleName, codeErrGasOverflow, "gas computation overflow/underflow")
+
+	// ErrInvalidAccount returns an error if the account is not an EVM compatible account
+	ErrInvalidAccount = sdkerrors.Register(ModuleName, codeErrInvalidAccount, "account type is not a valid ethereum account")
 )
 
 // NewExecErrorWithReason unpacks the revert return bytes and returns a wrapped error

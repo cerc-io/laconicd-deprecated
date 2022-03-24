@@ -14,6 +14,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -69,11 +70,17 @@ func Call(t *testing.T, method string, params interface{}) *Response {
 	var rpcRes *Response
 	time.Sleep(1 * time.Second)
 
-	if HOST == "" {
-		HOST = "http://localhost:8545"
+	httpReq, err := http.NewRequestWithContext(context.Background(), "POST", HOST, bytes.NewBuffer(req))
+	if err != nil {
+		require.NoError(t, err)
 	}
-	res, err := http.NewRequestWithContext(context.Background(), "POST", HOST, bytes.NewBuffer(req))
-	require.NoError(t, err)
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	res, err := client.Do(httpReq)
+	if err != nil {
+		require.NoError(t, errors.Wrap(err, "Could not perform request"))
+	}
 
 	decoder := json.NewDecoder(res.Body)
 	rpcRes = new(Response)
@@ -96,12 +103,16 @@ func CallWithError(method string, params interface{}) (*Response, error) {
 	var rpcRes *Response
 	time.Sleep(1 * time.Second)
 
-	if HOST == "" {
-		HOST = "http://localhost:8545"
-	}
-	res, err := http.NewRequestWithContext(context.Background(), "POST", HOST, bytes.NewBuffer(req))
+	httpReq, err := http.NewRequestWithContext(context.Background(), "POST", HOST, bytes.NewBuffer(req))
 	if err != nil {
 		return nil, err
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	res, err := client.Do(httpReq)
+	if err != nil {
+		return nil, errors.Wrap(err, "Could not perform request")
 	}
 
 	decoder := json.NewDecoder(res.Body)
@@ -254,6 +265,15 @@ func GetNonce(t *testing.T, block string) hexutil.Uint64 {
 	err = json.Unmarshal(rpcRes.Result, &nonce)
 	require.NoError(t, err)
 	return nonce
+}
+
+func GetGasPrice(t *testing.T) string {
+	gasRes := Call(t, "eth_gasPrice", []interface{}{})
+
+	var gasPrice string
+	err := json.Unmarshal(gasRes.Result, &gasPrice)
+	require.NoError(t, err)
+	return gasPrice
 }
 
 func UnlockAllAccounts(t *testing.T) {

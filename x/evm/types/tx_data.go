@@ -36,27 +36,43 @@ type TxData interface {
 
 	AsEthereumData() ethtypes.TxData
 	Validate() error
+
+	// static fee
 	Fee() *big.Int
 	Cost() *big.Int
+
+	// effective fee according to current base fee
+	EffectiveFee(baseFee *big.Int) *big.Int
+	EffectiveCost(baseFee *big.Int) *big.Int
 }
 
-func NewTxDataFromTx(tx *ethtypes.Transaction) TxData {
+func NewTxDataFromTx(tx *ethtypes.Transaction) (TxData, error) {
 	var txData TxData
+	var err error
 	switch tx.Type() {
-	// case ethtypes.DynamicFeeTxType:
-	// 	txData = newDynamicFeeTx(tx)
+	case ethtypes.DynamicFeeTxType:
+		txData, err = newDynamicFeeTx(tx)
 	case ethtypes.AccessListTxType:
-		txData = newAccessListTx(tx)
+		txData, err = newAccessListTx(tx)
 	default:
-		txData = newLegacyTx(tx)
+		txData, err = newLegacyTx(tx)
+	}
+	if err != nil {
+		return nil, err
 	}
 
-	return txData
+	return txData, nil
 }
 
-// DeriveChainID derives the chain id from the given v parameter
+// DeriveChainID derives the chain id from the given v parameter.
+//
+// CONTRACT: v value is either:
+//
+//  - {0,1} + CHAIN_ID * 2 + 35, if EIP155 is used
+//  - {0,1} + 27, otherwise
+// Ref: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
 func DeriveChainID(v *big.Int) *big.Int {
-	if v == nil {
+	if v == nil || v.Sign() < 1 {
 		return nil
 	}
 
@@ -65,6 +81,12 @@ func DeriveChainID(v *big.Int) *big.Int {
 		if v == 27 || v == 28 {
 			return new(big.Int)
 		}
+
+		if v < 35 {
+			return nil
+		}
+
+		// V MUST be of the form {0,1} + CHAIN_ID * 2 + 35
 		return new(big.Int).SetUint64((v - 35) / 2)
 	}
 	v = new(big.Int).Sub(v, big.NewInt(35))
