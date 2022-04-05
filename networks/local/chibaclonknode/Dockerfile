@@ -1,23 +1,24 @@
 FROM golang:alpine AS build-env
 
+# Install minimum necessary dependencies,
+ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
+RUN apk add --no-cache $PACKAGES
+
 # Set up dependencies
 ENV PACKAGES git build-base
 
 # Set working directory for the build
 WORKDIR /go/src/github.com/vulcanize/chiba-clonk
 
-# Install dependencies
-RUN apk add --update $PACKAGES
-RUN apk add linux-headers
-
 # Add source files
 COPY . .
 
-# Make the binary
-RUN make build
+# build binary
+RUN make build-linux
+
 
 # Final image
-FROM alpine:3.15
+FROM alpine:edge
 
 # Install ca-certificates
 RUN apk add --update ca-certificates jq
@@ -26,5 +27,7 @@ WORKDIR /
 # Copy over binaries from the build-env
 COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/chibaclonkd /usr/bin/chibaclonkd
 
-# Run chibaclonkd by default
-CMD ["chibaclonkd"]
+EXPOSE 26656 26657 1317 9090 8545 8546
+
+# Run ethermintd by default
+CMD ["chibaclonkd","start","--gql-playground","--gql-server","--home","/chibaclonk"]

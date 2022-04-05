@@ -1,73 +1,87 @@
 version: "3"
 
 services:
-  ethermintdnode0:
-    container_name: ethermintdnode0
-    image: "ethermintd/node"
+  chibaclonkdnode0:
+    container_name: chibaclonkdnode0
+    image: "chibaclonkd/node"
     ports:
-      - "26657:26657"
+      - "26656-26657:26656-26657"
+      - "1317:1317"
+      - "9090:9090"
       - "8545:8545"
       - "8546:8546"
       - "8125:8125"
     environment:
       - ID=0
-      - LOG=${LOG:-ethermintd.log}
+      - LOG=${LOG:-chibaclonkd.log}
     volumes:
-      - ./localnet-setup/node0/ethermintd:/ethermint:Z
+      - ./localnet-setup/node0/chibaclonkd:/chibaclonk:Z
     networks:
-      - localnet
-    entrypoint: "bash start-docker.sh"
+      localnet:
+        ipv4_address: 192.168.10.1
 
-  ethermintdnode1:
-    container_name: ethermintdnode1
-    image: "ethermintd/node"
+  chibaclonkdnode1:
+    container_name: chibaclonkdnode1
+    image: "chibaclonkd/node"
     ports:
-      - "26658:26657"
+      - "26666-26667:26656-26657"
+      - "1318:1317"
+      - "9091:9090"
       - "8555:8545"
       - "8556:8546"
       - "8126:8125"
     environment:
       - ID=1
-      - LOG=${LOG:-ethermintd.log}
+      - LOG=${LOG:-chibaclonkd.log}
     volumes:
-      - ./localnet-setup/node1/ethermintd:/ethermint:Z
+      - ./localnet-setup/node1/chibaclonkd:/chibaclonk:Z
     networks:
-      - localnet
-    entrypoint: "bash start-docker.sh"
+      localnet:
+        ipv4_address: 192.168.10.2
 
-  ethermintdnode2:
-    container_name: ethermintdnode2
-    image: "ethermintd/node"
+  chibaclonkdnode2:
+    container_name: chibaclonkdnode2
+    image: "chibaclonkd/node"
     environment:
       - ID=2
-      - LOG=${LOG:-ethermintd.log}
+      - LOG=${LOG:-chibaclonkd.log}
     ports:
-      - "26659:26657"
+      - "26676-26677:26656-26657"
+      - "1319:1317"
+      - "9092:9090"
       - "8565:8545"
       - "8566:8546"
       - "8127:8125"
     volumes:
-      - ./localnet-setup/node2/ethermintd:/ethermint:Z
+      - ./localnet-setup/node2/chibaclonkd:/chibaclonk:Z
     networks:
-      - localnet
-    entrypoint: "bash start-docker.sh"
+      localnet:
+        ipv4_address: 192.168.10.3
 
-  ethermintdnode3:
-    container_name: ethermintdnode3
-    image: "ethermintd/node"
+  chibaclonkdnode3:
+    container_name: chibaclonkdnode3
+    image: "chibaclonkd/node"
     environment:
       - ID=3
-      - LOG=${LOG:-ethermintd.log}
+      - LOG=${LOG:-chibaclonkd.log}
     ports:
-      - "26660:26657"
+      - "26686-26687:26656-26657"
+      - "1320:1317"
+      - "9093:9090"
       - "8575:8545"
       - "8576:8546"
       - "8128:8125"
     volumes:
-      - ./localnet-setup/node3/ethermintd:/ethermint:Z
+      - ./localnet-setup/node3/chibaclonkd:/chibaclonk:Z
     networks:
-      - localnet
-    entrypoint: "bash start-docker.sh"
-
+      localnet:
+        ipv4_address: 192.168.10.4
+    # entrypoint: "sh scripts/start-docker.sh"
+    
 networks:
   localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/16

@@ -5,7 +5,7 @@
 ## Start server
 
 ```shell
-./build/ethermintd start --gql-playground --gql-server           
+./build/chibaclonkd start --gql-playground --gql-server           
 ```
 
 Basic node status:

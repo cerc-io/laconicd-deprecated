@@ -63,7 +63,7 @@ fi
 
 # Compile ethermint
 echo "compiling ethermint"
-make build-ethermint
+make build
 
 # PID array declaration
 arr=()
@@ -73,24 +73,24 @@ arrcli=()
 
 init_func() {
     echo "create and add new keys"
-    "$PWD"/build/ethermintd keys add $KEY"$i" --home "$DATA_DIR$i" --no-backup --chain-id $CHAINID --algo "eth_secp256k1" --keyring-backend test
+    "$PWD"/build/chibaclonkd keys add $KEY"$i" --home "$DATA_DIR$i" --no-backup --chain-id $CHAINID --algo "eth_secp256k1" --keyring-backend test
     echo "init Ethermint with moniker=$MONIKER and chain-id=$CHAINID"
-    "$PWD"/build/ethermintd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
+    "$PWD"/build/chibaclonkd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
     echo "prepare genesis: Allocate genesis accounts"
-    "$PWD"/build/ethermintd add-genesis-account \
-    "$("$PWD"/build/ethermintd keys show "$KEY$i" -a --home "$DATA_DIR$i" --keyring-backend test)" 1000000000000000000aphoton,1000000000000000000stake \
+    "$PWD"/build/chibaclonkd add-genesis-account \
+    "$("$PWD"/build/chibaclonkd keys show "$KEY$i" -a --home "$DATA_DIR$i" --keyring-backend test)" 1000000000000000000aphoton,1000000000000000000stake \
     --home "$DATA_DIR$i" --keyring-backend test
     echo "prepare genesis: Sign genesis transaction"
-    "$PWD"/build/ethermintd gentx $KEY"$i" 1000000000000000000stake --keyring-backend test --home "$DATA_DIR$i" --keyring-backend test --chain-id $CHAINID
+    "$PWD"/build/chibaclonkd gentx $KEY"$i" 1000000000000000000stake --keyring-backend test --home "$DATA_DIR$i" --keyring-backend test --chain-id $CHAINID
     echo "prepare genesis: Collect genesis tx"
-    "$PWD"/build/ethermintd collect-gentxs --home "$DATA_DIR$i"
+    "$PWD"/build/chibaclonkd collect-gentxs --home "$DATA_DIR$i"
     echo "prepare genesis: Run validate-genesis to ensure everything worked and that the genesis file is setup correctly"
-    "$PWD"/build/ethermintd validate-genesis --home "$DATA_DIR$i"
+    "$PWD"/build/chibaclonkd validate-genesis --home "$DATA_DIR$i"
 }
 
 start_func() {
     echo "starting ethermint node $i in background ..."
-    "$PWD"/build/ethermintd start --pruning=nothing --rpc.unsafe \
+    "$PWD"/build/chibaclonkd start --pruning=nothing --rpc.unsafe \
     --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
     --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
     --keyring-backend test --home "$DATA_DIR$i" \
