@@ -47,7 +47,7 @@ func (q queryResolver) LookupAuthorities(ctx context.Context, names []string) ([
 			return nil, err
 		}
 
-		if nameAuthority.AuctionId == "" {
+		if nameAuthority.AuctionId != "" {
 			auctionResp, err := auctionQueryClient.GetAuction(context.Background(), &auctiontypes.AuctionRequest{Id: nameAuthority.GetAuctionId()})
 			if err != nil {
 				return nil, err
