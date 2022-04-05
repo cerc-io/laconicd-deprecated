@@ -1,0 +1,149 @@
+syntax = "proto3";
+package vulcanize.auction.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "vulcanize/auction/v1beta1/types.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/auction/types";
+
+// AuctionsRequest is the format for querying all the auctions
+message AuctionsRequest {
+  // pagination defines an optional pagination info for the next request
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// AuctionsResponse returns the list of all auctions
+message AuctionsResponse {
+  // List of auctions
+  Auctions auctions = 1;
+  // pagination defines an optional pagination info for the next request
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// AuctionRequest is the format for querying a specific auction
+message AuctionRequest {
+  // Auction ID
+  string id = 1;
+}
+
+// AuctionResponse returns the details of the queried auction
+message AuctionResponse {
+  // Auction details
+  Auction auction = 1;
+}
+
+// BidRequest is the format for querying a specific bid in an auction
+message BidRequest {
+  // Auction ID
+  string auction_id = 1;
+  // Bidder address
+  string bidder = 2;
+}
+
+// BidResponse returns the details of the queried bid
+message BidResponse {
+  // Bid details
+  Bid bid = 1;
+}
+
+// BidsRequest is the format for querying all bids in an auction
+message BidsRequest {
+  // Auction ID
+  string auction_id = 1;
+}
+
+// BidsResponse returns details of all bids in an auction
+message BidsResponse {
+  // List of bids in the auction
+  repeated Bid bids = 1;
+}
+
+// AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
+message AuctionsByBidderRequest {
+  // Address of the bidder
+  string bidder_address = 1;
+}
+
+// AuctionsByBidderResponse returns all auctions containing a bidder
+message AuctionsByBidderResponse {
+  // List of auctions
+  Auctions auctions = 1;
+}
+
+// AuctionsByOwnerRequest is the format for querying all auctions created by an owner
+message AuctionsByOwnerRequest {
+  // Address of the owner
+  string owner_address = 1;
+}
+
+// AuctionsByOwnerResponse returns all auctions created by an owner
+message AuctionsByOwnerResponse {
+  // List of auctions
+  Auctions auctions = 1;
+}
+
+// QueryParamsRequest is the format to query the parameters of the auction module
+message QueryParamsRequest {
+}
+
+// QueryParamsResponse returns parameters of the auction module
+message QueryParamsResponse {
+  Params params = 1;
+}
+
+// BalanceRequest is the format to fetch all balances
+message BalanceRequest {
+}
+
+message BalanceResponse {
+  // Set of all balances within the auction
+  repeated cosmos.base.v1beta1.Coin balance = 1 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+// Query defines the gRPC querier interface for the auction module
+service Query {
+  // Auctions queries all auctions
+  rpc Auctions(AuctionsRequest) returns (AuctionsResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions";
+  }
+
+  // GetAuction queries an auction
+  rpc GetAuction(AuctionRequest) returns (AuctionResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/auctions/{id}";
+  }
+
+  // GetBid queries an auction bid
+  rpc GetBid(BidRequest) returns (BidResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}";
+  }
+
+  // GetBids queries all auction bids
+  rpc GetBids(BidsRequest) returns (BidsResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/bids/{auction_id}";
+  }
+
+  // AuctionsByBidder queries auctions by bidder
+  rpc AuctionsByBidder(AuctionsByBidderRequest) returns (AuctionsByBidderResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/by-bidder/{bidder_address}";
+  }
+
+  // AuctionsByOwner queries auctions by owner
+  rpc AuctionsByOwner(AuctionsByOwnerRequest) returns (AuctionsByOwnerResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/by-owner/{owner_address}";
+  }
+
+  // QueryParams implements the params query command
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/params";
+  }
+
+  // Balance queries the auction module account balance
+  rpc Balance(BalanceRequest) returns (BalanceResponse) {
+    option (google.api.http).get = "/vulcanize/auction/v1beta1/balance";
+  }
+}
