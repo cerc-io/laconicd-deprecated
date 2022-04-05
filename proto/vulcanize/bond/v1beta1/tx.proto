@@ -1,0 +1,77 @@
+syntax = "proto3";
+package vulcanize.bond.v1beta1;
+
+option go_package = "github.com/tharsis/ethermint/x/bond/types";
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+// Msg defines the bond Msg service.
+service Msg {
+  // CreateBond defines a method for creating a new bond.
+  rpc CreateBond(MsgCreateBond) returns (MsgCreateBondResponse);
+
+  // RefillBond defines a method for refilling amount for bond.
+  rpc RefillBond(MsgRefillBond) returns (MsgRefillBondResponse);
+
+  // WithdrawBond defines a method for withdrawing amount from bond.
+  rpc WithdrawBond(MsgWithdrawBond) returns (MsgWithdrawBondResponse);
+
+  // CancelBond defines a method for cancelling a bond.
+  rpc CancelBond(MsgCancelBond) returns (MsgCancelBondResponse);
+}
+
+// MsgCreateBond defines a SDK message for creating a new bond.
+message MsgCreateBond{
+  string signer = 1;
+  repeated cosmos.base.v1beta1.Coin coins = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "json:\"coins\" yaml:\"coins\""
+  ];
+}
+
+// MsgCreateBondResponse defines the Msg/CreateBond response type.
+message MsgCreateBondResponse{
+  string id = 1;
+}
+
+// MsgRefillBond defines a SDK message for refill the amount for bond.
+message MsgRefillBond{
+  string id = 1;
+  string signer = 2;
+  repeated cosmos.base.v1beta1.Coin coins = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "json:\"coins\" yaml:\"coins\""
+  ];
+}
+
+// MsgRefillBondResponse defines the Msg/RefillBond response type.
+message MsgRefillBondResponse{
+}
+
+// MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
+message MsgWithdrawBond {
+  string id = 1;
+  string signer = 2;
+  repeated cosmos.base.v1beta1.Coin coins = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (gogoproto.moretags) = "json:\"coins\" yaml:\"coins\""
+  ];
+}
+
+// MsgWithdrawBondResponse defines the Msg/WithdrawBond response type.
+message MsgWithdrawBondResponse{
+}
+
+// MsgCancelBond defines a SDK message for the cancel the bond.
+message MsgCancelBond{
+  string id = 1;
+  string signer = 2;
+}
+
+// MsgCancelBondResponse defines the Msg/CancelBond response type.
+message MsgCancelBondResponse{
+}

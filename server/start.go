@@ -44,6 +44,8 @@ import (
 	ethdebug "github.com/tharsis/ethermint/rpc/ethereum/namespaces/debug"
 	"github.com/tharsis/ethermint/server/config"
 	srvflags "github.com/tharsis/ethermint/server/flags"
+
+	"github.com/tharsis/ethermint/gql"
 )
 
 // StartCmd runs the service passed in, either stand-alone or in-process with
@@ -431,6 +433,9 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 			return err
 		}
 	}
+
+	// Start the GQL Server
+	go gql.Server(clientCtx)
 
 	defer func() {
 		if tmNode.IsRunning() {

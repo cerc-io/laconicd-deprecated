@@ -128,7 +128,7 @@ func startInProcess(cfg Config, val *Validator) error {
 		}
 
 		tmEndpoint := "/websocket"
-		tmRPCAddr := fmt.Sprintf("tcp://%s", val.AppConfig.GRPC.Address)
+		tmRPCAddr := val.RPCAddress
 
 		val.jsonrpc, val.jsonrpcDone, err = server.StartJSONRPC(val.Ctx, val.ClientCtx, tmRPCAddr, tmEndpoint, *val.AppConfig)
 		if err != nil {
@@ -196,6 +196,7 @@ func initGenFiles(cfg Config, genAccounts []authtypes.GenesisAccount, genBalance
 
 	// set the balances in the genesis state
 	var bankGenState banktypes.GenesisState
+	cfg.Codec.MustUnmarshalJSON(cfg.GenesisState[banktypes.ModuleName], &bankGenState)
 	bankGenState.Balances = genBalances
 	cfg.GenesisState[banktypes.ModuleName] = cfg.Codec.MustMarshalJSON(&bankGenState)
 
