@@ -56,6 +56,12 @@ func NewMsgRefillBond(id string, amount sdk.Coin, signer sdk.AccAddress) MsgRefi
 	}
 }
 
+// Route Implements Msg.
+func (msg MsgRefillBond) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (msg MsgRefillBond) Type() string { return "refill" }
+
 func (msg MsgRefillBond) ValidateBasic() error {
 	if len(msg.Id) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
@@ -89,6 +95,12 @@ func NewMsgWithdrawBond(id string, amount sdk.Coin, signer sdk.AccAddress) MsgWi
 	}
 }
 
+// Route Implements Msg.
+func (msg MsgWithdrawBond) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (msg MsgWithdrawBond) Type() string { return "withdraw" }
+
 func (msg MsgWithdrawBond) ValidateBasic() error {
 	if len(msg.Id) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
@@ -120,6 +132,12 @@ func NewMsgCancelBond(id string, signer sdk.AccAddress) MsgCancelBond {
 		Signer: signer.String(),
 	}
 }
+
+// Route Implements Msg.
+func (msg MsgCancelBond) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (msg MsgCancelBond) Type() string { return "cancel" }
 
 func (msg MsgCancelBond) ValidateBasic() error {
 	if len(msg.Id) == 0 {
