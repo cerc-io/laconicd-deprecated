@@ -11,11 +11,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	"github.com/tharsis/ethermint/app"
-	ethermintd "github.com/tharsis/ethermint/cmd/ethermintd"
+	chibaclonkd "github.com/tharsis/ethermint/cmd/chibaclonkd"
 )
 
 func TestInitCmd(t *testing.T) {
-	rootCmd, _ := ethermintd.NewRootCmd()
+	rootCmd, _ := chibaclonkd.NewRootCmd()
 	rootCmd.SetArgs([]string{
 		"init",          // Test the init cmd
 		"etherminttest", // Moniker

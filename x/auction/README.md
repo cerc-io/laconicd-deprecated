@@ -15,30 +15,30 @@ The following steps need to be followed only before running the chain for the fi
 
 1. Add the root key:
    ```
-   ./build/ethermintd keys add root
+   ./build/chibaclonkd keys add root
    ```
    Keep a note of the keyring passphrase if you set it.
 2. Init the chain:
    ```
-   ./build/ethermintd init test-moniker --chain-id ethermint_9000-1
+   ./build/chibaclonkd init test-moniker --chain-id ethermint_9000-1
    ```
 3. Add genesis account:
    ```
-   ./build/ethermintd add-genesis-account $(./build/ethermintd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
+   ./build/chibaclonkd add-genesis-account $(./build/chibaclonkd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
    ```
 4. Make a genesis tx:
    ```
-   ./build/ethermintd gentx root 1000000000000000000stake --chain-id ethermint_9000-1 
+   ./build/chibaclonkd gentx root 1000000000000000000stake --chain-id ethermint_9000-1 
    ```
 5. Collect gentxs:
    ```
-   ./build/ethermintd collect-gentxs
+   ./build/chibaclonkd collect-gentxs
    ```
 
 The chain can now be started using:
 
 ```
-./build/ethermintd start
+./build/chibaclonkd start
 ```
 
 ## Querying the Params
@@ -46,7 +46,7 @@ The chain can now be started using:
 The following command will dislay the default params for the `auction` module:
 
 ```
-# ./build/ethermintd q auction params -o json | jq
+# ./build/chibaclonkd q auction params -o json | jq
 
 {
   "params": {
@@ -73,7 +73,7 @@ The following command will dislay the default params for the `auction` module:
 ### Create Auction
 
 ```
-# ./build/ethermintd tx auction create 100s 100s 10aphoton 10aphoton 1000aphoton --from root --chain-id $(./build/ethermintd status | jq .NodeInfo.network -r)
+# ./build/chibaclonkd tx auction create 100s 100s 10aphoton 10aphoton 1000aphoton --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)
 
 Enter keyring passphrase:
 
@@ -98,7 +98,7 @@ txhash: ECAD6DF1ECA763FBD26EB7C2C0B77425FFE2FBEA2BEC57CE0FBC173AE0F45298
 ### Commit Bid
 
 ```
-# ./build/ethermintd tx auction commit-bid e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d 2000aphoton --from root --chain-id $(./build/ethermintd status | jq .NodeInfo.network -r)
+# ./build/chibaclonkd tx auction commit-bid e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d 2000aphoton --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)
 
 Enter keyring passphrase:
 
@@ -123,7 +123,7 @@ txhash: 71D8CF34026E32A3A34C2C2D4ADF25ABC8D7943A4619761BE27F196603D91B9D
 ### Reveal Bid
 
 ```
-# ./build/ethermintd tx auction reveal-bid e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d root-bafyreibt4twofrc3xi2es27cfrroy346iy6lr3gkw33i5dltkqqarlyltm.json --from root --chain-id $(./build/ethermintd status | jq .NodeInfo.network -r)
+# ./build/chibaclonkd tx auction reveal-bid e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d root-bafyreibt4twofrc3xi2es27cfrroy346iy6lr3gkw33i5dltkqqarlyltm.json --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)
 
 Enter keyring passphrase:
 
@@ -150,7 +150,7 @@ txhash: 4D1C0B3DDA4050F9BB32240FBD5234229E5C32543C1A0A78033B9531EB0CF8BA
 ### List Auctions
 
 ```
-# ./build/ethermintd q auction list
+# ./build/chibaclonkd q auction list
 
 auctions:
   auctions:
@@ -182,7 +182,7 @@ pagination: null
 ### Get Bid
 
 ```
-# ./build/ethermintd q auction get-bid e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0e ethm1l7cstwtf2lvev27ka67c23yk7mmj8ad7tetpqc
+# ./build/chibaclonkd q auction get-bid e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0e ethm1l7cstwtf2lvev27ka67c23yk7mmj8ad7tetpqc
 
 bid:
   auction_id: e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d
@@ -205,7 +205,7 @@ bid:
 ### Get All Bids for an Auction
 
 ```
-./build/ethermintd q auction get-bids e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d
+./build/chibaclonkd q auction get-bids e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d
 
 bids:
 - auction_id: e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d
@@ -228,7 +228,7 @@ bids:
 ### Get Auction by AuctionID
 
 ```
-# ./build/ethermintd q auction get e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d
+# ./build/chibaclonkd q auction get e7d14c7e7a6d7537cbdb8fbe62f22b1553c2ef4ce3705ada7c28f80faf2fbe0d
 
 auction:
   commit_fee:
@@ -259,7 +259,7 @@ auction:
 ### Get Auction by Bidder
 
 ```
-# ./build/ethermintd q auction query-by-owner ethm1l7cstwtf2lvev27ka67c23yk7mmj8ad7tetpqc
+# ./build/chibaclonkd q auction query-by-owner ethm1l7cstwtf2lvev27ka67c23yk7mmj8ad7tetpqc
 
 auctions:
   auctions:
@@ -290,7 +290,7 @@ auctions:
 ### Query Account Balance
 
 ```
-# ./build/ethermintd q auction balance                                                   
+# ./build/chibaclonkd q auction balance                                                   
 
 balance:
 - amount: "20"

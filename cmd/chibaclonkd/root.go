@@ -41,7 +41,7 @@ import (
 	ethermint "github.com/tharsis/ethermint/types"
 )
 
-const EnvPrefix = "ETHERMINT"
+const EnvPrefix = "CHIBACLONK"
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
@@ -60,8 +60,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithViper(EnvPrefix)
 
 	rootCmd := &cobra.Command{
-		Use:   "ethermintd",
-		Short: "Ethermint Daemon",
+		Use:   "chibaclonkd",
+		Short: "Chiba-Clonk Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())

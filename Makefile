@@ -7,13 +7,14 @@ TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::'
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
-ETHERMINT_BINARY = ethermintd
-ETHERMINT_DIR = ethermint
+CHIBACLONK_BINARY = chibaclonkd
+CHIBACLONK_DIR = chibaclonk
 BUILDDIR ?= $(CURDIR)/build
 SIMAPP = ./app
-HTTPS_GIT := https://github.com/tharsis/ethermint.git
+HTTPS_GIT := https://github.com/vulcanize/chiba-clonk.git
 DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
+PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 
 export GO111MODULE = on
 
@@ -61,8 +62,8 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # process linker flags
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=ethermint \
-		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(ETHERMINT_BINARY) \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=chibaclonk \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(CHIBACLONK_BINARY) \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 			-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
@@ -344,8 +345,8 @@ test-sim-nondeterminism:
 
 test-sim-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
-	@echo "By default, ${HOME}/.$(ETHERMINT_DIR)/config/genesis.json will be used."
-	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.$(ETHERMINT_DIR)/config/genesis.json \
+	@echo "By default, ${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json will be used."
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 test-sim-import-export: runsim
@@ -358,8 +359,8 @@ test-sim-after-import: runsim
 
 test-sim-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.$(ETHERMINT_DIR)/config/genesis.json will be used."
-	@$(BINDIR)/runsim -Genesis=${HOME}/.$(ETHERMINT_DIR)/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
+	@echo "By default, ${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json will be used."
+	@$(BINDIR)/runsim -Genesis=${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
@@ -414,9 +415,9 @@ format-fix:
 
 containerProtoVer=v0.2
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
-containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
-containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+containerProtoGen=$(PROJECT_NAME)-proto-gen-$(containerProtoVer)
+containerProtoGenSwagger=$(PROJECT_NAME)-proto-gen-swagger-$(containerProtoVer)
+containerProtoFmt=$(PROJECT_NAME)-proto-fmt-$(containerProtoVer)
 
 proto-all: proto-format proto-lint proto-gen
 
@@ -494,19 +495,19 @@ ifeq ($(OS),Windows_NT)
 	mkdir localnet-setup &
 	@$(MAKE) localnet-build
 
-	IF not exist "build/node0/$(ETHERMINT_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\ethermint\Z ethermintd/node "./ethermintd testnet --v 4 -o /ethermint --keyring-backend=test --ip-addresses ethermintdnode0,ethermintdnode1,ethermintdnode2,ethermintdnode3"
+	IF not exist "build/node0/$(CHIBACLONK_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\ethermint\Z chibaclonkd/node sh -c "chibaclonkd testnet init-files --v 4 --keyring-backend=test"
 	docker-compose up -d
 else
 	mkdir -p localnet-setup
 	@$(MAKE) localnet-build
 
-	if ! [ -f localnet-setup/node0/$(ETHERMINT_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/ethermint:Z ethermintd/node "./ethermintd testnet --v 4 -o /ethermint --keyring-backend=test --ip-addresses ethermintdnode0,ethermintdnode1,ethermintdnode2,ethermintdnode3"; fi
+	if ! [ -f localnet-setup/node0/$(CHIBACLONK_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/localnet-setup:Z chibaclonkd/node sh -c "chibaclonkd testnet init-files --v 4 --keyring-backend=test"; fi
 	docker-compose up -d
 endif
 
 # Stop testnet
 localnet-stop:
-	docker-compose down
+	docker-compose down -v 
 
 # Clean testnet
 localnet-clean:
@@ -517,15 +518,15 @@ localnet-clean:
 localnet-unsafe-reset:
 	docker-compose down
 ifeq ($(OS),Windows_NT)
-	@docker run --rm -v $(CURDIR)\localnet-setup\node0\ethermitd:ethermint\Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node1\ethermitd:ethermint\Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node2\ethermitd:ethermint\Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node3\ethermitd:ethermint\Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node0\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node1\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node2\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node3\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
 else
-	@docker run --rm -v $(CURDIR)/localnet-setup/node0/ethermitd:/ethermint:Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node1/ethermitd:/ethermint:Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node2/ethermitd:/ethermint:Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node3/ethermitd:/ethermint:Z ethermintd/node "./ethermintd unsafe-reset-all --home=/ethermint"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node0/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node1/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node2/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node3/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
 endif
 
 # Clean testnet
