@@ -1,4 +1,4 @@
-# Setting up a Genesis Validator for Vulcanize chibaclonk Testnet (chibaclonk_9000-1)
+# Setting up a Genesis Validator for Vulcanize chibaclonk Testnet (chibaclonk_81337-1)
 
 Hardware
 ---
@@ -116,7 +116,7 @@ NOTE: Save `mnemonic` and related account details (public key). You will need to
 recover accounts at a later point in time.
 
 ## 7) Add Genesis Account
-
+**Note: don't add more than 12,000 CHK , if you add more than that, your gentx will be ignored.**
 ```
 chibaclonkd add-genesis-account <key-name> 12000000000000000000000achk --keyring-backend os
 ```
