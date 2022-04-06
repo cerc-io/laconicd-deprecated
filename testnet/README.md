@@ -4,4 +4,8 @@
 
 ```shell
 $ bash multinode_testnet.sh 
+
+or 
+# this is create localnet will docker containers
+$ make localnet-start 
 ```

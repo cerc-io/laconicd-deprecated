@@ -106,7 +106,8 @@ Use `curl` to download the genesis file
 **Replace your **genesis** file with published genesis file**
 
 ```shell
-curl http://167.172.173.94:26657/genesis | jq .result.genesis > ~/.chibaclonkd/config/genesis.json
+# Will be updated 
+curl {GENESIS_LINK} | jq .result.genesis > ~/.chibaclonkd/config/genesis.json
 ```
 
 Verify sha256 hash of genesis file with the below command
@@ -118,13 +119,16 @@ jq -S -c -M '' ~/.chibaclonkd/config/genesis.json | shasum -a 256
 genesis sha256 hash should be
 
 ```
-4e5b68b5652a608c44c33e669c84ac179d9c0e301f958b5448f037a53c5cbb4e
+{WILL BE UPDATED}
 ```
 
 ## 2) Update Peers & Seeds in config.toml
 
 ```
-peers="5ad2e6c35f2c84ff3ee31d89a95b34d92cb6afb1@157.230.101.237:26656,defc95b08547b6ef254723ad9621967a7e819020@161.35.223.44:26656"
+<!-- Note: don't use peers 
+peers="5ad2e6c35f2c84ff3ee31d89a95b34d92cb6afb1@157.230.101.237:26656,defc95b08547b6ef254723ad9621967a7e819020@161.35.223.44:26656" -->
+
+{peers={WILL BE UPDATED}}
 sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.chibaclonkd/config/config.toml
 ```
 

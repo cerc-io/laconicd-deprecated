@@ -19,10 +19,8 @@ recover accounts at a later point in time.
 
 ##### Get Test tokens from faucet
 
-- Open this link : http://167.172.173.94:1314/ and paste your account
-- 1 gnt = 10^18 agnt
-- Each Transaction you will get 500gnt
-- Total Tokens 5000gnt for account
+- Faucet website link will be updated
+- 1 CHK =  1 * 10e^18 achk
 
 ### 3.Create Validator
 
@@ -39,7 +37,7 @@ Please replace `key_name` with your key name and `moniker` also
 
 ```
 chibaclonkd tx staking create-validator \
-  --amount=4500000000000000000000agnt \
+  --amount=150000000000000000000000000achk \
   --pubkey=$(chibaclonkd tendermint show-validator) \
   --moniker="my-moniker" \
   --website="https://myweb.site" \
@@ -51,6 +49,6 @@ chibaclonkd tx staking create-validator \
   --min-self-delegation="1" \
   --gas="auto" \
   --gas-adjustment="1.2" \
-  --gas-prices="0.025agnt" \
+  --gas-prices="0.025achk" \
   --from=<key_name>
 ```

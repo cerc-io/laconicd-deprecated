@@ -118,16 +118,16 @@ recover accounts at a later point in time.
 ## 7) Add Genesis Account
 
 ```
-chibaclonkd add-genesis-account <key-name> 4500000000000000agnt --keyring-backend os
+chibaclonkd add-genesis-account <key-name> 150000000000000000000000000achk --keyring-backend os
 ```
 
 ## 8) Create Your `gentx`
 
 ```
-chibaclonkd gentx <key-name> 4500000000000000agnt \
+chibaclonkd gentx <key-name> 150000000000000000000000000achk \
   --pubkey=$(chibaclonkd tendermint show-validator) \
   --chain-id="chibaclonk_81337-1" \
-  --moniker="my-moniker" \
+  --moniker="YOUR_MONIKER_NAME" \
   --website="https://yourweb.site" \
   --details="description of my validator" \
   --commission-rate="0.10" \

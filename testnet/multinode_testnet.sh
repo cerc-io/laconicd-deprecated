@@ -39,7 +39,7 @@ fi
 # chain env variables
 export DAEMON_HOME=~/.testchibaclonk
 export CHAINID=chibaclonk_9000-1
-export DENOM=agnt
+export DENOM=achk
 export GH_URL=https://github.com/vulcanize/chiba-clonk.git
 export CHAIN_VERSION=main
 export DAEMON=chibaclonkd
