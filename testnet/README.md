@@ -6,6 +6,6 @@
 $ bash multinode_testnet.sh 
 
 or 
-# this is create localnet will docker containers
+# this is create localnet with docker containers
 $ make localnet-start 
 ```
