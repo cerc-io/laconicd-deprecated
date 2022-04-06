@@ -33,11 +33,11 @@ recover accounts at a later point in time.
 
 `Note:`  Only execute below transaction after complete sync of your full node
 
-Please replace `key_name` with your key name and `moniker` also
+Please replace `key_name` with your key name, amount with staking amount, validator description and `moniker` also
 
 ```
 chibaclonkd tx staking create-validator \
-  --amount=150000000000000000000000000achk \
+  --amount="AMOUNT" \
   --pubkey=$(chibaclonkd tendermint show-validator) \
   --moniker="my-moniker" \
   --website="https://myweb.site" \
