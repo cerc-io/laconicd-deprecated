@@ -3,13 +3,14 @@ package gql
 import (
 	"context"
 	"encoding/base64"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
-	"strconv"
 )
 
 // DefaultLogNumLines is the number of log lines to tail by default.
@@ -139,15 +140,17 @@ func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Re
 	gqlResponse := make([]*Record, len(ids))
 
 	for i, id := range ids {
+		// TODO: Implement HasRecord query similar to https://github.com/vulcanize/dxns/blob/main/gql/resolver.go#L325
 		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIdRequest{Id: id})
 		if err != nil {
-			return nil, err
+			gqlResponse[i] = nil
+		} else {
+			record, err := getGQLRecord(context.Background(), q, res.GetRecord())
+			if err != nil {
+				return nil, err
+			}
+			gqlResponse[i] = record
 		}
-		record, err := getGQLRecord(context.Background(), q, res.GetRecord())
-		if err != nil {
-			return nil, err
-		}
-		gqlResponse[i] = record
 	}
 
 	return gqlResponse, nil

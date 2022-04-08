@@ -3,12 +3,13 @@ package gql
 import (
 	"context"
 	"encoding/json"
+	"reflect"
+	"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
-	"reflect"
-	"strconv"
 )
 
 // OwnerAttributeName denotes the owner attribute name for a bond.
@@ -72,8 +73,8 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record nstypes.Re
 	return &Record{
 		ID:         record.Id,
 		BondID:     record.GetBondId(),
-		CreateTime: record.GetCreateTime().String(),
-		ExpiryTime: record.GetExpiryTime().String(),
+		CreateTime: record.GetCreateTime(),
+		ExpiryTime: record.GetExpiryTime(),
 		Owners:     record.GetOwners(),
 		Attributes: attributes,
 		References: references,

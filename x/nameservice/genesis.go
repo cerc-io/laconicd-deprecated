@@ -1,6 +1,8 @@
 package nameservice
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tharsis/ethermint/x/nameservice/keeper"
@@ -14,8 +16,11 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 		keeper.PutRecord(ctx, record)
 
 		// Add to record expiry queue if expiry time is in the future.
-		if record.ExpiryTime.After(ctx.BlockTime()) {
-			keeper.InsertRecordExpiryQueue(ctx, record)
+		expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
+		if err == nil {
+			if expiryTime.After(ctx.BlockTime()) {
+				keeper.InsertRecordExpiryQueue(ctx, record)
+			}
 		}
 
 		// Note: Bond genesis runs first, so bonds will already be present.

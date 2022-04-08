@@ -32,6 +32,8 @@ cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["staking"]["params"]
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["record_rent"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+
 
 # increase block time (?)
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json

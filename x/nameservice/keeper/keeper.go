@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"fmt"
+	"sort"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,8 +16,6 @@ import (
 	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
-	"sort"
-	"time"
 )
 
 var (
@@ -198,8 +199,8 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 		return err
 	}
 
-	record.CreateTime = ctx.BlockHeader().Time
-	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration)
+	record.CreateTime = ctx.BlockHeader().Time.Format(time.RFC3339)
+	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
 	record.Deleted = false
 
 	k.PutRecord(ctx, record.ToRecordObj())
@@ -268,9 +269,13 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 
 // InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
 func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
-	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime)
-	timeSlice = append(timeSlice, val.Id)
-	k.SetRecordExpiryQueueTimeSlice(ctx, val.ExpiryTime, timeSlice)
+	expiryTime, err := time.Parse(time.RFC3339, val.ExpiryTime)
+
+	if err == nil {
+		timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, expiryTime)
+		timeSlice = append(timeSlice, val.Id)
+		k.SetRecordExpiryQueueTimeSlice(ctx, expiryTime, timeSlice)
+	}
 }
 
 // GetModuleBalances gets the nameservice module account(s) balances.

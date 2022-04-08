@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -159,12 +161,16 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 
 	// Check if renewal is required (i.e. expired record marked as deleted).
 	record := k.GetRecord(ctx, msg.RecordId)
-	if !record.Deleted || record.ExpiryTime.After(ctx.BlockTime()) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
+	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
+
+	if err == nil {
+		if !record.Deleted || expiryTime.After(ctx.BlockTime()) {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
+		}
 	}
 
 	recordType := record.ToRecordType()
-	err := k.processRecord(ctx, &recordType, true)
+	err = k.processRecord(ctx, &recordType, true)
 	if err != nil {
 		return err
 	}
