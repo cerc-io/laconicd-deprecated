@@ -78,15 +78,15 @@ func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Rec
 	for _, name := range names {
 		res, err := nsQueryClient.ResolveWrn(context.Background(), &nstypes.QueryResolveWrn{Wrn: name})
 		if err != nil {
-			return nil, err
-		}
+			gqlResponse = append(gqlResponse, nil)
+		} else {
+			gqlRecord, err := getGQLRecord(context.Background(), q, *res.GetRecord())
+			if err != nil {
+				return nil, err
+			}
 
-		gqlRecord, err := getGQLRecord(context.Background(), q, *res.GetRecord())
-		if err != nil {
-			return nil, err
+			gqlResponse = append(gqlResponse, gqlRecord)
 		}
-
-		gqlResponse = append(gqlResponse, gqlRecord)
 	}
 
 	return gqlResponse, nil
@@ -99,15 +99,16 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 	for _, name := range names {
 		res, err := nsQueryClient.LookupWrn(context.Background(), &nstypes.QueryLookupWrn{Wrn: name})
 		if err != nil {
-			return nil, err
-		}
+			// Instead of throwing error for name not found, return nil similar to https://github.com/vulcanize/dxns/blob/main/gql/resolver.go#L191
+			gqlResponse = append(gqlResponse, nil)
+		} else {
+			gqlRecord, err := getGQLNameRecord(res.GetName())
+			if err != nil {
+				return nil, err
+			}
 
-		gqlRecord, err := getGQLNameRecord(res.GetName())
-		if err != nil {
-			return nil, err
+			gqlResponse = append(gqlResponse, gqlRecord)
 		}
-
-		gqlResponse = append(gqlResponse, gqlRecord)
 	}
 
 	return gqlResponse, nil
