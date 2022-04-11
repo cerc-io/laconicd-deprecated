@@ -122,7 +122,7 @@ func RunAddCmd(ctx client.Context, cmd *cobra.Command, args []string, inBuf *buf
 
 	if dryRun, _ := cmd.Flags().GetBool(flags.FlagDryRun); dryRun {
 		// use in memory keybase
-		kb = keyring.NewInMemory(etherminthd.EthSecp256k1Option())
+		kb = keyring.NewInMemory(ctx.Codec, etherminthd.EthSecp256k1Option())
 	} else {
 		_, err = kb.Key(name)
 		if err == nil {
@@ -156,7 +156,7 @@ func RunAddCmd(ctx client.Context, cmd *cobra.Command, args []string, inBuf *buf
 					return err
 				}
 
-				pks[i] = k.GetPubKey()
+				pks[i], err = k.GetPubKey()
 			}
 
 			if noSort, _ := cmd.Flags().GetBool(flagNoSort); !noSort {
@@ -183,7 +183,7 @@ func RunAddCmd(ctx client.Context, cmd *cobra.Command, args []string, inBuf *buf
 			return err
 		}
 
-		info, err := kb.SavePubKey(name, pk, algo.Name())
+		info, err := kb.SaveOfflineKey(name, pk)
 		if err != nil {
 			return err
 		}
@@ -289,7 +289,7 @@ func RunAddCmd(ctx client.Context, cmd *cobra.Command, args []string, inBuf *buf
 	return printCreate(cmd, info, showMnemonic, mnemonic, outputFormat)
 }
 
-func printCreate(cmd *cobra.Command, info keyring.Info, showMnemonic bool, mnemonic, outputFormat string) error {
+func printCreate(cmd *cobra.Command, info *keyring.Record, showMnemonic bool, mnemonic, outputFormat string) error {
 	switch outputFormat {
 	case OutputFormatText:
 		cmd.PrintErrln()

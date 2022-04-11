@@ -10,8 +10,7 @@ import (
 
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
-	tmquery "github.com/tendermint/tendermint/libs/pubsub/query"
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	coretypes "github.com/tendermint/tendermint/rpc/coretypes"
 	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -27,9 +26,9 @@ import (
 )
 
 var (
-	txEvents     = tmtypes.QueryForEvent(tmtypes.EventTx).String()
-	evmEvents    = tmquery.MustParse(fmt.Sprintf("%s='%s' AND %s.%s='%s'", tmtypes.EventTypeKey, tmtypes.EventTx, sdk.EventTypeMessage, sdk.AttributeKeyModule, evmtypes.ModuleName)).String()
-	headerEvents = tmtypes.QueryForEvent(tmtypes.EventNewBlockHeader).String()
+	txEvents     = tmtypes.QueryForEvent(tmtypes.EventTxValue).String()
+	evmEvents    = fmt.Sprintf("%s='%s' AND %s.%s='%s'", tmtypes.EventTypeKey, tmtypes.EventTx, sdk.EventTypeMessage, sdk.AttributeKeyModule, evmtypes.ModuleName)
+	headerEvents = tmtypes.QueryForEvent(tmtypes.EventNewBlockHeaderValue).String()
 )
 
 // EventSystem creates subscriptions, processes events and broadcasts them to the

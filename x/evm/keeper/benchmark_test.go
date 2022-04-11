@@ -7,7 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	// authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	// authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/ethereum/go-ethereum/common"
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
@@ -63,12 +64,12 @@ func DoBenchmark(b *testing.B, txBuilder TxBuilder) {
 		ctx, _ := suite.ctx.CacheContext()
 
 		// deduct fee first
-		txData, err := types.UnpackTxData(msg.Data)
-		require.NoError(b, err)
+		// txData, err := types.UnpackTxData(msg.Data)
+		// require.NoError(b, err)
 
-		fees := sdk.Coins{sdk.NewCoin(suite.EvmDenom(), sdk.NewIntFromBigInt(txData.Fee()))}
-		err = authante.DeductFees(suite.app.BankKeeper, suite.ctx, suite.app.AccountKeeper.GetAccount(ctx, msg.GetFrom()), fees)
-		require.NoError(b, err)
+		// fees := sdk.Coins{sdk.NewCoin(suite.EvmDenom(), sdk.NewIntFromBigInt(txData.Fee()))}
+		// err = authante.DeductFees(suite.app.BankKeeper, suite.ctx, suite.app.AccountKeeper.GetAccount(ctx, msg.GetFrom()), fees)
+		// require.NoError(b, err)
 
 		rsp, err := suite.app.EvmKeeper.EthereumTx(sdk.WrapSDKContext(ctx), msg)
 		require.NoError(b, err)

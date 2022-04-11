@@ -6,6 +6,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/tharsis/ethermint/x/feemarket/types"
 )
 
@@ -14,14 +15,14 @@ type Keeper struct {
 	// Protobuf codec
 	cdc codec.BinaryCodec
 	// Store key required for the Fee Market Prefix KVStore.
-	storeKey sdk.StoreKey
+	storeKey storetypes.StoreKey
 	// module specific parameter space that can be configured through governance
 	paramSpace paramtypes.Subspace
 }
 
 // NewKeeper generates new fee market module keeper
 func NewKeeper(
-	cdc codec.BinaryCodec, storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
+	cdc codec.BinaryCodec, storeKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
 ) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {

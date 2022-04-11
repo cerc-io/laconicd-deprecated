@@ -11,7 +11,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	coretypes "github.com/tendermint/tendermint/rpc/coretypes"
 	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -371,7 +371,13 @@ func (api *PublicFilterAPI) Logs(ctx context.Context, crit filters.FilterCriteri
 				}
 
 				// filter only events from EVM module txs
-				_, isMsgEthereumTx := ev.Events[evmtypes.TypeMsgEthereumTx]
+				var isMsgEthereumTx bool
+
+				for _, event := range ev.Events {
+					if event.Type == evmtypes.TypeMsgEthereumTx {
+						isMsgEthereumTx = true
+					}
+				}
 
 				if !isMsgEthereumTx {
 					// ignore transaction as it's not from the evm module

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/input"
 	"github.com/cosmos/cosmos-sdk/crypto"
@@ -30,12 +31,13 @@ func UnsafeExportEthKeyCommand() *cobra.Command {
 
 			keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
 			rootDir, _ := cmd.Flags().GetString(flags.FlagHome)
-
+			clientCtx := client.GetClientContextFromCmd(cmd)
 			kr, err := keyring.New(
 				sdk.KeyringServiceName(),
 				keyringBackend,
 				rootDir,
 				inBuf,
+				clientCtx.Codec,
 				hd.EthSecp256k1Option(),
 			)
 			if err != nil {

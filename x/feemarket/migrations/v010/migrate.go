@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	v09types "github.com/tharsis/ethermint/x/feemarket/migrations/v09/types"
 	"github.com/tharsis/ethermint/x/feemarket/types"
@@ -15,7 +16,7 @@ var KeyPrefixBaseFeeV1 = []byte{2}
 
 // MigrateStore migrates the BaseFee value from the store to the params for
 // In-Place Store migration logic.
-func MigrateStore(ctx sdk.Context, paramstore *paramtypes.Subspace, storeKey sdk.StoreKey) error {
+func MigrateStore(ctx sdk.Context, paramstore *paramtypes.Subspace, storeKey storetypes.StoreKey) error {
 	baseFee := types.DefaultParams().BaseFee
 
 	store := ctx.KVStore(storeKey)

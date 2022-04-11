@@ -10,7 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+
+	// "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 
@@ -22,9 +23,9 @@ import (
 )
 
 var (
-	_ sdk.Msg    = &MsgEthereumTx{}
-	_ sdk.Tx     = &MsgEthereumTx{}
-	_ ante.GasTx = &MsgEthereumTx{}
+	_ sdk.Msg = &MsgEthereumTx{}
+	_ sdk.Tx  = &MsgEthereumTx{}
+	// _ ante.GasTx = &MsgEthereumTx{}
 
 	_ codectypes.UnpackInterfacesMessage = MsgEthereumTx{}
 )

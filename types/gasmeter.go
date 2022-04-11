@@ -26,7 +26,7 @@ type infiniteGasMeterWithLimit struct {
 }
 
 // NewInfiniteGasMeterWithLimit returns a reference to a new infiniteGasMeter.
-func NewInfiniteGasMeterWithLimit(limit sdk.Gas) sdk.GasMeter {
+func NewInfiniteGasMeterWithLimit(limit sdk.Gas) *infiniteGasMeterWithLimit {
 	return &infiniteGasMeterWithLimit{
 		consumed: 0,
 		limit:    limit,

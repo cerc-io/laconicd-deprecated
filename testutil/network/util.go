@@ -3,18 +3,16 @@ package network
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"
+	abciclient "github.com/tendermint/tendermint/abci/client"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/node"
-	"github.com/tendermint/tendermint/p2p"
-	pvm "github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
 	"github.com/tendermint/tendermint/rpc/client/local"
 	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/server/api"
 	servergrpc "github.com/cosmos/cosmos-sdk/server/grpc"
@@ -25,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	mintypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
@@ -41,36 +40,35 @@ func startInProcess(cfg Config, val *Validator) error {
 		return err
 	}
 
-	nodeKey, err := p2p.LoadOrGenNodeKey(tmCfg.NodeKeyFile())
+	app := cfg.AppConstructor(*val)
+	genDoc, err := types.GenesisDocFromFile(tmCfg.GenesisFile())
 	if err != nil {
 		return err
 	}
 
-	app := cfg.AppConstructor(*val)
-
-	genDocProvider := node.DefaultGenesisDocProviderFunc(tmCfg)
-	tmNode, err := node.NewNode(
+	val.tmNode, err = node.New(
 		tmCfg,
-		pvm.LoadOrGenFilePV(tmCfg.PrivValidatorKeyFile(), tmCfg.PrivValidatorStateFile()),
-		nodeKey,
-		proxy.NewLocalClientCreator(app),
-		genDocProvider,
-		node.DefaultDBProvider,
-		node.DefaultMetricsProvider(tmCfg.Instrumentation),
 		logger.With("module", val.Moniker),
+		abciclient.NewLocalCreator(app),
+		genDoc,
 	)
 	if err != nil {
 		return err
 	}
 
-	if err := tmNode.Start(); err != nil {
+	if err := val.tmNode.Start(); err != nil {
 		return err
 	}
 
-	val.tmNode = tmNode
-
 	if val.RPCAddress != "" {
-		val.RPCClient = local.New(tmNode)
+		node, ok := val.tmNode.(local.NodeService)
+		if !ok {
+			panic("can't cast service.Service to NodeService")
+		}
+		val.RPCClient, err = local.New(node)
+		if err != nil {
+			panic("cant create a local node")
+		}
 	}
 
 	// We'll need a RPC client if the validator exposes a gRPC or REST endpoint.
@@ -147,7 +145,8 @@ func startInProcess(cfg Config, val *Validator) error {
 }
 
 func collectGenFiles(cfg Config, vals []*Validator, outputDir string) error {
-	genTime := tmtime.Now()
+	// genTime := tmtime.Now()
+	genTime := time.Now()
 
 	for i := 0; i < cfg.NumValidators; i++ {
 		tmCfg := vals[i].Ctx.Config
@@ -205,7 +204,7 @@ func initGenFiles(cfg Config, genAccounts []authtypes.GenesisAccount, genBalance
 	stakingGenState.Params.BondDenom = cfg.BondDenom
 	cfg.GenesisState[stakingtypes.ModuleName] = cfg.Codec.MustMarshalJSON(&stakingGenState)
 
-	var govGenState govtypes.GenesisState
+	var govGenState v1.GenesisState
 	cfg.Codec.MustUnmarshalJSON(cfg.GenesisState[govtypes.ModuleName], &govGenState)
 
 	govGenState.DepositParams.MinDeposit[0].Denom = cfg.BondDenom
@@ -251,12 +250,18 @@ func initGenFiles(cfg Config, genAccounts []authtypes.GenesisAccount, genBalance
 }
 
 func WriteFile(name string, dir string, contents []byte) error {
-	file := filepath.Join(dir, name)
+	writePath := filepath.Join(dir)
+	file := filepath.Join(writePath, name)
 
-	err := tmos.EnsureDir(dir, 0o755)
+	err := tmos.EnsureDir(writePath, 0755)
 	if err != nil {
 		return err
 	}
 
-	return tmos.WriteFile(file, contents, 0o644)
+	err = ioutil.WriteFile(file, contents, 0644) // nolint: gosec
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

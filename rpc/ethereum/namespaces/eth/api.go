@@ -20,7 +20,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
-	tmrpctypes "github.com/tendermint/tendermint/rpc/core/types"
+	tmrpctypes "github.com/tendermint/tendermint/rpc/coretypes"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -74,6 +74,7 @@ func NewPublicAPI(
 			viper.GetString(flags.FlagKeyringBackend),
 			clientCtx.KeyringDir,
 			clientCtx.Input,
+			clientCtx.Codec,
 			hd.EthSecp256k1Option(),
 		)
 		if err != nil {
@@ -242,7 +243,11 @@ func (e *PublicAPI) Accounts() ([]common.Address, error) {
 	}
 
 	for _, info := range infos {
-		addressBytes := info.GetPubKey().Address().Bytes()
+		pubKey, err := info.GetPubKey()
+		if err != nil {
+			return addresses, err
+		}
+		addressBytes := pubKey.Address().Bytes()
 		addresses = append(addresses, common.BytesToAddress(addressBytes))
 	}
 
