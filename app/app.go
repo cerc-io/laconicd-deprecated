@@ -21,7 +21,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/store/streaming"
+	"github.com/cosmos/cosmos-sdk/store/v2alpha1/multi"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -82,6 +86,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
 
 	// "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
 
@@ -104,7 +109,7 @@ import (
 	"github.com/tharsis/ethermint/x/evm"
 
 	// evmrest "github.com/tharsis/ethermint/x/evm/client/rest"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2alpha1"
 	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"github.com/tharsis/ethermint/x/feemarket"
@@ -255,6 +260,58 @@ func NewEthermintApp(
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
+	keys := sdk.NewKVStoreKeys(
+		// SDK keys
+
+		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
+		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
+		govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
+		evidencetypes.StoreKey, capabilitytypes.StoreKey,
+		authzkeeper.StoreKey,
+		// ibc keys
+		// ibchost.StoreKey, ibctransfertypes.StoreKey,
+		// ethermint keys
+		evmtypes.StoreKey, feemarkettypes.StoreKey,
+	)
+
+	// Add the EVM transient store key
+	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey)
+	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+
+	// initialize stores
+	setNamespaces := func(config *multi.StoreParams, ver uint64) error {
+		for _, key := range keys {
+			typ, err := storetypes.StoreKeyToType(key)
+			if err != nil {
+				return err
+			}
+			if err = config.RegisterSubstore(key, typ); err != nil {
+				return err
+			}
+		}
+		for _, key := range memKeys {
+			typ, err := storetypes.StoreKeyToType(key)
+			if err != nil {
+				return err
+			}
+			if err = config.RegisterSubstore(key, typ); err != nil {
+				return err
+			}
+		}
+		for _, key := range tkeys {
+			typ, err := storetypes.StoreKeyToType(key)
+			if err != nil {
+				return err
+			}
+			if err = config.RegisterSubstore(key, typ); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+
+	baseAppOptions = append(baseAppOptions, baseapp.StoreOption(setNamespaces))
+
 	// NOTE we use custom transaction decoder that supports the sdk.Tx interface instead of sdk.StdTx
 	bApp := baseapp.NewBaseApp(
 		appName,
@@ -266,22 +323,11 @@ func NewEthermintApp(
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
-	keys := sdk.NewKVStoreKeys(
-		// SDK keys
-		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
-		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, capabilitytypes.StoreKey,
-		feegrant.StoreKey, authzkeeper.StoreKey,
-		// ibc keys
-		// ibchost.StoreKey, ibctransfertypes.StoreKey,
-		// ethermint keys
-		evmtypes.StoreKey, feemarkettypes.StoreKey,
-	)
-
-	// Add the EVM transient store key
-	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey)
-	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+	// configure state listening capabilities using AppOptions
+	// we are doing nothing with the returned streamingServices and waitGroup in this case
+	if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, keys); err != nil {
+		tmos.Exit(err.Error())
+	}
 
 	app := &EthermintApp{
 		BaseApp:           bApp,
@@ -761,7 +807,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName)
+	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	// paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	// paramsKeeper.Subspace(ibchost.ModuleName)
