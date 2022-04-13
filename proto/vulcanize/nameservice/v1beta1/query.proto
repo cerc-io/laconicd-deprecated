@@ -68,8 +68,18 @@ message QueryParamsResponse{
 
 // QueryListRecordsRequest is request type for nameservice records list
 message QueryListRecordsRequest{
+  message ValueInput {
+    string string = 1;
+    int64 int = 2;
+  }
+  message KeyValueInput {
+    string key = 1;
+    ValueInput value = 2;
+  }
+  repeated KeyValueInput attributes = 1;
+
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 // QueryListRecordsResponse is response type for nameservice records list

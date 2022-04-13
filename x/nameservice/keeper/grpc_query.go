@@ -2,10 +2,17 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 )
+
+// BondIDAttributeName denotes the record bond ID.
+const BondIDAttributeName = "bondId"
+
+// ExpiryTimeAttributeName denotes the record expiry time.
+const ExpiryTimeAttributeName = "expiryTime"
 
 type Querier struct {
 	Keeper
@@ -19,9 +26,19 @@ func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: &params}, nil
 }
 
-func (q Querier) ListRecords(c context.Context, _ *types.QueryListRecordsRequest) (*types.QueryListRecordsResponse, error) {
+func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsRequest) (*types.QueryListRecordsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	records := q.Keeper.ListRecords(ctx)
+	attributes := req.GetAttributes()
+	records := []types.Record{}
+
+	if len(attributes) > 0 {
+		records = q.Keeper.MatchRecords(ctx, func(record *types.RecordType) bool {
+			return MatchOnAttributes(record, attributes)
+		})
+	} else {
+		records = q.Keeper.ListRecords(ctx)
+	}
+
 	return &types.QueryListRecordsResponse{Records: records}, nil
 }
 
@@ -94,4 +111,79 @@ func (q Querier) GetAuthorityExpiryQueue(c context.Context, _ *types.QueryGetAut
 	ctx := sdk.UnwrapSDKContext(c)
 	authorities := q.Keeper.GetAuthorityExpiryQueue(ctx)
 	return &types.QueryGetAuthorityExpiryQueueResponse{Authorities: authorities}, nil
+}
+
+func matchOnRecordField(record *types.RecordType, attr *types.QueryListRecordsRequest_KeyValueInput) (fieldFound bool, matched bool) {
+	fieldFound = false
+	matched = true
+
+	switch attr.Key {
+	case BondIDAttributeName:
+		{
+			fieldFound = true
+			if record.BondId != attr.Value.GetString_() {
+				matched = false
+				return
+			}
+		}
+	case ExpiryTimeAttributeName:
+		{
+			fieldFound = true
+			if record.ExpiryTime != attr.Value.GetString_() {
+				matched = false
+				return
+			}
+		}
+	}
+
+	return
+}
+
+func MatchOnAttributes(record *types.RecordType, attributes []*types.QueryListRecordsRequest_KeyValueInput) bool {
+	// Filter deleted records.
+	if record.Deleted {
+		return false
+	}
+
+	recAttrs := record.Attributes
+
+	for _, attr := range attributes {
+		// First try matching on record struct fields.
+		fieldFound, matched := matchOnRecordField(record, attr)
+
+		if fieldFound {
+			if !matched {
+				return false
+			}
+
+			continue
+		}
+
+		recAttrVal, recAttrFound := recAttrs[attr.Key]
+		if !recAttrFound {
+			return false
+		}
+
+		if attr.Value.Int != 0 {
+			recAttrValInt, ok := recAttrVal.(int)
+			if !ok || int(attr.Value.GetInt()) != recAttrValInt {
+				return false
+			}
+		}
+
+		if attr.Value.String_ != "" {
+			recAttrValString, ok := recAttrVal.(string)
+			if !ok {
+				return false
+			}
+
+			if attr.Value.GetString_() != recAttrValString {
+				return false
+			}
+		}
+
+		// TODO: Handle other attribute value types.
+	}
+
+	return true
 }

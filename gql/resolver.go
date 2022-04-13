@@ -116,7 +116,14 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 
 func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueInput, all *bool) ([]*Record, error) {
 	nsQueryClient := nstypes.NewQueryClient(q.ctx)
-	res, err := nsQueryClient.ListRecords(context.Background(), &nstypes.QueryListRecordsRequest{})
+
+	res, err := nsQueryClient.ListRecords(
+		context.Background(),
+		&nstypes.QueryListRecordsRequest{
+			Attributes: parseRequestAttributes(attributes),
+		},
+	)
+
 	if err != nil {
 		return nil, err
 	}

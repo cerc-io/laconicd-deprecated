@@ -127,6 +127,29 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 	return records
 }
 
+// MatchRecords - get all matching records.
+func (k Keeper) MatchRecords(ctx sdk.Context, matchFn func(*types.RecordType) bool) []types.Record {
+	var records []types.Record
+
+	store := ctx.KVStore(k.storeKey)
+	itr := sdk.KVStorePrefixIterator(store, PrefixCIDToRecordIndex)
+	defer itr.Close()
+	for ; itr.Valid(); itr.Next() {
+		bz := store.Get(itr.Key())
+		if bz != nil {
+			var obj types.Record
+			k.cdc.MustUnmarshal(bz, &obj)
+			record := obj.ToRecordType()
+			// record := recordObjToRecord(store, codec, obj)
+			if matchFn(&record) {
+				records = append(records, obj)
+			}
+		}
+	}
+
+	return records
+}
+
 func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord {
 	var records []*types.ExpiryQueueRecord
 
@@ -200,7 +223,8 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	}
 
 	record.CreateTime = ctx.BlockHeader().Time.Format(time.RFC3339)
-	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
+	// record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
+	record.ExpiryTime = ctx.BlockHeader().Time.Add(time.Minute).Format(time.RFC3339)
 	record.Deleted = false
 
 	k.PutRecord(ctx, record.ToRecordObj())

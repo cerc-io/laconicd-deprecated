@@ -266,3 +266,26 @@ func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
 
 	return kvPairs, nil
 }
+
+func parseRequestAttributes(attrs []*KeyValueInput) []*nstypes.QueryListRecordsRequest_KeyValueInput {
+	kvPairs := []*nstypes.QueryListRecordsRequest_KeyValueInput{}
+
+	for _, value := range attrs {
+		kvPair := &nstypes.QueryListRecordsRequest_KeyValueInput{
+			Key:   value.Key,
+			Value: &nstypes.QueryListRecordsRequest_ValueInput{},
+		}
+
+		if value.Value.String != nil {
+			kvPair.Value.String_ = *value.Value.String
+		}
+
+		if value.Value.Int != nil {
+			kvPair.Value.Int = int64(*value.Value.Int)
+		}
+
+		kvPairs = append(kvPairs, kvPair)
+	}
+
+	return kvPairs
+}
