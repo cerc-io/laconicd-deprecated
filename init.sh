@@ -38,7 +38,7 @@ cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["para
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_reveal_fee"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_minimum_bid"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 
-if [[ "$AUCTION_ENABLED" == "true" ]]; then
+if [[ "$TEST_AUCTION_ENABLED" == "true" ]]; then
   echo "Enabling auction and setting timers."
 
   cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_enabled"]=true' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json

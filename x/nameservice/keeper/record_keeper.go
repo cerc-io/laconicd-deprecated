@@ -145,8 +145,7 @@ func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			//records = append(records, recordObjToRecord(store, k.cdc, obj))
-			records = append(records, obj)
+			records = append(records, recordObjToRecord(store, k.cdc, obj))
 		}
 	}
 
@@ -163,10 +162,12 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 	record := k.GetRecord(ctx, msg.RecordId)
 	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
 
-	if err == nil {
-		if !record.Deleted || expiryTime.After(ctx.BlockTime()) {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
-		}
+	if err != nil {
+		panic(err)
+	}
+
+	if !record.Deleted || expiryTime.After(ctx.BlockTime()) {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
 	}
 
 	recordType := record.ToRecordType()

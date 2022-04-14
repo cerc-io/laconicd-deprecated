@@ -56,6 +56,7 @@ func (r *Record) ToRecordType() RecordType {
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
+	resourceObj.Names = r.Names
 	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(helpers.BytesFromBase64(r.Attributes))
 
 	return resourceObj

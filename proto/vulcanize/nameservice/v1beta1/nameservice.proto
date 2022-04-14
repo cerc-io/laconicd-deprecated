@@ -81,6 +81,9 @@ message Record {
   string attributes = 7 [
     (gogoproto.moretags) = "json:\"attributes\" yaml:\"attributes\""
   ];
+  repeated string names = 8 [
+    (gogoproto.moretags) = "json:\"names\" yaml:\"names\""
+  ];
 }
 
 // AuthorityEntry defines the nameservice module AuthorityEntries

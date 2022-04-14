@@ -17,10 +17,13 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 		// Add to record expiry queue if expiry time is in the future.
 		expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
-		if err == nil {
-			if expiryTime.After(ctx.BlockTime()) {
-				keeper.InsertRecordExpiryQueue(ctx, record)
-			}
+
+		if err != nil {
+			panic(err)
+		}
+
+		if expiryTime.After(ctx.BlockTime()) {
+			keeper.InsertRecordExpiryQueue(ctx, record)
 		}
 
 		// Note: Bond genesis runs first, so bonds will already be present.

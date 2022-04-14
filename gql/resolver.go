@@ -78,6 +78,7 @@ func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Rec
 	for _, name := range names {
 		res, err := nsQueryClient.ResolveWrn(context.Background(), &nstypes.QueryResolveWrn{Wrn: name})
 		if err != nil {
+			// Return nil for record not found.
 			gqlResponse = append(gqlResponse, nil)
 		} else {
 			gqlRecord, err := getGQLRecord(context.Background(), q, *res.GetRecord())
@@ -99,7 +100,7 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 	for _, name := range names {
 		res, err := nsQueryClient.LookupWrn(context.Background(), &nstypes.QueryLookupWrn{Wrn: name})
 		if err != nil {
-			// Instead of throwing error for name not found, return nil similar to https://github.com/vulcanize/dxns/blob/main/gql/resolver.go#L191
+			// Return nil for name not found.
 			gqlResponse = append(gqlResponse, nil)
 		} else {
 			gqlRecord, err := getGQLNameRecord(res.GetName())
@@ -121,6 +122,7 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 		context.Background(),
 		&nstypes.QueryListRecordsRequest{
 			Attributes: parseRequestAttributes(attributes),
+			All:        (all != nil && *all),
 		},
 	)
 
@@ -148,9 +150,9 @@ func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Re
 	gqlResponse := make([]*Record, len(ids))
 
 	for i, id := range ids {
-		// TODO: Implement HasRecord query similar to https://github.com/vulcanize/dxns/blob/main/gql/resolver.go#L325
 		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIdRequest{Id: id})
 		if err != nil {
+			// Return nil for record not found.
 			gqlResponse[i] = nil
 		} else {
 			record, err := getGQLRecord(context.Background(), q, res.GetRecord())

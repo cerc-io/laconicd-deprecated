@@ -29,11 +29,12 @@ func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsRequest) (*types.QueryListRecordsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	attributes := req.GetAttributes()
+	all := req.GetAll()
 	records := []types.Record{}
 
 	if len(attributes) > 0 {
 		records = q.Keeper.MatchRecords(ctx, func(record *types.RecordType) bool {
-			return MatchOnAttributes(record, attributes)
+			return MatchOnAttributes(record, attributes, all)
 		})
 	} else {
 		records = q.Keeper.ListRecords(ctx)
@@ -139,9 +140,14 @@ func matchOnRecordField(record *types.RecordType, attr *types.QueryListRecordsRe
 	return
 }
 
-func MatchOnAttributes(record *types.RecordType, attributes []*types.QueryListRecordsRequest_KeyValueInput) bool {
+func MatchOnAttributes(record *types.RecordType, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) bool {
 	// Filter deleted records.
 	if record.Deleted {
+		return false
+	}
+
+	// If ONLY named records are requested, check for that condition first.
+	if !all && len(record.Names) == 0 {
 		return false
 	}
 

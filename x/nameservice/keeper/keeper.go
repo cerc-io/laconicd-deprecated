@@ -119,8 +119,7 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			//records = append(records, recordObjToRecord(store, k.cdc, obj))
-			records = append(records, obj)
+			records = append(records, recordObjToRecord(store, k.cdc, obj))
 		}
 	}
 
@@ -139,8 +138,8 @@ func (k Keeper) MatchRecords(ctx sdk.Context, matchFn func(*types.RecordType) bo
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
+			obj = recordObjToRecord(store, k.cdc, obj)
 			record := obj.ToRecordType()
-			// record := recordObjToRecord(store, codec, obj)
 			if matchFn(&record) {
 				records = append(records, obj)
 			}
@@ -223,8 +222,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	}
 
 	record.CreateTime = ctx.BlockHeader().Time.Format(time.RFC3339)
-	// record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
-	record.ExpiryTime = ctx.BlockHeader().Time.Add(time.Minute).Format(time.RFC3339)
+	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
 	record.Deleted = false
 
 	k.PutRecord(ctx, record.ToRecordObj())
@@ -295,11 +293,13 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
 	expiryTime, err := time.Parse(time.RFC3339, val.ExpiryTime)
 
-	if err == nil {
-		timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, expiryTime)
-		timeSlice = append(timeSlice, val.Id)
-		k.SetRecordExpiryQueueTimeSlice(ctx, expiryTime, timeSlice)
+	if err != nil {
+		panic(err)
 	}
+
+	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, expiryTime)
+	timeSlice = append(timeSlice, val.Id)
+	k.SetRecordExpiryQueueTimeSlice(ctx, expiryTime, timeSlice)
 }
 
 // GetModuleBalances gets the nameservice module account(s) balances.
@@ -320,4 +320,20 @@ func (k Keeper) GetModuleBalances(ctx sdk.Context) []*types.AccountBalance {
 	}
 
 	return balances
+}
+
+func recordObjToRecord(store sdk.KVStore, codec codec.BinaryCodec, record types.Record) types.Record {
+	reverseNameIndexKey := GetCIDToNamesIndexKey(record.Id)
+
+	if store.Has(reverseNameIndexKey) {
+		names, err := helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
+
+		if err != nil {
+			panic(err)
+		}
+
+		record.Names = names
+	}
+
+	return record
 }
