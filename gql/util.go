@@ -279,11 +279,34 @@ func parseRequestAttributes(attrs []*KeyValueInput) []*nstypes.QueryListRecordsR
 
 		if value.Value.String != nil {
 			kvPair.Value.String_ = *value.Value.String
+			kvPair.Value.Type = "string"
 		}
 
 		if value.Value.Int != nil {
 			kvPair.Value.Int = int64(*value.Value.Int)
+			kvPair.Value.Type = "int"
 		}
+
+		if value.Value.Float != nil {
+			kvPair.Value.Float = *value.Value.Float
+			kvPair.Value.Type = "float"
+		}
+
+		if value.Value.Boolean != nil {
+			kvPair.Value.Boolean = *value.Value.Boolean
+			kvPair.Value.Type = "boolean"
+		}
+
+		if value.Value.Reference != nil {
+			reference := &nstypes.QueryListRecordsRequest_ReferenceInput{
+				Id: value.Value.Reference.ID,
+			}
+
+			kvPair.Value.Reference = reference
+			kvPair.Value.Type = "reference"
+		}
+
+		// TODO: Handle arrays.
 
 		kvPairs = append(kvPairs, kvPair)
 	}

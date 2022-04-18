@@ -68,9 +68,17 @@ message QueryParamsResponse{
 
 // QueryListRecordsRequest is request type for nameservice records list
 message QueryListRecordsRequest{
+  message ReferenceInput {
+    string id = 1;
+  }
   message ValueInput {
-    string string = 1;
-    int64 int = 2;
+    string type = 1;
+    string string = 2;
+    int64 int = 3;
+    double float = 4;
+    bool boolean = 5;
+    ReferenceInput reference = 6;
+    repeated ValueInput values = 7;
   }
   message KeyValueInput {
     string key = 1;
