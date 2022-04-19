@@ -13,5 +13,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 // EndBlocker Called every block, update validator set
 func EndBlocker(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
+	k.ProcessRecordExpiryQueue(ctx)
+	k.ProcessAuthorityExpiryQueue(ctx)
+
 	return []abci.ValidatorUpdate{}
 }

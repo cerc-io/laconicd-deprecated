@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"time"
@@ -300,6 +301,102 @@ func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
 	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, expiryTime)
 	timeSlice = append(timeSlice, val.Id)
 	k.SetRecordExpiryQueueTimeSlice(ctx, expiryTime, timeSlice)
+}
+
+// DeleteRecordExpiryQueue deletes a record CID from the record expiry queue.
+func (k Keeper) DeleteRecordExpiryQueue(ctx sdk.Context, record types.Record) {
+	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
+
+	if err != nil {
+		panic(err)
+	}
+
+	timeSlice := k.GetRecordExpiryQueueTimeSlice(ctx, expiryTime)
+	var newTimeSlice []string
+
+	for _, cid := range timeSlice {
+		if !bytes.Equal([]byte(cid), []byte(record.Id)) {
+			newTimeSlice = append(newTimeSlice, cid)
+		}
+	}
+
+	if len(newTimeSlice) == 0 {
+		k.DeleteRecordExpiryQueueTimeSlice(ctx, expiryTime)
+	} else {
+		k.SetRecordExpiryQueueTimeSlice(ctx, expiryTime, newTimeSlice)
+	}
+}
+
+// RecordExpiryQueueIterator returns all the record expiry queue timeslices from time 0 until endTime.
+func (k Keeper) RecordExpiryQueueIterator(ctx sdk.Context, endTime time.Time) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	rangeEndBytes := sdk.InclusiveEndBytes(getRecordExpiryQueueTimeKey(endTime))
+	return store.Iterator(PrefixExpiryTimeToRecordsIndex, rangeEndBytes)
+}
+
+// GetAllExpiredRecords returns a concatenated list of all the timeslices before currTime.
+func (k Keeper) GetAllExpiredRecords(ctx sdk.Context, currTime time.Time) (expiredRecordCIDs []string) {
+	// Gets an iterator for all timeslices from time 0 until the current block header time.
+	itr := k.RecordExpiryQueueIterator(ctx, ctx.BlockHeader().Time)
+	defer itr.Close()
+
+	for ; itr.Valid(); itr.Next() {
+		timeslice, err := helpers.BytesArrToStringArr(itr.Value())
+
+		if err != nil {
+			panic(err)
+		}
+
+		expiredRecordCIDs = append(expiredRecordCIDs, timeslice...)
+	}
+
+	return expiredRecordCIDs
+}
+
+// ProcessRecordExpiryQueue tries to renew expiring records (by collecting rent) else marks them as deleted.
+func (k Keeper) ProcessRecordExpiryQueue(ctx sdk.Context) {
+	cids := k.GetAllExpiredRecords(ctx, ctx.BlockHeader().Time)
+	for _, cid := range cids {
+		record := k.GetRecord(ctx, cid)
+
+		// If record doesn't have an associated bond or if bond no longer exists, mark it deleted.
+		if record.BondId == "" || !k.bondKeeper.HasBond(ctx, record.BondId) {
+			record.Deleted = true
+			k.PutRecord(ctx, record)
+			k.DeleteRecordExpiryQueue(ctx, record)
+
+			return
+		}
+
+		// Try to renew the record by taking rent.
+		k.TryTakeRecordRent(ctx, record)
+	}
+}
+
+// TryTakeRecordRent tries to take rent from the record bond.
+func (k Keeper) TryTakeRecordRent(ctx sdk.Context, record types.Record) {
+	params := k.GetParams(ctx)
+	rent := params.RecordRent
+	sdkErr := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondId, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
+
+	if sdkErr != nil {
+		// Insufficient funds, mark record as deleted.
+		record.Deleted = true
+		k.PutRecord(ctx, record)
+		k.DeleteRecordExpiryQueue(ctx, record)
+
+		return
+	}
+
+	// Delete old expiry queue entry, create new one.
+	k.DeleteRecordExpiryQueue(ctx, record)
+	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
+	k.InsertRecordExpiryQueue(ctx, record)
+
+	// Save record.
+	record.Deleted = false
+	k.PutRecord(ctx, record)
+	k.AddBondToRecordIndexEntry(ctx, record.BondId, record.Id)
 }
 
 // GetModuleBalances gets the nameservice module account(s) balances.

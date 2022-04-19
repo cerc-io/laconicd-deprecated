@@ -1,7 +1,12 @@
 package keeper
 
 import (
+	"bytes"
 	"fmt"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,9 +14,6 @@ import (
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
-	"net/url"
-	"strings"
-	"time"
 )
 
 func getAuthorityPubKey(pubKey cryptotypes.PubKey) string {
@@ -594,6 +596,111 @@ func (k Keeper) SetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time
 	store := ctx.KVStore(k.storeKey)
 	bz, _ := helpers.StrArrToBytesArr(names)
 	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
+}
+
+// ProcessAuthorityExpiryQueue tries to renew expiring authorities (by collecting rent) else marks them as expired.
+func (k Keeper) ProcessAuthorityExpiryQueue(ctx sdk.Context) {
+	names := k.GetAllExpiredAuthorities(ctx, ctx.BlockHeader().Time)
+	for _, name := range names {
+		authority := k.GetNameAuthority(ctx, name)
+
+		// If authority doesn't have an associated bond or if bond no longer exists, mark it expired.
+		if authority.BondId == "" || !k.bondKeeper.HasBond(ctx, authority.BondId) {
+			authority.Status = types.AuthorityExpired
+			k.SetNameAuthority(ctx, name, &authority)
+			k.DeleteAuthorityExpiryQueue(ctx, name, authority)
+
+			ctx.Logger().Info(fmt.Sprintf("Marking authority expired as no bond present: %s", name))
+
+			return
+		}
+
+		// Try to renew the authority by taking rent.
+		k.TryTakeAuthorityRent(ctx, name, authority)
+	}
+}
+
+// DeleteAuthorityExpiryQueueTimeSlice deletes a specific authority expiry queue timeslice.
+func (k Keeper) DeleteAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(getAuthorityExpiryQueueTimeKey(timestamp))
+}
+
+// DeleteAuthorityExpiryQueue deletes an authority name from the authority expiry queue.
+func (k Keeper) DeleteAuthorityExpiryQueue(ctx sdk.Context, name string, authority types.NameAuthority) {
+	timeSlice := k.GetAuthorityExpiryQueueTimeSlice(ctx, authority.ExpiryTime)
+	newTimeSlice := []string{}
+
+	for _, existingName := range timeSlice {
+		if !bytes.Equal([]byte(existingName), []byte(name)) {
+			newTimeSlice = append(newTimeSlice, existingName)
+		}
+	}
+
+	if len(newTimeSlice) == 0 {
+		k.DeleteAuthorityExpiryQueueTimeSlice(ctx, authority.ExpiryTime)
+	} else {
+		k.SetAuthorityExpiryQueueTimeSlice(ctx, authority.ExpiryTime, newTimeSlice)
+	}
+}
+
+// GetAllExpiredAuthorities returns a concatenated list of all the timeslices before currTime.
+func (k Keeper) GetAllExpiredAuthorities(ctx sdk.Context, currTime time.Time) (expiredAuthorityNames []string) {
+	// Gets an iterator for all timeslices from time 0 until the current block header time.
+	itr := k.AuthorityExpiryQueueIterator(ctx, ctx.BlockHeader().Time)
+	defer itr.Close()
+
+	for ; itr.Valid(); itr.Next() {
+		timeslice := []string{}
+		timeslice, err := helpers.BytesArrToStringArr(itr.Value())
+
+		if err != nil {
+			panic(err)
+		}
+
+		expiredAuthorityNames = append(expiredAuthorityNames, timeslice...)
+	}
+
+	return expiredAuthorityNames
+}
+
+// AuthorityExpiryQueueIterator returns all the authority expiry queue timeslices from time 0 until endTime.
+func (k Keeper) AuthorityExpiryQueueIterator(ctx sdk.Context, endTime time.Time) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	rangeEndBytes := sdk.InclusiveEndBytes(getAuthorityExpiryQueueTimeKey(endTime))
+	return store.Iterator(PrefixExpiryTimeToAuthoritiesIndex, rangeEndBytes)
+}
+
+// TryTakeAuthorityRent tries to take rent from the authority bond.
+func (k Keeper) TryTakeAuthorityRent(ctx sdk.Context, name string, authority types.NameAuthority) {
+	ctx.Logger().Info(fmt.Sprintf("Trying to take rent for authority: %s", name))
+
+	params := k.GetParams(ctx)
+	rent := params.AuthorityRent
+	sdkErr := k.bondKeeper.TransferCoinsToModuleAccount(ctx, authority.BondId, types.AuthorityRentModuleAccountName, sdk.NewCoins(rent))
+
+	if sdkErr != nil {
+		// Insufficient funds, mark authority as expired.
+		authority.Status = types.AuthorityExpired
+		k.SetNameAuthority(ctx, name, &authority)
+		k.DeleteAuthorityExpiryQueue(ctx, name, authority)
+
+		ctx.Logger().Info(fmt.Sprintf("Insufficient funds in owner account to pay authority rent, marking as expired: %s", name))
+
+		return
+	}
+
+	// Delete old expiry queue entry, create new one.
+	k.DeleteAuthorityExpiryQueue(ctx, name, authority)
+	authority.ExpiryTime = ctx.BlockTime().Add(params.AuthorityRentDuration)
+	k.InsertAuthorityExpiryQueue(ctx, name, authority.ExpiryTime)
+
+	// Save authority.
+	authority.Status = types.AuthorityActive
+	k.SetNameAuthority(ctx, name, &authority)
+	k.AddBondToAuthorityIndexEntry(ctx, authority.BondId, name)
+
+	ctx.Logger().Info(fmt.Sprintf("Authority rent paid successfully: %s", name))
 }
 
 // ListNameAuthorityRecords - get all name authority records.

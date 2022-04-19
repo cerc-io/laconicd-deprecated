@@ -34,9 +34,18 @@ cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["gov"]["deposit_para
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 # Custom modules
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["record_rent"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_rent"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_commit_fee"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_reveal_fee"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_minimum_bid"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+
+if [[ "$TEST_EXPIRY" == "true" ]]; then
+  echo "Setting timers for expiry tests."
+
+  cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["record_rent_duration"]="60s"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+  cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_grace_period"]="60s"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+  cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_rent_duration"]="60s"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
+fi
 
 if [[ "$TEST_AUCTION_ENABLED" == "true" ]]; then
   echo "Enabling auction and setting timers."
