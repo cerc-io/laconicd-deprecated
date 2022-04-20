@@ -43,6 +43,7 @@ message MsgSetRecord{
 
 // MsgSetRecordResponse
 message MsgSetRecordResponse{
+  string id = 1;
 }
 
 // Payload

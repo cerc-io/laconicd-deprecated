@@ -25,7 +25,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		return nil, err
 	}
 
-	err = m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
+	record, err := m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
 		BondId:  msg.GetBondId(),
 		Signer:  msg.GetSigner(),
 		Payload: msg.GetPayload(),
@@ -48,7 +48,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		),
 	})
 
-	return &types.MsgSetRecordResponse{}, nil
+	return &types.MsgSetRecordResponse{Id: record.Id}, nil
 }
 
 func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.MsgSetNameResponse, error) {

@@ -171,7 +171,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 }
 
 // ProcessSetRecord creates a record.
-func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) error {
+func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordType, error) {
 	payload := msg.Payload.ToReadablePayload()
 	record := types.RecordType{Attributes: payload.Record, BondId: msg.BondId}
 
@@ -179,13 +179,14 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) error 
 	resourceSignBytes, _ := record.GetSignBytes()
 	cid, err := record.GetCID()
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
 	}
 
 	record.Id = cid
 
 	if exists := k.HasRecord(ctx, record.Id); exists {
-		return nil
+		// Immutable record already exists. No-op.
+		return &record, nil
 	}
 
 	record.Owners = []string{}
@@ -193,13 +194,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) error 
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
 			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
 			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}
@@ -208,9 +209,9 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) error 
 	sort.Strings(record.Owners)
 	sdkErr := k.processRecord(ctx, &record, false)
 	if sdkErr != nil {
-		return sdkErr
+		return nil, sdkErr
 	}
-	return nil
+	return &record, nil
 }
 
 func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenewal bool) error {
