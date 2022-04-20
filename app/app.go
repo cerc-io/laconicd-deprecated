@@ -11,12 +11,16 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
+	"github.com/tharsis/ethermint/app/middleware"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/db"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -111,7 +115,6 @@ import (
 	// evmrest "github.com/tharsis/ethermint/x/evm/client/rest"
 	storetypes "github.com/cosmos/cosmos-sdk/store/v2alpha1"
 	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	"github.com/tharsis/ethermint/x/feemarket"
 	feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
@@ -608,33 +611,43 @@ func NewEthermintApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-
-	// use Ethermint's custom AnteHandler
-
-	// maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
-	// options := ante.HandlerOptions{
-	// 	AccountKeeper:   app.AccountKeeper,
-	// 	BankKeeper:      app.BankKeeper,
-	// 	EvmKeeper:       app.EvmKeeper,
-	// 	FeegrantKeeper:  app.FeeGrantKeeper,
-	// 	IBCKeeper:       app.IBCKeeper,
-	// 	FeeMarketKeeper: app.FeeMarketKeeper,
-	// 	SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-	// 	SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-	// 	MaxTxGasWanted:  maxGasWanted,
-	// }
-
-	// if err := options.Validate(); err != nil {
-	// 	panic(err)
-	// }
-
-	// app.SetAnteHandler(ante.NewAnteHandler(options))
 	app.SetEndBlocker(app.EndBlocker)
 
 	// app.ScopedIBCKeeper = scopedIBCKeeper
 	// app.ScopedTransferKeeper = scopedTransferKeeper
+	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
+	options := middleware.HandlerOptions{
+		Debug:            app.Trace(),
+		LegacyRouter:     app.legacyRouter,
+		MsgServiceRouter: app.msgSvcRouter,
+		AccountKeeper:    app.AccountKeeper,
+		BankKeeper:       app.BankKeeper,
+		EvmKeeper:        app.EvmKeeper,
+		FeegrantKeeper:   app.FeeGrantKeeper,
+		FeeMarketKeeper:  app.FeeMarketKeeper,
+		SignModeHandler:  encodingConfig.TxConfig.SignModeHandler(),
+		SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
+		MaxTxGasWanted:   maxGasWanted,
+		TxDecoder:        encodingConfig.TxConfig.TxDecoder(),
+	}
+
+	app.setTxHandler(options, encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
 
 	return app
+}
+
+func (app *EthermintApp) setTxHandler(options middleware.HandlerOptions, txConfig client.TxConfig, indexEventsStr []string) {
+	indexEvents := map[string]struct{}{}
+	for _, e := range indexEventsStr {
+		indexEvents[e] = struct{}{}
+	}
+
+	txHandler, err := middleware.NewMiddleware(indexEventsStr, options)
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetTxHandler(txHandler)
 }
 
 // Name returns the name of the App

@@ -45,6 +45,14 @@ func (g *infiniteGasMeterWithLimit) Limit() sdk.Gas {
 	return g.limit
 }
 
+// GasRemaining returns the gas left in the GasMeter.
+func (g *infiniteGasMeterWithLimit) GasRemaining() sdk.Gas {
+	if g.IsPastLimit() {
+		return 0
+	}
+	return g.limit - g.consumed
+}
+
 // addUint64Overflow performs the addition operation on two uint64 integers and
 // returns a boolean on whether or not the result overflows.
 func addUint64Overflow(a, b uint64) (uint64, bool) {
