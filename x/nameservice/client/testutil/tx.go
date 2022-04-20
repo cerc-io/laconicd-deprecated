@@ -47,8 +47,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[nstypes.ModuleName], &nsData))
 
 	nsData.Params.RecordRent = sdk.NewCoin(s.cfg.BondDenom, nstypes.DefaultRecordRent)
-	nsData.Params.RecordRentDuration = 5 * time.Second
-	nsData.Params.AuthorityGracePeriod = 5 * time.Second
+	nsData.Params.RecordRentDuration = 10 * time.Second
+	nsData.Params.AuthorityGracePeriod = 10 * time.Second
 	nsDataBz, err := s.cfg.Codec.MarshalJSON(&nsData)
 	s.Require().NoError(err)
 	genesisState[nstypes.ModuleName] = nsDataBz

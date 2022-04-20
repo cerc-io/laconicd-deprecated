@@ -52,8 +52,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 				sr.NoError(err)
 				params := nstypes.DefaultParams()
 				params.RecordRent = sdk.NewCoin(s.cfg.BondDenom, nstypes.DefaultRecordRent)
-				params.RecordRentDuration = 5 * time.Second
-				params.AuthorityGracePeriod = 5 * time.Second
+				params.RecordRentDuration = 10 * time.Second
+				params.AuthorityGracePeriod = 10 * time.Second
 				sr.Equal(response.GetParams().String(), params.String())
 			}
 		})
@@ -237,8 +237,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			if !tc.expectErr {
 				tc.preRun(s.bondId)
 			}
-			// wait 7 seconds for records expires
-			time.Sleep(time.Second * 7)
+			// wait 12 seconds for records expires
+			time.Sleep(time.Second * 12)
 			resp, _ := rest.GetRequest(tc.url)
 			require := s.Require()
 			if tc.expectErr {
@@ -307,8 +307,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 			if !tc.expectErr {
 				tc.preRun("QueryAuthorityExpiryQueue")
 			}
-			// wait 7 seconds to name authorites expires
-			time.Sleep(time.Second * 7)
+			// wait 12 seconds to name authorites expires
+			time.Sleep(time.Second * 12)
 
 			resp, _ := rest.GetRequest(tc.url)
 			require := s.Require()
@@ -318,7 +318,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 				var response nstypes.QueryGetAuthorityExpiryQueueResponse
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
 				sr.NoError(err)
-				sr.NotZero(len(response.GetAuthorities()))
+				// removed from expiry queue as no bond set
+				sr.Zero(len(response.GetAuthorities()))
 			}
 		})
 	}

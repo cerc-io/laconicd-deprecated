@@ -3,9 +3,10 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/tharsis/ethermint/x/nameservice/client/cli"
 	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
-	"os"
 )
 
 func (suite *KeeperTestSuite) TestGrpcQueryParams() {
@@ -62,12 +63,13 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NoError(err)
 				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
 				sr.NoError(err)
-				err = suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
+				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
 					BondId:  suite.bond.GetId(),
 					Signer:  suite.accounts[0].String(),
 					Payload: payload.ToPayload(),
 				})
 				sr.NoError(err)
+				sr.NotNil(record.Id)
 			}
 			resp, err := grpcClient.ListRecords(context.Background(), test.req)
 			if test.expErr {
@@ -192,12 +194,13 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 				sr.NoError(err)
 				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
 				sr.NoError(err)
-				err = suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
+				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
 					BondId:  suite.bond.GetId(),
 					Signer:  suite.accounts[0].String(),
 					Payload: payload.ToPayload(),
 				})
 				sr.NoError(err)
+				sr.NotNil(record.Id)
 			}
 			resp, err := grpcClient.GetNameServiceModuleBalance(context.Background(), test.req)
 			if test.expErr {

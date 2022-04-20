@@ -40,8 +40,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryParams() {
 			sr.NoError(err)
 			params := types.DefaultParams()
 			params.RecordRent = sdk.NewCoin(s.cfg.BondDenom, types.DefaultRecordRent)
-			params.RecordRentDuration = 5 * time.Second
-			params.AuthorityGracePeriod = 5 * time.Second
+			params.RecordRentDuration = 10 * time.Second
+			params.AuthorityGracePeriod = 10 * time.Second
 			sr.Equal(param.GetParams().String(), params.String())
 		})
 	}
@@ -433,7 +433,7 @@ func (s *IntegrationTestSuite) GetRecordExpiryQueue() {
 		s.Run(tc.name, func() {
 			if !tc.expErr {
 				tc.preRun(authorityName, s)
-				time.Sleep(time.Second * 7)
+				time.Sleep(time.Second * 12)
 			}
 			cmd := cli.GetRecordExpiryQueue()
 			clientCtx := val.ClientCtx
