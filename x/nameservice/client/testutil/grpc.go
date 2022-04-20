@@ -3,6 +3,9 @@ package testutil
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,8 +13,6 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tharsis/ethermint/x/nameservice/client/cli"
 	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
-	"os"
-	"time"
 )
 
 func (s *IntegrationTestSuite) TestGRPCQueryParams() {
@@ -130,7 +131,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?wrn=%s"
+	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?crn=%s"
 	var authorityName = "QueryLookUp"
 
 	testCases := []struct {
@@ -165,13 +166,13 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 		s.Run(tc.name, func() {
 			if !tc.expectErr {
 				tc.preRun(authorityName)
-				tc.url = fmt.Sprintf(reqUrl, fmt.Sprintf("wrn://%s/", authorityName))
+				tc.url = fmt.Sprintf(reqUrl, fmt.Sprintf("crn://%s/", authorityName))
 			}
 			resp, _ := rest.GetRequest(tc.url)
 			if tc.expectErr {
 				sr.Contains(string(resp), tc.errorMsg)
 			} else {
-				var response nstypes.QueryLookupWrnResponse
+				var response nstypes.QueryLookupCrnResponse
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
 				sr.NoError(err)
 				sr.NotZero(len(response.Name.Latest.Id))

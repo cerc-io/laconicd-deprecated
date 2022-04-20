@@ -3,14 +3,15 @@ package testutil
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tharsis/ethermint/x/nameservice/client/cli"
 	"github.com/tharsis/ethermint/x/nameservice/types"
-	"os"
-	"time"
 )
 
 func (s *IntegrationTestSuite) TestGetCmdQueryParams() {
@@ -302,7 +303,7 @@ func (s *IntegrationTestSuite) TestGetCmdWhoIs() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
+func (s *IntegrationTestSuite) TestGetCmdLookupCRN() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	var authorityName = "test1"
@@ -314,7 +315,7 @@ func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
 		preRun      func(authorityName string)
 	}{
 		{
-			"invalid request without wrn",
+			"invalid request without crn",
 			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			true,
 			0,
@@ -324,7 +325,7 @@ func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
 		},
 		{
 			"success query with name",
-			[]string{fmt.Sprintf("wrn://%s/", authorityName), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{fmt.Sprintf("crn://%s/", authorityName), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			1,
 			func(authorityName string) {
@@ -337,10 +338,10 @@ func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			if !tc.expErr {
-				// set-name with wrn and bond-id
+				// set-name with crn and bond-id
 				tc.preRun(authorityName)
 			}
-			cmd := cli.GetCmdLookupWRN()
+			cmd := cli.GetCmdLookupCRN()
 			clientCtx := val.ClientCtx
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
@@ -348,7 +349,7 @@ func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
 				sr.Error(err)
 			} else {
 				sr.NoError(err)
-				var response types.QueryLookupWrnResponse
+				var response types.QueryLookupCrnResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
 				sr.NoError(err)
 				nameRecord := response.GetName()
@@ -364,7 +365,7 @@ func (s *IntegrationTestSuite) TestGetCmdLookupWRN() {
 		noOfRecords int
 	}{
 		{
-			"invalid request without wrn",
+			"invalid request without crn",
 			[]string{"invalid", fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			true,
 			0,
@@ -565,7 +566,7 @@ func createNameRecord(authorityName string, s *IntegrationTestSuite) {
 	sr.Zero(d.Code)
 
 	args = []string{
-		fmt.Sprintf("wrn://%s/", authorityName),
+		fmt.Sprintf("crn://%s/", authorityName),
 		"test_hello_cid",
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

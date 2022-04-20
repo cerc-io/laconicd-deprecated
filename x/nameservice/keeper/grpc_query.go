@@ -79,27 +79,27 @@ func (q Querier) Whois(c context.Context, request *types.QueryWhoisRequest) (*ty
 	return &types.QueryWhoisResponse{NameAuthority: nameAuthority}, nil
 }
 
-func (q Querier) LookupWrn(c context.Context, req *types.QueryLookupWrn) (*types.QueryLookupWrnResponse, error) {
+func (q Querier) LookupCrn(c context.Context, req *types.QueryLookupCrn) (*types.QueryLookupCrnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	wrn := req.GetWrn()
-	if !q.Keeper.HasNameRecord(ctx, wrn) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "WRN not found.")
+	crn := req.GetCrn()
+	if !q.Keeper.HasNameRecord(ctx, crn) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "CRN not found.")
 	}
-	nameRecord := q.Keeper.GetNameRecord(ctx, wrn)
+	nameRecord := q.Keeper.GetNameRecord(ctx, crn)
 	if nameRecord == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "name record not found.")
 	}
-	return &types.QueryLookupWrnResponse{Name: nameRecord}, nil
+	return &types.QueryLookupCrnResponse{Name: nameRecord}, nil
 }
 
-func (q Querier) ResolveWrn(c context.Context, req *types.QueryResolveWrn) (*types.QueryResolveWrnResponse, error) {
+func (q Querier) ResolveCrn(c context.Context, req *types.QueryResolveCrn) (*types.QueryResolveCrnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	wrn := req.GetWrn()
-	record := q.Keeper.ResolveWRN(ctx, wrn)
+	crn := req.GetCrn()
+	record := q.Keeper.ResolveCRN(ctx, crn)
 	if record == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "record not found.")
 	}
-	return &types.QueryResolveWrnResponse{Record: record}, nil
+	return &types.QueryResolveCrnResponse{Record: record}, nil
 }
 
 func (q Querier) GetRecordExpiryQueue(c context.Context, _ *types.QueryGetRecordExpiryQueue) (*types.QueryGetRecordExpiryQueueResponse, error) {

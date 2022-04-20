@@ -1,9 +1,10 @@
 package types
 
 import (
+	"net/url"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"net/url"
 )
 
 var (
@@ -14,9 +15,9 @@ var (
 )
 
 // NewMsgSetName is the constructor function for MsgSetName.
-func NewMsgSetName(wrn string, cid string, signer sdk.AccAddress) MsgSetName {
+func NewMsgSetName(crn string, cid string, signer sdk.AccAddress) MsgSetName {
 	return MsgSetName{
-		Wrn:    wrn,
+		Crn:    crn,
 		Cid:    cid,
 		Signer: signer.String(),
 	}
@@ -31,8 +32,8 @@ func (msg MsgSetName) Type() string { return "set-name" }
 // ValidateBasic Implements Msg.
 func (msg MsgSetName) ValidateBasic() error {
 
-	if msg.Wrn == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "WRN is required.")
+	if msg.Crn == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "CRN is required.")
 	}
 
 	if msg.Cid == "" {
@@ -144,9 +145,9 @@ func (msg MsgSetAuthorityBond) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgDeleteNameAuthority is the constructor function for MsgDeleteNameAuthority.
-func NewMsgDeleteNameAuthority(wrn string, signer sdk.AccAddress) MsgDeleteNameAuthority {
+func NewMsgDeleteNameAuthority(crn string, signer sdk.AccAddress) MsgDeleteNameAuthority {
 	return MsgDeleteNameAuthority{
-		Wrn:    wrn,
+		Crn:    crn,
 		Signer: signer.String(),
 	}
 }
@@ -159,17 +160,17 @@ func (msg MsgDeleteNameAuthority) Type() string { return "delete-name" }
 
 // ValidateBasic Implements Msg.
 func (msg MsgDeleteNameAuthority) ValidateBasic() error {
-	if len(msg.Wrn) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "wrn is required.")
+	if len(msg.Crn) == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "crn is required.")
 	}
 
 	if len(msg.Signer) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
 	}
 
-	_, err := url.Parse(msg.Wrn)
+	_, err := url.Parse(msg.Crn)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid wrn.")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid crn.")
 	}
 
 	return nil

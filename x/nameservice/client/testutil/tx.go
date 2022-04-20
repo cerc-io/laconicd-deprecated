@@ -313,7 +313,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetName() {
 		{
 			"success",
 			[]string{
-				fmt.Sprintf("wrn://%s/", authorityName),
+				fmt.Sprintf("crn://%s/", authorityName),
 				"test_hello_cid",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -488,7 +488,7 @@ func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 		preRun func(authorityName string, s *IntegrationTestSuite)
 	}{
 		{
-			"invalid request without wrn",
+			"invalid request without crn",
 			[]string{
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -521,7 +521,7 @@ func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			if !tc.err {
 				tc.preRun(authorityName, s)
-				tc.args = append([]string{fmt.Sprintf("wrn://%s/", authorityName)}, tc.args...)
+				tc.args = append([]string{fmt.Sprintf("crn://%s/", authorityName)}, tc.args...)
 			}
 			clientCtx := val.ClientCtx
 			cmd := cli.GetCmdDeleteName()
@@ -551,7 +551,7 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 		postRun func(recordId string, s *IntegrationTestSuite)
 	}{
 		{
-			"invalid request without wrn",
+			"invalid request without crn",
 			[]string{
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -670,7 +670,7 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 //		postRun func(recordId string, s *IntegrationTestSuite)
 //	}{
 //		{
-//			"invalid request without wrn",
+//			"invalid request without crn",
 //			[]string{
 //				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 //				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -794,7 +794,7 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 		postRun func(recordId, bondId string, s *IntegrationTestSuite)
 	}{
 		{
-			"invalid request without wrn",
+			"invalid request without crn",
 			[]string{
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

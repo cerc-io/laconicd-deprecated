@@ -39,7 +39,7 @@ cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["para
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_reveal_fee"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_minimum_bid"]["denom"]="aphoton"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json
 
-if [[ "$TEST_EXPIRY" == "true" ]]; then
+if [[ "$TEST_NAMESERVICE_EXPIRY" == "true" ]]; then
   echo "Setting timers for expiry tests."
 
   cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["nameservice"]["params"]["record_rent_duration"]="60s"' > $HOME/.chibaclonkd/config/tmp_genesis.json && mv $HOME/.chibaclonkd/config/tmp_genesis.json $HOME/.chibaclonkd/config/genesis.json

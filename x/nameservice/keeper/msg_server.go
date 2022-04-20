@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 )
@@ -64,7 +65,7 @@ func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.Msg
 		sdk.NewEvent(
 			types.EventTypeSetRecord,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyWRN, msg.Wrn),
+			sdk.NewAttribute(types.AttributeKeyCRN, msg.Crn),
 			sdk.NewAttribute(types.AttributeKeyCID, msg.Cid),
 		),
 		sdk.NewEvent(
@@ -146,7 +147,7 @@ func (m msgServer) DeleteName(c context.Context, msg *types.MsgDeleteNameAuthori
 		sdk.NewEvent(
 			types.EventTypeDeleteName,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyWRN, msg.Wrn),
+			sdk.NewAttribute(types.AttributeKeyCRN, msg.Crn),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

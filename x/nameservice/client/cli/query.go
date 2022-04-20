@@ -3,12 +3,13 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/tharsis/ethermint/x/nameservice/types"
-	"strings"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -23,7 +24,7 @@ func GetQueryCmd() *cobra.Command {
 	bondQueryCmd.AddCommand(
 		GetCmdWhoIs(),
 		GetCmdResolve(),
-		GetCmdLookupWRN(),
+		GetCmdLookupCRN(),
 		GetRecordExpiryQueue(),
 		GetAuthorityExpiryQueue(),
 		GetQueryParamsCmd(),
@@ -68,15 +69,15 @@ $ %s query %s whois [name]
 	return cmd
 }
 
-// GetCmdLookupWRN queries naming info for a WRN.
-func GetCmdLookupWRN() *cobra.Command {
+// GetCmdLookupCRN queries naming info for a CRN.
+func GetCmdLookupCRN() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lookup [wrn]",
-		Short: "Get naming info for WRN.",
+		Use:   "lookup [crn]",
+		Short: "Get naming info for CRN.",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Get naming info for WRN.
+			fmt.Sprintf(`Get naming info for CRN.
 Example:
-$ %s query %s lookup [wrn]
+$ %s query %s lookup [crn]
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -88,7 +89,7 @@ $ %s query %s lookup [wrn]
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.LookupWrn(cmd.Context(), &types.QueryLookupWrn{Wrn: args[0]})
+			res, err := queryClient.LookupCrn(cmd.Context(), &types.QueryLookupCrn{Crn: args[0]})
 			if err != nil {
 				return err
 			}
@@ -141,7 +142,7 @@ func GetCmdList() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get the records.
 Example:
-$ %s query %s list 
+$ %s query %s list
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -184,7 +185,7 @@ func GetCmdGetResource() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get the record by id.
 Example:
-$ %s query %s get [ID] 
+$ %s query %s get [ID]
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -207,15 +208,15 @@ $ %s query %s get [ID]
 	return cmd
 }
 
-// GetCmdResolve resolves a WRN to a record.
+// GetCmdResolve resolves a CRN to a record.
 func GetCmdResolve() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resolve [wrn]",
-		Short: "Resolve WRN to record.",
+		Use:   "resolve [crn]",
+		Short: "Resolve CRN to record.",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Resolve WRN to record.
+			fmt.Sprintf(`Resolve CRN to record.
 Example:
-$ %s query %s resolve [wrn]
+$ %s query %s resolve [crn]
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -227,7 +228,7 @@ $ %s query %s resolve [wrn]
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			record, err := queryClient.ResolveWrn(cmd.Context(), &types.QueryResolveWrn{Wrn: args[0]})
+			record, err := queryClient.ResolveCrn(cmd.Context(), &types.QueryResolveCrn{Crn: args[0]})
 			if err != nil {
 				return err
 			}
@@ -246,7 +247,7 @@ func GetCmdQueryByBond() *cobra.Command {
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get the record by bond id.
 Example:
-$ %s query %s query-by-bond [bond id] 
+$ %s query %s query-by-bond [bond id]
 `,
 				version.AppName, types.ModuleName,
 			),

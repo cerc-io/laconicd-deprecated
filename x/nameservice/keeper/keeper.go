@@ -29,8 +29,8 @@ var (
 	// PrefixNameAuthorityRecordIndex is the prefix for the name -> NameAuthority index.
 	PrefixNameAuthorityRecordIndex = []byte{0x01}
 
-	// PrefixWRNToNameRecordIndex is the prefix for the WRN -> NamingRecord index.
-	PrefixWRNToNameRecordIndex = []byte{0x02}
+	// PrefixCRNToNameRecordIndex is the prefix for the CRN -> NamingRecord index.
+	PrefixCRNToNameRecordIndex = []byte{0x02}
 
 	// PrefixBondIDToRecordsIndex is the prefix for the Bond ID -> [Record] index.
 	PrefixBondIDToRecordsIndex = []byte{0x03}

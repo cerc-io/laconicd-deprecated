@@ -39,12 +39,12 @@ service Query {
   rpc Whois(QueryWhoisRequest) returns (QueryWhoisResponse){
     option (google.api.http).get = "/vulcanize/nameservice/v1beta1/whois/{name}";
   }
-  // LookupWrn
-  rpc LookupWrn(QueryLookupWrn) returns (QueryLookupWrnResponse){
+  // LookupCrn
+  rpc LookupCrn(QueryLookupCrn) returns (QueryLookupCrnResponse){
     option (google.api.http).get = "/vulcanize/nameservice/v1beta1/lookup";
   }
-  // ResolveWrn
-  rpc ResolveWrn(QueryResolveWrn) returns (QueryResolveWrnResponse){
+  // ResolveCrn
+  rpc ResolveCrn(QueryResolveCrn) returns (QueryResolveCrnResponse){
     option (google.api.http).get = "/vulcanize/nameservice/v1beta1/resolve";
   }
   // GetRecordExpiryQueue
@@ -178,23 +178,23 @@ message QueryWhoisResponse{
   ];
 }
 
-// QueryLookupWrn is request type for LookupWrn
-message QueryLookupWrn{
-  string wrn = 1;
+// QueryLookupCrn is request type for LookupCrn
+message QueryLookupCrn{
+  string crn = 1;
 }
 
-// QueryLookupWrnResponse is response type for QueryLookupWrn
-message QueryLookupWrnResponse{
+// QueryLookupCrnResponse is response type for QueryLookupCrn
+message QueryLookupCrnResponse{
   NameRecord name = 1;
 }
 
-// QueryResolveWrn is request type for ResolveWrn
-message QueryResolveWrn{
-  string wrn = 1;
+// QueryResolveCrn is request type for ResolveCrn
+message QueryResolveCrn{
+  string crn = 1;
 }
 
-// QueryResolveWrnResponse is response type for QueryResolveWrn
-message QueryResolveWrnResponse{
+// QueryResolveCrnResponse is response type for QueryResolveCrn
+message QueryResolveCrnResponse{
   Record record = 1;
 }
 

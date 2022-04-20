@@ -76,7 +76,7 @@ func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Rec
 	nsQueryClient := nstypes.NewQueryClient(q.ctx)
 	var gqlResponse []*Record
 	for _, name := range names {
-		res, err := nsQueryClient.ResolveWrn(context.Background(), &nstypes.QueryResolveWrn{Wrn: name})
+		res, err := nsQueryClient.ResolveCrn(context.Background(), &nstypes.QueryResolveCrn{Crn: name})
 		if err != nil {
 			// Return nil for record not found.
 			gqlResponse = append(gqlResponse, nil)
@@ -98,7 +98,7 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 	var gqlResponse []*NameRecord
 
 	for _, name := range names {
-		res, err := nsQueryClient.LookupWrn(context.Background(), &nstypes.QueryLookupWrn{Wrn: name})
+		res, err := nsQueryClient.LookupCrn(context.Background(), &nstypes.QueryLookupCrn{Crn: name})
 		if err != nil {
 			// Return nil for name not found.
 			gqlResponse = append(gqlResponse, nil)

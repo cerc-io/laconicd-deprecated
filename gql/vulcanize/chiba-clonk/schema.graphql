@@ -106,7 +106,7 @@ type PeerInfo {
     remote_ip:      String!
 }
 
-# Vulcanize DXNS status.
+# Vulcanize chiba-clonk status.
 type Status {
     version:    String!
     node:       NodeInfo!
