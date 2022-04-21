@@ -1,11 +1,11 @@
-# Vulcanize dxns gql
+# Vulcanize chiba-clonk gql
 
 > Browser : http://localhost:9473 for gql
 
 ## Start server
 
 ```shell
-./build/chibaclonkd start --gql-playground --gql-server           
+./build/chibaclonkd start --gql-playground --gql-server
 ```
 
 Basic node status:
@@ -100,7 +100,7 @@ Query records.
 
 ```graphql
 {
-    queryRecords(attributes: [{ key: "type", value: { string: "wrn:bot" } }]) {
+    queryRecords(attributes: [{ key: "type", value: { string: "crn:bot" } }]) {
         id
         names
         bondId
@@ -316,7 +316,7 @@ LookUp Names
 
 ```graphql
 {
-    lookupNames(names: ["wrn://hello/test"]){
+    lookupNames(names: ["crn://hello/test"]){
         latest{
             id
             height

@@ -1,17 +1,17 @@
 # Build chain
 
-```bash 
-# it will create binary in build folder with `ethermintd` 
-$ make build 
+```bash
+# it will create binary in build folder with `ethermintd`
+$ make build
 ```
 
 # Setup Chain
 
 ```bash
-./build/chibaclonkd keys add root 
+./build/chibaclonkd keys add root
 ./build/chibaclonkd init test-moniker --chain-id ethermint_9000-1
 ./build/chibaclonkd add-genesis-account $(./build/chibaclonkd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
-./build/chibaclonkd gentx root 1000000000000000000stake --chain-id ethermint_9000-1 
+./build/chibaclonkd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
 ./build/chibaclonkd collect-gentxs
 ./build/chibaclonkd start
 ```
@@ -78,7 +78,7 @@ $ ./build/chibaclonkd tx nameservice set ~/Desktop/examples/records/example1.yml
 ## Get records list
 
 ```bash
-$ ./build/chibaclonkd q nameservice list -o json  | jq   
+$ ./build/chibaclonkd q nameservice list -o json  | jq
 [
   {
     "id": "bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae",
@@ -181,8 +181,8 @@ $ ./build/chibaclonkd q nameservice  balance -o json | jq .
 ## add bond to the authority
 
 ```bash
-$ ./build/chibaclonkd tx nameservice authority-bond [Authority Name] [Bond ID ]  --from root --chain-id ethermint_9000-1  -y -o json | jq .  
-$ ./build/chibaclonkd tx nameservice authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id ethermint_9000-1  -y -o json | jq .  
+$ ./build/chibaclonkd tx nameservice authority-bond [Authority Name] [Bond ID ]  --from root --chain-id ethermint_9000-1  -y -o json | jq .
+$ ./build/chibaclonkd tx nameservice authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id ethermint_9000-1  -y -o json | jq .
  ```
 
 ## Query the records by associate bond id
@@ -247,12 +247,12 @@ txhash: 7AFEF524CB0D92D6576FC08601A787786E802449888FD8DDAA7635698CC85060
   "timestamp": ""
 }
 
-``` 
+```
 
 ## dissociate-records => remove all record from bond
 
 ```bash
-$./build/chibaclonkd tx nameservice dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .                                                           
+$./build/chibaclonkd tx nameservice dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
 {
   "height": "0",
   "txhash": "0316F503E5DEA47CB108AE6C7C7FFAF3F71CC56BC22F63CB97322E1BE48B33B9",
@@ -274,14 +274,14 @@ $./build/chibaclonkd tx nameservice dissociate-records c3f7a78c5042d2003880962ba
 > When a record is expires , needs to renew record
 
 ```bash
-$ ./build/chibaclonkd tx nameservice renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1 
+$ ./build/chibaclonkd tx nameservice renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1
 
 ```
 
 ## Set the authority name
 
 ```bash
-$ ./build/chibaclonkd tx nameservice set-name wrn://hello/test test_hello_cid  --from root --chain-id ethermint_9000-1 -y -o json | jq .
+$ ./build/chibaclonkd tx nameservice set-name crn://hello/test test_hello_cid  --from root --chain-id ethermint_9000-1 -y -o json | jq .
 {
   "height": "0",
   "txhash": "66A63C73B076EEE9A2F7605354448EDEB161F0115D4D03AF68C01BA28DB97486",
@@ -301,7 +301,7 @@ $ ./build/chibaclonkd tx nameservice set-name wrn://hello/test test_hello_cid  -
 ## Delete the name
 
 ```bash
-$./build/chibaclonkd tx nameservice delete-name wrn://hello/test --from root --chain-id ethermint_9000-1 -y 
+$./build/chibaclonkd tx nameservice delete-name crn://hello/test --from root --chain-id ethermint_9000-1 -y
 code: 0
 codespace: ""
 data: ""
@@ -320,7 +320,7 @@ txhash: A3FF4C46BAC7BD6E54BBB743A49830AE8C6F6FE59282384789CBA323C1FE540C
 ## List of Authorities Expire Queue
 
 ```bash
-$ ./build/chibaclonkd q nameservice authority-expiry  -o json | jq . 
+$ ./build/chibaclonkd q nameservice authority-expiry  -o json | jq .
 {
   "authorities": [],
   "pagination": null
@@ -331,7 +331,7 @@ $ ./build/chibaclonkd q nameservice authority-expiry  -o json | jq .
 ## List of Records Expire Queue
 
 ```bash
-$  ./build/chibaclonkd q nameservice record-expiry -o json | jq .     
+$  ./build/chibaclonkd q nameservice record-expiry -o json | jq .
 {
   "records": [],
   "pagination": null

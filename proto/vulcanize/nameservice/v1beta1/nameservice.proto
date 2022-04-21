@@ -68,22 +68,21 @@ message Record {
   string bond_id = 2 [
     (gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""
   ];
-  google.protobuf.Timestamp create_time = 3 [
-    (gogoproto.stdtime) = true,
-    (gogoproto.nullable) = false,
+  string create_time = 3 [
     (gogoproto.moretags) = "json:\"createTime\" yaml:\"createTime\""
   ];
-  google.protobuf.Timestamp expiry_time = 4 [
-    (gogoproto.stdtime) = true,
-    (gogoproto.nullable) = false,
+  string expiry_time = 4 [
     (gogoproto.moretags) = "json:\"expiryTime\" yaml:\"expiryTime\""
   ];
   bool deleted = 5;
   repeated string owners = 6 [
     (gogoproto.moretags) = "json:\"owners\" yaml:\"owners\""
   ];
-  bytes attributes = 7 [
+  string attributes = 7 [
     (gogoproto.moretags) = "json:\"attributes\" yaml:\"attributes\""
+  ];
+  repeated string names = 8 [
+    (gogoproto.moretags) = "json:\"names\" yaml:\"names\""
   ];
 }
 

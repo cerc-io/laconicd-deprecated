@@ -1,7 +1,12 @@
 package keeper
 
 import (
+	"bytes"
 	"fmt"
+	"net/url"
+	"strings"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,9 +14,6 @@ import (
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
 	"github.com/tharsis/ethermint/x/nameservice/types"
-	"net/url"
-	"strings"
-	"time"
 )
 
 func getAuthorityPubKey(pubKey cryptotypes.PubKey) string {
@@ -26,9 +28,9 @@ func GetNameAuthorityIndexKey(name string) []byte {
 	return append(PrefixNameAuthorityRecordIndex, []byte(name)...)
 }
 
-// GetNameRecordIndexKey Generates WRN -> NameRecord index key.
-func GetNameRecordIndexKey(wrn string) []byte {
-	return append(PrefixWRNToNameRecordIndex, []byte(wrn)...)
+// GetNameRecordIndexKey Generates CRN -> NameRecord index key.
+func GetNameRecordIndexKey(crn string) []byte {
+	return append(PrefixCRNToNameRecordIndex, []byte(crn)...)
 }
 
 func GetCIDToNamesIndexKey(id string) []byte {
@@ -101,35 +103,35 @@ func RemoveBondToAuthorityIndexEntry(store sdk.KVStore, bondID string, name stri
 	store.Delete(getBondIDToAuthoritiesIndexKey(bondID, name))
 }
 
-func (k Keeper) updateBlockChangeSetForName(ctx sdk.Context, wrn string) {
+func (k Keeper) updateBlockChangeSetForName(ctx sdk.Context, crn string) {
 	changeSet := k.getOrCreateBlockChangeSet(ctx, ctx.BlockHeight())
-	changeSet.Names = append(changeSet.Names, wrn)
+	changeSet.Names = append(changeSet.Names, crn)
 	k.saveBlockChangeSet(ctx, changeSet)
 }
 
-func (k Keeper) getAuthority(ctx sdk.Context, wrn string) (string, *url.URL, *types.NameAuthority, error) {
-	parsedWRN, err := url.Parse(wrn)
+func (k Keeper) getAuthority(ctx sdk.Context, crn string) (string, *url.URL, *types.NameAuthority, error) {
+	parsedCRN, err := url.Parse(crn)
 	if err != nil {
-		return "", nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid WRN.")
+		return "", nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid CRN.")
 	}
 
-	name := parsedWRN.Host
+	name := parsedCRN.Host
 	if !k.HasNameAuthority(ctx, name) {
 		return name, nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
 	}
 	authority := k.GetNameAuthority(ctx, name)
-	return name, parsedWRN, &authority, nil
+	return name, parsedCRN, &authority, nil
 }
 
-func (k Keeper) checkWRNAccess(ctx sdk.Context, signer sdk.AccAddress, wrn string) error {
-	name, parsedWRN, authority, err := k.getAuthority(ctx, wrn)
+func (k Keeper) checkCRNAccess(ctx sdk.Context, signer sdk.AccAddress, crn string) error {
+	name, parsedCRN, authority, err := k.getAuthority(ctx, crn)
 	if err != nil {
 		return err
 	}
 
-	formattedWRN := fmt.Sprintf("wrn://%s%s", name, parsedWRN.RequestURI())
-	if formattedWRN != wrn {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid WRN.")
+	formattedCRN := fmt.Sprintf("crn://%s%s", name, parsedCRN.RequestURI())
+	if formattedCRN != crn {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid CRN.")
 	}
 
 	if authority.OwnerAddress != signer.String() {
@@ -159,14 +161,14 @@ func (k Keeper) checkWRNAccess(ctx sdk.Context, signer sdk.AccAddress, wrn strin
 }
 
 // HasNameRecord - checks if a name record exists.
-func (k Keeper) HasNameRecord(ctx sdk.Context, wrn string) bool {
+func (k Keeper) HasNameRecord(ctx sdk.Context, crn string) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(GetNameRecordIndexKey(wrn))
+	return store.Has(GetNameRecordIndexKey(crn))
 }
 
 // GetNameRecord - gets a name record from the store.
-func GetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string) *types.NameRecord {
-	nameRecordKey := GetNameRecordIndexKey(wrn)
+func GetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, crn string) *types.NameRecord {
+	nameRecordKey := GetNameRecordIndexKey(crn)
 	if !store.Has(nameRecordKey) {
 		return nil
 	}
@@ -179,14 +181,14 @@ func GetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string) *type
 }
 
 // GetNameRecord - gets a name record from the store.
-func (k Keeper) GetNameRecord(ctx sdk.Context, wrn string) *types.NameRecord {
-	_, _, authority, err := k.getAuthority(ctx, wrn)
+func (k Keeper) GetNameRecord(ctx sdk.Context, crn string) *types.NameRecord {
+	_, _, authority, err := k.getAuthority(ctx, crn)
 	if err != nil || authority.Status != types.AuthorityActive {
 		// If authority is not active (or any other error), lookup fails.
 		return nil
 	}
 
-	nameRecord := GetNameRecord(ctx.KVStore(k.storeKey), k.cdc, wrn)
+	nameRecord := GetNameRecord(ctx.KVStore(k.storeKey), k.cdc, crn)
 
 	// Name record may not exist.
 	if nameRecord == nil {
@@ -203,12 +205,12 @@ func (k Keeper) GetNameRecord(ctx sdk.Context, wrn string) *types.NameRecord {
 }
 
 // RemoveRecordToNameMapping removes a name from the record ID -> []names index.
-func RemoveRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
+func RemoveRecordToNameMapping(store sdk.KVStore, id string, crn string) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(id)
 
 	names, _ := helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
 	nameSet := helpers.SliceToSet(names)
-	nameSet.Remove(wrn)
+	nameSet.Remove(crn)
 
 	if nameSet.Cardinality() == 0 {
 		// Delete as storing empty slice throws error from baseapp.
@@ -220,7 +222,7 @@ func RemoveRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
 }
 
 // AddRecordToNameMapping adds a name to the record ID -> []names index.
-func AddRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
+func AddRecordToNameMapping(store sdk.KVStore, id string, crn string) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(id)
 
 	var names []string
@@ -229,14 +231,14 @@ func AddRecordToNameMapping(store sdk.KVStore, id string, wrn string) {
 	}
 
 	nameSet := helpers.SliceToSet(names)
-	nameSet.Add(wrn)
+	nameSet.Add(crn)
 	bz, _ := helpers.StrArrToBytesArr(helpers.SetToSlice(nameSet))
 	store.Set(reverseNameIndexKey, bz)
 }
 
 // SetNameRecord - sets a name record.
-func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id string, height int64) {
-	nameRecordIndexKey := GetNameRecordIndexKey(wrn)
+func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, crn string, id string, height int64) {
+	nameRecordIndexKey := GetNameRecordIndexKey(crn)
 
 	var nameRecord types.NameRecord
 	if store.Has(nameRecordIndexKey) {
@@ -246,7 +248,7 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 
 		// Update old CID -> []Name index.
 		if nameRecord.Latest.Id != "" || len(nameRecord.Latest.Id) != 0 {
-			RemoveRecordToNameMapping(store, nameRecord.Latest.Id, wrn)
+			RemoveRecordToNameMapping(store, nameRecord.Latest.Id, crn)
 		}
 	}
 
@@ -259,35 +261,35 @@ func SetNameRecord(store sdk.KVStore, codec codec.BinaryCodec, wrn string, id st
 
 	// Update new CID -> []Name index.
 	if id != "" {
-		AddRecordToNameMapping(store, id, wrn)
+		AddRecordToNameMapping(store, id, crn)
 	}
 }
 
 // SetNameRecord - sets a name record.
-func (k Keeper) SetNameRecord(ctx sdk.Context, wrn string, id string) {
-	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, wrn, id, ctx.BlockHeight())
+func (k Keeper) SetNameRecord(ctx sdk.Context, crn string, id string) {
+	SetNameRecord(ctx.KVStore(k.storeKey), k.cdc, crn, id, ctx.BlockHeight())
 
 	// Update changeSet for name.
-	k.updateBlockChangeSetForName(ctx, wrn)
+	k.updateBlockChangeSetForName(ctx, crn)
 }
 
-// ProcessSetName creates a WRN -> Record ID mapping.
+// ProcessSetName creates a CRN -> Record ID mapping.
 func (k Keeper) ProcessSetName(ctx sdk.Context, msg types.MsgSetName) error {
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return err
 	}
-	err = k.checkWRNAccess(ctx, signerAddress, msg.Wrn)
+	err = k.checkCRNAccess(ctx, signerAddress, msg.Crn)
 	if err != nil {
 		return err
 	}
 
-	nameRecord := k.GetNameRecord(ctx, msg.Wrn)
+	nameRecord := k.GetNameRecord(ctx, msg.Crn)
 	if nameRecord != nil && nameRecord.Latest.Id == msg.Cid {
 		return nil
 	}
 
-	k.SetNameRecord(ctx, msg.Wrn, msg.Cid)
+	k.SetNameRecord(ctx, msg.Crn, msg.Cid)
 
 	return nil
 }
@@ -296,7 +298,7 @@ func (k Keeper) ProcessSetName(ctx sdk.Context, msg types.MsgSetName) error {
 func (k Keeper) ListNameRecords(ctx sdk.Context) []types.NameEntry {
 	var nameEntries []types.NameEntry
 	store := ctx.KVStore(k.storeKey)
-	itr := sdk.KVStorePrefixIterator(store, PrefixWRNToNameRecordIndex)
+	itr := sdk.KVStorePrefixIterator(store, PrefixCRNToNameRecordIndex)
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		bz := store.Get(itr.Key())
@@ -304,7 +306,7 @@ func (k Keeper) ListNameRecords(ctx sdk.Context) []types.NameEntry {
 			var record types.NameRecord
 			k.cdc.MustUnmarshal(bz, &record)
 			nameEntries = append(nameEntries, types.NameEntry{
-				Name:  string(itr.Key()[len(PrefixWRNToNameRecordIndex):]),
+				Name:  string(itr.Key()[len(PrefixCRNToNameRecordIndex):]),
 				Entry: &record,
 			})
 		}
@@ -425,13 +427,13 @@ func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRo
 
 // ProcessReserveAuthority reserves a name authority.
 func (k Keeper) ProcessReserveAuthority(ctx sdk.Context, msg types.MsgReserveAuthority) error {
-	wrn := fmt.Sprintf("wrn://%s", msg.GetName())
-	parsedWrn, err := url.Parse(wrn)
+	crn := fmt.Sprintf("crn://%s", msg.GetName())
+	parsedCrn, err := url.Parse(crn)
 	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
 	}
-	name := parsedWrn.Host
-	if fmt.Sprintf("wrn://%s", name) != wrn {
+	name := parsedCrn.Host
+	if fmt.Sprintf("crn://%s", name) != crn {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
 	}
 	if strings.Contains(name, ".") {
@@ -482,23 +484,23 @@ func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthori
 	return nil
 }
 
-// ProcessDeleteName removes a WRN -> Record ID mapping.
+// ProcessDeleteName removes a CRN -> Record ID mapping.
 func (k Keeper) ProcessDeleteName(ctx sdk.Context, msg types.MsgDeleteNameAuthority) error {
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return err
 	}
-	err = k.checkWRNAccess(ctx, signerAddress, msg.Wrn)
+	err = k.checkCRNAccess(ctx, signerAddress, msg.Crn)
 	if err != nil {
 		return err
 	}
 
-	if !k.HasNameRecord(ctx, msg.Wrn) {
+	if !k.HasNameRecord(ctx, msg.Crn) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name not found.")
 	}
 
 	// Set CID to empty string.
-	k.SetNameRecord(ctx, msg.Wrn, "")
+	k.SetNameRecord(ctx, msg.Crn, "")
 
 	return nil
 }
@@ -524,9 +526,9 @@ func (k Keeper) GetAuthorityExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRec
 	return authorities
 }
 
-// ResolveWRN resolves a WRN to a record.
-func (k Keeper) ResolveWRN(ctx sdk.Context, wrn string) *types.Record {
-	_, _, authority, err := k.getAuthority(ctx, wrn)
+// ResolveCRN resolves a CRN to a record.
+func (k Keeper) ResolveCRN(ctx sdk.Context, crn string) *types.Record {
+	_, _, authority, err := k.getAuthority(ctx, crn)
 	if err != nil || authority.Status != types.AuthorityActive {
 		// If authority is not active (or any other error), resolution fails.
 		return nil
@@ -534,7 +536,7 @@ func (k Keeper) ResolveWRN(ctx sdk.Context, wrn string) *types.Record {
 
 	// Name should not resolve if it's stale.
 	// i.e. authority was registered later than the name.
-	record, nameRecord := ResolveWRN(ctx.KVStore(k.storeKey), wrn, k, ctx)
+	record, nameRecord := ResolveCRN(ctx.KVStore(k.storeKey), crn, k, ctx)
 	if authority.Height > nameRecord.Latest.Height {
 		return nil
 	}
@@ -542,9 +544,9 @@ func (k Keeper) ResolveWRN(ctx sdk.Context, wrn string) *types.Record {
 	return record
 }
 
-// ResolveWRN resolves a WRN to a record.
-func ResolveWRN(store sdk.KVStore, wrn string, k Keeper, c sdk.Context) (*types.Record, *types.NameRecord) {
-	nameKey := GetNameRecordIndexKey(wrn)
+// ResolveCRN resolves a CRN to a record.
+func ResolveCRN(store sdk.KVStore, crn string, k Keeper, c sdk.Context) (*types.Record, *types.NameRecord) {
+	nameKey := GetNameRecordIndexKey(crn)
 
 	if store.Has(nameKey) {
 		bz := store.Get(nameKey)
@@ -594,6 +596,111 @@ func (k Keeper) SetAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time
 	store := ctx.KVStore(k.storeKey)
 	bz, _ := helpers.StrArrToBytesArr(names)
 	store.Set(getAuthorityExpiryQueueTimeKey(timestamp), bz)
+}
+
+// ProcessAuthorityExpiryQueue tries to renew expiring authorities (by collecting rent) else marks them as expired.
+func (k Keeper) ProcessAuthorityExpiryQueue(ctx sdk.Context) {
+	names := k.GetAllExpiredAuthorities(ctx, ctx.BlockHeader().Time)
+	for _, name := range names {
+		authority := k.GetNameAuthority(ctx, name)
+
+		// If authority doesn't have an associated bond or if bond no longer exists, mark it expired.
+		if authority.BondId == "" || !k.bondKeeper.HasBond(ctx, authority.BondId) {
+			authority.Status = types.AuthorityExpired
+			k.SetNameAuthority(ctx, name, &authority)
+			k.DeleteAuthorityExpiryQueue(ctx, name, authority)
+
+			ctx.Logger().Info(fmt.Sprintf("Marking authority expired as no bond present: %s", name))
+
+			return
+		}
+
+		// Try to renew the authority by taking rent.
+		k.TryTakeAuthorityRent(ctx, name, authority)
+	}
+}
+
+// DeleteAuthorityExpiryQueueTimeSlice deletes a specific authority expiry queue timeslice.
+func (k Keeper) DeleteAuthorityExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Time) {
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(getAuthorityExpiryQueueTimeKey(timestamp))
+}
+
+// DeleteAuthorityExpiryQueue deletes an authority name from the authority expiry queue.
+func (k Keeper) DeleteAuthorityExpiryQueue(ctx sdk.Context, name string, authority types.NameAuthority) {
+	timeSlice := k.GetAuthorityExpiryQueueTimeSlice(ctx, authority.ExpiryTime)
+	newTimeSlice := []string{}
+
+	for _, existingName := range timeSlice {
+		if !bytes.Equal([]byte(existingName), []byte(name)) {
+			newTimeSlice = append(newTimeSlice, existingName)
+		}
+	}
+
+	if len(newTimeSlice) == 0 {
+		k.DeleteAuthorityExpiryQueueTimeSlice(ctx, authority.ExpiryTime)
+	} else {
+		k.SetAuthorityExpiryQueueTimeSlice(ctx, authority.ExpiryTime, newTimeSlice)
+	}
+}
+
+// GetAllExpiredAuthorities returns a concatenated list of all the timeslices before currTime.
+func (k Keeper) GetAllExpiredAuthorities(ctx sdk.Context, currTime time.Time) (expiredAuthorityNames []string) {
+	// Gets an iterator for all timeslices from time 0 until the current block header time.
+	itr := k.AuthorityExpiryQueueIterator(ctx, ctx.BlockHeader().Time)
+	defer itr.Close()
+
+	for ; itr.Valid(); itr.Next() {
+		timeslice := []string{}
+		timeslice, err := helpers.BytesArrToStringArr(itr.Value())
+
+		if err != nil {
+			panic(err)
+		}
+
+		expiredAuthorityNames = append(expiredAuthorityNames, timeslice...)
+	}
+
+	return expiredAuthorityNames
+}
+
+// AuthorityExpiryQueueIterator returns all the authority expiry queue timeslices from time 0 until endTime.
+func (k Keeper) AuthorityExpiryQueueIterator(ctx sdk.Context, endTime time.Time) sdk.Iterator {
+	store := ctx.KVStore(k.storeKey)
+	rangeEndBytes := sdk.InclusiveEndBytes(getAuthorityExpiryQueueTimeKey(endTime))
+	return store.Iterator(PrefixExpiryTimeToAuthoritiesIndex, rangeEndBytes)
+}
+
+// TryTakeAuthorityRent tries to take rent from the authority bond.
+func (k Keeper) TryTakeAuthorityRent(ctx sdk.Context, name string, authority types.NameAuthority) {
+	ctx.Logger().Info(fmt.Sprintf("Trying to take rent for authority: %s", name))
+
+	params := k.GetParams(ctx)
+	rent := params.AuthorityRent
+	sdkErr := k.bondKeeper.TransferCoinsToModuleAccount(ctx, authority.BondId, types.AuthorityRentModuleAccountName, sdk.NewCoins(rent))
+
+	if sdkErr != nil {
+		// Insufficient funds, mark authority as expired.
+		authority.Status = types.AuthorityExpired
+		k.SetNameAuthority(ctx, name, &authority)
+		k.DeleteAuthorityExpiryQueue(ctx, name, authority)
+
+		ctx.Logger().Info(fmt.Sprintf("Insufficient funds in owner account to pay authority rent, marking as expired: %s", name))
+
+		return
+	}
+
+	// Delete old expiry queue entry, create new one.
+	k.DeleteAuthorityExpiryQueue(ctx, name, authority)
+	authority.ExpiryTime = ctx.BlockTime().Add(params.AuthorityRentDuration)
+	k.InsertAuthorityExpiryQueue(ctx, name, authority.ExpiryTime)
+
+	// Save authority.
+	authority.Status = types.AuthorityActive
+	k.SetNameAuthority(ctx, name, &authority)
+	k.AddBondToAuthorityIndexEntry(ctx, authority.BondId, name)
+
+	ctx.Logger().Info(fmt.Sprintf("Authority rent paid successfully: %s", name))
 }
 
 // ListNameAuthorityRecords - get all name authority records.

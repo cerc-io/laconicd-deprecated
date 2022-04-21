@@ -20,7 +20,7 @@ service Msg {
   rpc DissociateRecords(MsgDissociateRecords) returns (MsgDissociateRecordsResponse){}
   // ReAssociateRecords
   rpc ReAssociateRecords(MsgReAssociateRecords) returns (MsgReAssociateRecordsResponse){}
-  // SetName will store the name with given wrn and name
+  // SetName will store the name with given crn and name
   rpc SetName(MsgSetName) returns (MsgSetNameResponse){}
   // Reserve name
   rpc ReserveName(MsgReserveAuthority) returns (MsgReserveAuthorityResponse){}
@@ -43,6 +43,7 @@ message MsgSetRecord{
 
 // MsgSetRecordResponse
 message MsgSetRecordResponse{
+  string id = 1;
 }
 
 // Payload
@@ -56,7 +57,7 @@ message Payload {
 
 // MsgSetName
 message MsgSetName{
-  string wrn = 1;
+  string crn = 1;
   string cid = 2;
   string signer = 3;
 }
@@ -92,7 +93,7 @@ message MsgSetAuthorityBondResponse{
 
 // MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
 message MsgDeleteNameAuthority{
-  string wrn = 1;
+  string crn = 1;
   string signer = 2;
 }
 

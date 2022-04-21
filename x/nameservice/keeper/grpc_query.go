@@ -2,10 +2,17 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 )
+
+// BondIDAttributeName denotes the record bond ID.
+const BondIDAttributeName = "bondId"
+
+// ExpiryTimeAttributeName denotes the record expiry time.
+const ExpiryTimeAttributeName = "expiryTime"
 
 type Querier struct {
 	Keeper
@@ -19,9 +26,20 @@ func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: &params}, nil
 }
 
-func (q Querier) ListRecords(c context.Context, _ *types.QueryListRecordsRequest) (*types.QueryListRecordsResponse, error) {
+func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsRequest) (*types.QueryListRecordsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	records := q.Keeper.ListRecords(ctx)
+	attributes := req.GetAttributes()
+	all := req.GetAll()
+	records := []types.Record{}
+
+	if len(attributes) > 0 {
+		records = q.Keeper.MatchRecords(ctx, func(record *types.RecordType) bool {
+			return MatchOnAttributes(record, attributes, all)
+		})
+	} else {
+		records = q.Keeper.ListRecords(ctx)
+	}
+
 	return &types.QueryListRecordsResponse{Records: records}, nil
 }
 
@@ -61,27 +79,27 @@ func (q Querier) Whois(c context.Context, request *types.QueryWhoisRequest) (*ty
 	return &types.QueryWhoisResponse{NameAuthority: nameAuthority}, nil
 }
 
-func (q Querier) LookupWrn(c context.Context, req *types.QueryLookupWrn) (*types.QueryLookupWrnResponse, error) {
+func (q Querier) LookupCrn(c context.Context, req *types.QueryLookupCrn) (*types.QueryLookupCrnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	wrn := req.GetWrn()
-	if !q.Keeper.HasNameRecord(ctx, wrn) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "WRN not found.")
+	crn := req.GetCrn()
+	if !q.Keeper.HasNameRecord(ctx, crn) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "CRN not found.")
 	}
-	nameRecord := q.Keeper.GetNameRecord(ctx, wrn)
+	nameRecord := q.Keeper.GetNameRecord(ctx, crn)
 	if nameRecord == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "name record not found.")
 	}
-	return &types.QueryLookupWrnResponse{Name: nameRecord}, nil
+	return &types.QueryLookupCrnResponse{Name: nameRecord}, nil
 }
 
-func (q Querier) ResolveWrn(c context.Context, req *types.QueryResolveWrn) (*types.QueryResolveWrnResponse, error) {
+func (q Querier) ResolveCrn(c context.Context, req *types.QueryResolveCrn) (*types.QueryResolveCrnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	wrn := req.GetWrn()
-	record := q.Keeper.ResolveWRN(ctx, wrn)
+	crn := req.GetCrn()
+	record := q.Keeper.ResolveCRN(ctx, crn)
 	if record == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "record not found.")
 	}
-	return &types.QueryResolveWrnResponse{Record: record}, nil
+	return &types.QueryResolveCrnResponse{Record: record}, nil
 }
 
 func (q Querier) GetRecordExpiryQueue(c context.Context, _ *types.QueryGetRecordExpiryQueue) (*types.QueryGetRecordExpiryQueueResponse, error) {
@@ -94,4 +112,116 @@ func (q Querier) GetAuthorityExpiryQueue(c context.Context, _ *types.QueryGetAut
 	ctx := sdk.UnwrapSDKContext(c)
 	authorities := q.Keeper.GetAuthorityExpiryQueue(ctx)
 	return &types.QueryGetAuthorityExpiryQueueResponse{Authorities: authorities}, nil
+}
+
+func matchOnRecordField(record *types.RecordType, attr *types.QueryListRecordsRequest_KeyValueInput) (fieldFound bool, matched bool) {
+	fieldFound = false
+	matched = true
+
+	switch attr.Key {
+	case BondIDAttributeName:
+		{
+			fieldFound = true
+			if record.BondId != attr.Value.GetString_() {
+				matched = false
+				return
+			}
+		}
+	case ExpiryTimeAttributeName:
+		{
+			fieldFound = true
+			if record.ExpiryTime != attr.Value.GetString_() {
+				matched = false
+				return
+			}
+		}
+	}
+
+	return
+}
+
+func MatchOnAttributes(record *types.RecordType, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) bool {
+	// Filter deleted records.
+	if record.Deleted {
+		return false
+	}
+
+	// If ONLY named records are requested, check for that condition first.
+	if !all && len(record.Names) == 0 {
+		return false
+	}
+
+	recAttrs := record.Attributes
+
+	for _, attr := range attributes {
+		// First try matching on record struct fields.
+		fieldFound, matched := matchOnRecordField(record, attr)
+
+		if fieldFound {
+			if !matched {
+				return false
+			}
+
+			continue
+		}
+
+		recAttrVal, recAttrFound := recAttrs[attr.Key]
+		if !recAttrFound {
+			return false
+		}
+
+		if attr.Value.Type == "int" {
+			recAttrValInt, ok := recAttrVal.(int)
+			if !ok || int(attr.Value.GetInt()) != recAttrValInt {
+				return false
+			}
+		}
+
+		if attr.Value.Type == "float" {
+			recAttrValFloat, ok := recAttrVal.(float64)
+			if !ok || attr.Value.GetFloat() != recAttrValFloat {
+				return false
+			}
+		}
+
+		if attr.Value.Type == "string" {
+			recAttrValString, ok := recAttrVal.(string)
+			if !ok {
+				return false
+			}
+
+			if attr.Value.GetString_() != recAttrValString {
+				return false
+			}
+		}
+
+		if attr.Value.Type == "boolean" {
+			recAttrValBool, ok := recAttrVal.(bool)
+			if !ok || attr.Value.GetBoolean() != recAttrValBool {
+				return false
+			}
+		}
+
+		if attr.Value.Type == "reference" {
+			obj, ok := recAttrVal.(map[string]interface{})
+			if !ok {
+				// Attr value is not an object.
+				return false
+			}
+
+			if _, ok := obj["/"].(string); !ok {
+				// Attr value is not a reference.
+				return false
+			}
+
+			recAttrValRefID := obj["/"].(string)
+			if recAttrValRefID != attr.Value.GetReference().GetId() {
+				return false
+			}
+		}
+
+		// TODO: Handle arrays.
+	}
+
+	return true
 }

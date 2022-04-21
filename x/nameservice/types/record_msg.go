@@ -23,6 +23,12 @@ func NewMsgSetRecord(payload Payload, bondID string, signer sdk.AccAddress) MsgS
 	}
 }
 
+// Route Implements Msg.
+func (msg MsgSetRecord) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (msg MsgSetRecord) Type() string { return "set-record" }
+
 func (msg MsgSetRecord) ValidateBasic() error {
 	if len(msg.Signer) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)

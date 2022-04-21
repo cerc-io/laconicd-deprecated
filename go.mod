@@ -3,6 +3,7 @@ module github.com/tharsis/ethermint
 go 1.17
 
 require (
+	github.com/99designs/gqlgen v0.17.2
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cosmos/cosmos-sdk v0.45.1
@@ -35,6 +36,7 @@ require (
 	github.com/tendermint/tendermint v0.34.14
 	github.com/tendermint/tm-db v0.6.7
 	github.com/tyler-smith/go-bip39 v1.1.0
+	github.com/vektah/gqlparser/v2 v2.4.1
 	google.golang.org/genproto v0.0.0-20220401170504-314d38edb7de
 	google.golang.org/grpc v1.45.0
 	google.golang.org/protobuf v1.28.0
@@ -44,7 +46,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
-	github.com/99designs/gqlgen v0.17.2 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
@@ -152,7 +153,6 @@ require (
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
-	github.com/vektah/gqlparser/v2 v2.4.1 // indirect
 	github.com/whyrusleeping/cbor-gen v0.0.0-20200123233031-1cdf64d27158 // indirect
 	github.com/zondax/hid v0.9.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect

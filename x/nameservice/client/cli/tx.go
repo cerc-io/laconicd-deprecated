@@ -2,6 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,8 +13,6 @@ import (
 	"github.com/tharsis/ethermint/server/flags"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
-	"strings"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/bond transaction commands.
@@ -241,12 +242,12 @@ $ %s tx %s reassociate-records [old-bond-id] [new-bond-id]
 // GetCmdSetName is the CLI command for mapping a name to a CID.
 func GetCmdSetName() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "set-name [wrn] [cid]",
-		Short: "Set WRN to CID mapping.",
+		Use:   "set-name [crn] [cid]",
+		Short: "Set CRN to CID mapping.",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Set name with wrn and cid.
+			fmt.Sprintf(`Set name with crn and cid.
 Example:
-$ %s tx %s set-name [wrn] [cid]
+$ %s tx %s set-name [crn] [cid]
 `,
 				version.AppName, types.ModuleName,
 			),
@@ -345,12 +346,12 @@ $ %s tx %s authority-bond [name] [bond-id]
 
 func GetCmdDeleteName() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "delete-name [wrn]",
-		Short: "Delete WRN.",
+		Use:   "delete-name [crn]",
+		Short: "Delete CRN.",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Delete WRN.
+			fmt.Sprintf(`Delete CRN.
 Example:
-$ %s tx %s delete-name [wrn]
+$ %s tx %s delete-name [crn]
 `,
 				version.AppName, types.ModuleName,
 			),

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tharsis/ethermint/x/nameservice/types"
 )
@@ -24,7 +25,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		return nil, err
 	}
 
-	err = m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
+	record, err := m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
 		BondId:  msg.GetBondId(),
 		Signer:  msg.GetSigner(),
 		Payload: msg.GetPayload(),
@@ -47,7 +48,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		),
 	})
 
-	return &types.MsgSetRecordResponse{}, nil
+	return &types.MsgSetRecordResponse{Id: record.Id}, nil
 }
 
 func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.MsgSetNameResponse, error) {
@@ -64,7 +65,7 @@ func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.Msg
 		sdk.NewEvent(
 			types.EventTypeSetRecord,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyWRN, msg.Wrn),
+			sdk.NewAttribute(types.AttributeKeyCRN, msg.Crn),
 			sdk.NewAttribute(types.AttributeKeyCID, msg.Cid),
 		),
 		sdk.NewEvent(
@@ -146,7 +147,7 @@ func (m msgServer) DeleteName(c context.Context, msg *types.MsgDeleteNameAuthori
 		sdk.NewEvent(
 			types.EventTypeDeleteName,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyWRN, msg.Wrn),
+			sdk.NewAttribute(types.AttributeKeyCRN, msg.Crn),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

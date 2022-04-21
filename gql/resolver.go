@@ -3,13 +3,14 @@ package gql
 import (
 	"context"
 	"encoding/base64"
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
-	"strconv"
 )
 
 // DefaultLogNumLines is the number of log lines to tail by default.
@@ -75,17 +76,18 @@ func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Rec
 	nsQueryClient := nstypes.NewQueryClient(q.ctx)
 	var gqlResponse []*Record
 	for _, name := range names {
-		res, err := nsQueryClient.ResolveWrn(context.Background(), &nstypes.QueryResolveWrn{Wrn: name})
+		res, err := nsQueryClient.ResolveCrn(context.Background(), &nstypes.QueryResolveCrn{Crn: name})
 		if err != nil {
-			return nil, err
-		}
+			// Return nil for record not found.
+			gqlResponse = append(gqlResponse, nil)
+		} else {
+			gqlRecord, err := getGQLRecord(context.Background(), q, *res.GetRecord())
+			if err != nil {
+				return nil, err
+			}
 
-		gqlRecord, err := getGQLRecord(context.Background(), q, *res.GetRecord())
-		if err != nil {
-			return nil, err
+			gqlResponse = append(gqlResponse, gqlRecord)
 		}
-
-		gqlResponse = append(gqlResponse, gqlRecord)
 	}
 
 	return gqlResponse, nil
@@ -96,17 +98,18 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 	var gqlResponse []*NameRecord
 
 	for _, name := range names {
-		res, err := nsQueryClient.LookupWrn(context.Background(), &nstypes.QueryLookupWrn{Wrn: name})
+		res, err := nsQueryClient.LookupCrn(context.Background(), &nstypes.QueryLookupCrn{Crn: name})
 		if err != nil {
-			return nil, err
-		}
+			// Return nil for name not found.
+			gqlResponse = append(gqlResponse, nil)
+		} else {
+			gqlRecord, err := getGQLNameRecord(res.GetName())
+			if err != nil {
+				return nil, err
+			}
 
-		gqlRecord, err := getGQLNameRecord(res.GetName())
-		if err != nil {
-			return nil, err
+			gqlResponse = append(gqlResponse, gqlRecord)
 		}
-
-		gqlResponse = append(gqlResponse, gqlRecord)
 	}
 
 	return gqlResponse, nil
@@ -114,7 +117,15 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 
 func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueInput, all *bool) ([]*Record, error) {
 	nsQueryClient := nstypes.NewQueryClient(q.ctx)
-	res, err := nsQueryClient.ListRecords(context.Background(), &nstypes.QueryListRecordsRequest{})
+
+	res, err := nsQueryClient.ListRecords(
+		context.Background(),
+		&nstypes.QueryListRecordsRequest{
+			Attributes: parseRequestAttributes(attributes),
+			All:        (all != nil && *all),
+		},
+	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -141,13 +152,15 @@ func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Re
 	for i, id := range ids {
 		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIdRequest{Id: id})
 		if err != nil {
-			return nil, err
+			// Return nil for record not found.
+			gqlResponse[i] = nil
+		} else {
+			record, err := getGQLRecord(context.Background(), q, res.GetRecord())
+			if err != nil {
+				return nil, err
+			}
+			gqlResponse[i] = record
 		}
-		record, err := getGQLRecord(context.Background(), q, res.GetRecord())
-		if err != nil {
-			return nil, err
-		}
-		gqlResponse[i] = record
 	}
 
 	return gqlResponse, nil

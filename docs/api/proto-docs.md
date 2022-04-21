@@ -179,17 +179,20 @@
     - [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest)
     - [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse)
     - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
+    - [QueryListRecordsRequest.KeyValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.KeyValueInput)
+    - [QueryListRecordsRequest.ReferenceInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ReferenceInput)
+    - [QueryListRecordsRequest.ValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput)
     - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
-    - [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn)
-    - [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse)
+    - [QueryLookupCrn](#vulcanize.nameservice.v1beta1.QueryLookupCrn)
+    - [QueryLookupCrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupCrnResponse)
     - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
     - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
     - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
     - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
     - [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse)
-    - [QueryResolveWrn](#vulcanize.nameservice.v1beta1.QueryResolveWrn)
-    - [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse)
+    - [QueryResolveCrn](#vulcanize.nameservice.v1beta1.QueryResolveCrn)
+    - [QueryResolveCrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveCrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
     - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
   
@@ -2362,11 +2365,12 @@ Params defines the nameservice module records
 | ----- | ---- | ----- | ----------- |
 | `id` | [string](#string) |  |  |
 | `bond_id` | [string](#string) |  |  |
-| `create_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| `expiry_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `create_time` | [string](#string) |  |  |
+| `expiry_time` | [string](#string) |  |  |
 | `deleted` | [bool](#bool) |  |  |
 | `owners` | [string](#string) | repeated |  |
-| `attributes` | [bytes](#bytes) |  |  |
+| `attributes` | [string](#string) |  |  |
+| `names` | [string](#string) | repeated |  |
 
 
 
@@ -2597,7 +2601,61 @@ QueryListRecordsRequest is request type for nameservice records list
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| `attributes` | [QueryListRecordsRequest.KeyValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.KeyValueInput) | repeated |  |
+| `all` | [bool](#bool) |  |  |
 | `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest.KeyValueInput"></a>
+
+### QueryListRecordsRequest.KeyValueInput
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `key` | [string](#string) |  |  |
+| `value` | [QueryListRecordsRequest.ValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ReferenceInput"></a>
+
+### QueryListRecordsRequest.ReferenceInput
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput"></a>
+
+### QueryListRecordsRequest.ValueInput
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `type` | [string](#string) |  |  |
+| `string` | [string](#string) |  |  |
+| `int` | [int64](#int64) |  |  |
+| `float` | [double](#double) |  |  |
+| `boolean` | [bool](#bool) |  |  |
+| `reference` | [QueryListRecordsRequest.ReferenceInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ReferenceInput) |  |  |
+| `values` | [QueryListRecordsRequest.ValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput) | repeated |  |
 
 
 
@@ -2620,25 +2678,25 @@ QueryListRecordsResponse is response type for nameservice records list
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryLookupWrn"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryLookupCrn"></a>
 
-### QueryLookupWrn
-QueryLookupWrn is request type for LookupWrn
+### QueryLookupCrn
+QueryLookupCrn is request type for LookupCrn
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `wrn` | [string](#string) |  |  |
+| `crn` | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryLookupWrnResponse"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryLookupCrnResponse"></a>
 
-### QueryLookupWrnResponse
-QueryLookupWrnResponse is response type for QueryLookupWrn
+### QueryLookupCrnResponse
+QueryLookupCrnResponse is response type for QueryLookupCrn
 
 
 | Field | Type | Label | Description |
@@ -2737,25 +2795,25 @@ QueryRecordByIdResponse is response type for nameservice records by id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryResolveWrn"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryResolveCrn"></a>
 
-### QueryResolveWrn
-QueryResolveWrn is request type for ResolveWrn
+### QueryResolveCrn
+QueryResolveCrn is request type for ResolveCrn
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `wrn` | [string](#string) |  |  |
+| `crn` | [string](#string) |  |  |
 
 
 
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryResolveWrnResponse"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryResolveCrnResponse"></a>
 
-### QueryResolveWrnResponse
-QueryResolveWrnResponse is response type for QueryResolveWrn
+### QueryResolveCrnResponse
+QueryResolveCrnResponse is response type for QueryResolveCrn
 
 
 | Field | Type | Label | Description |
@@ -2817,8 +2875,8 @@ Query defines the gRPC querier service for nameservice module
 | `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/vulcanize/nameservice/v1beta1/balance|
 | `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/vulcanize/nameservice/v1beta1/names|
 | `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/vulcanize/nameservice/v1beta1/whois/{name}|
-| `LookupWrn` | [QueryLookupWrn](#vulcanize.nameservice.v1beta1.QueryLookupWrn) | [QueryLookupWrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupWrnResponse) | LookupWrn | GET|/vulcanize/nameservice/v1beta1/lookup|
-| `ResolveWrn` | [QueryResolveWrn](#vulcanize.nameservice.v1beta1.QueryResolveWrn) | [QueryResolveWrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveWrnResponse) | ResolveWrn | GET|/vulcanize/nameservice/v1beta1/resolve|
+| `LookupCrn` | [QueryLookupCrn](#vulcanize.nameservice.v1beta1.QueryLookupCrn) | [QueryLookupCrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupCrnResponse) | LookupCrn | GET|/vulcanize/nameservice/v1beta1/lookup|
+| `ResolveCrn` | [QueryResolveCrn](#vulcanize.nameservice.v1beta1.QueryResolveCrn) | [QueryResolveCrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveCrnResponse) | ResolveCrn | GET|/vulcanize/nameservice/v1beta1/resolve|
 | `GetRecordExpiryQueue` | [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue) | [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse) | GetRecordExpiryQueue | GET|/vulcanize/nameservice/v1beta1/record-expiry|
 | `GetAuthorityExpiryQueue` | [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue) | [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse) | GetAuthorityExpiryQueue | GET|/vulcanize/nameservice/v1beta1/authority-expiry|
 
@@ -2868,7 +2926,7 @@ MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `wrn` | [string](#string) |  |  |
+| `crn` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
 
@@ -3053,7 +3111,7 @@ MsgSetName
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `wrn` | [string](#string) |  |  |
+| `crn` | [string](#string) |  |  |
 | `cid` | [string](#string) |  |  |
 | `signer` | [string](#string) |  |  |
 
@@ -3095,6 +3153,11 @@ MsgSetRecord
 MsgSetRecordResponse
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
 
 
 
@@ -3134,7 +3197,7 @@ Msg
 | `DissociateBond` | [MsgDissociateBond](#vulcanize.nameservice.v1beta1.MsgDissociateBond) | [MsgDissociateBondResponse](#vulcanize.nameservice.v1beta1.MsgDissociateBondResponse) | DissociateBond | |
 | `DissociateRecords` | [MsgDissociateRecords](#vulcanize.nameservice.v1beta1.MsgDissociateRecords) | [MsgDissociateRecordsResponse](#vulcanize.nameservice.v1beta1.MsgDissociateRecordsResponse) | DissociateRecords | |
 | `ReAssociateRecords` | [MsgReAssociateRecords](#vulcanize.nameservice.v1beta1.MsgReAssociateRecords) | [MsgReAssociateRecordsResponse](#vulcanize.nameservice.v1beta1.MsgReAssociateRecordsResponse) | ReAssociateRecords | |
-| `SetName` | [MsgSetName](#vulcanize.nameservice.v1beta1.MsgSetName) | [MsgSetNameResponse](#vulcanize.nameservice.v1beta1.MsgSetNameResponse) | SetName will store the name with given wrn and name | |
+| `SetName` | [MsgSetName](#vulcanize.nameservice.v1beta1.MsgSetName) | [MsgSetNameResponse](#vulcanize.nameservice.v1beta1.MsgSetNameResponse) | SetName will store the name with given crn and name | |
 | `ReserveName` | [MsgReserveAuthority](#vulcanize.nameservice.v1beta1.MsgReserveAuthority) | [MsgReserveAuthorityResponse](#vulcanize.nameservice.v1beta1.MsgReserveAuthorityResponse) | Reserve name | |
 | `DeleteName` | [MsgDeleteNameAuthority](#vulcanize.nameservice.v1beta1.MsgDeleteNameAuthority) | [MsgDeleteNameAuthorityResponse](#vulcanize.nameservice.v1beta1.MsgDeleteNameAuthorityResponse) | Delete Name method will remove authority name | |
 | `SetAuthorityBond` | [MsgSetAuthorityBond](#vulcanize.nameservice.v1beta1.MsgSetAuthorityBond) | [MsgSetAuthorityBondResponse](#vulcanize.nameservice.v1beta1.MsgSetAuthorityBondResponse) | SetAuthorityBond | |

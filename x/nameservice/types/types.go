@@ -2,9 +2,9 @@ package types
 
 import (
 	"crypto/sha256"
+
 	canonicalJson "github.com/gibson042/canonicaljson-go"
 	"github.com/tharsis/ethermint/x/nameservice/helpers"
-	"time"
 )
 
 const (
@@ -24,11 +24,9 @@ type PayloadType struct {
 func (payloadObj *PayloadType) ToPayload() Payload {
 	var payload = Payload{
 		Record: &Record{
-			CreateTime: time.Time{},
-			ExpiryTime: time.Time{},
 			Deleted:    false,
 			Owners:     nil,
-			Attributes: helpers.MarshalMapToJSONBytes(payloadObj.Record),
+			Attributes: helpers.BytesToBase64(helpers.MarshalMapToJSONBytes(payloadObj.Record)),
 		},
 		Signatures: payloadObj.Signatures,
 	}
@@ -40,7 +38,7 @@ func (payloadObj *PayloadType) ToPayload() Payload {
 func (payload Payload) ToReadablePayload() PayloadType {
 	var payloadType PayloadType
 
-	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(payload.Record.Attributes)
+	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(helpers.BytesFromBase64(payload.Record.Attributes))
 
 	payloadType.Signatures = payload.Signatures
 
@@ -58,7 +56,8 @@ func (r *Record) ToRecordType() RecordType {
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
-	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(r.Attributes)
+	resourceObj.Names = r.Names
+	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(helpers.BytesFromBase64(r.Attributes))
 
 	return resourceObj
 }
@@ -68,8 +67,8 @@ type RecordType struct {
 	Id         string                 `json:"id,omitempty"`
 	Names      []string               `json:"names,omitempty"`
 	BondId     string                 `json:"bondId,omitempty"`
-	CreateTime time.Time              `json:"createTime,omitempty"`
-	ExpiryTime time.Time              `json:"expiryTime,omitempty"`
+	CreateTime string                 `json:"createTime,omitempty"`
+	ExpiryTime string                 `json:"expiryTime,omitempty"`
 	Deleted    bool                   `json:"deleted,omitempty"`
 	Owners     []string               `json:"owners,omitempty"`
 	Attributes map[string]interface{} `json:"attributes,omitempty"`
@@ -86,7 +85,7 @@ func (r *RecordType) ToRecordObj() Record {
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
-	resourceObj.Attributes = helpers.MarshalMapToJSONBytes(r.Attributes)
+	resourceObj.Attributes = helpers.BytesToBase64(helpers.MarshalMapToJSONBytes(r.Attributes))
 
 	return resourceObj
 }

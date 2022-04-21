@@ -988,7 +988,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "vulcanize/dxns/schema.graphql", Input: `# Reference to another record.
+	{Name: "vulcanize/chiba-clonk/schema.graphql", Input: `# Reference to another record.
 type Reference {
     id:         String!         # ID of linked record.
 }
@@ -1096,7 +1096,7 @@ type PeerInfo {
     remote_ip:      String!
 }
 
-# Vulcanize DXNS status.
+# Vulcanize chiba-clonk status.
 type Status {
     version:    String!
     node:       NodeInfo!

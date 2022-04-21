@@ -3,12 +3,13 @@ package gql
 import (
 	"context"
 	"encoding/json"
+	"reflect"
+	"strconv"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
-	"reflect"
-	"strconv"
 )
 
 // OwnerAttributeName denotes the owner attribute name for a bond.
@@ -72,9 +73,10 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record nstypes.Re
 	return &Record{
 		ID:         record.Id,
 		BondID:     record.GetBondId(),
-		CreateTime: record.GetCreateTime().String(),
-		ExpiryTime: record.GetExpiryTime().String(),
+		CreateTime: record.GetCreateTime(),
+		ExpiryTime: record.GetExpiryTime(),
 		Owners:     record.GetOwners(),
+		Names:      record.GetNames(),
 		Attributes: attributes,
 		References: references,
 	}, nil
@@ -264,4 +266,50 @@ func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
 	}
 
 	return kvPairs, nil
+}
+
+func parseRequestAttributes(attrs []*KeyValueInput) []*nstypes.QueryListRecordsRequest_KeyValueInput {
+	kvPairs := []*nstypes.QueryListRecordsRequest_KeyValueInput{}
+
+	for _, value := range attrs {
+		kvPair := &nstypes.QueryListRecordsRequest_KeyValueInput{
+			Key:   value.Key,
+			Value: &nstypes.QueryListRecordsRequest_ValueInput{},
+		}
+
+		if value.Value.String != nil {
+			kvPair.Value.String_ = *value.Value.String
+			kvPair.Value.Type = "string"
+		}
+
+		if value.Value.Int != nil {
+			kvPair.Value.Int = int64(*value.Value.Int)
+			kvPair.Value.Type = "int"
+		}
+
+		if value.Value.Float != nil {
+			kvPair.Value.Float = *value.Value.Float
+			kvPair.Value.Type = "float"
+		}
+
+		if value.Value.Boolean != nil {
+			kvPair.Value.Boolean = *value.Value.Boolean
+			kvPair.Value.Type = "boolean"
+		}
+
+		if value.Value.Reference != nil {
+			reference := &nstypes.QueryListRecordsRequest_ReferenceInput{
+				Id: value.Value.Reference.ID,
+			}
+
+			kvPair.Value.Reference = reference
+			kvPair.Value.Type = "reference"
+		}
+
+		// TODO: Handle arrays.
+
+		kvPairs = append(kvPairs, kvPair)
+	}
+
+	return kvPairs
 }
