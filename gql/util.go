@@ -24,7 +24,7 @@ const ExpiryTimeAttributeName = "expiryTime"
 func getGQLCoin(coin sdk.Coin) *Coin {
 	gqlCoin := Coin{
 		Type:     coin.Denom,
-		Quantity: strconv.FormatInt(coin.Amount.Int64(), 10),
+		Quantity: coin.Amount.String(),
 	}
 
 	return &gqlCoin
