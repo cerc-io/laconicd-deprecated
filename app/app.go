@@ -626,7 +626,7 @@ func NewEthermintApp(
 		FeegrantKeeper:   app.FeeGrantKeeper,
 		FeeMarketKeeper:  app.FeeMarketKeeper,
 		SignModeHandler:  encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
+		SigGasConsumer:   middleware.DefaultSigVerificationGasConsumer,
 		MaxTxGasWanted:   maxGasWanted,
 		TxDecoder:        encodingConfig.TxConfig.TxDecoder(),
 	}
@@ -646,7 +646,6 @@ func (app *EthermintApp) setTxHandler(options middleware.HandlerOptions, txConfi
 	if err != nil {
 		panic(err)
 	}
-
 	app.SetTxHandler(txHandler)
 }
 
