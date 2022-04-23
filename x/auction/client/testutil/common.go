@@ -61,9 +61,12 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string, acco
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.EthSecp256k1)
 	sr.NoError(err)
 
-	val.ClientCtx.Keyring.SavePubKey(accountName, info.GetPubKey(), hd.EthSecp256k1Type)
+	pubKey, err := info.GetPubKey()
+	sr.NoError(err)
 
-	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	val.ClientCtx.Keyring.SaveOfflineKey(accountName, pubKey)
+
+	newAddr, _ := info.GetAddress()
 	_, err = banktestutil.MsgSendExec(
 		val.ClientCtx,
 		val.Address,

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
@@ -16,8 +17,8 @@ import (
 // RecordKeeper exposes the bare minimal read-only API for other modules.
 type RecordKeeper struct {
 	auctionKeeper auctionkeeper.Keeper
-	storeKey      sdk.StoreKey      // Unexposed key to access store from sdk.Context
-	cdc           codec.BinaryCodec // The wire codec for binary encoding/decoding.
+	storeKey      storetypes.StoreKey // Unexposed key to access store from sdk.Context
+	cdc           codec.BinaryCodec   // The wire codec for binary encoding/decoding.
 }
 
 func (k RecordKeeper) UsesAuction(ctx sdk.Context, auctionID string) bool {
@@ -123,7 +124,7 @@ func (k Keeper) RemoveBondToRecordIndexEntry(ctx sdk.Context, bondID string, id 
 }
 
 // NewRecordKeeper creates new instances of the nameservice RecordKeeper
-func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec) RecordKeeper {
+func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) RecordKeeper {
 	return RecordKeeper{
 		auctionKeeper: auctionKeeper,
 		storeKey:      storeKey,

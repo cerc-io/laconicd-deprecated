@@ -89,7 +89,7 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	sr.NoError(err)
 
-	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	newAddr, _ := info.GetAddress()
 	_, err = banktestutil.MsgSendExec(
 		val.ClientCtx,
 		val.Address,

@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	"github.com/tharsis/ethermint/x/auction/types"
 
 	wnsUtils "github.com/tharsis/ethermint/utils"
@@ -43,7 +43,7 @@ type Keeper struct {
 	// Track auction usage in other cosmos-sdk modules (more like a usage tracker).
 	usageKeepers []types.AuctionUsageKeeper
 
-	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
+	storeKey storetypes.StoreKey // Unexposed key to access store from sdk.Context
 
 	cdc codec.BinaryCodec // The wire codec for binary encoding/decoding.
 
@@ -58,7 +58,7 @@ type AuctionClientKeeper interface {
 }
 
 // NewKeeper creates new instances of the auction Keeper
-func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKey sdk.StoreKey, cdc codec.BinaryCodec, ps params.Subspace) Keeper {
+func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, ps params.Subspace) Keeper {
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}

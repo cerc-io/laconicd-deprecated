@@ -2,8 +2,9 @@ package testutil
 
 import (
 	"fmt"
+
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tharsis/ethermint/x/bond/client/cli"
 	bondtypes "github.com/tharsis/ethermint/x/bond/types"

@@ -78,7 +78,7 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
 	sr.NoError(err)
 
 	// account key
-	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	newAddr, _ := info.GetAddress()
 	_, err = banktestutil.MsgSendExec(
 		val.ClientCtx,
 		val.Address,
