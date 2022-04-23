@@ -1,0 +1,18 @@
+syntax = "proto3";
+package vulcanize.bond.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "vulcanize/bond/v1beta1/bond.proto";
+
+option go_package = "github.com/tharsis/ethermint/x/bond/types";
+
+// GenesisState defines the bond module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [(gogoproto.nullable) = false];
+
+  // bonds defines all the bonds
+  repeated Bond bonds = 2 [
+    (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
+  ];
+}

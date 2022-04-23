@@ -181,7 +181,7 @@ function setupNetwork({ runConfig, timeout }) {
       stdio: ['ignore', runConfig.verboseLog ? 'pipe' : 'ignore', 'pipe'],
     });
 
-    logger.info(`Starting Ethermintd process... timeout: ${timeout}ms`);
+    logger.info(`Starting Chibaclonkd process... timeout: ${timeout}ms`);
     if (runConfig.verboseLog) {
       ethermintdProc.stdout.pipe(process.stdout);
     }
@@ -191,14 +191,14 @@ function setupNetwork({ runConfig, timeout }) {
         process.stdout.write(oLine);
       }
       if (oLine.indexOf('Starting JSON-RPC server') !== -1) {
-        logger.info('Ethermintd started');
+        logger.info('Chibaclonkd started');
         resolve(ethermintdProc);
       }
     });
   });
 
   const timeoutPromise = new Promise((resolve, reject) => {
-    setTimeout(() => reject(new Error('Start ethermintd timeout!')), timeout);
+    setTimeout(() => reject(new Error('Start chibaclonkd timeout!')), timeout);
   });
   return Promise.race([spawnPromise, timeoutPromise]);
 }

@@ -80,6 +80,149 @@
 - [ethermint/types/v1/web3.proto](#ethermint/types/v1/web3.proto)
     - [ExtensionOptionsWeb3Tx](#ethermint.types.v1.ExtensionOptionsWeb3Tx)
   
+- [vulcanize/auction/v1beta1/types.proto](#vulcanize/auction/v1beta1/types.proto)
+    - [Auction](#vulcanize.auction.v1beta1.Auction)
+    - [Auctions](#vulcanize.auction.v1beta1.Auctions)
+    - [Bid](#vulcanize.auction.v1beta1.Bid)
+    - [Params](#vulcanize.auction.v1beta1.Params)
+  
+- [vulcanize/auction/v1beta1/genesis.proto](#vulcanize/auction/v1beta1/genesis.proto)
+    - [GenesisState](#vulcanize.auction.v1beta1.GenesisState)
+  
+- [vulcanize/auction/v1beta1/query.proto](#vulcanize/auction/v1beta1/query.proto)
+    - [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest)
+    - [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse)
+    - [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest)
+    - [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse)
+    - [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest)
+    - [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse)
+    - [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest)
+    - [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse)
+    - [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest)
+    - [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse)
+    - [BidRequest](#vulcanize.auction.v1beta1.BidRequest)
+    - [BidResponse](#vulcanize.auction.v1beta1.BidResponse)
+    - [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest)
+    - [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse)
+    - [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest)
+    - [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse)
+  
+    - [Query](#vulcanize.auction.v1beta1.Query)
+  
+- [vulcanize/auction/v1beta1/tx.proto](#vulcanize/auction/v1beta1/tx.proto)
+    - [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid)
+    - [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse)
+    - [MsgCreateAuction](#vulcanize.auction.v1beta1.MsgCreateAuction)
+    - [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse)
+    - [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid)
+    - [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse)
+  
+    - [Msg](#vulcanize.auction.v1beta1.Msg)
+  
+- [vulcanize/bond/v1beta1/bond.proto](#vulcanize/bond/v1beta1/bond.proto)
+    - [Bond](#vulcanize.bond.v1beta1.Bond)
+    - [Params](#vulcanize.bond.v1beta1.Params)
+  
+- [vulcanize/bond/v1beta1/genesis.proto](#vulcanize/bond/v1beta1/genesis.proto)
+    - [GenesisState](#vulcanize.bond.v1beta1.GenesisState)
+  
+- [vulcanize/bond/v1beta1/query.proto](#vulcanize/bond/v1beta1/query.proto)
+    - [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest)
+    - [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse)
+    - [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest)
+    - [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse)
+    - [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest)
+    - [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse)
+    - [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest)
+    - [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse)
+    - [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest)
+    - [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse)
+  
+    - [Query](#vulcanize.bond.v1beta1.Query)
+  
+- [vulcanize/bond/v1beta1/tx.proto](#vulcanize/bond/v1beta1/tx.proto)
+    - [MsgCancelBond](#vulcanize.bond.v1beta1.MsgCancelBond)
+    - [MsgCancelBondResponse](#vulcanize.bond.v1beta1.MsgCancelBondResponse)
+    - [MsgCreateBond](#vulcanize.bond.v1beta1.MsgCreateBond)
+    - [MsgCreateBondResponse](#vulcanize.bond.v1beta1.MsgCreateBondResponse)
+    - [MsgRefillBond](#vulcanize.bond.v1beta1.MsgRefillBond)
+    - [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse)
+    - [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond)
+    - [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse)
+  
+    - [Msg](#vulcanize.bond.v1beta1.Msg)
+  
+- [vulcanize/nameservice/v1beta1/nameservice.proto](#vulcanize/nameservice/v1beta1/nameservice.proto)
+    - [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo)
+    - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
+    - [BlockChangeSet](#vulcanize.nameservice.v1beta1.BlockChangeSet)
+    - [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority)
+    - [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry)
+    - [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord)
+    - [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry)
+    - [Params](#vulcanize.nameservice.v1beta1.Params)
+    - [Record](#vulcanize.nameservice.v1beta1.Record)
+    - [Signature](#vulcanize.nameservice.v1beta1.Signature)
+  
+- [vulcanize/nameservice/v1beta1/genesis.proto](#vulcanize/nameservice/v1beta1/genesis.proto)
+    - [GenesisState](#vulcanize.nameservice.v1beta1.GenesisState)
+  
+- [vulcanize/nameservice/v1beta1/query.proto](#vulcanize/nameservice/v1beta1/query.proto)
+    - [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance)
+    - [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord)
+    - [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest)
+    - [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse)
+    - [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue)
+    - [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse)
+    - [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue)
+    - [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse)
+    - [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest)
+    - [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse)
+    - [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest)
+    - [QueryListRecordsRequest.KeyValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.KeyValueInput)
+    - [QueryListRecordsRequest.ReferenceInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ReferenceInput)
+    - [QueryListRecordsRequest.ValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput)
+    - [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse)
+    - [QueryLookupCrn](#vulcanize.nameservice.v1beta1.QueryLookupCrn)
+    - [QueryLookupCrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupCrnResponse)
+    - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
+    - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
+    - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
+    - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
+    - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
+    - [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse)
+    - [QueryResolveCrn](#vulcanize.nameservice.v1beta1.QueryResolveCrn)
+    - [QueryResolveCrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveCrnResponse)
+    - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
+    - [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse)
+  
+    - [Query](#vulcanize.nameservice.v1beta1.Query)
+  
+- [vulcanize/nameservice/v1beta1/tx.proto](#vulcanize/nameservice/v1beta1/tx.proto)
+    - [MsgAssociateBond](#vulcanize.nameservice.v1beta1.MsgAssociateBond)
+    - [MsgAssociateBondResponse](#vulcanize.nameservice.v1beta1.MsgAssociateBondResponse)
+    - [MsgDeleteNameAuthority](#vulcanize.nameservice.v1beta1.MsgDeleteNameAuthority)
+    - [MsgDeleteNameAuthorityResponse](#vulcanize.nameservice.v1beta1.MsgDeleteNameAuthorityResponse)
+    - [MsgDissociateBond](#vulcanize.nameservice.v1beta1.MsgDissociateBond)
+    - [MsgDissociateBondResponse](#vulcanize.nameservice.v1beta1.MsgDissociateBondResponse)
+    - [MsgDissociateRecords](#vulcanize.nameservice.v1beta1.MsgDissociateRecords)
+    - [MsgDissociateRecordsResponse](#vulcanize.nameservice.v1beta1.MsgDissociateRecordsResponse)
+    - [MsgReAssociateRecords](#vulcanize.nameservice.v1beta1.MsgReAssociateRecords)
+    - [MsgReAssociateRecordsResponse](#vulcanize.nameservice.v1beta1.MsgReAssociateRecordsResponse)
+    - [MsgRenewRecord](#vulcanize.nameservice.v1beta1.MsgRenewRecord)
+    - [MsgRenewRecordResponse](#vulcanize.nameservice.v1beta1.MsgRenewRecordResponse)
+    - [MsgReserveAuthority](#vulcanize.nameservice.v1beta1.MsgReserveAuthority)
+    - [MsgReserveAuthorityResponse](#vulcanize.nameservice.v1beta1.MsgReserveAuthorityResponse)
+    - [MsgSetAuthorityBond](#vulcanize.nameservice.v1beta1.MsgSetAuthorityBond)
+    - [MsgSetAuthorityBondResponse](#vulcanize.nameservice.v1beta1.MsgSetAuthorityBondResponse)
+    - [MsgSetName](#vulcanize.nameservice.v1beta1.MsgSetName)
+    - [MsgSetNameResponse](#vulcanize.nameservice.v1beta1.MsgSetNameResponse)
+    - [MsgSetRecord](#vulcanize.nameservice.v1beta1.MsgSetRecord)
+    - [MsgSetRecordResponse](#vulcanize.nameservice.v1beta1.MsgSetRecordResponse)
+    - [Payload](#vulcanize.nameservice.v1beta1.Payload)
+  
+    - [Msg](#vulcanize.nameservice.v1beta1.Msg)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -1138,6 +1281,1926 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
  <!-- end enums -->
 
  <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/types.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/types.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.Auction"></a>
+
+### Auction
+Auction represents a sealed-bid on-chain auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `status` | [string](#string) |  |  |
+| `owner_address` | [string](#string) |  | Address of the creator of the auction |
+| `create_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the auction was created |
+| `commits_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the commits phase concluded |
+| `reveals_end_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp at which the reveals phase concluded |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit and reveal fees must both be paid when committing a bid Reveal fee is returned only if the bid is revealed |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount for a valid commit |
+| `winner_address` | [string](#string) |  | Address of the winner |
+| `winning_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Winning bid, i.e., the highest bid |
+| `winning_price` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Amount the winner pays, i.e. the second highest auction |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.Auctions"></a>
+
+### Auctions
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.Bid"></a>
+
+### Bid
+Bid represents a sealed bid (commit) made during the auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  |  |
+| `bidder_address` | [string](#string) |  |  |
+| `status` | [string](#string) |  |  |
+| `commit_hash` | [string](#string) |  |  |
+| `commit_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `reveal_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `bid_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.Params"></a>
+
+### Params
+Params defines the auction module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the reveals phase in seconds |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/genesis.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the genesis state of the auction module
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
+| `auctions` | [Auction](#vulcanize.auction.v1beta1.Auction) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/query.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionRequest"></a>
+
+### AuctionRequest
+AuctionRequest is the format for querying a specific auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  | Auction ID |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionResponse"></a>
+
+### AuctionResponse
+AuctionResponse returns the details of the queried auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByBidderRequest"></a>
+
+### AuctionsByBidderRequest
+AuctionsByBidderRequest is the format for querying all auctions containing a bidder address
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bidder_address` | [string](#string) |  | Address of the bidder |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByBidderResponse"></a>
+
+### AuctionsByBidderResponse
+AuctionsByBidderResponse returns all auctions containing a bidder
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByOwnerRequest"></a>
+
+### AuctionsByOwnerRequest
+AuctionsByOwnerRequest is the format for querying all auctions created by an owner
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner_address` | [string](#string) |  | Address of the owner |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsByOwnerResponse"></a>
+
+### AuctionsByOwnerResponse
+AuctionsByOwnerResponse returns all auctions created by an owner
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsRequest"></a>
+
+### AuctionsRequest
+AuctionsRequest is the format for querying all the auctions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.AuctionsResponse"></a>
+
+### AuctionsResponse
+AuctionsResponse returns the list of all auctions
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auctions` | [Auctions](#vulcanize.auction.v1beta1.Auctions) |  | List of auctions |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination info for the next request |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BalanceRequest"></a>
+
+### BalanceRequest
+BalanceRequest is the format to fetch all balances
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BalanceResponse"></a>
+
+### BalanceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | Set of all balances within the auction |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidRequest"></a>
+
+### BidRequest
+BidRequest is the format for querying a specific bid in an auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `bidder` | [string](#string) |  | Bidder address |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidResponse"></a>
+
+### BidResponse
+BidResponse returns the details of the queried bid
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Bid details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidsRequest"></a>
+
+### BidsRequest
+BidsRequest is the format for querying all bids in an auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.BidsResponse"></a>
+
+### BidsResponse
+BidsResponse returns details of all bids in an auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bids` | [Bid](#vulcanize.auction.v1beta1.Bid) | repeated | List of bids in the auction |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the format to query the parameters of the auction module
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse returns parameters of the auction module
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.auction.v1beta1.Params) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.auction.v1beta1.Query"></a>
+
+### Query
+Query defines the gRPC querier interface for the auction module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Auctions` | [AuctionsRequest](#vulcanize.auction.v1beta1.AuctionsRequest) | [AuctionsResponse](#vulcanize.auction.v1beta1.AuctionsResponse) | Auctions queries all auctions | GET|/vulcanize/auction/v1beta1/auctions|
+| `GetAuction` | [AuctionRequest](#vulcanize.auction.v1beta1.AuctionRequest) | [AuctionResponse](#vulcanize.auction.v1beta1.AuctionResponse) | GetAuction queries an auction | GET|/vulcanize/auction/v1beta1/auctions/{id}|
+| `GetBid` | [BidRequest](#vulcanize.auction.v1beta1.BidRequest) | [BidResponse](#vulcanize.auction.v1beta1.BidResponse) | GetBid queries an auction bid | GET|/vulcanize/auction/v1beta1/bids/{auction_id}/{bidder}|
+| `GetBids` | [BidsRequest](#vulcanize.auction.v1beta1.BidsRequest) | [BidsResponse](#vulcanize.auction.v1beta1.BidsResponse) | GetBids queries all auction bids | GET|/vulcanize/auction/v1beta1/bids/{auction_id}|
+| `AuctionsByBidder` | [AuctionsByBidderRequest](#vulcanize.auction.v1beta1.AuctionsByBidderRequest) | [AuctionsByBidderResponse](#vulcanize.auction.v1beta1.AuctionsByBidderResponse) | AuctionsByBidder queries auctions by bidder | GET|/vulcanize/auction/v1beta1/by-bidder/{bidder_address}|
+| `AuctionsByOwner` | [AuctionsByOwnerRequest](#vulcanize.auction.v1beta1.AuctionsByOwnerRequest) | [AuctionsByOwnerResponse](#vulcanize.auction.v1beta1.AuctionsByOwnerResponse) | AuctionsByOwner queries auctions by owner | GET|/vulcanize/auction/v1beta1/by-owner/{owner_address}|
+| `QueryParams` | [QueryParamsRequest](#vulcanize.auction.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.auction.v1beta1.QueryParamsResponse) | QueryParams implements the params query command | GET|/vulcanize/auction/v1beta1/params|
+| `Balance` | [BalanceRequest](#vulcanize.auction.v1beta1.BalanceRequest) | [BalanceResponse](#vulcanize.auction.v1beta1.BalanceResponse) | Balance queries the auction module account balance | GET|/vulcanize/auction/v1beta1/balance|
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/auction/v1beta1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/auction/v1beta1/tx.proto
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCommitBid"></a>
+
+### MsgCommitBid
+CommitBid defines the message to commit a bid
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `commit_hash` | [string](#string) |  | Commit Hash |
+| `signer` | [string](#string) |  | Address of the signer |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCommitBidResponse"></a>
+
+### MsgCommitBidResponse
+MsgCommitBidResponse returns the state of the auction after the bid creation
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bid` | [Bid](#vulcanize.auction.v1beta1.Bid) |  | Auction details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCreateAuction"></a>
+
+### MsgCreateAuction
+MsgCreateAuction defines a create auction message
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the commits phase in seconds |
+| `reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  | Duration of the reveals phase in seconds |
+| `commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Commit fees |
+| `reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Reveal fees |
+| `minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | Minimum acceptable bid amount |
+| `signer` | [string](#string) |  | Address of the signer |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgCreateAuctionResponse"></a>
+
+### MsgCreateAuctionResponse
+MsgCreateAuctionResponse returns the details of the created auction
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgRevealBid"></a>
+
+### MsgRevealBid
+RevealBid defines the message to reveal a bid
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  | Auction ID |
+| `reveal` | [string](#string) |  | Commit Hash |
+| `signer` | [string](#string) |  | Address of the signer |
+
+
+
+
+
+
+<a name="vulcanize.auction.v1beta1.MsgRevealBidResponse"></a>
+
+### MsgRevealBidResponse
+MsgRevealBidResponse returns the state of the auction after the bid reveal
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction` | [Auction](#vulcanize.auction.v1beta1.Auction) |  | Auction details |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.auction.v1beta1.Msg"></a>
+
+### Msg
+Tx defines the gRPC tx interface
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateAuction` | [MsgCreateAuction](#vulcanize.auction.v1beta1.MsgCreateAuction) | [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse) | CreateAuction is the command for creating an auction | |
+| `CommitBid` | [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid) | [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse) | CommitBid is the command for committing a bid | |
+| `RevealBid` | [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid) | [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse) | RevealBid is the command for revealing a bid | |
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/bond.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/bond.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.Bond"></a>
+
+### Bond
+Bond represents funds deposited by an account for record rent payments.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  | id is unique identifier of the bond |
+| `owner` | [string](#string) |  | owner of the bond |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | balance of the bond |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.Params"></a>
+
+### Params
+Params defines the bond module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `max_bond_amount` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | max_bond_amount is maximum amount to bond |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/genesis.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the bond module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.bond.v1beta1.Params) |  | params defines all the parameters of the module. |
+| `bonds` | [Bond](#vulcanize.bond.v1beta1.Bond) | repeated | bonds defines all the bonds |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/query.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIdRequest"></a>
+
+### QueryGetBondByIdRequest
+QueryGetBondById
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIdResponse"></a>
+
+### QueryGetBondByIdResponse
+QueryGetBondByIdResponse returns QueryGetBondById query response
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond` | [Bond](#vulcanize.bond.v1beta1.Bond) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest"></a>
+
+### QueryGetBondModuleBalanceRequest
+QueryGetBondModuleBalanceRequest is request type for bond module balance rpc method
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse"></a>
+
+### QueryGetBondModuleBalanceResponse
+QueryGetBondModuleBalanceResponse is the response type for bond module balance rpc method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest"></a>
+
+### QueryGetBondsByOwnerRequest
+QueryGetBondsByOwnerRequest is request type for Query/GetBondsByOwner RPC Method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse"></a>
+
+### QueryGetBondsByOwnerResponse
+QueryGetBondsByOwnerResponse is response type for Query/GetBondsByOwner RPC Method
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bonds` | [Bond](#vulcanize.bond.v1beta1.Bond) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsRequest"></a>
+
+### QueryGetBondsRequest
+QueryGetBondById queries a bond by bond-id.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryGetBondsResponse"></a>
+
+### QueryGetBondsResponse
+QueryGetBondsResponse is response type for get the bonds by bond-id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bonds` | [Bond](#vulcanize.bond.v1beta1.Bond) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is request for query the bond module params
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse returns response type  of bond module params
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.bond.v1beta1.Params) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.bond.v1beta1.Query"></a>
+
+### Query
+Query defines the gRPC querier service for bond module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Params` | [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Params queries bonds module params. | GET|/vulcanize/bond/v1beta1/params|
+| `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/vulcanize/bond/v1beta1/bonds|
+| `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
+| `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/vulcanize/bond/v1beta1/by-owner/{owner}|
+| `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/vulcanize/bond/v1beta1/balance|
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/bond/v1beta1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/bond/v1beta1/tx.proto
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCancelBond"></a>
+
+### MsgCancelBond
+MsgCancelBond defines a SDK message for the cancel the bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCancelBondResponse"></a>
+
+### MsgCancelBondResponse
+MsgCancelBondResponse defines the Msg/CancelBond response type.
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCreateBond"></a>
+
+### MsgCreateBond
+MsgCreateBond defines a SDK message for creating a new bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `signer` | [string](#string) |  |  |
+| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgCreateBondResponse"></a>
+
+### MsgCreateBondResponse
+MsgCreateBondResponse defines the Msg/CreateBond response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgRefillBond"></a>
+
+### MsgRefillBond
+MsgRefillBond defines a SDK message for refill the amount for bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgRefillBondResponse"></a>
+
+### MsgRefillBondResponse
+MsgRefillBondResponse defines the Msg/RefillBond response type.
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgWithdrawBond"></a>
+
+### MsgWithdrawBond
+MsgWithdrawBond defines a SDK message for withdrawing amount from bond.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `coins` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.bond.v1beta1.MsgWithdrawBondResponse"></a>
+
+### MsgWithdrawBondResponse
+MsgWithdrawBondResponse defines the Msg/WithdrawBond response type.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.bond.v1beta1.Msg"></a>
+
+### Msg
+Msg defines the bond Msg service.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `CreateBond` | [MsgCreateBond](#vulcanize.bond.v1beta1.MsgCreateBond) | [MsgCreateBondResponse](#vulcanize.bond.v1beta1.MsgCreateBondResponse) | CreateBond defines a method for creating a new bond. | |
+| `RefillBond` | [MsgRefillBond](#vulcanize.bond.v1beta1.MsgRefillBond) | [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse) | RefillBond defines a method for refilling amount for bond. | |
+| `WithdrawBond` | [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdrawing amount from bond. | |
+| `CancelBond` | [MsgCancelBond](#vulcanize.bond.v1beta1.MsgCancelBond) | [MsgCancelBondResponse](#vulcanize.bond.v1beta1.MsgCancelBondResponse) | CancelBond defines a method for cancelling a bond. | |
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/nameservice/v1beta1/nameservice.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/nameservice/v1beta1/nameservice.proto
+
+
+
+<a name="vulcanize.nameservice.v1beta1.AuctionBidInfo"></a>
+
+### AuctionBidInfo
+AuctionBidInfo
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `auction_id` | [string](#string) |  |  |
+| `bidder_address` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.AuthorityEntry"></a>
+
+### AuthorityEntry
+AuthorityEntry defines the nameservice module AuthorityEntries
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `entry` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.BlockChangeSet"></a>
+
+### BlockChangeSet
+BlockChangeSet
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `height` | [int64](#int64) |  |  |
+| `records` | [string](#string) | repeated |  |
+| `auctions` | [string](#string) | repeated |  |
+| `auction_bids` | [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo) | repeated |  |
+| `authorities` | [string](#string) | repeated |  |
+| `names` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.NameAuthority"></a>
+
+### NameAuthority
+NameAuthority
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `owner_public_key` | [string](#string) |  | Owner public key. |
+| `owner_address` | [string](#string) |  | Owner address. |
+| `height` | [uint64](#uint64) |  | height at which name/authority was created. |
+| `status` | [string](#string) |  |  |
+| `auction_id` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `expiry_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.NameEntry"></a>
+
+### NameEntry
+NameEntry
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `entry` | [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.NameRecord"></a>
+
+### NameRecord
+NameRecord
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `latest` | [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry) |  |  |
+| `history` | [NameRecordEntry](#vulcanize.nameservice.v1beta1.NameRecordEntry) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.NameRecordEntry"></a>
+
+### NameRecordEntry
+NameRecordEntry
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `height` | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.Params"></a>
+
+### Params
+Params defines the nameservice module parameters
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_rent` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `record_rent_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_rent` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `authority_rent_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_grace_period` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_auction_enabled` | [bool](#bool) |  |  |
+| `authority_auction_commits_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_auction_reveals_duration` | [google.protobuf.Duration](#google.protobuf.Duration) |  |  |
+| `authority_auction_commit_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `authority_auction_reveal_fee` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+| `authority_auction_minimum_bid` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.Record"></a>
+
+### Record
+Params defines the nameservice module records
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `create_time` | [string](#string) |  |  |
+| `expiry_time` | [string](#string) |  |  |
+| `deleted` | [bool](#bool) |  |  |
+| `owners` | [string](#string) | repeated |  |
+| `attributes` | [string](#string) |  |  |
+| `names` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.Signature"></a>
+
+### Signature
+Signature
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `sig` | [string](#string) |  |  |
+| `pub_key` | [string](#string) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/nameservice/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/nameservice/v1beta1/genesis.proto
+
+
+
+<a name="vulcanize.nameservice.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the nameservice module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.nameservice.v1beta1.Params) |  | params defines all the params of nameservice module. |
+| `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated | records |
+| `authorities` | [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry) | repeated | authorities |
+| `names` | [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry) | repeated | names |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/nameservice/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/nameservice/v1beta1/query.proto
+
+
+
+<a name="vulcanize.nameservice.v1beta1.AccountBalance"></a>
+
+### AccountBalance
+AccountBalance is nameservice module account balance
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `account_name` | [string](#string) |  |  |
+| `balance` | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.ExpiryQueueRecord"></a>
+
+### ExpiryQueueRecord
+ExpiryQueueRecord
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `value` | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest"></a>
+
+### GetNameServiceModuleBalanceRequest
+GetNameServiceModuleBalanceRequest is request type for nameservice module accounts balance
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse"></a>
+
+### GetNameServiceModuleBalanceResponse
+GetNameServiceModuleBalanceResponse is response type for nameservice module accounts balance
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `balances` | [AccountBalance](#vulcanize.nameservice.v1beta1.AccountBalance) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue"></a>
+
+### QueryGetAuthorityExpiryQueue
+QueryGetAuthorityExpiryQueue
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse"></a>
+
+### QueryGetAuthorityExpiryQueueResponse
+QueryGetAuthorityExpiryQueueResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `authorities` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue"></a>
+
+### QueryGetRecordExpiryQueue
+QueryGetRecordExpiryQueue
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse"></a>
+
+### QueryGetRecordExpiryQueueResponse
+QueryGetRecordExpiryQueueResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `records` | [ExpiryQueueRecord](#vulcanize.nameservice.v1beta1.ExpiryQueueRecord) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest"></a>
+
+### QueryListNameRecordsRequest
+QueryListNameRecordsRequest is request type for nameservice names records
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse"></a>
+
+### QueryListNameRecordsResponse
+QueryListNameRecordsResponse is response type for nameservice names records
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `names` | [NameEntry](#vulcanize.nameservice.v1beta1.NameEntry) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest"></a>
+
+### QueryListRecordsRequest
+QueryListRecordsRequest is request type for nameservice records list
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `attributes` | [QueryListRecordsRequest.KeyValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.KeyValueInput) | repeated |  |
+| `all` | [bool](#bool) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest.KeyValueInput"></a>
+
+### QueryListRecordsRequest.KeyValueInput
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `key` | [string](#string) |  |  |
+| `value` | [QueryListRecordsRequest.ValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ReferenceInput"></a>
+
+### QueryListRecordsRequest.ReferenceInput
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput"></a>
+
+### QueryListRecordsRequest.ValueInput
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `type` | [string](#string) |  |  |
+| `string` | [string](#string) |  |  |
+| `int` | [int64](#int64) |  |  |
+| `float` | [double](#double) |  |  |
+| `boolean` | [bool](#bool) |  |  |
+| `reference` | [QueryListRecordsRequest.ReferenceInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ReferenceInput) |  |  |
+| `values` | [QueryListRecordsRequest.ValueInput](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest.ValueInput) | repeated |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryListRecordsResponse"></a>
+
+### QueryListRecordsResponse
+QueryListRecordsResponse is response type for nameservice records list
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryLookupCrn"></a>
+
+### QueryLookupCrn
+QueryLookupCrn is request type for LookupCrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `crn` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryLookupCrnResponse"></a>
+
+### QueryLookupCrnResponse
+QueryLookupCrnResponse is response type for QueryLookupCrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [NameRecord](#vulcanize.nameservice.v1beta1.NameRecord) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is request type for nameservice params
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse is response type for nameservice params
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#vulcanize.nameservice.v1beta1.Params) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
+
+### QueryRecordByBondIdRequest
+QueryRecordByBondIdRequest is request type for get the records by bond-id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
+
+### QueryRecordByBondIdResponse
+QueryRecordByBondIdResponse is response type for records list by bond-id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `records` | [Record](#vulcanize.nameservice.v1beta1.Record) | repeated |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByIdRequest"></a>
+
+### QueryRecordByIdRequest
+QueryRecordByIdRequest is request type for nameservice records by id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByIdResponse"></a>
+
+### QueryRecordByIdResponse
+QueryRecordByIdResponse is response type for nameservice records by id
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record` | [Record](#vulcanize.nameservice.v1beta1.Record) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryResolveCrn"></a>
+
+### QueryResolveCrn
+QueryResolveCrn is request type for ResolveCrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `crn` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryResolveCrnResponse"></a>
+
+### QueryResolveCrnResponse
+QueryResolveCrnResponse is response type for QueryResolveCrn
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record` | [Record](#vulcanize.nameservice.v1beta1.Record) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryWhoisRequest"></a>
+
+### QueryWhoisRequest
+QueryWhoisRequest is request type for Get NameAuthority
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.QueryWhoisResponse"></a>
+
+### QueryWhoisResponse
+QueryWhoisResponse is response type for whois request
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name_authority` | [NameAuthority](#vulcanize.nameservice.v1beta1.NameAuthority) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.nameservice.v1beta1.Query"></a>
+
+### Query
+Query defines the gRPC querier service for nameservice module
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Params queries the nameservice module params. | GET|/vulcanize/nameservice/v1beta1/params|
+| `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/vulcanize/nameservice/v1beta1/records|
+| `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/vulcanize/nameservice/v1beta1/records/{id}|
+| `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}|
+| `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/vulcanize/nameservice/v1beta1/balance|
+| `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/vulcanize/nameservice/v1beta1/names|
+| `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/vulcanize/nameservice/v1beta1/whois/{name}|
+| `LookupCrn` | [QueryLookupCrn](#vulcanize.nameservice.v1beta1.QueryLookupCrn) | [QueryLookupCrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupCrnResponse) | LookupCrn | GET|/vulcanize/nameservice/v1beta1/lookup|
+| `ResolveCrn` | [QueryResolveCrn](#vulcanize.nameservice.v1beta1.QueryResolveCrn) | [QueryResolveCrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveCrnResponse) | ResolveCrn | GET|/vulcanize/nameservice/v1beta1/resolve|
+| `GetRecordExpiryQueue` | [QueryGetRecordExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueue) | [QueryGetRecordExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetRecordExpiryQueueResponse) | GetRecordExpiryQueue | GET|/vulcanize/nameservice/v1beta1/record-expiry|
+| `GetAuthorityExpiryQueue` | [QueryGetAuthorityExpiryQueue](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueue) | [QueryGetAuthorityExpiryQueueResponse](#vulcanize.nameservice.v1beta1.QueryGetAuthorityExpiryQueueResponse) | GetAuthorityExpiryQueue | GET|/vulcanize/nameservice/v1beta1/authority-expiry|
+
+ <!-- end services -->
+
+
+
+<a name="vulcanize/nameservice/v1beta1/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/nameservice/v1beta1/tx.proto
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgAssociateBond"></a>
+
+### MsgAssociateBond
+MsgAssociateBond
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_id` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgAssociateBondResponse"></a>
+
+### MsgAssociateBondResponse
+MsgAssociateBondResponse
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgDeleteNameAuthority"></a>
+
+### MsgDeleteNameAuthority
+MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `crn` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgDeleteNameAuthorityResponse"></a>
+
+### MsgDeleteNameAuthorityResponse
+MsgDeleteNameAuthorityResponse
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgDissociateBond"></a>
+
+### MsgDissociateBond
+MsgDissociateBond is SDK message for Msg/DissociateBond
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgDissociateBondResponse"></a>
+
+### MsgDissociateBondResponse
+MsgDissociateBondResponse is response type for MsgDissociateBond
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgDissociateRecords"></a>
+
+### MsgDissociateRecords
+MsgDissociateRecords is SDK message for Msg/DissociateRecords
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgDissociateRecordsResponse"></a>
+
+### MsgDissociateRecordsResponse
+MsgDissociateRecordsResponse is response type for MsgDissociateRecords
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgReAssociateRecords"></a>
+
+### MsgReAssociateRecords
+MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `new_bond_id` | [string](#string) |  |  |
+| `old_bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgReAssociateRecordsResponse"></a>
+
+### MsgReAssociateRecordsResponse
+MsgReAssociateRecordsResponse is response type for MsgReAssociateRecords
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgRenewRecord"></a>
+
+### MsgRenewRecord
+MsgRenewRecord is SDK message for Renew a record
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgRenewRecordResponse"></a>
+
+### MsgRenewRecordResponse
+MsgRenewRecordResponse
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgReserveAuthority"></a>
+
+### MsgReserveAuthority
+MsgReserveName
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `owner` | [string](#string) |  | if creating a sub-authority. |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgReserveAuthorityResponse"></a>
+
+### MsgReserveAuthorityResponse
+MsgReserveNameResponse
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgSetAuthorityBond"></a>
+
+### MsgSetAuthorityBond
+MsgSetAuthorityBond is SDK message for SetAuthorityBond
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgSetAuthorityBondResponse"></a>
+
+### MsgSetAuthorityBondResponse
+MsgSetAuthorityBondResponse
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgSetName"></a>
+
+### MsgSetName
+MsgSetName
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `crn` | [string](#string) |  |  |
+| `cid` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgSetNameResponse"></a>
+
+### MsgSetNameResponse
+MsgSetNameResponse
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgSetRecord"></a>
+
+### MsgSetRecord
+MsgSetRecord
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond_id` | [string](#string) |  |  |
+| `signer` | [string](#string) |  |  |
+| `payload` | [Payload](#vulcanize.nameservice.v1beta1.Payload) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.MsgSetRecordResponse"></a>
+
+### MsgSetRecordResponse
+MsgSetRecordResponse
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `id` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.Payload"></a>
+
+### Payload
+Payload
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `record` | [Record](#vulcanize.nameservice.v1beta1.Record) |  |  |
+| `signatures` | [Signature](#vulcanize.nameservice.v1beta1.Signature) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="vulcanize.nameservice.v1beta1.Msg"></a>
+
+### Msg
+Msg
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `SetRecord` | [MsgSetRecord](#vulcanize.nameservice.v1beta1.MsgSetRecord) | [MsgSetRecordResponse](#vulcanize.nameservice.v1beta1.MsgSetRecordResponse) | SetRecord will records a new record with given payload and bond id | |
+| `RenewRecord` | [MsgRenewRecord](#vulcanize.nameservice.v1beta1.MsgRenewRecord) | [MsgRenewRecordResponse](#vulcanize.nameservice.v1beta1.MsgRenewRecordResponse) | Renew Record will renew the expire record | |
+| `AssociateBond` | [MsgAssociateBond](#vulcanize.nameservice.v1beta1.MsgAssociateBond) | [MsgAssociateBondResponse](#vulcanize.nameservice.v1beta1.MsgAssociateBondResponse) | AssociateBond | |
+| `DissociateBond` | [MsgDissociateBond](#vulcanize.nameservice.v1beta1.MsgDissociateBond) | [MsgDissociateBondResponse](#vulcanize.nameservice.v1beta1.MsgDissociateBondResponse) | DissociateBond | |
+| `DissociateRecords` | [MsgDissociateRecords](#vulcanize.nameservice.v1beta1.MsgDissociateRecords) | [MsgDissociateRecordsResponse](#vulcanize.nameservice.v1beta1.MsgDissociateRecordsResponse) | DissociateRecords | |
+| `ReAssociateRecords` | [MsgReAssociateRecords](#vulcanize.nameservice.v1beta1.MsgReAssociateRecords) | [MsgReAssociateRecordsResponse](#vulcanize.nameservice.v1beta1.MsgReAssociateRecordsResponse) | ReAssociateRecords | |
+| `SetName` | [MsgSetName](#vulcanize.nameservice.v1beta1.MsgSetName) | [MsgSetNameResponse](#vulcanize.nameservice.v1beta1.MsgSetNameResponse) | SetName will store the name with given crn and name | |
+| `ReserveName` | [MsgReserveAuthority](#vulcanize.nameservice.v1beta1.MsgReserveAuthority) | [MsgReserveAuthorityResponse](#vulcanize.nameservice.v1beta1.MsgReserveAuthorityResponse) | Reserve name | |
+| `DeleteName` | [MsgDeleteNameAuthority](#vulcanize.nameservice.v1beta1.MsgDeleteNameAuthority) | [MsgDeleteNameAuthorityResponse](#vulcanize.nameservice.v1beta1.MsgDeleteNameAuthorityResponse) | Delete Name method will remove authority name | |
+| `SetAuthorityBond` | [MsgSetAuthorityBond](#vulcanize.nameservice.v1beta1.MsgSetAuthorityBond) | [MsgSetAuthorityBondResponse](#vulcanize.nameservice.v1beta1.MsgSetAuthorityBondResponse) | SetAuthorityBond | |
 
  <!-- end services -->
 

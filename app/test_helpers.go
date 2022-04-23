@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/tharsis/ethermint/encoding"
 
 	"github.com/cosmos/cosmos-sdk/db/memdb"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -60,4 +63,16 @@ func Setup(isCheckTx bool, patchGenesis func(*EthermintApp, simapp.GenesisState)
 	}
 
 	return app
+}
+
+// CreateRandomAccounts will generate random accounts
+func CreateRandomAccounts(accNum int) []sdk.AccAddress {
+	// createRandomAccounts is a strategy used by addTestAddrs() in order to generated addresses in random order.
+	testAddrs := make([]sdk.AccAddress, accNum)
+	for i := 0; i < accNum; i++ {
+		pk := ed25519.GenPrivKey().PubKey()
+		testAddrs[i] = sdk.AccAddress(pk.Address())
+	}
+
+	return testAddrs
 }
