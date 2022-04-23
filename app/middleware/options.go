@@ -80,11 +80,8 @@ func newEthAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
 }
 
 func newCosmosAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
-
 	return authmiddleware.ComposeMiddlewares(
 		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
-		// reject MsgEthereumTxs
-		NewRejectMessagesDecorator(),
 		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
 		// Set a new GasMeter on sdk.Context.
 		//
@@ -130,8 +127,6 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) (tx.Handler, error) {
 
 	return authmiddleware.ComposeMiddlewares(
 		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
-		// reject MsgEthereumTxs
-		NewRejectMessagesDecorator(),
 		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
 		// Set a new GasMeter on sdk.Context.
 		//

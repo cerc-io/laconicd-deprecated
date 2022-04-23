@@ -36,16 +36,37 @@ func (rmd RejectMessagesDecorator) CheckTx(ctx context.Context, req tx.Request, 
 			)
 		}
 	}
+
 	return rmd.next.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
 func (rmd RejectMessagesDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	reqTx := req.Tx
+	for _, msg := range reqTx.GetMsgs() {
+		if _, ok := msg.(*evmtypes.MsgEthereumTx); ok {
+			return tx.Response{}, sdkerrors.Wrapf(
+				sdkerrors.ErrInvalidType,
+				"MsgEthereumTx needs to be contained within a tx with 'ExtensionOptionsEthereumTx' option",
+			)
+		}
+	}
+
 	return rmd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
 func (rmd RejectMessagesDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	reqTx := req.Tx
+	for _, msg := range reqTx.GetMsgs() {
+		if _, ok := msg.(*evmtypes.MsgEthereumTx); ok {
+			return tx.Response{}, sdkerrors.Wrapf(
+				sdkerrors.ErrInvalidType,
+				"MsgEthereumTx needs to be contained within a tx with 'ExtensionOptionsEthereumTx' option",
+			)
+		}
+	}
+
 	return rmd.next.SimulateTx(ctx, req)
 }
 

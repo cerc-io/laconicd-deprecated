@@ -76,9 +76,7 @@ func (md MD) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestChe
 	// 	return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid transaction type: %T", reqTx)
 	// }
 
-	anteHandler = md.cosmosMiddleware
-
-	return anteHandler.CheckTx(ctx, req, checkReq)
+	return md.cosmosMiddleware.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
@@ -107,8 +105,7 @@ func (md MD) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error)
 		}
 	}
 
-	anteHandler = md.cosmosMiddleware
-	return anteHandler.DeliverTx(ctx, req)
+	return md.cosmosMiddleware.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
@@ -137,8 +134,7 @@ func (md MD) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error
 		}
 	}
 
-	anteHandler = md.cosmosMiddleware
-	return anteHandler.SimulateTx(ctx, req)
+	return md.cosmosMiddleware.SimulateTx(ctx, req)
 }
 
 var _ authante.SignatureVerificationGasConsumer = DefaultSigVerificationGasConsumer
