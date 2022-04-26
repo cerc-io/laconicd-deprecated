@@ -25,19 +25,21 @@ func TestEthermintAppExport(t *testing.T) {
 		AppOpts:            EmptyAppOptions{},
 	})
 
-	// for acc := range maccPerms {
-	// 	fmt.Println(acc)
-	// 	require.True(
-	// 		t,
-	// 		app.BankKeeper.BlockedAddr(app.AccountKeeper.GetModuleAddress(acc)),
-	// 		fmt.Sprintf("ensure that blocked addresses %s are properly set in bank keeper", acc),
-	// 	)
-	// }
+	for acc := range allowedReceivingModAcc {
+		// check module account is not blocked in bank
+		require.False(
+			t,
+			app.BankKeeper.BlockedAddr(app.AccountKeeper.GetModuleAddress(acc)),
+			"ensure that blocked addresses %s are properly set in bank keeper",
+		)
+	}
 
 	app.Commit()
+	logger2, _ := log.NewDefaultLogger("plain", "info", false)
 
 	// Making a new app object with the db, so that initchain hasn't been called
-	app2 := NewEthermintApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, EmptyAppOptions{})
+	app2 := NewEthermintApp(logger2, db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, EmptyAppOptions{})
+	require.NoError(t, app2.Init())
 	_, err := app2.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }
