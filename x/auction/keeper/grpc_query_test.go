@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 	"github.com/tharsis/ethermint/app"
 	"github.com/tharsis/ethermint/x/auction/types"
 )
@@ -40,7 +40,7 @@ func (suite *KeeperTestSuite) TestGrpcGetAllAuctions() {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuctions {
 				account := app.CreateRandomAccounts(1)[0]
-				err := simapp.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(
+				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(
 					sdk.Coin{Amount: sdk.NewInt(100), Denom: sdk.DefaultBondDenom},
 				))
 
@@ -329,7 +329,7 @@ func (suite *KeeperTestSuite) createAuctionAndCommitBid(commitBid bool) (*types.
 
 	accounts := app.CreateRandomAccounts(accCount)
 	for _, account := range accounts {
-		err := simapp.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(
+		err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(
 			sdk.Coin{Amount: sdk.NewInt(100), Denom: sdk.DefaultBondDenom},
 		))
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -12,12 +13,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-
 	cryptocodec "github.com/tharsis/ethermint/crypto/codec"
 	ethermint "github.com/tharsis/ethermint/types"
 )
 
+var protoCodec codec.Codec
+
 func init() {
+	protoCodec = codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	amino := codec.NewLegacyAmino()
 	cryptocodec.RegisterCrypto(amino)
 }
@@ -28,7 +31,7 @@ func TestKeyring(t *testing.T) {
 	dir := t.TempDir()
 	mockIn := strings.NewReader("")
 
-	kr, err := keyring.New("ethermint", keyring.BackendTest, dir, mockIn, EthSecp256k1Option())
+	kr, err := keyring.New("ethermint", keyring.BackendTest, dir, mockIn, protoCodec, EthSecp256k1Option())
 	require.NoError(t, err)
 
 	// fail in retrieving key
@@ -40,9 +43,8 @@ func TestKeyring(t *testing.T) {
 	info, mnemonic, err := kr.NewMnemonic("foo", keyring.English, ethermint.BIP44HDPath, keyring.DefaultBIP39Passphrase, EthSecp256k1)
 	require.NoError(t, err)
 	require.NotEmpty(t, mnemonic)
-	require.Equal(t, "foo", info.GetName())
+	require.Equal(t, "foo", info.Name)
 	require.Equal(t, "local", info.GetType().String())
-	require.Equal(t, EthSecp256k1Type, info.GetAlgo())
 
 	hdPath := ethermint.BIP44HDPath
 

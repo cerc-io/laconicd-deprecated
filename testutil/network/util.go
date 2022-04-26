@@ -26,7 +26,6 @@ import (
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	mintypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
 	"github.com/tharsis/ethermint/server"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )

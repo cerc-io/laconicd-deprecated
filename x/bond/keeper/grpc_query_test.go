@@ -3,8 +3,9 @@ package keeper_test
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/simapp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 	"github.com/tharsis/ethermint/app"
 	"github.com/tharsis/ethermint/x/bond/types"
 )
@@ -39,7 +40,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
 				account := app.CreateRandomAccounts(1)[0]
-				err := simapp.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
+				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
@@ -102,7 +103,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
 				account := app.CreateRandomAccounts(1)[0]
-				err := simapp.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
+				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
@@ -156,7 +157,7 @@ func (suite *KeeperTestSuite) TestGrpcGetBondsByOwner() {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
 				account := app.CreateRandomAccounts(1)[0]
-				_ = simapp.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
+				_ = testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
@@ -200,7 +201,7 @@ func (suite *KeeperTestSuite) TestGrpcGetModuleBalance() {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
 				account := app.CreateRandomAccounts(1)[0]
-				_ = simapp.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
+				_ = testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))

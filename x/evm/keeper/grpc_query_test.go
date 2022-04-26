@@ -467,7 +467,7 @@ func (suite *KeeperTestSuite) TestQueryValidatorAccount() {
 
 	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.msg), func() {
-			suite.SetupTest() // reset
+			// suite.SetupTest() // reset
 
 			tc.malleate()
 			ctx := sdk.WrapSDKContext(suite.ctx)

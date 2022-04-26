@@ -2,8 +2,9 @@ package keeper_test
 
 import (
 	"fmt"
-	abci "github.com/tendermint/tendermint/abci/types"
 	"math/big"
+
+	prototypes "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func (suite *KeeperTestSuite) TestCalculateBaseFee() {
@@ -38,11 +39,11 @@ func (suite *KeeperTestSuite) TestCalculateBaseFee() {
 				suite.app.FeeMarketKeeper.SetBlockGasUsed(suite.ctx, 100)
 
 				// Set target/gasLimit through Consensus Param MaxGas
-				blockParams := abci.BlockParams{
+				blockParams := prototypes.BlockParams{
 					MaxGas:   100,
 					MaxBytes: 10,
 				}
-				consParams := abci.ConsensusParams{Block: &blockParams}
+				consParams := prototypes.ConsensusParams{Block: &blockParams}
 				suite.ctx = suite.ctx.WithConsensusParams(&consParams)
 
 				// set ElasticityMultiplier
@@ -60,11 +61,11 @@ func (suite *KeeperTestSuite) TestCalculateBaseFee() {
 
 				suite.app.FeeMarketKeeper.SetBlockGasUsed(suite.ctx, 200)
 
-				blockParams := abci.BlockParams{
+				blockParams := prototypes.BlockParams{
 					MaxGas:   100,
 					MaxBytes: 10,
 				}
-				consParams := abci.ConsensusParams{Block: &blockParams}
+				consParams := prototypes.ConsensusParams{Block: &blockParams}
 				suite.ctx = suite.ctx.WithConsensusParams(&consParams)
 
 				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)
@@ -81,11 +82,11 @@ func (suite *KeeperTestSuite) TestCalculateBaseFee() {
 
 				suite.app.FeeMarketKeeper.SetBlockGasUsed(suite.ctx, 50)
 
-				blockParams := abci.BlockParams{
+				blockParams := prototypes.BlockParams{
 					MaxGas:   100,
 					MaxBytes: 10,
 				}
-				consParams := abci.ConsensusParams{Block: &blockParams}
+				consParams := prototypes.ConsensusParams{Block: &blockParams}
 				suite.ctx = suite.ctx.WithConsensusParams(&consParams)
 
 				params := suite.app.FeeMarketKeeper.GetParams(suite.ctx)

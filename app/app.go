@@ -678,7 +678,6 @@ func NewEthermintApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetEndBlocker(app.EndBlocker)
 
 	// app.ScopedIBCKeeper = scopedIBCKeeper
 	// app.ScopedTransferKeeper = scopedTransferKeeper
@@ -699,6 +698,7 @@ func NewEthermintApp(
 	}
 
 	app.setTxHandler(options, encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
+	app.SetEndBlocker(app.EndBlocker)
 
 	return app
 }

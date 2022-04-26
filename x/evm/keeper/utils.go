@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	// authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
@@ -25,10 +25,10 @@ func (k Keeper) DeductTxCostsFromUserBalance(
 	isContractCreation := txData.GetTo() == nil
 
 	// fetch sender account from signature
-	// signerAcc, err := authante.GetSignerAcc(ctx, k.accountKeeper, msgEthTx.GetFrom())
-	// if err != nil {
-	// 	return nil, sdkerrors.Wrapf(err, "account not found for sender %s", msgEthTx.From)
-	// }
+	signerAcc, err := authmiddleware.GetSignerAcc(ctx, k.accountKeeper, msgEthTx.GetFrom())
+	if err != nil {
+		return nil, sdkerrors.Wrapf(err, "account not found for sender %s", msgEthTx.From)
+	}
 
 	gasLimit := txData.GetGas()
 
@@ -74,14 +74,14 @@ func (k Keeper) DeductTxCostsFromUserBalance(
 
 	fees := sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(feeAmt))}
 
-	// // deduct the full gas cost from the user balance
-	// if err := authante.DeductFees(k.bankKeeper, ctx, signerAcc, fees); err != nil {
-	// 	return nil, sdkerrors.Wrapf(
-	// 		err,
-	// 		"failed to deduct full gas cost %s from the user %s balance",
-	// 		fees, msgEthTx.From,
-	// 	)
-	// }
+	// deduct the full gas cost from the user balance
+	if err := authmiddleware.DeductFees(k.bankKeeper, ctx, signerAcc, fees); err != nil {
+		return nil, sdkerrors.Wrapf(
+			err,
+			"failed to deduct full gas cost %s from the user %s balance",
+			fees, msgEthTx.From,
+		)
+	}
 	return fees, nil
 }
 

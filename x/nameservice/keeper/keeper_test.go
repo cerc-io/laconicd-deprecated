@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -25,7 +26,7 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	testApp := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	testApp := app.Setup(suite.T(), false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
@@ -38,7 +39,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 
 	suite.accounts = app.CreateRandomAccounts(1)
 	account := suite.accounts[0]
-	_ = simapp.FundAccount(testApp.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
+	_ = testutil.FundAccount(testApp.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 		Denom:  sdk.DefaultBondDenom,
 		Amount: sdk.NewInt(100000000000),
 	}))
@@ -52,7 +53,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 }
 
 func TestParams(t *testing.T) {
-	testApp := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	testApp := app.Setup(t, false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
