@@ -2,15 +2,16 @@ package gql
 
 import (
 	"context"
-	"github.com/cosmos/cosmos-sdk/client"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// NodeDataPath is the path to the ethermintd data folder.
-var NodeDataPath = os.ExpandEnv("$HOME/.ethermintd/data")
+// NodeDataPath is the path to the chibaclonkd data folder.
+var NodeDataPath = os.ExpandEnv("$HOME/.chibaclonkd/data")
 
 func getStatusInfo(client client.Context) (*NodeInfo, *SyncInfo, *ValidatorInfo, error) {
 	nodeClient, err := client.GetNode()
