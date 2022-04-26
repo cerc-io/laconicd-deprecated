@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// NodeDataPath is the path to the ethermintd data folder.
+// NodeDataPath is the path to the chibaclonkd data folder.
 var NodeDataPath = os.ExpandEnv("$HOME/.chibaclonkd/data")
 
 func getStatusInfo(client client.Context) (*NodeInfo, *SyncInfo, *ValidatorInfo, error) {
