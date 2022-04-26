@@ -201,7 +201,7 @@ replace (
 
 	// replace cosmos
 	github.com/cosmos/cosmos-sdk => github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.3-alpha
-	github.com/cosmos/cosmos-sdk/db => /home/vitwit/Projects/vulcanize/cosmos-sdk/db
+	github.com/cosmos/cosmos-sdk/db => github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.44.0
 )
