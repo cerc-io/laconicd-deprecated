@@ -58,4 +58,4 @@ chibaclonkd collect-gentxs
 chibaclonkd validate-genesis
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-chibaclonkd start --pruning=nothing --rpc.unsafe --keyring-backend test --log_level info --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable
+chibaclonkd start --pruning=nothing --rpc.unsafe --keyring-backend test --log_level info --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable --mode validator
