@@ -6,7 +6,8 @@ chibaclonkd validate-genesis --home /chibaclonk
 echo "starting chibaclonk node $ID in background ..."
 chibaclonkd start \
 --home /chibaclonk \
---keyring-backend test
+--keyring-backend test \ 
+--mode validator
 
 echo "started ethermint node"
 tail -f /dev/null

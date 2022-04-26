@@ -59,8 +59,8 @@ if [[ ! "$DATA_DIR" ]]; then
     exit 1
 fi
 
-# Compile ethermint
-echo "compiling ethermint"
+# Compile chibaclonk
+echo "compiling chibaclonk"
 make build
 
 # PID array declaration
@@ -103,16 +103,16 @@ init_func() {
 }
 
 start_func() {
-    echo "starting ethermint node $i in background ..."
+    echo "starting chibaclonk node $i in background ..."
     "$PWD"/build/chibaclonkd start --pruning=nothing --rpc.unsafe \
     --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
     --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
     --json-rpc.api="eth,txpool,personal,net,debug,web3" \
-    --keyring-backend test --home "$DATA_DIR$i" \
+    --keyring-backend test --mode validator --home "$DATA_DIR$i" \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
 
     ETHERMINT_PID=$!
-    echo "started ethermint node, pid=$ETHERMINT_PID"
+    echo "started chibaclonk node, pid=$ETHERMINT_PID"
     # add PID to array
     arr+=("$ETHERMINT_PID")
 

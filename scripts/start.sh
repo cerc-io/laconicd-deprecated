@@ -61,8 +61,8 @@ if [[ ! "$DATA_CLI_DIR" ]]; then
     exit 1
 fi
 
-# Compile ethermint
-echo "compiling ethermint"
+# Compile chibaclonk
+echo "compiling chibaclonk"
 make build
 
 # PID array declaration
@@ -89,15 +89,15 @@ init_func() {
 }
 
 start_func() {
-    echo "starting ethermint node $i in background ..."
+    echo "starting chibaclonk node $i in background ..."
     "$PWD"/build/chibaclonkd start --pruning=nothing --rpc.unsafe \
     --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
     --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
-    --keyring-backend test --home "$DATA_DIR$i" \
+    --keyring-backend test --mode validator --home "$DATA_DIR$i" \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
     
     ETHERMINT_PID=$!
-    echo "started ethermint node, pid=$ETHERMINT_PID"
+    echo "started chibaclonk node, pid=$ETHERMINT_PID"
     # add PID to array
     arr+=("$ETHERMINT_PID")
 }
@@ -123,7 +123,7 @@ if [[ -z $TEST || $TEST == "rpc" ]]; then
     
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test ethermint node $HOST_RPC ..."
+        echo "going to test chibaclonk node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/e2e/... -timeout=300s -v -short
         MODE=$MODE HOST=$HOST_RPC go test ./tests/rpc/... -timeout=300s -v -short
 
@@ -136,7 +136,7 @@ stop_func() {
     ETHERMINT_PID=$i
     echo "shutting down node, pid=$ETHERMINT_PID ..."
     
-    # Shutdown ethermint node
+    # Shutdown chibaclonk node
     kill -9 "$ETHERMINT_PID"
     wait "$ETHERMINT_PID"
 }
