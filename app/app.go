@@ -683,6 +683,7 @@ func NewEthermintApp(
 	// app.ScopedTransferKeeper = scopedTransferKeeper
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
 	options := middleware.HandlerOptions{
+		Codec:            app.appCodec,
 		Debug:            app.Trace(),
 		LegacyRouter:     app.legacyRouter,
 		MsgServiceRouter: app.msgSvcRouter,

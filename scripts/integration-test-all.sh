@@ -144,7 +144,7 @@ if [[ -z $TEST || $TEST == "integration" ]] ; then
 
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test ethermint node $HOST_RPC ..."
+        echo "going to test chibaclonk node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/e2e/... -timeout=$time_out -v -short
         TEST_FAIL=$?
     done
@@ -158,7 +158,7 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
 
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test ethermint node $HOST_RPC ..."
+        echo "going to test chibaclonk node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/rpc/... -timeout=$time_out -v -short
 
         TEST_FAIL=$?

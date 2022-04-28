@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
@@ -17,6 +18,7 @@ import (
 type HandlerOptions struct {
 	Debug bool
 
+	Codec codec.Codec
 	// TxDecoder is used to decode the raw tx bytes into a sdk.Tx.
 	TxDecoder sdk.TxDecoder
 
@@ -68,14 +70,14 @@ func (options HandlerOptions) Validate() error {
 func newEthAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
 	return authmiddleware.ComposeMiddlewares(
 		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
-		NewEthSetUpContextDecorator(options.EvmKeeper),
-		NewEthMempoolFeeDecorator(options.EvmKeeper),
-		NewEthValidateBasicDecorator(options.EvmKeeper),
-		NewEthSigVerificationDecorator(options.EvmKeeper),
-		NewEthAccountVerificationDecorator(options.AccountKeeper, options.BankKeeper, options.EvmKeeper),
-		NewEthGasConsumeDecorator(options.EvmKeeper, options.MaxTxGasWanted),
-		NewCanTransferDecorator(options.EvmKeeper),
-		NewEthIncrementSenderSequenceDecorator(options.AccountKeeper),
+		NewEthSetUpContextMiddleware(options.EvmKeeper),
+		NewEthMempoolFeeMiddleware(options.EvmKeeper),
+		NewEthValidateBasicMiddleware(options.EvmKeeper),
+		NewEthSigVerificationMiddleware(options.EvmKeeper),
+		NewEthAccountVerificationMiddleware(options.AccountKeeper, options.BankKeeper, options.EvmKeeper),
+		NewEthGasConsumeMiddleware(options.EvmKeeper, options.MaxTxGasWanted),
+		NewCanTransferMiddleware(options.EvmKeeper),
+		NewEthIncrementSenderSequenceMiddleware(options.AccountKeeper),
 	), nil
 }
 
@@ -83,6 +85,7 @@ func newCosmosAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
 	return authmiddleware.ComposeMiddlewares(
 		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
 		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
+		NewRejectMessagesMiddleware,
 		// Set a new GasMeter on sdk.Context.
 		//
 		// Make sure the Gas middleware is outside of all other middlewares
@@ -127,6 +130,7 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) (tx.Handler, error) {
 
 	return authmiddleware.ComposeMiddlewares(
 		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
+		NewRejectMessagesMiddleware,
 		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
 		// Set a new GasMeter on sdk.Context.
 		//
@@ -141,7 +145,7 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) (tx.Handler, error) {
 		// emitted outside of this middleware.
 		authmiddleware.NewIndexEventsTxMiddleware(options.IndexEvents),
 		// Reject all extension options other than the ones needed by the feemarket.
-		authmiddleware.NewExtensionOptionsMiddleware(options.ExtensionOptionChecker),
+		// authmiddleware.NewExtensionOptionsMiddleware(options.ExtensionOptionChecker),
 		authmiddleware.ValidateBasicMiddleware,
 		authmiddleware.TxTimeoutHeightMiddleware,
 		authmiddleware.ValidateMemoMiddleware(options.AccountKeeper),
@@ -155,7 +159,7 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) (tx.Handler, error) {
 		authmiddleware.ValidateSigCountMiddleware(options.AccountKeeper),
 		authmiddleware.SigGasConsumeMiddleware(options.AccountKeeper, options.SigGasConsumer),
 		// Note: signature verification uses EIP instead of the cosmos signature validator
-		NewEip712SigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
+		NewEip712SigVerificationMiddleware(options.Codec, options.AccountKeeper, options.SignModeHandler),
 		authmiddleware.IncrementSequenceMiddleware(options.AccountKeeper),
 		// Creates a new MultiStore branch, discards downstream writes if the downstream returns error.
 		// These kinds of middlewares should be put under this:

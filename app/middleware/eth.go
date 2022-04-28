@@ -17,24 +17,11 @@ import (
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
-// EthSetupContextDecorator is adapted from SetUpContextDecorator from cosmos-sdk, it ignores gas consumption
+// EthSetupContextMiddleware is adapted from SetUpContextMiddleware from cosmos-sdk, it ignores gas consumption
 // by setting the gas meter to infinite
-type EthSetupContextDecorator struct {
+type EthSetupContextMiddleware struct {
 	next      tx.Handler
 	evmKeeper EVMKeeper
-}
-
-// CheckTx implements tx.Handler
-func (esc EthSetupContextDecorator) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
-	sdkCtx, err := gasContext(sdk.UnwrapSDKContext(ctx), req.Tx, false)
-	if err != nil {
-		return tx.Response{}, tx.ResponseCheckTx{}, err
-	}
-
-	// Reset transient gas used to prepare the execution of current cosmos tx.
-	// Transient gas-used is necessary to sum the gas-used of cosmos tx, when it contains multiple eth msgs.
-	esc.evmKeeper.ResetTransientGasUsed(sdkCtx)
-	return esc.next.CheckTx(ctx, req, checkReq)
 }
 
 // gasContext returns a new context with a gas meter set from a given context.
@@ -62,16 +49,21 @@ func setGasMeter(ctx sdk.Context, gasLimit uint64, simulate bool) sdk.Context {
 	return ctx.WithGasMeter(sdk.NewGasMeter(gasLimit))
 }
 
-// populateGas returns a new tx.Response with gas fields populated.
-func populateGas(res tx.Response, sdkCtx sdk.Context) tx.Response {
-	res.GasWanted = sdkCtx.GasMeter().Limit()
-	res.GasUsed = sdkCtx.GasMeter().GasConsumed()
+// CheckTx implements tx.Handler
+func (esc EthSetupContextMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	sdkCtx, err := gasContext(sdk.UnwrapSDKContext(ctx), req.Tx, false)
+	if err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
+	}
 
-	return res
+	// Reset transient gas used to prepare the execution of current cosmos tx.
+	// Transient gas-used is necessary to sum the gas-used of cosmos tx, when it contains multiple eth msgs.
+	esc.evmKeeper.ResetTransientGasUsed(sdkCtx)
+	return esc.next.CheckTx(sdkCtx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (esc EthSetupContextDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (esc EthSetupContextMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	sdkCtx, err := gasContext(sdk.UnwrapSDKContext(ctx), req.Tx, false)
 	if err != nil {
 		return tx.Response{}, err
@@ -80,11 +72,11 @@ func (esc EthSetupContextDecorator) DeliverTx(ctx context.Context, req tx.Reques
 	// Reset transient gas used to prepare the execution of current cosmos tx.
 	// Transient gas-used is necessary to sum the gas-used of cosmos tx, when it contains multiple eth msgs.
 	esc.evmKeeper.ResetTransientGasUsed(sdkCtx)
-	return esc.next.DeliverTx(ctx, req)
+	return esc.next.DeliverTx(sdkCtx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (esc EthSetupContextDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (esc EthSetupContextMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	sdkCtx, err := gasContext(sdk.UnwrapSDKContext(ctx), req.Tx, false)
 	if err != nil {
 		return tx.Response{}, err
@@ -93,33 +85,33 @@ func (esc EthSetupContextDecorator) SimulateTx(ctx context.Context, req tx.Reque
 	// Reset transient gas used to prepare the execution of current cosmos tx.
 	// Transient gas-used is necessary to sum the gas-used of cosmos tx, when it contains multiple eth msgs.
 	esc.evmKeeper.ResetTransientGasUsed(sdkCtx)
-	return esc.next.SimulateTx(ctx, req)
+	return esc.next.SimulateTx(sdkCtx, req)
 }
 
-var _ tx.Handler = EthSetupContextDecorator{}
+var _ tx.Handler = EthSetupContextMiddleware{}
 
-func NewEthSetUpContextDecorator(evmKeeper EVMKeeper) tx.Middleware {
+func NewEthSetUpContextMiddleware(evmKeeper EVMKeeper) tx.Middleware {
 	return func(txh tx.Handler) tx.Handler {
-		return EthSetupContextDecorator{
+		return EthSetupContextMiddleware{
 			next:      txh,
 			evmKeeper: evmKeeper,
 		}
 	}
 }
 
-// EthMempoolFeeDecorator will check if the transaction's effective fee is at least as large
+// EthMempoolFeeMiddleware will check if the transaction's effective fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config).
-// If fee is too low, decorator returns error and tx is rejected from mempool.
+// If fee is too low, Middleware returns error and tx is rejected from mempool.
 // Note this only applies when ctx.CheckTx = true
 // If fee is high enough or not CheckTx, then call next AnteHandler
-// CONTRACT: Tx must implement FeeTx to use MempoolFeeDecorator
-type EthMempoolFeeDecorator struct {
+// CONTRACT: Tx must implement FeeTx to use MempoolFeeMiddleware
+type EthMempoolFeeMiddleware struct {
 	next      tx.Handler
 	evmKeeper EVMKeeper
 }
 
 // CheckTx implements tx.Handler
-func (mfd EthMempoolFeeDecorator) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func (mfd EthMempoolFeeMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	params := mfd.evmKeeper.GetParams(sdkCtx)
@@ -146,34 +138,34 @@ func (mfd EthMempoolFeeDecorator) CheckTx(ctx context.Context, req tx.Request, c
 }
 
 // DeliverTx implements tx.Handler
-func (mfd EthMempoolFeeDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (mfd EthMempoolFeeMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	return mfd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (mfd EthMempoolFeeDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (mfd EthMempoolFeeMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	return mfd.next.SimulateTx(ctx, req)
 }
 
-var _ tx.Handler = EthMempoolFeeDecorator{}
+var _ tx.Handler = EthMempoolFeeMiddleware{}
 
-func NewEthMempoolFeeDecorator(ek EVMKeeper) tx.Middleware {
+func NewEthMempoolFeeMiddleware(ek EVMKeeper) tx.Middleware {
 	return func(txh tx.Handler) tx.Handler {
-		return EthMempoolFeeDecorator{
+		return EthMempoolFeeMiddleware{
 			next:      txh,
 			evmKeeper: ek,
 		}
 	}
 }
 
-// EthValidateBasicDecorator is adapted from ValidateBasicDecorator from cosmos-sdk, it ignores ErrNoSignatures
-type EthValidateBasicDecorator struct {
+// EthValidateBasicMiddleware is adapted from ValidateBasicMiddleware from cosmos-sdk, it ignores ErrNoSignatures
+type EthValidateBasicMiddleware struct {
 	next      tx.Handler
 	evmKeeper EVMKeeper
 }
 
 // CheckTx implements tx.Handler
-func (vbd EthValidateBasicDecorator) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func (vbd EthValidateBasicMiddleware) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
 	ctx := sdk.UnwrapSDKContext(cx)
 	reqTx := req.Tx
 
@@ -255,21 +247,21 @@ func (vbd EthValidateBasicDecorator) CheckTx(cx context.Context, req tx.Request,
 }
 
 // DeliverTx implements tx.Handler
-func (vbd EthValidateBasicDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (vbd EthValidateBasicMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	return vbd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (vbd EthValidateBasicDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (vbd EthValidateBasicMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	return vbd.next.SimulateTx(ctx, req)
 }
 
-var _ tx.Handler = EthValidateBasicDecorator{}
+var _ tx.Handler = EthValidateBasicMiddleware{}
 
-// NewEthValidateBasicDecorator creates a new EthValidateBasicDecorator
-func NewEthValidateBasicDecorator(ek EVMKeeper) tx.Middleware {
+// NewEthValidateBasicMiddleware creates a new EthValidateBasicMiddleware
+func NewEthValidateBasicMiddleware(ek EVMKeeper) tx.Middleware {
 	return func(h tx.Handler) tx.Handler {
-		return EthValidateBasicDecorator{
+		return EthValidateBasicMiddleware{
 			next:      h,
 			evmKeeper: ek,
 		}
@@ -277,14 +269,13 @@ func NewEthValidateBasicDecorator(ek EVMKeeper) tx.Middleware {
 
 }
 
-// EthSigVerificationDecorator validates an ethereum signatures
-type EthSigVerificationDecorator struct {
+// EthSigVerificationMiddleware validates an ethereum signatures
+type EthSigVerificationMiddleware struct {
 	next      tx.Handler
 	evmKeeper EVMKeeper
 }
 
-// CheckTx implements tx.Handler
-func (esvd EthSigVerificationDecorator) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func ethSigVerificationMiddleware(esvd EthSigVerificationMiddleware, cx context.Context, req tx.Request) (tx.Response, error) {
 	chainID := esvd.evmKeeper.ChainID()
 	ctx := sdk.UnwrapSDKContext(cx)
 	reqTx := req.Tx
@@ -298,12 +289,12 @@ func (esvd EthSigVerificationDecorator) CheckTx(cx context.Context, req tx.Reque
 	for _, msg := range reqTx.GetMsgs() {
 		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
 		if !ok {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
+			return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
 		sender, err := signer.Sender(msgEthTx.AsTransaction())
 		if err != nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+			return tx.Response{}, sdkerrors.Wrapf(
 				sdkerrors.ErrorInvalidSigner,
 				"couldn't retrieve sender address ('%s') from the ethereum transaction: %s",
 				msgEthTx.From,
@@ -315,33 +306,50 @@ func (esvd EthSigVerificationDecorator) CheckTx(cx context.Context, req tx.Reque
 		msgEthTx.From = sender.Hex()
 	}
 
+	return tx.Response{}, nil
+}
+
+// CheckTx implements tx.Handler
+func (esvd EthSigVerificationMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	if _, err := ethSigVerificationMiddleware(esvd, ctx, req); err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
+	}
+
 	return esvd.next.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (esvd EthSigVerificationDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (esvd EthSigVerificationMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := ethSigVerificationMiddleware(esvd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
 	return esvd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (esvd EthSigVerificationDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (esvd EthSigVerificationMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := ethSigVerificationMiddleware(esvd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
 	return esvd.next.SimulateTx(ctx, req)
 }
 
-var _ tx.Handler = EthSigVerificationDecorator{}
+var _ tx.Handler = EthSigVerificationMiddleware{}
 
-// NewEthSigVerificationDecorator creates a new EthSigVerificationDecorator
-func NewEthSigVerificationDecorator(ek EVMKeeper) tx.Middleware {
+// NewEthSigVerificationMiddleware creates a new EthSigVerificationMiddleware
+func NewEthSigVerificationMiddleware(ek EVMKeeper) tx.Middleware {
 	return func(h tx.Handler) tx.Handler {
-		return EthSigVerificationDecorator{
+		return EthSigVerificationMiddleware{
 			next:      h,
 			evmKeeper: ek,
 		}
 	}
 }
 
-// EthAccountVerificationDecorator validates an account balance checks
-type EthAccountVerificationDecorator struct {
+// EthAccountVerificationMiddleware validates an account balance checks
+type EthAccountVerificationMiddleware struct {
 	next       tx.Handler
 	ak         evmtypes.AccountKeeper
 	bankKeeper evmtypes.BankKeeper
@@ -349,7 +357,7 @@ type EthAccountVerificationDecorator struct {
 }
 
 // CheckTx implements tx.Handler
-func (avd EthAccountVerificationDecorator) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func (avd EthAccountVerificationMiddleware) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
 	reqTx := req.Tx
 	ctx := sdk.UnwrapSDKContext(cx)
 	if !ctx.IsCheckTx() {
@@ -394,21 +402,21 @@ func (avd EthAccountVerificationDecorator) CheckTx(cx context.Context, req tx.Re
 }
 
 // DeliverTx implements tx.Handler
-func (avd EthAccountVerificationDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (avd EthAccountVerificationMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	return avd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (avd EthAccountVerificationDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (avd EthAccountVerificationMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
 	return avd.next.SimulateTx(ctx, req)
 }
 
-var _ tx.Handler = EthAccountVerificationDecorator{}
+var _ tx.Handler = EthAccountVerificationMiddleware{}
 
-// NewEthAccountVerificationDecorator creates a new EthAccountVerificationDecorator
-func NewEthAccountVerificationDecorator(ak evmtypes.AccountKeeper, bankKeeper evmtypes.BankKeeper, ek EVMKeeper) tx.Middleware {
+// NewEthAccountVerificationMiddleware creates a new EthAccountVerificationMiddleware
+func NewEthAccountVerificationMiddleware(ak evmtypes.AccountKeeper, bankKeeper evmtypes.BankKeeper, ek EVMKeeper) tx.Middleware {
 	return func(h tx.Handler) tx.Handler {
-		return EthAccountVerificationDecorator{
+		return EthAccountVerificationMiddleware{
 			next:       h,
 			ak:         ak,
 			bankKeeper: bankKeeper,
@@ -417,16 +425,15 @@ func NewEthAccountVerificationDecorator(ak evmtypes.AccountKeeper, bankKeeper ev
 	}
 }
 
-// EthGasConsumeDecorator validates enough intrinsic gas for the transaction and
+// EthGasConsumeMiddleware validates enough intrinsic gas for the transaction and
 // gas consumption.
-type EthGasConsumeDecorator struct {
+type EthGasConsumeMiddleware struct {
 	next         tx.Handler
 	evmKeeper    EVMKeeper
 	maxGasWanted uint64
 }
 
-// CheckTx implements tx.Handler
-func (egcd EthGasConsumeDecorator) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func ethGasMiddleware(egcd EthGasConsumeMiddleware, cx context.Context, req tx.Request) (context.Context, tx.Response, error) {
 	ctx := sdk.UnwrapSDKContext(cx)
 	reqTx := req.Tx
 
@@ -445,12 +452,12 @@ func (egcd EthGasConsumeDecorator) CheckTx(cx context.Context, req tx.Request, c
 	for _, msg := range reqTx.GetMsgs() {
 		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
 		if !ok {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
+			return ctx, tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
 		txData, err := evmtypes.UnpackTxData(msgEthTx.Data)
 		if err != nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrap(err, "failed to unpack tx data")
+			return ctx, tx.Response{}, sdkerrors.Wrap(err, "failed to unpack tx data")
 		}
 
 		if ctx.IsCheckTx() {
@@ -474,7 +481,7 @@ func (egcd EthGasConsumeDecorator) CheckTx(cx context.Context, req tx.Request, c
 			london,
 		)
 		if err != nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(err, "failed to deduct transaction costs from user balance")
+			return ctx, tx.Response{}, sdkerrors.Wrapf(err, "failed to deduct transaction costs from user balance")
 		}
 
 		events = append(events, sdk.NewEvent(sdk.EventTypeTx, sdk.NewAttribute(sdk.AttributeKeyFee, fees.String())))
@@ -498,28 +505,49 @@ func (egcd EthGasConsumeDecorator) CheckTx(cx context.Context, req tx.Request, c
 	gasConsumed := ctx.GasMeter().GasConsumed()
 	ctx = ctx.WithGasMeter(ethermint.NewInfiniteGasMeterWithLimit(gasWanted))
 	ctx.GasMeter().ConsumeGas(gasConsumed, "copy gas consumed")
-	return egcd.next.CheckTx(ctx, req, checkReq)
+
+	return ctx, tx.Response{}, nil
+}
+
+// CheckTx implements tx.Handler
+func (egcd EthGasConsumeMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	newCtx, _, err := ethGasMiddleware(egcd, ctx, req)
+	if err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
+	}
+
+	return egcd.next.CheckTx(newCtx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (egcd EthGasConsumeDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
-	return egcd.next.DeliverTx(ctx, req)
+func (egcd EthGasConsumeMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	newCtx, _, err := ethGasMiddleware(egcd, ctx, req)
+	if err != nil {
+		return tx.Response{}, err
+	}
+
+	return egcd.next.DeliverTx(newCtx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (egcd EthGasConsumeDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
-	return egcd.next.SimulateTx(ctx, req)
+func (egcd EthGasConsumeMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	newCtx, _, err := ethGasMiddleware(egcd, ctx, req)
+	if err != nil {
+		return tx.Response{}, err
+	}
+
+	return egcd.next.SimulateTx(newCtx, req)
 }
 
-var _ tx.Handler = EthGasConsumeDecorator{}
+var _ tx.Handler = EthGasConsumeMiddleware{}
 
-// NewEthGasConsumeDecorator creates a new EthGasConsumeDecorator
-func NewEthGasConsumeDecorator(
+// NewEthGasConsumeMiddleware creates a new EthGasConsumeMiddleware
+func NewEthGasConsumeMiddleware(
 	evmKeeper EVMKeeper,
 	maxGasWanted uint64,
 ) tx.Middleware {
 	return func(h tx.Handler) tx.Handler {
-		return EthGasConsumeDecorator{
+		return EthGasConsumeMiddleware{
 			h,
 			evmKeeper,
 			maxGasWanted,
@@ -527,15 +555,14 @@ func NewEthGasConsumeDecorator(
 	}
 }
 
-// CanTransferDecorator checks if the sender is allowed to transfer funds according to the EVM block
+// CanTransferMiddleware checks if the sender is allowed to transfer funds according to the EVM block
 // context rules.
-type CanTransferDecorator struct {
+type CanTransferMiddleware struct {
 	next      tx.Handler
 	evmKeeper EVMKeeper
 }
 
-// CheckTx implements tx.Handler
-func (ctd CanTransferDecorator) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func canTransfer(ctd CanTransferMiddleware, cx context.Context, req tx.Request) (tx.Response, error) {
 	ctx := sdk.UnwrapSDKContext(cx)
 	reqTx := req.Tx
 	params := ctd.evmKeeper.GetParams(ctx)
@@ -545,14 +572,14 @@ func (ctd CanTransferDecorator) CheckTx(cx context.Context, req tx.Request, chec
 	for _, msg := range reqTx.GetMsgs() {
 		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
 		if !ok {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
+			return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
 		baseFee := ctd.evmKeeper.BaseFee(ctx, ethCfg)
 
 		coreMsg, err := msgEthTx.AsMessage(signer, baseFee)
 		if err != nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+			return tx.Response{}, sdkerrors.Wrapf(
 				err,
 				"failed to create an ethereum core.Message from signer %T", signer,
 			)
@@ -571,7 +598,7 @@ func (ctd CanTransferDecorator) CheckTx(cx context.Context, req tx.Request, chec
 		// check that caller has enough balance to cover asset transfer for **topmost** call
 		// NOTE: here the gas consumed is from the context with the infinite gas meter
 		if coreMsg.Value().Sign() > 0 && !evm.Context.CanTransfer(stateDB, coreMsg.From(), coreMsg.Value()) {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+			return tx.Response{}, sdkerrors.Wrapf(
 				sdkerrors.ErrInsufficientFunds,
 				"failed to transfer %s from address %s using the EVM block context transfer function",
 				coreMsg.Value(),
@@ -581,13 +608,13 @@ func (ctd CanTransferDecorator) CheckTx(cx context.Context, req tx.Request, chec
 
 		if evmtypes.IsLondon(ethCfg, ctx.BlockHeight()) {
 			if baseFee == nil {
-				return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrap(
+				return tx.Response{}, sdkerrors.Wrap(
 					evmtypes.ErrInvalidBaseFee,
 					"base fee is supported but evm block context value is nil",
 				)
 			}
 			if coreMsg.GasFeeCap().Cmp(baseFee) < 0 {
-				return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+				return tx.Response{}, sdkerrors.Wrapf(
 					sdkerrors.ErrInsufficientFee,
 					"max fee per gas less than block base fee (%s < %s)",
 					coreMsg.GasFeeCap(), baseFee,
@@ -596,57 +623,75 @@ func (ctd CanTransferDecorator) CheckTx(cx context.Context, req tx.Request, chec
 		}
 	}
 
+	return tx.Response{}, nil
+}
+
+// CheckTx implements tx.Handler
+func (ctd CanTransferMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	if _, err := canTransfer(ctd, ctx, req); err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
+	}
+
 	return ctd.next.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (ctd CanTransferDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (ctd CanTransferMiddleware) DeliverTx(cx context.Context, req tx.Request) (tx.Response, error) {
+	ctx := sdk.UnwrapSDKContext(cx)
+	if _, err := canTransfer(ctd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
 	return ctd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (ctd CanTransferDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (ctd CanTransferMiddleware) SimulateTx(cx context.Context, req tx.Request) (tx.Response, error) {
+	ctx := sdk.UnwrapSDKContext(cx)
+	if _, err := canTransfer(ctd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
 	return ctd.next.SimulateTx(ctx, req)
 }
 
-var _ tx.Handler = CanTransferDecorator{}
+var _ tx.Handler = CanTransferMiddleware{}
 
-// NewCanTransferDecorator creates a new CanTransferDecorator instance.
-func NewCanTransferDecorator(evmKeeper EVMKeeper) tx.Middleware {
+// NewCanTransferMiddleware creates a new CanTransferMiddleware instance.
+func NewCanTransferMiddleware(evmKeeper EVMKeeper) tx.Middleware {
 	return func(h tx.Handler) tx.Handler {
-		return CanTransferDecorator{
+		return CanTransferMiddleware{
 			next:      h,
 			evmKeeper: evmKeeper,
 		}
 	}
 }
 
-// EthIncrementSenderSequenceDecorator increments the sequence of the signers.
-type EthIncrementSenderSequenceDecorator struct {
+// EthIncrementSenderSequenceMiddleware increments the sequence of the signers.
+type EthIncrementSenderSequenceMiddleware struct {
 	next tx.Handler
 	ak   evmtypes.AccountKeeper
 }
 
-// CheckTx implements tx.Handler
-func (issd EthIncrementSenderSequenceDecorator) CheckTx(cx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+func ethIncrementSenderSequence(issd EthIncrementSenderSequenceMiddleware, cx context.Context, req tx.Request) (tx.Response, error) {
 	ctx := sdk.UnwrapSDKContext(cx)
 	reqTx := req.Tx
 
 	for _, msg := range reqTx.GetMsgs() {
 		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
 		if !ok {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
+			return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
 		txData, err := evmtypes.UnpackTxData(msgEthTx.Data)
 		if err != nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrap(err, "failed to unpack tx data")
+			return tx.Response{}, sdkerrors.Wrap(err, "failed to unpack tx data")
 		}
 
 		// increase sequence of sender
 		acc := issd.ak.GetAccount(ctx, msgEthTx.GetFrom())
 		if acc == nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+			return tx.Response{}, sdkerrors.Wrapf(
 				sdkerrors.ErrUnknownAddress,
 				"account %s is nil", common.BytesToAddress(msgEthTx.GetFrom().Bytes()),
 			)
@@ -656,42 +701,57 @@ func (issd EthIncrementSenderSequenceDecorator) CheckTx(cx context.Context, req 
 		// we merged the nonce verification to nonce increment, so when tx includes multiple messages
 		// with same sender, they'll be accepted.
 		if txData.GetNonce() != nonce {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+			return tx.Response{}, sdkerrors.Wrapf(
 				sdkerrors.ErrInvalidSequence,
 				"invalid nonce; got %d, expected %d", txData.GetNonce(), nonce,
 			)
 		}
 
 		if err := acc.SetSequence(nonce + 1); err != nil {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(err, "failed to set sequence to %d", acc.GetSequence()+1)
+			return tx.Response{}, sdkerrors.Wrapf(err, "failed to set sequence to %d", acc.GetSequence()+1)
 		}
 
 		issd.ak.SetAccount(ctx, acc)
+	}
+
+	return tx.Response{}, nil
+}
+
+// CheckTx implements tx.Handler
+func (issd EthIncrementSenderSequenceMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	if _, err := ethIncrementSenderSequence(issd, ctx, req); err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
 	}
 
 	return issd.next.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (issd EthIncrementSenderSequenceDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
-	return issd.next.DeliverTx(ctx, req)
+func (issd EthIncrementSenderSequenceMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := ethIncrementSenderSequence(issd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
 
+	return issd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (issd EthIncrementSenderSequenceDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (issd EthIncrementSenderSequenceMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := ethIncrementSenderSequence(issd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
 	return issd.next.SimulateTx(ctx, req)
 }
 
-var _ tx.Handler = EthIncrementSenderSequenceDecorator{}
+var _ tx.Handler = EthIncrementSenderSequenceMiddleware{}
 
-// NewEthIncrementSenderSequenceDecorator creates a new EthIncrementSenderSequenceDecorator.
-func NewEthIncrementSenderSequenceDecorator(ak evmtypes.AccountKeeper) tx.Middleware {
+// NewEthIncrementSenderSequenceMiddleware creates a new EthIncrementSenderSequenceMiddleware.
+func NewEthIncrementSenderSequenceMiddleware(ak evmtypes.AccountKeeper) tx.Middleware {
 	return func(h tx.Handler) tx.Handler {
-		return EthIncrementSenderSequenceDecorator{
+		return EthIncrementSenderSequenceMiddleware{
 			next: h,
 			ak:   ak,
 		}
 	}
-
 }

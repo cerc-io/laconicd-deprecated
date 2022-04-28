@@ -8,16 +8,14 @@ import (
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
-// RejectMessagesDecorator prevents invalid msg types from being executed
-type RejectMessagesDecorator struct {
+// RejectMessagesMiddleware prevents invalid msg types from being executed
+type RejectMessagesMiddleware struct {
 	next tx.Handler
 }
 
-func NewRejectMessagesDecorator() tx.Middleware {
-	return func(h tx.Handler) tx.Handler {
-		return RejectMessagesDecorator{
-			next: h,
-		}
+func NewRejectMessagesMiddleware(txh tx.Handler) tx.Handler {
+	return RejectMessagesMiddleware{
+		next: txh,
 	}
 }
 
@@ -26,37 +24,33 @@ func NewRejectMessagesDecorator() tx.Middleware {
 // order to perform the refund.
 
 // CheckTx implements tx.Handler
-func (rmd RejectMessagesDecorator) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
-	reqTx := req.Tx
-	for _, msg := range reqTx.GetMsgs() {
-		if _, ok := msg.(*evmtypes.MsgEthereumTx); ok {
-			return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
-				sdkerrors.ErrInvalidType,
-				"MsgEthereumTx needs to be contained within a tx with 'ExtensionOptionsEthereumTx' option",
-			)
-		}
+func (rmd RejectMessagesMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	if _, err := reject(req); err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
 	}
 
 	return rmd.next.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (rmd RejectMessagesDecorator) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
-	reqTx := req.Tx
-	for _, msg := range reqTx.GetMsgs() {
-		if _, ok := msg.(*evmtypes.MsgEthereumTx); ok {
-			return tx.Response{}, sdkerrors.Wrapf(
-				sdkerrors.ErrInvalidType,
-				"MsgEthereumTx needs to be contained within a tx with 'ExtensionOptionsEthereumTx' option",
-			)
-		}
+func (rmd RejectMessagesMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := reject(req); err != nil {
+		return tx.Response{}, err
 	}
 
 	return rmd.next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (rmd RejectMessagesDecorator) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+func (rmd RejectMessagesMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := reject(req); err != nil {
+		return tx.Response{}, err
+	}
+
+	return rmd.next.SimulateTx(ctx, req)
+}
+
+func reject(req tx.Request) (tx.Response, error) {
 	reqTx := req.Tx
 	for _, msg := range reqTx.GetMsgs() {
 		if _, ok := msg.(*evmtypes.MsgEthereumTx); ok {
@@ -67,7 +61,7 @@ func (rmd RejectMessagesDecorator) SimulateTx(ctx context.Context, req tx.Reques
 		}
 	}
 
-	return rmd.next.SimulateTx(ctx, req)
+	return tx.Response{}, nil
 }
 
-var _ tx.Handler = RejectMessagesDecorator{}
+var _ tx.Handler = RejectMessagesMiddleware{}
