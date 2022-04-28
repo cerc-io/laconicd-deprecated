@@ -19,17 +19,17 @@ const (
 type MD struct {
 	ethMiddleware    tx.Handler
 	cosmosMiddleware tx.Handler
-	cosmoseip792     tx.Handler
+	cosmoseip712     tx.Handler
 }
 
 var _ tx.Handler = MD{}
 
-func NewMiddleware(indexEventsStr []string, options HandlerOptions) (tx.Handler, error) {
+func NewMiddleware(options HandlerOptions) (tx.Handler, error) {
 	ethMiddleware, err := newEthAuthMiddleware(options)
 	if err != nil {
 		return nil, err
 	}
-	cosmoseip792, err := newCosmosAnteHandlerEip712(options)
+	cosmoseip712, err := newCosmosAnteHandlerEip712(options)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func NewMiddleware(indexEventsStr []string, options HandlerOptions) (tx.Handler,
 	return MD{
 		ethMiddleware:    ethMiddleware,
 		cosmosMiddleware: cosmosMiddleware,
-		cosmoseip792:     cosmoseip792,
+		cosmoseip712:     cosmoseip712,
 	}, nil
 }
 
@@ -58,7 +58,7 @@ func (md MD) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestChe
 				anteHandler = md.ethMiddleware
 			case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
 				// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
-				anteHandler = md.cosmoseip792
+				anteHandler = md.cosmoseip712
 			default:
 				return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
 					sdkerrors.ErrUnknownExtensionOptions,
@@ -93,7 +93,7 @@ func (md MD) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error)
 				anteHandler = md.ethMiddleware
 			case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
 				// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
-				anteHandler = md.cosmoseip792
+				anteHandler = md.cosmoseip712
 			default:
 				return tx.Response{}, sdkerrors.Wrapf(
 					sdkerrors.ErrUnknownExtensionOptions,
@@ -122,7 +122,7 @@ func (md MD) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error
 				anteHandler = md.ethMiddleware
 			case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
 				// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
-				anteHandler = md.cosmoseip792
+				anteHandler = md.cosmoseip712
 			default:
 				return tx.Response{}, sdkerrors.Wrapf(
 					sdkerrors.ErrUnknownExtensionOptions,

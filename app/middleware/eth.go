@@ -171,7 +171,7 @@ func (vbd EthValidateBasicMiddleware) CheckTx(cx context.Context, req tx.Request
 
 	// no need to validate basic on recheck tx, call next antehandler
 	if ctx.IsReCheckTx() {
-		return vbd.CheckTx(ctx, req, checkReq)
+		return vbd.next.CheckTx(ctx, req, checkReq)
 	}
 
 	err := reqTx.ValidateBasic()

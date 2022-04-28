@@ -19,7 +19,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&EthAccount{},
 	)
 	registry.RegisterInterface(
-		"ethermint.v1.ExtensionOptionsWeb3Tx",
+		"ethermint.types.v1.ExtensionOptionsWeb3Tx",
 		(*ExtensionOptionsWeb3TxI)(nil),
 		&ExtensionOptionsWeb3Tx{},
 	)

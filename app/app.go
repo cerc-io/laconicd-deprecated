@@ -221,8 +221,8 @@ type EthermintApp struct {
 	cdc               *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
-	msgSvcRouter      *authmiddleware.MsgServiceRouter
-	legacyRouter      sdk.Router
+	MsgSvcRouter      *authmiddleware.MsgServiceRouter
+	LegacyRouter      sdk.Router
 	invCheckPeriod    uint
 
 	// keys to access the substores
@@ -368,8 +368,8 @@ func NewEthermintApp(
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
-		legacyRouter:      authmiddleware.NewLegacyRouter(),
-		msgSvcRouter:      authmiddleware.NewMsgServiceRouter(interfaceRegistry),
+		LegacyRouter:      authmiddleware.NewLegacyRouter(),
+		MsgSvcRouter:      authmiddleware.NewMsgServiceRouter(interfaceRegistry),
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
@@ -423,7 +423,7 @@ func NewEthermintApp(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
-	app.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey], appCodec, app.msgSvcRouter, app.AccountKeeper)
+	app.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey], appCodec, app.MsgSvcRouter, app.AccountKeeper)
 
 	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
 
@@ -479,7 +479,7 @@ func NewEthermintApp(
 
 	govKeeper := govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govRouter, app.msgSvcRouter, govConfig,
+		&stakingKeeper, govRouter, app.MsgSvcRouter, govConfig,
 	)
 
 	app.GovKeeper = *govKeeper.SetHooks(
@@ -644,8 +644,8 @@ func NewEthermintApp(
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.legacyRouter, app.QueryRouter(), encodingConfig.Amino)
-	app.configurator = module.NewConfigurator(app.appCodec, app.msgSvcRouter, app.GRPCQueryRouter())
+	app.mm.RegisterRoutes(app.LegacyRouter, app.QueryRouter(), encodingConfig.Amino)
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgSvcRouter, app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
 	// add test gRPC service for testing gRPC queries in isolation
@@ -685,8 +685,8 @@ func NewEthermintApp(
 	options := middleware.HandlerOptions{
 		Codec:            app.appCodec,
 		Debug:            app.Trace(),
-		LegacyRouter:     app.legacyRouter,
-		MsgServiceRouter: app.msgSvcRouter,
+		LegacyRouter:     app.LegacyRouter,
+		MsgServiceRouter: app.MsgSvcRouter,
 		AccountKeeper:    app.AccountKeeper,
 		BankKeeper:       app.BankKeeper,
 		EvmKeeper:        app.EvmKeeper,
@@ -710,7 +710,9 @@ func (app *EthermintApp) setTxHandler(options middleware.HandlerOptions, txConfi
 		indexEvents[e] = struct{}{}
 	}
 
-	txHandler, err := middleware.NewMiddleware(indexEventsStr, options)
+	options.IndexEvents = indexEvents
+
+	txHandler, err := middleware.NewMiddleware(options)
 	if err != nil {
 		panic(err)
 	}
