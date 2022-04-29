@@ -175,7 +175,7 @@ func (s *IntegrationTestSuite) TestGetQueryBondById() {
 		{
 			"invalid bond id",
 			[]string{
-				fmt.Sprint("not_found_bond_id"),
+				"not_found_bond_id",
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			true,
@@ -246,7 +246,7 @@ func (s *IntegrationTestSuite) TestGetQueryBondListsByOwner() {
 		{
 			"invalid owner address",
 			[]string{
-				fmt.Sprint("not_found_bond_id"),
+				"not_found_bond_id",
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			true,

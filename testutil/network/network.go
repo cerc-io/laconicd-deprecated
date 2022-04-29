@@ -16,6 +16,8 @@ import (
 	"testing"
 	"time"
 
+	tmcfg "github.com/tendermint/tendermint/config"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rs/zerolog"
@@ -253,6 +255,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		ctx := server.NewDefaultContext()
 		tmCfg := ctx.Config
 		tmCfg.Consensus.TimeoutCommit = cfg.TimeoutCommit
+		tmCfg.Mode = tmcfg.ModeValidator
 
 		// Only allow the first validator to expose an RPC, API and gRPC
 		// server/client due to Tendermint in-process constraints.
@@ -559,7 +562,7 @@ func (n *Network) LatestHeight() (int64, error) {
 // committed after a given block. If that height is not reached within a timeout,
 // an error is returned. Regardless, the latest height queried is returned.
 func (n *Network) WaitForHeight(h int64) (int64, error) {
-	return n.WaitForHeightWithTimeout(h, 100*time.Second)
+	return n.WaitForHeightWithTimeout(h, time.Duration(10*time.Second))
 }
 
 // WaitForHeightWithTimeout is the same as WaitForHeight except the caller can
