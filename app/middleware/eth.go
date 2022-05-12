@@ -46,7 +46,7 @@ func setGasMeter(ctx sdk.Context, gasLimit uint64, simulate bool) sdk.Context {
 		return ctx.WithGasMeter(sdk.NewInfiniteGasMeter())
 	}
 
-	return ctx.WithGasMeter(sdk.NewGasMeter(gasLimit))
+	return ctx.WithGasMeter(ethermint.NewInfiniteGasMeterWithLimit(gasLimit))
 }
 
 // CheckTx implements tx.Handler
