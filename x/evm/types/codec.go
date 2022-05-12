@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	"github.com/cosmos/cosmos-sdk/types/tx"
 	proto "github.com/gogo/protobuf/proto"
 )
 
@@ -24,6 +25,10 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterInterface(
 		"ethermint.evm.v1.ExtensionOptionsEthereumTx",
 		(*ExtensionOptionsEthereumTxI)(nil),
+		&ExtensionOptionsEthereumTx{},
+	)
+	registry.RegisterImplementations(
+		(*tx.TxExtensionOptionI)(nil),
 		&ExtensionOptionsEthereumTx{},
 	)
 	registry.RegisterInterface(
