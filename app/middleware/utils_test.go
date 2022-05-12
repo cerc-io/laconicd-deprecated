@@ -13,7 +13,7 @@ import (
 	types3 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/spf13/cast"
-	ante "github.com/tharsis/ethermint/app/middleware"
+	"github.com/tharsis/ethermint/app/middleware"
 	"github.com/tharsis/ethermint/ethereum/eip712"
 	"github.com/tharsis/ethermint/server/config"
 	"github.com/tharsis/ethermint/types"
@@ -123,7 +123,7 @@ func (suite *MiddlewareTestSuite) SetupTest() {
 	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	maxGasWanted := cast.ToUint64(config.DefaultMaxTxGasWanted)
 
-	options := ante.HandlerOptions{
+	options := middleware.HandlerOptions{
 		TxDecoder:        suite.clientCtx.TxConfig.TxDecoder(),
 		AccountKeeper:    suite.app.AccountKeeper,
 		BankKeeper:       suite.app.BankKeeper,
@@ -135,14 +135,12 @@ func (suite *MiddlewareTestSuite) SetupTest() {
 		MsgServiceRouter: suite.app.MsgSvcRouter,
 		FeeMarketKeeper:  suite.app.FeeMarketKeeper,
 		SignModeHandler:  suite.clientCtx.TxConfig.SignModeHandler(),
-		SigGasConsumer:   ante.DefaultSigVerificationGasConsumer,
+		SigGasConsumer:   middleware.DefaultSigVerificationGasConsumer,
 		MaxTxGasWanted:   maxGasWanted,
 	}
 
 	suite.Require().NoError(options.Validate())
-	middleware, err := ante.NewMiddleware(options)
-	suite.Require().NoError(err)
-	suite.anteHandler = middleware
+	suite.anteHandler = middleware.NewTxHandler(options)
 	suite.ethSigner = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
 }
 

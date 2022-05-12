@@ -712,10 +712,7 @@ func (app *EthermintApp) setTxHandler(options middleware.HandlerOptions, txConfi
 
 	options.IndexEvents = indexEvents
 
-	txHandler, err := middleware.NewMiddleware(options)
-	if err != nil {
-		panic(err)
-	}
+	txHandler := middleware.NewTxHandler(options)
 	app.SetTxHandler(txHandler)
 }
 

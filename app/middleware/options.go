@@ -13,7 +13,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
-// HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
+// HandlerOptions extend the SDK's TxHandler options by requiring the IBC
 // channel keeper, EVM Keeper and Fee Market Keeper.
 type HandlerOptions struct {
 	Debug bool
@@ -50,26 +50,25 @@ func (options HandlerOptions) Validate() error {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for middlewares")
 	}
 	if options.AccountKeeper == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
+		return sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for middlewares")
 	}
 	if options.BankKeeper == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
+		return sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for middlewares")
 	}
 	if options.SignModeHandler == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+		return sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for middlewares")
 	}
 	if options.FeeMarketKeeper == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "fee market keeper is required for AnteHandler")
+		return sdkerrors.Wrap(sdkerrors.ErrLogic, "fee market keeper is required for middlewares")
 	}
 	if options.EvmKeeper == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrLogic, "evm keeper is required for AnteHandler")
+		return sdkerrors.Wrap(sdkerrors.ErrLogic, "evm keeper is required for middlewares")
 	}
 	return nil
 }
 
-func newEthAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
-	return authmiddleware.ComposeMiddlewares(
-		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
+func newEthAuthMiddleware(options HandlerOptions) tx.Middleware {
+	stack := []tx.Middleware{
 		NewEthSetUpContextMiddleware(options.EvmKeeper),
 		NewEthMempoolFeeMiddleware(options.EvmKeeper),
 		NewEthValidateBasicMiddleware(options.EvmKeeper),
@@ -78,13 +77,14 @@ func newEthAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
 		NewEthGasConsumeMiddleware(options.EvmKeeper, options.MaxTxGasWanted),
 		NewCanTransferMiddleware(options.EvmKeeper),
 		NewEthIncrementSenderSequenceMiddleware(options.AccountKeeper),
-	), nil
+	}
+	return func(txh tx.Handler) tx.Handler {
+		return authmiddleware.ComposeMiddlewares(txh, stack...)
+	}
 }
 
-func newCosmosAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
-	return authmiddleware.ComposeMiddlewares(
-		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
-		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
+func newCosmosAuthMiddleware(options HandlerOptions) tx.Middleware {
+	stack := []tx.Middleware{
 		NewRejectMessagesMiddleware,
 		// Set a new GasMeter on sdk.Context.
 		//
@@ -123,15 +123,15 @@ func newCosmosAuthMiddleware(options HandlerOptions) (tx.Handler, error) {
 		// should be accounted for, should go below this middleware.
 		authmiddleware.ConsumeBlockGasMiddleware,
 		authmiddleware.NewTipMiddleware(options.BankKeeper),
-	), nil
+	}
+	return func(txh tx.Handler) tx.Handler {
+		return authmiddleware.ComposeMiddlewares(txh, stack...)
+	}
 }
 
-func newCosmosAnteHandlerEip712(options HandlerOptions) (tx.Handler, error) {
-
-	return authmiddleware.ComposeMiddlewares(
-		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
+func newCosmosMiddlewareEip712(options HandlerOptions) tx.Middleware {
+	stack := []tx.Middleware{
 		NewRejectMessagesMiddleware,
-		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
 		// Set a new GasMeter on sdk.Context.
 		//
 		// Make sure the Gas middleware is outside of all other middlewares
@@ -170,5 +170,8 @@ func newCosmosAnteHandlerEip712(options HandlerOptions) (tx.Handler, error) {
 		// should be accounted for, should go below this middleware.
 		authmiddleware.ConsumeBlockGasMiddleware,
 		authmiddleware.NewTipMiddleware(options.BankKeeper),
-	), nil
+	}
+	return func(txh tx.Handler) tx.Handler {
+		return authmiddleware.ComposeMiddlewares(txh, stack...)
+	}
 }
