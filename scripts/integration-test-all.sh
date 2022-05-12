@@ -32,6 +32,7 @@ usage() {
     echo "-q <number>  -- Quantity of nodes to run. eg: 3"
     echo "-z <number>  -- Quantity of nodes to run tests against eg: 3"
     echo "-s <number>  -- Sleep between operations in secs. eg: 5"
+    echo "-m <string>  -- Mode for testing. eg: rpc"
     echo "-r <string>  -- Remove test dir after, eg: true, default is false"
     exit 1
 }
