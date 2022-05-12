@@ -354,6 +354,8 @@ func NewEthermintApp(
 	)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
+
+	evmtypes.RegisterInterfaces(interfaceRegistry)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	// configure state listening capabilities using AppOptions
