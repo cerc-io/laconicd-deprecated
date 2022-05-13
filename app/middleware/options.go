@@ -71,6 +71,7 @@ func newEthAuthMiddleware(options HandlerOptions) tx.Middleware {
 	stack := []tx.Middleware{
 		NewEthSetUpContextMiddleware(options.EvmKeeper),
 		NewEthMempoolFeeMiddleware(options.EvmKeeper),
+		authmiddleware.NewIndexEventsTxMiddleware(options.IndexEvents),
 		NewEthValidateBasicMiddleware(options.EvmKeeper),
 		NewEthSigVerificationMiddleware(options.EvmKeeper),
 		NewEthAccountVerificationMiddleware(options.AccountKeeper, options.BankKeeper, options.EvmKeeper),
