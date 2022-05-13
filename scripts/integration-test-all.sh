@@ -17,10 +17,10 @@ RPC_PORT="854"
 IP_ADDR="0.0.0.0"
 
 KEY="mykey"
-CHAINID="ethermint_9000-1"
+CHAINID="chibaclonk_9000-1"
 MONIKER="mymoniker"
 
-## default port prefixes for ethermintd
+## default port prefixes for chibaclonkd
 NODE_P2P_PORT="2660"
 NODE_PORT="2663"
 NODE_RPC_PORT="2666"
@@ -55,6 +55,7 @@ set -euxo pipefail
 
 DATA_DIR=$(mktemp -d -t ethermint-datadir.XXXXX)
 
+DATA_DIR=$(mktemp -d -t chibaclonk-datadir.XXXXX)
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"
     exit 1
@@ -105,17 +106,21 @@ init_func() {
 
 start_func() {
     echo "starting chibaclonk node $i in background ..."
-    "$PWD"/build/chibaclonkd start --pruning=nothing --rpc.unsafe \
-    --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
-    --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
-    --json-rpc.api="eth,txpool,personal,net,debug,web3" \
-    --keyring-backend test --mode validator --home "$DATA_DIR$i" \
+    "$PWD"/build/chibaclonkd start \
+          --pruning=nothing --rpc.unsafe \
+          --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" \
+          --address tcp://$IP_ADDR:$NODE_PORT"$i" \
+          --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
+          --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
+          --json-rpc.api="eth,txpool,personal,net,debug,web3" \
+          --keyring-backend test --mode validator --home "$DATA_DIR$i" \
+          --log_level debug \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
 
-    ETHERMINT_PID=$!
-    echo "started chibaclonk node, pid=$ETHERMINT_PID"
+    CHIBACLONK_PID=$!
+    echo "started chibaclonk node, pid=$CHIBACLONK_PID"
     # add PID to array
-    arr+=("$ETHERMINT_PID")
+    arr+=("$CHIBACLONK_PID")
 
     if [[ $MODE == "pending" ]]; then
       echo "waiting for the first block..."
@@ -164,16 +169,15 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
 
         TEST_FAIL=$?
     done
-
 fi
 
 stop_func() {
-    ETHERMINT_PID=$i
-    echo "shutting down node, pid=$ETHERMINT_PID ..."
+    CHIBACLONK_PID=$i
+    echo "shutting down node, pid=$CHIBACLONK_PID ..."
 
-    # Shutdown ethermint node
-    kill -9 "$ETHERMINT_PID"
-    wait "$ETHERMINT_PID"
+    # Shutdown chibaclonk node
+    kill -9 "$CHIBACLONK_PID"
+    wait "$CHIBACLONK_PID"
 
     if [ $REMOVE_DATA_DIR == "true" ]
     then
