@@ -391,7 +391,7 @@ func (api *PublicFilterAPI) Logs(ctx context.Context, crit filters.FilterCriteri
 					continue
 				}
 
-				txResponse, err := evmtypes.DecodeTxResponse(dataTx.TxResult.Result.Data)
+				txResponse, err := evmtypes.DecodeTxResponse(dataTx.TxResult.Result.Data, api.clientCtx.Codec)
 				if err != nil {
 					return
 				}
@@ -467,7 +467,7 @@ func (api *PublicFilterAPI) NewFilter(criteria filters.FilterCriteria) (rpc.ID, 
 					continue
 				}
 
-				txResponse, err := evmtypes.DecodeTxResponse(dataTx.TxResult.Result.Data)
+				txResponse, err := evmtypes.DecodeTxResponse(dataTx.TxResult.Result.Data, api.clientCtx.Codec)
 				if err != nil {
 					return
 				}

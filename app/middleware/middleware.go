@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-	authante "github.com/cosmos/cosmos-sdk/x/auth/middleware"
+	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/tharsis/ethermint/crypto/ethsecp256k1"
 )
@@ -16,128 +16,91 @@ const (
 	secp256k1VerifyCost uint64 = 21000
 )
 
-type MD struct {
-	ethMiddleware    tx.Handler
-	cosmosMiddleware tx.Handler
-	cosmoseip712     tx.Handler
+type txRouter struct {
+	eth, cosmos, eip712 tx.Handler
 }
 
-var _ tx.Handler = MD{}
+var _ tx.Handler = txRouter{}
 
-func NewMiddleware(options HandlerOptions) (tx.Handler, error) {
-	ethMiddleware, err := newEthAuthMiddleware(options)
-	if err != nil {
-		return nil, err
+func NewTxHandler(options HandlerOptions) tx.Handler {
+	return authmiddleware.ComposeMiddlewares(
+		authmiddleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
+		authmiddleware.NewTxDecoderMiddleware(options.TxDecoder),
+		NewTxRouterMiddleware(options),
+	)
+}
+
+func NewTxRouterMiddleware(options HandlerOptions) tx.Middleware {
+	ethMiddleware := newEthAuthMiddleware(options)
+	cosmoseip712 := newCosmosMiddlewareEip712(options)
+	cosmosMiddleware := newCosmosAuthMiddleware(options)
+	return func(txh tx.Handler) tx.Handler {
+		return txRouter{
+			eth:    ethMiddleware(txh),
+			cosmos: cosmosMiddleware(txh),
+			eip712: cosmoseip712(txh),
+		}
 	}
-	cosmoseip712, err := newCosmosAnteHandlerEip712(options)
-	if err != nil {
-		return nil, err
-	}
-	cosmosMiddleware, err := newCosmosAuthMiddleware(options)
-	if err != nil {
-		return nil, err
-	}
-	return MD{
-		ethMiddleware:    ethMiddleware,
-		cosmosMiddleware: cosmosMiddleware,
-		cosmoseip712:     cosmoseip712,
-	}, nil
 }
 
 // CheckTx implements tx.Handler
-func (md MD) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
-	var anteHandler tx.Handler
-	reqTx := req.Tx
-	txWithExtensions, ok := reqTx.(authante.HasExtensionOptionsTx)
+func (txh txRouter) route(req tx.Request) (tx.Handler, error) {
+	txWithExtensions, ok := req.Tx.(authmiddleware.HasExtensionOptionsTx)
 	if ok {
 		opts := txWithExtensions.GetExtensionOptions()
 		if len(opts) > 0 {
+			var next tx.Handler
 			switch typeURL := opts[0].GetTypeUrl(); typeURL {
 			case "/ethermint.evm.v1.ExtensionOptionsEthereumTx":
 				// handle as *evmtypes.MsgEthereumTx
-				anteHandler = md.ethMiddleware
+				next = txh.eth
 			case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
 				// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
-				anteHandler = md.cosmoseip712
+				next = txh.eip712
 			default:
-				return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(
+				return nil, sdkerrors.Wrapf(
 					sdkerrors.ErrUnknownExtensionOptions,
 					"rejecting tx with unsupported extension option: %s", typeURL,
 				)
 			}
-
-			return anteHandler.CheckTx(ctx, req, checkReq)
+			return next, nil
 		}
 	}
-
 	// // handle as totally normal Cosmos SDK tx
-	// _, ok = reqTx.(sdk.Tx)
-	// if !ok {
-	// 	return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid transaction type: %T", reqTx)
+	// if _, ok = reqTx.(sdk.Tx); !ok {
+	// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid transaction type: %T", reqTx)
 	// }
+	return txh.cosmos, nil
+}
 
-	return md.cosmosMiddleware.CheckTx(ctx, req, checkReq)
+// CheckTx implements tx.Handler
+func (txh txRouter) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (res tx.Response, rct tx.ResponseCheckTx, err error) {
+	next, err := txh.route(req)
+	if err != nil {
+		return
+	}
+	return next.CheckTx(ctx, req, checkReq)
 }
 
 // DeliverTx implements tx.Handler
-func (md MD) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
-	var anteHandler tx.Handler
-	reqTx := req.Tx
-	txWithExtensions, ok := reqTx.(authante.HasExtensionOptionsTx)
-	if ok {
-		opts := txWithExtensions.GetExtensionOptions()
-		if len(opts) > 0 {
-			switch typeURL := opts[0].GetTypeUrl(); typeURL {
-			case "/ethermint.evm.v1.ExtensionOptionsEthereumTx":
-				// handle as *evmtypes.MsgEthereumTx
-				anteHandler = md.ethMiddleware
-			case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
-				// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
-				anteHandler = md.cosmoseip712
-			default:
-				return tx.Response{}, sdkerrors.Wrapf(
-					sdkerrors.ErrUnknownExtensionOptions,
-					"rejecting tx with unsupported extension option: %s", typeURL,
-				)
-			}
-
-			return anteHandler.DeliverTx(ctx, req)
-		}
+func (txh txRouter) DeliverTx(ctx context.Context, req tx.Request) (res tx.Response, err error) {
+	next, err := txh.route(req)
+	if err != nil {
+		return
 	}
-
-	return md.cosmosMiddleware.DeliverTx(ctx, req)
+	return next.DeliverTx(ctx, req)
 }
 
 // SimulateTx implements tx.Handler
-func (md MD) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
-	var anteHandler tx.Handler
-	reqTx := req.Tx
-	txWithExtensions, ok := reqTx.(authante.HasExtensionOptionsTx)
-	if ok {
-		opts := txWithExtensions.GetExtensionOptions()
-		if len(opts) > 0 {
-			switch typeURL := opts[0].GetTypeUrl(); typeURL {
-			case "/ethermint.evm.v1.ExtensionOptionsEthereumTx":
-				// handle as *evmtypes.MsgEthereumTx
-				anteHandler = md.ethMiddleware
-			case "/ethermint.types.v1.ExtensionOptionsWeb3Tx":
-				// handle as normal Cosmos SDK tx, except signature is checked for EIP712 representation
-				anteHandler = md.cosmoseip712
-			default:
-				return tx.Response{}, sdkerrors.Wrapf(
-					sdkerrors.ErrUnknownExtensionOptions,
-					"rejecting tx with unsupported extension option: %s", typeURL,
-				)
-			}
-
-			return anteHandler.SimulateTx(ctx, req)
-		}
+func (txh txRouter) SimulateTx(ctx context.Context, req tx.Request) (res tx.Response, err error) {
+	next, err := txh.route(req)
+	if err != nil {
+		return
 	}
-
-	return md.cosmosMiddleware.SimulateTx(ctx, req)
+	return next.SimulateTx(ctx, req)
 }
 
-var _ authante.SignatureVerificationGasConsumer = DefaultSigVerificationGasConsumer
+var _ authmiddleware.SignatureVerificationGasConsumer = DefaultSigVerificationGasConsumer
 
 // DefaultSigVerificationGasConsumer is the default implementation of SignatureVerificationGasConsumer. It consumes gas
 // for signature verification based upon the public key type. The cost is fetched from the given params and is matched
@@ -152,5 +115,5 @@ func DefaultSigVerificationGasConsumer(
 		return nil
 	}
 
-	return authante.DefaultSigVerificationGasConsumer(meter, sig, params)
+	return authmiddleware.DefaultSigVerificationGasConsumer(meter, sig, params)
 }

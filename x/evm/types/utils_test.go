@@ -5,23 +5,33 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
-	proto "github.com/gogo/protobuf/proto"
+
 	"github.com/tharsis/ethermint/app"
 	"github.com/tharsis/ethermint/encoding"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/ethereum/go-ethereum/common"
 )
+
+var testCodec codec.Codec
+
+func init() {
+	registry := codectypes.NewInterfaceRegistry()
+	evmtypes.RegisterInterfaces(registry)
+	testCodec = codec.NewProtoCodec(registry)
+}
 
 func TestEvmDataEncoding(t *testing.T) {
 	ret := []byte{0x5, 0x8}
 
-	data := &evmtypes.MsgEthereumTxResponse{
+	resp := &evmtypes.MsgEthereumTxResponse{
 		Hash: common.BytesToHash([]byte("hash")).String(),
 		Logs: []*evmtypes.Log{{
 			Data:        []byte{1, 2, 3, 4},
@@ -30,21 +40,20 @@ func TestEvmDataEncoding(t *testing.T) {
 		Ret: ret,
 	}
 
-	enc, err := proto.Marshal(data)
+	any, err := codectypes.NewAnyWithValue(resp)
 	require.NoError(t, err)
-
 	txData := &sdk.TxMsgData{
-		Data: []*sdk.MsgData{{MsgType: evmtypes.TypeMsgEthereumTx, Data: enc}},
+		MsgResponses: []*codectypes.Any{any},
 	}
 
-	txDataBz, err := proto.Marshal(txData)
+	txDataBz, err := txData.Marshal()
 	require.NoError(t, err)
 
-	res, err := evmtypes.DecodeTxResponse(txDataBz)
+	decoded, err := evmtypes.DecodeTxResponse(txDataBz, testCodec)
 	require.NoError(t, err)
-	require.NotNil(t, res)
-	require.Equal(t, data.Logs, res.Logs)
-	require.Equal(t, ret, res.Ret)
+	require.NotNil(t, decoded)
+	require.Equal(t, resp.Logs, decoded.Logs)
+	require.Equal(t, ret, decoded.Ret)
 }
 
 func TestUnwrapEthererumMsg(t *testing.T) {

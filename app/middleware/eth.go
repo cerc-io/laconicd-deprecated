@@ -46,7 +46,7 @@ func setGasMeter(ctx sdk.Context, gasLimit uint64, simulate bool) sdk.Context {
 		return ctx.WithGasMeter(sdk.NewInfiniteGasMeter())
 	}
 
-	return ctx.WithGasMeter(sdk.NewGasMeter(gasLimit))
+	return ctx.WithGasMeter(ethermint.NewInfiniteGasMeterWithLimit(gasLimit))
 }
 
 // CheckTx implements tx.Handler
@@ -180,7 +180,7 @@ func (vbd EthValidateBasicMiddleware) CheckTx(cx context.Context, req tx.Request
 		return tx.Response{}, tx.ResponseCheckTx{}, sdkerrors.Wrap(err, "tx basic validation failed")
 	}
 
-	// For eth type cosmos tx, some fields should be veified as zero values,
+	// For eth type cosmos tx, some fields should be verified as zero values,
 	// since we will only verify the signature against the hash of the MsgEthereumTx.Data
 	if wrapperTx, ok := reqTx.(protoTxProvider); ok {
 		protoTx := wrapperTx.GetProtoTx()

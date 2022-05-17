@@ -17,19 +17,10 @@ import (
 	"github.com/tharsis/ethermint/ethereum/eip712"
 	ethermint "github.com/tharsis/ethermint/types"
 
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
-
-var ethermintCodec codec.ProtoCodecMarshaler
-
-func init() {
-	registry := codectypes.NewInterfaceRegistry()
-	ethermint.RegisterInterfaces(registry)
-	ethermintCodec = codec.NewProtoCodec(registry)
-}
 
 // Eip712SigVerificationMiddleware Verify all signatures for a tx and return an error if any are invalid. Note,
 // the Eip712SigVerificationMiddleware middleware will not get executed on ReCheck.
