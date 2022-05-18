@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	context "context"
+	"context"
 	"errors"
 	"math/big"
 

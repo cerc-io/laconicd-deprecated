@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	context "context"
+	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -66,10 +66,7 @@ func (txh txRouter) route(req tx.Request) (tx.Handler, error) {
 			return next, nil
 		}
 	}
-	// // handle as totally normal Cosmos SDK tx
-	// if _, ok = reqTx.(sdk.Tx); !ok {
-	// 	return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid transaction type: %T", reqTx)
-	// }
+	// handle as totally normal Cosmos SDK tx
 	return txh.cosmos, nil
 }
 
@@ -100,7 +97,7 @@ func (txh txRouter) SimulateTx(ctx context.Context, req tx.Request) (res tx.Resp
 	return next.SimulateTx(ctx, req)
 }
 
-var _ authmiddleware.SignatureVerificationGasConsumer = DefaultSigVerificationGasConsumer
+var _ = DefaultSigVerificationGasConsumer
 
 // DefaultSigVerificationGasConsumer is the default implementation of SignatureVerificationGasConsumer. It consumes gas
 // for signature verification based upon the public key type. The cost is fetched from the given params and is matched

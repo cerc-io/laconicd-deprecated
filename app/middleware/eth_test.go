@@ -16,10 +16,6 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
-func nextFn(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
-	return ctx, nil
-}
-
 func (suite MiddlewareTestSuite) TestEthSigVerificationDecorator() {
 	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthSigVerificationMiddleware(suite.app.EvmKeeper))
 	addr, privKey := tests.NewAddrKey()
@@ -288,26 +284,22 @@ func (suite MiddlewareTestSuite) TestEthGasConsumeDecorator() {
 			if tc.expPanic {
 				suite.Require().Panics(func() {
 					_, _, _ = txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewGasMeter(1))), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
-
 				})
 				return
 			}
 
 			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewInfiniteGasMeter())), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 
-			// ctx, err := t.AnteHandle(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewInfiniteGasMeter()), tc.tx, false, nextFn)
 			if tc.expPass {
 				suite.Require().NoError(err)
 			} else {
 				suite.Require().Error(err)
 			}
-			// suite.Require().Equal(tc.gasLimit, ctx.GasMeter().Limit())
 		})
 	}
 }
 
 func (suite MiddlewareTestSuite) TestCanTransferDecorator() {
-	// dec := ante.NewCanTransferMiddleware(suite.app.EvmKeeper)
 	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewCanTransferMiddleware(suite.app.EvmKeeper))
 
 	addr, privKey := tests.NewAddrKey()
