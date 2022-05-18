@@ -562,7 +562,7 @@ func (n *Network) LatestHeight() (int64, error) {
 // committed after a given block. If that height is not reached within a timeout,
 // an error is returned. Regardless, the latest height queried is returned.
 func (n *Network) WaitForHeight(h int64) (int64, error) {
-	return n.WaitForHeightWithTimeout(h, time.Duration(10*time.Second))
+	return n.WaitForHeightWithTimeout(h, 10*time.Second)
 }
 
 // WaitForHeightWithTimeout is the same as WaitForHeight except the caller can
@@ -638,21 +638,6 @@ func (n *Network) Cleanup() {
 				_ = v.grpcWeb.Close()
 			}
 		}
-
-		// if v.jsonrpc != nil {
-		// 	shutdownCtx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
-		// 	defer cancelFn()
-
-		// 	if err := v.jsonrpc.Shutdown(shutdownCtx); err != nil {
-		// 		v.tmNode.Logger.Error("HTTP server shutdown produced a warning", "error", err.Error())
-		// 	} else {
-		// 		v.tmNode.Logger.Info("HTTP server shut down, waiting 5 sec")
-		// 		select {
-		// 		case <-time.Tick(5 * time.Second):
-		// 		case <-v.jsonrpcDone:
-		// 		}
-		// 	}
-		// }
 	}
 
 	if n.Config.CleanupDir {

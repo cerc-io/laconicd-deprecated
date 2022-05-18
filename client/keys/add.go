@@ -156,7 +156,9 @@ func RunAddCmd(ctx client.Context, cmd *cobra.Command, args []string, inBuf *buf
 					return err
 				}
 
-				pks[i], err = k.GetPubKey()
+				if pks[i], err = k.GetPubKey(); err != nil {
+					return err
+				}
 			}
 
 			if noSort, _ := cmd.Flags().GetBool(flagNoSort); !noSort {
