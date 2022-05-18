@@ -170,7 +170,7 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		// transfer.AppModuleBasic{},
+		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		// Ethermint modules
 		evm.AppModuleBasic{},
@@ -289,7 +289,6 @@ func NewEthermintApp(
 
 	keys := sdk.NewKVStoreKeys(
 		// SDK keys
-
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
@@ -592,7 +591,6 @@ func NewEthermintApp(
 		stakingtypes.ModuleName,
 		evmtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		// no-op modules
 		// no-op modules
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
