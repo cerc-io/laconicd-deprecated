@@ -303,8 +303,8 @@ github.com/cosmos/gorocksdb v1.2.0 h1:d0l3jJG8M4hBouIZq0mDUHZ+zjOx044J3nGRskwTb4
 github.com/cosmos/gorocksdb v1.2.0/go.mod h1:aaKvKItm514hKfNJpUJXnnOWeBnk2GL4+Qw9NHizILw=
 github.com/cosmos/iavl v0.18.0 h1:02ur4vnalMR2GuWCFNkuseUcl/BCVmg9tOeHOGiZOkE=
 github.com/cosmos/iavl v0.18.0/go.mod h1:L0VZHfq0tqMNJvXlslGExaaiZM7eSm+90Vh9QUbp6j4=
-github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220331200732-34f03df4aa59 h1:JArEGS53oKuhFXFKbgOxabN2AcK9nHieCMwYSFe5l4o=
-github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220331200732-34f03df4aa59/go.mod h1:b/e8JFZRZHf0p5xQkOrBbtEO50nthrEEQXAnOaNoD6Q=
+github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220517190049-c4ce2b908a1e h1:Ib7epelzyhChHJWym0VFX8rr5HO0iGjV9jpX3UiXw4k=
+github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220517190049-c4ce2b908a1e/go.mod h1:fZZsQ09aFdP1RxMTTi1s6NNhxT8LbZTALHEPc/Gd0s0=
 github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76 h1:DdzS1m6o/pCqeZ8VOAit/gyATedRgjvkVI+UCrLpyuU=
 github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76/go.mod h1:0mkLWIoZuQ7uBoospo5Q9zIpqq6rYCPJDSUdeCJvPM8=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=

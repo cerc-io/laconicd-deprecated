@@ -6,10 +6,10 @@ require (
 	github.com/99designs/gqlgen v0.17.2
 	github.com/btcsuite/btcd v0.22.0-beta
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
-	github.com/cosmos/cosmos-sdk v0.46.0-alpha3.0.20220325134903-a69764f9f01b
+	github.com/cosmos/cosmos-sdk v0.46.0-beta2
 	github.com/cosmos/cosmos-sdk/db v1.0.0-beta.1
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220331200732-34f03df4aa59
+	github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220517190049-c4ce2b908a1e
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.8.0
 	github.com/ethereum/go-ethereum v1.10.17
