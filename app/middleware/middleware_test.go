@@ -398,7 +398,6 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			suite.ctx = suite.ctx.WithIsCheckTx(tc.checkTx).WithIsReCheckTx(tc.reCheckTx)
 
 			// expConsumed := params.TxGasContractCreation + params.TxGas
-			// _, err := suite.anteHandler(suite.ctx, tc.txFn(), false)
 			_, _, err := suite.anteHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.txFn()}, tx.RequestCheckTx{})
 			// suite.Require().Equal(consumed, ctx.GasMeter().GasConsumed())
 
@@ -677,7 +676,6 @@ func (suite MiddlewareTestSuite) TestAnteHandlerWithDynamicTxFee() {
 
 			suite.ctx = suite.ctx.WithIsCheckTx(tc.checkTx).WithIsReCheckTx(tc.reCheckTx)
 			suite.app.EvmKeeper.SetBalance(suite.ctx, addr, big.NewInt((ethparams.InitialBaseFee+10)*100000))
-			// _, err := suite.anteHandler(suite.ctx, tc.txFn(), false)
 			_, _, err := suite.anteHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.txFn()}, tx.RequestCheckTx{})
 			if tc.expPass {
 				suite.Require().NoError(err)

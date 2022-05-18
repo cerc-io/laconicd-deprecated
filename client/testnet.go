@@ -456,7 +456,6 @@ func collectGenFiles(
 	outputDir, nodeDirPrefix, nodeDaemonHome string, genBalIterator banktypes.GenesisBalancesIterator,
 ) error {
 	var appState json.RawMessage
-	// genTime := tmtime.Now()
 	genTime := time.Now()
 
 	for i := 0; i < numValidators; i++ {

@@ -384,7 +384,6 @@ func (suite MiddlewareTestSuite) TestCanTransferDecorator() {
 
 func (suite MiddlewareTestSuite) TestEthIncrementSenderSequenceDecorator() {
 	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthIncrementSenderSequenceMiddleware(suite.app.AccountKeeper))
-
 	addr, privKey := tests.NewAddrKey()
 
 	contract := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 0, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
@@ -456,7 +455,6 @@ func (suite MiddlewareTestSuite) TestEthIncrementSenderSequenceDecorator() {
 				return
 			}
 
-			// _, err := dec.AnteHandle(suite.ctx, tc.tx, false, nextFn)
 			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 			if tc.expPass {
 				suite.Require().NoError(err)
@@ -482,7 +480,6 @@ func (suite MiddlewareTestSuite) TestEthIncrementSenderSequenceDecorator() {
 
 func (suite MiddlewareTestSuite) TestEthSetupContextDecorator() {
 	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthSetUpContextMiddleware(suite.app.EvmKeeper))
-
 	tx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
 
 	testCases := []struct {

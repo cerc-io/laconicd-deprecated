@@ -53,7 +53,6 @@ done
 
 set -euxo pipefail
 
-DATA_DIR=$(mktemp -d -t ethermint-datadir.XXXXX)
 
 DATA_DIR=$(mktemp -d -t chibaclonk-datadir.XXXXX)
 if [[ ! "$DATA_DIR" ]]; then
