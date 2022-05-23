@@ -1,4 +1,4 @@
-package ante
+package middleware
 
 import (
 	"math/big"

@@ -1,16 +1,21 @@
-package ante_test
+package middleware_test
 
 import (
+	context "context"
 	"math"
 	"testing"
 	"time"
 
+	clientTx "github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	types3 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/spf13/cast"
+	"github.com/tharsis/ethermint/app/middleware"
 	"github.com/tharsis/ethermint/ethereum/eip712"
+	"github.com/tharsis/ethermint/server/config"
 	"github.com/tharsis/ethermint/types"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -19,48 +24,69 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"github.com/tharsis/ethermint/app"
-	ante "github.com/tharsis/ethermint/app/ante"
 	"github.com/tharsis/ethermint/encoding"
 	"github.com/tharsis/ethermint/tests"
 	"github.com/tharsis/ethermint/x/evm/statedb"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
-
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-type AnteTestSuite struct {
+// customTxHandler is a test middleware that will run a custom function.
+type customTxHandler struct {
+	fn func(context.Context, tx.Request) (tx.Response, error)
+}
+
+var _ tx.Handler = customTxHandler{}
+
+func (h customTxHandler) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	return h.fn(ctx, req)
+}
+func (h customTxHandler) CheckTx(ctx context.Context, req tx.Request, _ tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	res, err := h.fn(ctx, req)
+	return res, tx.ResponseCheckTx{}, err
+}
+func (h customTxHandler) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	return h.fn(ctx, req)
+}
+
+// noopTxHandler is a test middleware that returns an empty response.
+var noopTxHandler = customTxHandler{func(_ context.Context, _ tx.Request) (tx.Response, error) {
+	return tx.Response{}, nil
+}}
+
+type MiddlewareTestSuite struct {
 	suite.Suite
 
 	ctx             sdk.Context
 	app             *app.EthermintApp
 	clientCtx       client.Context
-	anteHandler     sdk.AnteHandler
+	anteHandler     tx.Handler
 	ethSigner       ethtypes.Signer
 	enableFeemarket bool
 	enableLondonHF  bool
 }
 
-func (suite *AnteTestSuite) StateDB() *statedb.StateDB {
+func (suite *MiddlewareTestSuite) StateDB() *statedb.StateDB {
 	return statedb.New(suite.ctx, suite.app.EvmKeeper, statedb.NewEmptyTxConfig(common.BytesToHash(suite.ctx.HeaderHash().Bytes())))
 }
 
-func (suite *AnteTestSuite) SetupTest() {
+func (suite *MiddlewareTestSuite) SetupTest() {
 	checkTx := false
 
-	suite.app = app.Setup(checkTx, func(app *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	suite.app = app.Setup(suite.T(), checkTx, func(app *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
 		if suite.enableFeemarket {
 			// setup feemarketGenesis params
 			feemarketGenesis := feemarkettypes.DefaultGenesisState()
@@ -95,32 +121,37 @@ func (suite *AnteTestSuite) SetupTest() {
 	encodingConfig.Amino.RegisterConcrete(&testdata.TestMsg{}, "testdata.TestMsg", nil)
 
 	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
+	maxGasWanted := cast.ToUint64(config.DefaultMaxTxGasWanted)
 
-	options := ante.HandlerOptions{
-		AccountKeeper:   suite.app.AccountKeeper,
-		BankKeeper:      suite.app.BankKeeper,
-		EvmKeeper:       suite.app.EvmKeeper,
-		FeegrantKeeper:  suite.app.FeeGrantKeeper,
-		IBCKeeper:       suite.app.IBCKeeper,
-		FeeMarketKeeper: suite.app.FeeMarketKeeper,
-		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+	options := middleware.HandlerOptions{
+		TxDecoder:        suite.clientCtx.TxConfig.TxDecoder(),
+		AccountKeeper:    suite.app.AccountKeeper,
+		BankKeeper:       suite.app.BankKeeper,
+		EvmKeeper:        suite.app.EvmKeeper,
+		FeegrantKeeper:   suite.app.FeeGrantKeeper,
+		Codec:            suite.app.AppCodec(),
+		Debug:            suite.app.Trace(),
+		LegacyRouter:     suite.app.LegacyRouter,
+		MsgServiceRouter: suite.app.MsgSvcRouter,
+		FeeMarketKeeper:  suite.app.FeeMarketKeeper,
+		SignModeHandler:  suite.clientCtx.TxConfig.SignModeHandler(),
+		SigGasConsumer:   middleware.DefaultSigVerificationGasConsumer,
+		MaxTxGasWanted:   maxGasWanted,
 	}
 
 	suite.Require().NoError(options.Validate())
-
-	suite.anteHandler = ante.NewAnteHandler(options)
+	suite.anteHandler = middleware.NewTxHandler(options)
 	suite.ethSigner = ethtypes.LatestSignerForChainID(suite.app.EvmKeeper.ChainID())
 }
 
-func TestAnteTestSuite(t *testing.T) {
-	suite.Run(t, &AnteTestSuite{
+func TestMiddlewareTestSuite(t *testing.T) {
+	suite.Run(t, &MiddlewareTestSuite{
 		enableLondonHF: true,
 	})
 }
 
 // CreateTestTx is a helper function to create a tx given multiple inputs.
-func (suite *AnteTestSuite) CreateTestTx(
+func (suite *MiddlewareTestSuite) CreateTestTx(
 	msg *evmtypes.MsgEthereumTx, priv cryptotypes.PrivKey, accNum uint64, signCosmosTx bool,
 	unsetExtensionOptions ...bool,
 ) authsigning.Tx {
@@ -128,7 +159,7 @@ func (suite *AnteTestSuite) CreateTestTx(
 }
 
 // CreateTestTxBuilder is a helper function to create a tx builder given multiple inputs.
-func (suite *AnteTestSuite) CreateTestTxBuilder(
+func (suite *MiddlewareTestSuite) CreateTestTxBuilder(
 	msg *evmtypes.MsgEthereumTx, priv cryptotypes.PrivKey, accNum uint64, signCosmosTx bool,
 	unsetExtensionOptions ...bool,
 ) client.TxBuilder {
@@ -184,7 +215,7 @@ func (suite *AnteTestSuite) CreateTestTxBuilder(
 			AccountNumber: accNum,
 			Sequence:      txData.GetNonce(),
 		}
-		sigV2, err = tx.SignWithPrivKey(
+		sigV2, err = clientTx.SignWithPrivKey(
 			suite.clientCtx.TxConfig.SignModeHandler().DefaultMode(), signerData,
 			txBuilder, priv, suite.clientCtx.TxConfig, txData.GetNonce(),
 		)
@@ -199,22 +230,22 @@ func (suite *AnteTestSuite) CreateTestTxBuilder(
 	return txBuilder
 }
 
-func (suite *AnteTestSuite) CreateTestEIP712TxBuilderMsgSend(from sdk.AccAddress, priv cryptotypes.PrivKey, chainId string, gas uint64, gasAmount sdk.Coins) client.TxBuilder {
+func (suite *MiddlewareTestSuite) CreateTestEIP712TxBuilderMsgSend(from sdk.AccAddress, priv cryptotypes.PrivKey, chainId string, gas uint64, gasAmount sdk.Coins) client.TxBuilder {
 	// Build MsgSend
 	recipient := sdk.AccAddress(common.Address{}.Bytes())
 	msgSend := types2.NewMsgSend(from, recipient, sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(1))))
 	return suite.CreateTestEIP712CosmosTxBuilder(from, priv, chainId, gas, gasAmount, msgSend)
 }
 
-func (suite *AnteTestSuite) CreateTestEIP712TxBuilderMsgDelegate(from sdk.AccAddress, priv cryptotypes.PrivKey, chainId string, gas uint64, gasAmount sdk.Coins) client.TxBuilder {
+func (suite *MiddlewareTestSuite) CreateTestEIP712TxBuilderMsgDelegate(from sdk.AccAddress, priv cryptotypes.PrivKey, chainId string, gas uint64, gasAmount sdk.Coins) client.TxBuilder {
 	// Build MsgSend
 	valEthAddr := tests.GenerateAddress()
 	valAddr := sdk.ValAddress(valEthAddr.Bytes())
-	msgSend := types3.NewMsgDelegate(from, valAddr, sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
+	msgSend := types3.NewMsgDelegate(from, valAddr, sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
 	return suite.CreateTestEIP712CosmosTxBuilder(from, priv, chainId, gas, gasAmount, msgSend)
 }
 
-func (suite *AnteTestSuite) CreateTestEIP712CosmosTxBuilder(
+func (suite *MiddlewareTestSuite) CreateTestEIP712CosmosTxBuilder(
 	from sdk.AccAddress, priv cryptotypes.PrivKey, chainId string, gas uint64, gasAmount sdk.Coins, msg sdk.Msg,
 ) client.TxBuilder {
 	var err error
@@ -231,7 +262,7 @@ func (suite *AnteTestSuite) CreateTestEIP712CosmosTxBuilder(
 	fee := legacytx.NewStdFee(gas, gasAmount)
 	accNumber := suite.app.AccountKeeper.GetAccount(suite.ctx, from).GetAccountNumber()
 
-	data := legacytx.StdSignBytes(chainId, accNumber, nonce, 0, fee, []sdk.Msg{msg}, "")
+	data := legacytx.StdSignBytes(chainId, accNumber, nonce, 0, fee, []sdk.Msg{msg}, "", nil)
 	typedData, err := eip712.WrapTxToTypedData(ethermintCodec, ethChainId, msg, data, &eip712.FeeDelegationOptions{
 		FeePayer: from,
 	})

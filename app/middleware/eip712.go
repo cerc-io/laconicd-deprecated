@@ -1,107 +1,104 @@
-package ante
+package middleware
 
 import (
+	context "context"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/cosmos/cosmos-sdk/x/auth/middleware"
+	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/tharsis/ethermint/crypto/ethsecp256k1"
 	"github.com/tharsis/ethermint/ethereum/eip712"
 	ethermint "github.com/tharsis/ethermint/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
-var ethermintCodec codec.ProtoCodecMarshaler
-
-func init() {
-	registry := codectypes.NewInterfaceRegistry()
-	ethermint.RegisterInterfaces(registry)
-	ethermintCodec = codec.NewProtoCodec(registry)
-}
-
-// Eip712SigVerificationDecorator Verify all signatures for a tx and return an error if any are invalid. Note,
-// the Eip712SigVerificationDecorator decorator will not get executed on ReCheck.
+// Eip712SigVerificationMiddleware Verify all signatures for a tx and return an error if any are invalid. Note,
+// the Eip712SigVerificationMiddleware middleware will not get executed on ReCheck.
 //
-// CONTRACT: Pubkeys are set in context for all signers before this decorator runs
+// CONTRACT: Pubkeys are set in context for all signers before this middleware runs
 // CONTRACT: Tx must implement SigVerifiableTx interface
-type Eip712SigVerificationDecorator struct {
+type Eip712SigVerificationMiddleware struct {
+	appCodec        codec.Codec
+	next            tx.Handler
 	ak              evmtypes.AccountKeeper
 	signModeHandler authsigning.SignModeHandler
 }
 
-// NewEip712SigVerificationDecorator creates a new Eip712SigVerificationDecorator
-func NewEip712SigVerificationDecorator(ak evmtypes.AccountKeeper, signModeHandler authsigning.SignModeHandler) Eip712SigVerificationDecorator {
-	return Eip712SigVerificationDecorator{
-		ak:              ak,
-		signModeHandler: signModeHandler,
+var _ tx.Handler = Eip712SigVerificationMiddleware{}
+
+// NewEip712SigVerificationMiddleware creates a new Eip712SigVerificationMiddleware
+func NewEip712SigVerificationMiddleware(appCodec codec.Codec, ak evmtypes.AccountKeeper, signModeHandler authsigning.SignModeHandler) tx.Middleware {
+	return func(h tx.Handler) tx.Handler {
+		return Eip712SigVerificationMiddleware{
+			appCodec:        appCodec,
+			next:            h,
+			ak:              ak,
+			signModeHandler: signModeHandler,
+		}
 	}
 }
 
-// AnteHandle handles validation of EIP712 signed cosmos txs.
-// it is not run on RecheckTx
-func (svd Eip712SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	// no need to verify signatures on recheck tx
-	if ctx.IsReCheckTx() {
-		return next(ctx, tx, simulate)
+func eipSigVerification(svd Eip712SigVerificationMiddleware, cx context.Context, req tx.Request) (tx.Response, error) {
+	ctx := sdk.UnwrapSDKContext(cx)
+	reqTx := req.Tx
+
+	sigTx, ok := reqTx.(authsigning.SigVerifiableTx)
+	if !ok {
+		return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "tx %T doesn't implement authsigning.SigVerifiableTx", reqTx)
 	}
 
-	sigTx, ok := tx.(authsigning.SigVerifiableTx)
+	authSignTx, ok := reqTx.(authsigning.Tx)
 	if !ok {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "tx %T doesn't implement authsigning.SigVerifiableTx", tx)
-	}
-
-	authSignTx, ok := tx.(authsigning.Tx)
-	if !ok {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "tx %T doesn't implement the authsigning.Tx interface", tx)
+		return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "tx %T doesn't implement the authsigning.Tx interface", reqTx)
 	}
 
 	// stdSigs contains the sequence number, account number, and signatures.
 	// When simulating, this would just be a 0-length slice.
 	sigs, err := sigTx.GetSignaturesV2()
 	if err != nil {
-		return ctx, err
+		return tx.Response{}, err
 	}
 
 	signerAddrs := sigTx.GetSigners()
 
 	// EIP712 allows just one signature
 	if len(sigs) != 1 {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "invalid number of signers (%d);  EIP712 signatures allows just one signature", len(sigs))
+		return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "invalid number of signers (%d);  EIP712 signatures allows just one signature", len(sigs))
 	}
 
 	// check that signer length and signature length are the same
 	if len(sigs) != len(signerAddrs) {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "invalid number of signer;  expected: %d, got %d", len(signerAddrs), len(sigs))
+		return tx.Response{}, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "invalid number of signer;  expected: %d, got %d", len(signerAddrs), len(sigs))
 	}
 
 	// EIP712 has just one signature, avoid looping here and only read index 0
 	i := 0
 	sig := sigs[i]
 
-	acc, err := authante.GetSignerAcc(ctx, svd.ak, signerAddrs[i])
+	acc, err := middleware.GetSignerAcc(ctx, svd.ak, signerAddrs[i])
 	if err != nil {
-		return ctx, err
+		return tx.Response{}, err
 	}
 
 	// retrieve pubkey
 	pubKey := acc.GetPubKey()
-	if !simulate && pubKey == nil {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidPubKey, "pubkey on account is not set")
+	if pubKey == nil {
+		return tx.Response{}, sdkerrors.Wrap(sdkerrors.ErrInvalidPubKey, "pubkey on account is not set")
 	}
 
 	// Check account sequence number.
 	if sig.Sequence != acc.GetSequence() {
-		return ctx, sdkerrors.Wrapf(
+		return tx.Response{}, sdkerrors.Wrapf(
 			sdkerrors.ErrWrongSequence,
 			"account sequence mismatch, expected %d, got %d", acc.GetSequence(), sig.Sequence,
 		)
@@ -122,21 +119,45 @@ func (svd Eip712SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx,
 		Sequence:      acc.GetSequence(),
 	}
 
-	if simulate {
-		return next(ctx, tx, simulate)
-	}
-
-	if err := VerifySignature(pubKey, signerData, sig.Data, svd.signModeHandler, authSignTx); err != nil {
+	if err := VerifySignature(svd.appCodec, pubKey, signerData, sig.Data, svd.signModeHandler, authSignTx); err != nil {
 		errMsg := fmt.Errorf("signature verification failed; please verify account number (%d) and chain-id (%s): %w", accNum, chainID, err)
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, errMsg.Error())
+		return tx.Response{}, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, errMsg.Error())
 	}
 
-	return next(ctx, tx, simulate)
+	return tx.Response{}, nil
+}
+
+// CheckTx implements tx.Handler
+func (svd Eip712SigVerificationMiddleware) CheckTx(ctx context.Context, req tx.Request, checkReq tx.RequestCheckTx) (tx.Response, tx.ResponseCheckTx, error) {
+	if _, err := eipSigVerification(svd, ctx, req); err != nil {
+		return tx.Response{}, tx.ResponseCheckTx{}, err
+	}
+
+	return svd.next.CheckTx(ctx, req, checkReq)
+}
+
+// DeliverTx implements tx.Handler
+func (svd Eip712SigVerificationMiddleware) DeliverTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := eipSigVerification(svd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
+	return svd.next.DeliverTx(ctx, req)
+}
+
+// SimulateTx implements tx.Handler
+func (svd Eip712SigVerificationMiddleware) SimulateTx(ctx context.Context, req tx.Request) (tx.Response, error) {
+	if _, err := eipSigVerification(svd, ctx, req); err != nil {
+		return tx.Response{}, err
+	}
+
+	return svd.next.SimulateTx(ctx, req)
 }
 
 // VerifySignature verifies a transaction signature contained in SignatureData abstracting over different signing modes
 // and single vs multi-signatures.
 func VerifySignature(
+	appCodec codec.Codec,
 	pubKey cryptotypes.PubKey,
 	signerData authsigning.SignerData,
 	sigData signing.SignatureData,
@@ -171,7 +192,7 @@ func VerifySignature(
 				Amount: tx.GetFee(),
 				Gas:    tx.GetGas(),
 			},
-			msgs, tx.GetMemo(),
+			msgs, tx.GetMemo(), tx.GetTip(),
 		)
 
 		signerChainID, err := ethermint.ParseChainID(signerData.ChainID)
@@ -179,7 +200,7 @@ func VerifySignature(
 			return sdkerrors.Wrapf(err, "failed to parse chainID: %s", signerData.ChainID)
 		}
 
-		txWithExtensions, ok := tx.(authante.HasExtensionOptionsTx)
+		txWithExtensions, ok := tx.(middleware.HasExtensionOptionsTx)
 		if !ok {
 			return sdkerrors.Wrap(sdkerrors.ErrUnknownExtensionOptions, "tx doesnt contain any extensions")
 		}
@@ -190,7 +211,7 @@ func VerifySignature(
 
 		var optIface ethermint.ExtensionOptionsWeb3TxI
 
-		if err := ethermintCodec.UnpackAny(opts[0], &optIface); err != nil {
+		if err := appCodec.UnpackAny(opts[0], &optIface); err != nil {
 			return sdkerrors.Wrap(err, "failed to proto-unpack ExtensionOptionsWeb3Tx")
 		}
 
@@ -215,7 +236,7 @@ func VerifySignature(
 			FeePayer: feePayer,
 		}
 
-		typedData, err := eip712.WrapTxToTypedData(ethermintCodec, extOpt.TypedDataChainID, msgs[0], txBytes, feeDelegation)
+		typedData, err := eip712.WrapTxToTypedData(appCodec, extOpt.TypedDataChainID, msgs[0], txBytes, feeDelegation)
 		if err != nil {
 			return sdkerrors.Wrap(err, "failed to pack tx data in EIP712 object")
 		}

@@ -1,11 +1,13 @@
-package ante_test
+package middleware_test
 
 import (
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/tharsis/ethermint/app/ante"
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
+	"github.com/cosmos/cosmos-sdk/x/auth/middleware"
+	ante "github.com/tharsis/ethermint/app/middleware"
 	"github.com/tharsis/ethermint/server/config"
 	"github.com/tharsis/ethermint/tests"
 	"github.com/tharsis/ethermint/x/evm/statedb"
@@ -14,12 +16,8 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
-func nextFn(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
-	return ctx, nil
-}
-
-func (suite AnteTestSuite) TestEthSigVerificationDecorator() {
-	dec := ante.NewEthSigVerificationDecorator(suite.app.EvmKeeper)
+func (suite MiddlewareTestSuite) TestEthSigVerificationDecorator() {
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthSigVerificationMiddleware(suite.app.EvmKeeper))
 	addr, privKey := tests.NewAddrKey()
 
 	signedTx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
@@ -46,7 +44,7 @@ func (suite AnteTestSuite) TestEthSigVerificationDecorator() {
 
 	for _, tc := range testCases {
 		suite.Run(tc.name, func() {
-			_, err := dec.AnteHandle(suite.ctx.WithIsReCheckTx(tc.reCheckTx), tc.tx, false, nextFn)
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 
 			if tc.expPass {
 				suite.Require().NoError(err)
@@ -57,10 +55,10 @@ func (suite AnteTestSuite) TestEthSigVerificationDecorator() {
 	}
 }
 
-func (suite AnteTestSuite) TestNewEthAccountVerificationDecorator() {
-	dec := ante.NewEthAccountVerificationDecorator(
+func (suite MiddlewareTestSuite) TestNewEthAccountVerificationDecorator() {
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthAccountVerificationMiddleware(
 		suite.app.AccountKeeper, suite.app.BankKeeper, suite.app.EvmKeeper,
-	)
+	))
 
 	addr := tests.GenerateAddress()
 
@@ -134,8 +132,7 @@ func (suite AnteTestSuite) TestNewEthAccountVerificationDecorator() {
 			tc.malleate()
 			suite.Require().NoError(vmdb.Commit())
 
-			_, err := dec.AnteHandle(suite.ctx.WithIsCheckTx(tc.checkTx), tc.tx, false, nextFn)
-
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx.WithIsCheckTx(tc.checkTx)), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 			if tc.expPass {
 				suite.Require().NoError(err)
 			} else {
@@ -145,10 +142,9 @@ func (suite AnteTestSuite) TestNewEthAccountVerificationDecorator() {
 	}
 }
 
-func (suite AnteTestSuite) TestEthNonceVerificationDecorator() {
+func (suite MiddlewareTestSuite) TestEthNonceVerificationDecorator() {
 	suite.SetupTest()
-	dec := ante.NewEthIncrementSenderSequenceDecorator(suite.app.AccountKeeper)
-
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthIncrementSenderSequenceMiddleware(suite.app.AccountKeeper))
 	addr := tests.GenerateAddress()
 
 	tx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
@@ -190,7 +186,7 @@ func (suite AnteTestSuite) TestEthNonceVerificationDecorator() {
 	for _, tc := range testCases {
 		suite.Run(tc.name, func() {
 			tc.malleate()
-			_, err := dec.AnteHandle(suite.ctx.WithIsReCheckTx(tc.reCheckTx), tc.tx, false, nextFn)
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 
 			if tc.expPass {
 				suite.Require().NoError(err)
@@ -201,8 +197,8 @@ func (suite AnteTestSuite) TestEthNonceVerificationDecorator() {
 	}
 }
 
-func (suite AnteTestSuite) TestEthGasConsumeDecorator() {
-	dec := ante.NewEthGasConsumeDecorator(suite.app.EvmKeeper, config.DefaultMaxTxGasWanted)
+func (suite MiddlewareTestSuite) TestEthGasConsumeDecorator() {
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthGasConsumeMiddleware(suite.app.EvmKeeper, config.DefaultMaxTxGasWanted))
 
 	addr := tests.GenerateAddress()
 
@@ -287,24 +283,24 @@ func (suite AnteTestSuite) TestEthGasConsumeDecorator() {
 
 			if tc.expPanic {
 				suite.Require().Panics(func() {
-					_, _ = dec.AnteHandle(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewGasMeter(1)), tc.tx, false, nextFn)
+					_, _, _ = txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewGasMeter(1))), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 				})
 				return
 			}
 
-			ctx, err := dec.AnteHandle(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewInfiniteGasMeter()), tc.tx, false, nextFn)
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx.WithIsCheckTx(true).WithGasMeter(sdk.NewInfiniteGasMeter())), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
+
 			if tc.expPass {
 				suite.Require().NoError(err)
 			} else {
 				suite.Require().Error(err)
 			}
-			suite.Require().Equal(tc.gasLimit, ctx.GasMeter().Limit())
 		})
 	}
 }
 
-func (suite AnteTestSuite) TestCanTransferDecorator() {
-	dec := ante.NewCanTransferDecorator(suite.app.EvmKeeper)
+func (suite MiddlewareTestSuite) TestCanTransferDecorator() {
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewCanTransferMiddleware(suite.app.EvmKeeper))
 
 	addr, privKey := tests.NewAddrKey()
 
@@ -376,8 +372,7 @@ func (suite AnteTestSuite) TestCanTransferDecorator() {
 			tc.malleate()
 			suite.Require().NoError(vmdb.Commit())
 
-			_, err := dec.AnteHandle(suite.ctx.WithIsCheckTx(true), tc.tx, false, nextFn)
-
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx.WithIsCheckTx(true)), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 			if tc.expPass {
 				suite.Require().NoError(err)
 			} else {
@@ -387,8 +382,8 @@ func (suite AnteTestSuite) TestCanTransferDecorator() {
 	}
 }
 
-func (suite AnteTestSuite) TestEthIncrementSenderSequenceDecorator() {
-	dec := ante.NewEthIncrementSenderSequenceDecorator(suite.app.AccountKeeper)
+func (suite MiddlewareTestSuite) TestEthIncrementSenderSequenceDecorator() {
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthIncrementSenderSequenceMiddleware(suite.app.AccountKeeper))
 	addr, privKey := tests.NewAddrKey()
 
 	contract := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 0, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
@@ -455,12 +450,17 @@ func (suite AnteTestSuite) TestEthIncrementSenderSequenceDecorator() {
 
 			if tc.expPanic {
 				suite.Require().Panics(func() {
-					_, _ = dec.AnteHandle(suite.ctx, tc.tx, false, nextFn)
+					_, _, _ = txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 				})
 				return
 			}
 
-			_, err := dec.AnteHandle(suite.ctx, tc.tx, false, nextFn)
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
+			if tc.expPass {
+				suite.Require().NoError(err)
+			} else {
+				suite.Require().Error(err)
+			}
 
 			if tc.expPass {
 				suite.Require().NoError(err)
@@ -478,8 +478,8 @@ func (suite AnteTestSuite) TestEthIncrementSenderSequenceDecorator() {
 	}
 }
 
-func (suite AnteTestSuite) TestEthSetupContextDecorator() {
-	dec := ante.NewEthSetUpContextDecorator(suite.app.EvmKeeper)
+func (suite MiddlewareTestSuite) TestEthSetupContextDecorator() {
+	txHandler := middleware.ComposeMiddlewares(noopTxHandler, ante.NewEthSetUpContextMiddleware(suite.app.EvmKeeper))
 	tx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
 
 	testCases := []struct {
@@ -497,8 +497,7 @@ func (suite AnteTestSuite) TestEthSetupContextDecorator() {
 
 	for _, tc := range testCases {
 		suite.Run(tc.name, func() {
-			_, err := dec.AnteHandle(suite.ctx, tc.tx, false, nextFn)
-
+			_, _, err := txHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.tx}, txtypes.RequestCheckTx{})
 			if tc.expPass {
 				suite.Require().NoError(err)
 			} else {

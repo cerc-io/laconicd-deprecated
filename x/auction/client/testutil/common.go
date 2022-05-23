@@ -36,6 +36,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	var err error
+
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
 	s.Require().NoError(err)
 
@@ -61,9 +62,7 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string, acco
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.EthSecp256k1)
 	sr.NoError(err)
 
-	val.ClientCtx.Keyring.SavePubKey(accountName, info.GetPubKey(), hd.EthSecp256k1Type)
-
-	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	newAddr, _ := info.GetAddress()
 	_, err = banktestutil.MsgSendExec(
 		val.ClientCtx,
 		val.Address,

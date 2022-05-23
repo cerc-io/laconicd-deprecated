@@ -8,6 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -63,7 +64,7 @@ type Keeper struct {
 	bondKeeper    bondkeeper.Keeper
 	auctionKeeper auctionkeeper.Keeper
 
-	storeKey sdk.StoreKey // Unexposed key to access store from sdk.Context
+	storeKey storetypes.StoreKey // Unexposed key to access store from sdk.Context
 
 	cdc codec.BinaryCodec // The wire codec for binary encoding/decoding.
 
@@ -72,7 +73,7 @@ type Keeper struct {
 
 // NewKeeper creates new instances of the nameservice Keeper
 func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
-	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey sdk.StoreKey, ps paramtypes.Subspace) Keeper {
+	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey storetypes.StoreKey, ps paramtypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())

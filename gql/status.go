@@ -49,17 +49,17 @@ func getNetInfo(client client.Context) (string, []*PeerInfo, error) {
 		return "", nil, err
 	}
 
-	peers := netInfo.Peers
-	peersInfo := make([]*PeerInfo, len(peers))
-	for index, peer := range peers {
+	peersInfo := make([]*PeerInfo, netInfo.NPeers)
+	// TODO: find a way to get the peer information from nodeClient
+	for index, peer := range netInfo.Peers {
 		peersInfo[index] = &PeerInfo{
 			Node: &NodeInfo{
-				ID:      string(peer.NodeInfo.ID()),
-				Moniker: peer.NodeInfo.Moniker,
-				Network: peer.NodeInfo.Network,
+				ID: string(peer.ID),
+				// Moniker: peer.Node.Moniker,
+				// Network: peer.Node.Network,
 			},
-			IsOutbound: peer.IsOutbound,
-			RemoteIP:   peer.RemoteIP,
+			// IsOutbound: peer.IsOutbound,
+			// RemoteIP:   peer.RemoteIP,
 		}
 	}
 

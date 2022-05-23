@@ -35,7 +35,7 @@ cat $HOME/.chibaclonkd/config/genesis.json | jq '.app_state["mint"]["params"]["m
 "$PWD"/build/chibaclonkd validate-genesis
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed) in background and log to file
-"$PWD"/build/chibaclonkd start --pruning=nothing --rpc.unsafe --json-rpc.address="0.0.0.0:8545" --keyring-backend test > ethermintd.log 2>&1 &
+"$PWD"/build/chibaclonkd start --pruning=nothing --mode validator --rpc.unsafe --json-rpc.address="0.0.0.0:8545" --keyring-backend test > ethermintd.log 2>&1 &
 
 # Give ethermintd node enough time to launch
 sleep 5

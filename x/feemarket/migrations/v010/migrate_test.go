@@ -1,7 +1,6 @@
 package v010_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -22,12 +21,12 @@ import (
 func TestMigrateStore(t *testing.T) {
 	encCfg := encoding.MakeConfig(app.ModuleBasics)
 	feemarketKey := sdk.NewKVStoreKey(feemarkettypes.StoreKey)
-	tFeeMarketKey := sdk.NewTransientStoreKey(fmt.Sprintf("%s_test", feemarkettypes.StoreKey))
+	tFeeMarketKey := sdk.NewTransientStoreKey("margetkey_test")
 	ctx := testutil.DefaultContext(feemarketKey, tFeeMarketKey)
 	paramstore := paramtypes.NewSubspace(
-		encCfg.Marshaler, encCfg.Amino, feemarketKey, tFeeMarketKey, "feemarket",
+		encCfg.Codec, encCfg.Amino, feemarketKey, tFeeMarketKey, "feemarket",
 	)
-	fmKeeper := feemarketkeeper.NewKeeper(encCfg.Marshaler, feemarketKey, paramstore)
+	fmKeeper := feemarketkeeper.NewKeeper(encCfg.Codec, feemarketKey, paramstore)
 	fmKeeper.SetParams(ctx, types.DefaultParams())
 	require.True(t, paramstore.HasKeyTable())
 

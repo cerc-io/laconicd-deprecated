@@ -43,15 +43,16 @@ func AddCommands(rootCmd *cobra.Command, defaultNodeHome string, appCreator type
 }
 
 func ConnectTmWS(tmRPCAddr, tmEndpoint string, logger tmlog.Logger) *rpcclient.WSClient {
-	tmWsClient, err := rpcclient.NewWS(tmRPCAddr, tmEndpoint,
-		rpcclient.MaxReconnectAttempts(256),
-		rpcclient.ReadWait(120*time.Second),
-		rpcclient.WriteWait(120*time.Second),
-		rpcclient.PingPeriod(50*time.Second),
-		rpcclient.OnReconnect(func() {
-			logger.Debug("EVM RPC reconnects to Tendermint WS", "address", tmRPCAddr+tmEndpoint)
-		}),
-	)
+	tmWsClient, err := rpcclient.NewWSWithOptions(tmRPCAddr, tmEndpoint, rpcclient.WSOptions{
+		MaxReconnectAttempts: 256, // first: 2 sec, last: 17 min.
+		WriteWait:            120 * time.Second,
+		ReadWait:             120 * time.Second,
+		PingPeriod:           50 * time.Second,
+	})
+
+	tmWsClient.OnReconnect(func() {
+		logger.Debug("EVM RPC reconnects to Tendermint WS", "address", tmRPCAddr+tmEndpoint)
+	})
 
 	if err != nil {
 		logger.Error(
@@ -59,7 +60,7 @@ func ConnectTmWS(tmRPCAddr, tmEndpoint string, logger tmlog.Logger) *rpcclient.W
 			"address", tmRPCAddr+tmEndpoint,
 			"error", err,
 		)
-	} else if err := tmWsClient.OnStart(); err != nil {
+	} else if err := tmWsClient.Start(); err != nil {
 		logger.Error(
 			"Tendermint WS client could not start",
 			"address", tmRPCAddr+tmEndpoint,

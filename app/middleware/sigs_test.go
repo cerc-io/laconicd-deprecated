@@ -1,4 +1,4 @@
-package ante_test
+package middleware_test
 
 import (
 	"math/big"
@@ -8,7 +8,7 @@ import (
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
-func (suite AnteTestSuite) TestSignatures() {
+func (suite MiddlewareTestSuite) TestSignatures() {
 	suite.enableFeemarket = false
 	suite.SetupTest() // reset
 

@@ -3,7 +3,7 @@ package testutil
 import (
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 )
 

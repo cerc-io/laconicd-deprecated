@@ -16,36 +16,43 @@ import (
 
 	"github.com/spf13/cobra"
 
+	tmservice "github.com/tendermint/tendermint/libs/service"
 	"google.golang.org/grpc"
-
-	abciserver "github.com/tendermint/tendermint/abci/server"
-	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/node"
-	"github.com/tendermint/tendermint/p2p"
-	pvm "github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	"github.com/tendermint/tendermint/rpc/client/local"
-	dbm "github.com/tendermint/tm-db"
-
-	"github.com/cosmos/cosmos-sdk/server/rosetta"
-	crgserver "github.com/cosmos/cosmos-sdk/server/rosetta/lib/server"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	dbm "github.com/cosmos/cosmos-sdk/db"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servergrpc "github.com/cosmos/cosmos-sdk/server/grpc"
+	"github.com/cosmos/cosmos-sdk/server/rosetta"
+	crgserver "github.com/cosmos/cosmos-sdk/server/rosetta/lib/server"
 	"github.com/cosmos/cosmos-sdk/server/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	abciclient "github.com/tendermint/tendermint/abci/client"
+	abciserver "github.com/tendermint/tendermint/abci/server"
+	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	"github.com/tendermint/tendermint/node"
+	"github.com/tendermint/tendermint/rpc/client/local"
+	tmtypes "github.com/tendermint/tendermint/types"
 
 	ethdebug "github.com/tharsis/ethermint/rpc/ethereum/namespaces/debug"
 	"github.com/tharsis/ethermint/server/config"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 
 	"github.com/tharsis/ethermint/gql"
+)
+
+const (
+
+	// gRPC-related flags
+	flagGRPCOnly       = "grpc-only"
+	flagGRPCEnable     = "grpc.enable"
+	flagGRPCAddress    = "grpc.address"
+	flagGRPCWebEnable  = "grpc-web.enable"
+	flagGRPCWebAddress = "grpc-web.address"
 )
 
 // StartCmd runs the service passed in, either stand-alone or in-process with
@@ -141,7 +148,6 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Bool(server.FlagTrace, false, "Provide full stack traces for errors in ABCI Log")
 	cmd.Flags().String(server.FlagPruning, storetypes.PruningOptionDefault, "Pruning strategy (default|nothing|everything|custom)")
 	cmd.Flags().Uint64(server.FlagPruningKeepRecent, 0, "Number of recent heights to keep on disk (ignored if pruning is not 'custom')")
-	cmd.Flags().Uint64(server.FlagPruningKeepEvery, 0, "Offset heights to keep on disk after 'keep-every' (ignored if pruning is not 'custom')")
 	cmd.Flags().Uint64(server.FlagPruningInterval, 0, "Height interval at which pruned heights are removed from disk (ignored if pruning is not 'custom')")
 	cmd.Flags().Uint(server.FlagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	cmd.Flags().Uint64(server.FlagMinRetainBlocks, 0, "Minimum block height offset during ABCI commit to prune Tendermint blocks")
@@ -186,10 +192,11 @@ func startStandAlone(ctx *server.Context, appCreator types.AppCreator) error {
 	transport := ctx.Viper.GetString(srvflags.Transport)
 	home := ctx.Viper.GetString(flags.FlagHome)
 
-	db, err := openDB(home)
+	db, err := openDB(home, server.GetAppDBBackend((ctx.Viper)))
 	if err != nil {
 		return err
 	}
+
 	defer func() {
 		if err := db.Close(); err != nil {
 			ctx.Logger.With("error", err).Error("error closing db")
@@ -261,9 +268,8 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 	}
 
 	traceWriterFile := ctx.Viper.GetString(srvflags.TraceStore)
-	db, err := openDB(home)
+	db, err := openDB(home, server.GetAppDBBackend(ctx.Viper))
 	if err != nil {
-		logger.Error("failed to open DB", "error", err.Error())
 		return err
 	}
 	defer func() {
@@ -294,38 +300,46 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 
 	app := appCreator(ctx.Logger, db, traceWriter, ctx.Viper)
 
-	nodeKey, err := p2p.LoadOrGenNodeKey(cfg.NodeKeyFile())
+	genDoc, err := tmtypes.GenesisDocFromFile(cfg.GenesisFile())
 	if err != nil {
-		logger.Error("failed load or gen node key", "error", err.Error())
 		return err
 	}
 
-	genDocProvider := node.DefaultGenesisDocProviderFunc(cfg)
-	tmNode, err := node.NewNode(
-		cfg,
-		pvm.LoadOrGenFilePV(cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile()),
-		nodeKey,
-		proxy.NewLocalClientCreator(app),
-		genDocProvider,
-		node.DefaultDBProvider,
-		node.DefaultMetricsProvider(cfg.Instrumentation),
-		ctx.Logger.With("server", "node"),
+	var (
+		tmNode   tmservice.Service
+		gRPCOnly = ctx.Viper.GetBool(flagGRPCOnly)
 	)
-	if err != nil {
-		logger.Error("failed init node", "error", err.Error())
-		return err
-	}
+	if gRPCOnly {
+		ctx.Logger.Info("starting node in gRPC only mode; Tendermint is disabled")
+		config.GRPC.Enable = true
+	} else {
+		ctx.Logger.Info("starting node with ABCI Tendermint in-process")
 
-	if err := tmNode.Start(); err != nil {
-		logger.Error("failed start tendermint server", "error", err.Error())
-		return err
+		tmNode, err = node.New(cfg, ctx.Logger, abciclient.NewLocalCreator(app), genDoc)
+		if err != nil {
+			return err
+		}
+
+		if err := tmNode.Start(); err != nil {
+			return err
+		}
 	}
 
 	// Add the tx service to the gRPC router. We only need to register this
 	// service if API or gRPC or JSONRPC is enabled, and avoid doing so in the general
 	// case, because it spawns a new local tendermint RPC client.
 	if config.API.Enable || config.GRPC.Enable || config.JSONRPC.Enable {
-		clientCtx = clientCtx.WithClient(local.New(tmNode))
+		node, ok := tmNode.(local.NodeService)
+		if !ok {
+			return fmt.Errorf("unable to set node type; please try re-installing the binary")
+		}
+
+		localNode, err := local.New(node)
+		if err != nil {
+			return err
+		}
+
+		clientCtx = clientCtx.WithClient(localNode)
 
 		app.RegisterTxService(clientCtx)
 		app.RegisterTendermintService(clientCtx)
@@ -333,7 +347,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 
 	var apiSrv *api.Server
 	if config.API.Enable {
-		genDoc, err := genDocProvider()
+		genDoc, err := tmtypes.GenesisDocFromFile(cfg.GenesisFile())
 		if err != nil {
 			return err
 		}
@@ -419,7 +433,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 	)
 
 	if config.JSONRPC.Enable {
-		genDoc, err := genDocProvider()
+		genDoc, err := tmtypes.GenesisDocFromFile(cfg.GenesisFile())
 		if err != nil {
 			return err
 		}
@@ -481,9 +495,9 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 	return server.WaitForQuitSignals()
 }
 
-func openDB(rootDir string) (dbm.DB, error) {
+func openDB(rootDir string, backendType dbm.BackendType) (dbm.DBConnection, error) {
 	dataDir := filepath.Join(rootDir, "data")
-	return sdk.NewLevelDB("application", dataDir)
+	return dbm.NewDB("application", backendType, dataDir)
 }
 
 func openTraceWriter(traceWriterFile string) (w io.Writer, err error) {

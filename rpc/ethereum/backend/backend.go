@@ -1,7 +1,6 @@
 package backend
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,7 +14,8 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
-	tmrpctypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	tmrpctypes "github.com/tendermint/tendermint/rpc/coretypes"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -334,8 +334,8 @@ func (e *EVMBackend) BlockBloom(height *int64) (ethtypes.Bloom, error) {
 		}
 
 		for _, attr := range event.Attributes {
-			if bytes.Equal(attr.Key, bAttributeKeyEthereumBloom) {
-				return ethtypes.BytesToBloom(attr.Value), nil
+			if attr.Key == string(bAttributeKeyEthereumBloom) {
+				return ethtypes.BytesToBloom([]byte(attr.Value)), nil
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
-	tmrpctypes "github.com/tendermint/tendermint/rpc/core/types"
+	tmrpctypes "github.com/tendermint/tendermint/rpc/coretypes"
 	rpctypes "github.com/tharsis/ethermint/rpc/ethereum/types"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )

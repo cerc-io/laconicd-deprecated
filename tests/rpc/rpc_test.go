@@ -301,17 +301,6 @@ func deployTestContract(t *testing.T) (hexutil.Bytes, map[string]interface{}) {
 	return hash, receipt
 }
 
-func getTransactionReceipt(t *testing.T, hash hexutil.Bytes) map[string]interface{} {
-	param := []string{hash.String()}
-	rpcRes := call(t, "eth_getTransactionReceipt", param)
-
-	receipt := make(map[string]interface{})
-	err := json.Unmarshal(rpcRes.Result, &receipt)
-	require.NoError(t, err)
-
-	return receipt
-}
-
 func waitForReceipt(t *testing.T, hash hexutil.Bytes) map[string]interface{} {
 	timeout := time.After(12 * time.Second)
 	ticker := time.Tick(500 * time.Millisecond)
@@ -321,7 +310,7 @@ func waitForReceipt(t *testing.T, hash hexutil.Bytes) map[string]interface{} {
 		case <-timeout:
 			return nil
 		case <-ticker:
-			receipt := getTransactionReceipt(t, hash)
+			receipt := GetTransactionReceipt(t, hash)
 			if receipt != nil {
 				return receipt
 			}

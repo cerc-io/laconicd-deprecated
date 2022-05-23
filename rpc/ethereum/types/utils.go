@@ -242,7 +242,7 @@ func BaseFeeFromEvents(events []abci.Event) *big.Int {
 		}
 
 		for _, attr := range event.Attributes {
-			if bytes.Equal(attr.Key, []byte(feemarkettypes.AttributeKeyBaseFee)) {
+			if attr.Key == feemarkettypes.AttributeKeyBaseFee {
 				result, success := new(big.Int).SetString(string(attr.Value), 10)
 				if success {
 					return result
@@ -250,6 +250,14 @@ func BaseFeeFromEvents(events []abci.Event) *big.Int {
 
 				return nil
 			}
+			// if bytes.Equal(attr.Key, []byte(feemarkettypes.AttributeKeyBaseFee)) {
+			// 	result, success := new(big.Int).SetString(string(attr.Value), 10)
+			// 	if success {
+			// 		return result
+			// 	}
+
+			// 	return nil
+			// }
 		}
 	}
 	return nil
@@ -310,10 +318,10 @@ func FindTxAttributesByIndex(events []abci.Event, txIndex uint64) int {
 // FindAttribute find event attribute with specified key, if not found returns nil.
 func FindAttribute(attrs []abci.EventAttribute, key []byte) []byte {
 	for _, attr := range attrs {
-		if !bytes.Equal(attr.Key, key) {
+		if !bytes.Equal([]byte(attr.Key), key) {
 			continue
 		}
-		return attr.Value
+		return []byte(attr.Value)
 	}
 	return nil
 }

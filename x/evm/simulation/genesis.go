@@ -3,11 +3,21 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/tharsis/ethermint/x/evm/types"
 )
+
+// GenExtraEIPs randomly generates specific extra eips or not.
+func genExtraEIPs(r *rand.Rand) []int64 {
+	var extraEIPs []int64
+	if r.Uint32()%2 == 0 {
+		extraEIPs = []int64{1344, 1884, 2200, 2929, 3198, 3529}
+	}
+	return extraEIPs
+}
 
 // RandomizedGenState generates a random GenesisState for nft
 func RandomizedGenState(simState *module.SimulationState) {

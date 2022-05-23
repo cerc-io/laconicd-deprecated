@@ -1,17 +1,16 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	"github.com/cosmos/cosmos-sdk/types/tx"
 	proto "github.com/gogo/protobuf/proto"
 )
 
-var ModuleCdc = codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
-
 type (
+	TxResponse                  interface{}
 	ExtensionOptionsEthereumTxI interface{}
 )
 
@@ -21,9 +20,8 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&MsgEthereumTx{},
 	)
-	registry.RegisterInterface(
-		"ethermint.evm.v1.ExtensionOptionsEthereumTx",
-		(*ExtensionOptionsEthereumTxI)(nil),
+	registry.RegisterImplementations(
+		(*tx.TxExtensionOptionI)(nil),
 		&ExtensionOptionsEthereumTx{},
 	)
 	registry.RegisterInterface(
@@ -32,6 +30,16 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		&DynamicFeeTx{},
 		&AccessListTx{},
 		&LegacyTx{},
+	)
+	registry.RegisterInterface(
+		"ethermint.evm.v1.MsgEthereumTxResponse",
+		(*TxResponse)(nil),
+		&MsgEthereumTxResponse{},
+	)
+	registry.RegisterInterface(
+		"ethermint.evm.v1.ExtensionOptionsEthereumTx",
+		(*ExtensionOptionsEthereumTxI)(nil),
+		&ExtensionOptionsEthereumTx{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

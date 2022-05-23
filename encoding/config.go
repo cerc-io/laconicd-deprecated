@@ -1,7 +1,7 @@
 package encoding
 
 import (
-	amino "github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -12,15 +12,16 @@ import (
 
 // MakeConfig creates an EncodingConfig for testing
 func MakeConfig(mb module.BasicManager) params.EncodingConfig {
-	cdc := amino.NewLegacyAmino()
+	amino := codec.NewLegacyAmino()
 	interfaceRegistry := types.NewInterfaceRegistry()
-	marshaler := amino.NewProtoCodec(interfaceRegistry)
+	marshaler := codec.NewProtoCodec(interfaceRegistry)
+	txCfg := tx.NewTxConfig(marshaler, tx.DefaultSignModes)
 
 	encodingConfig := params.EncodingConfig{
 		InterfaceRegistry: interfaceRegistry,
-		Marshaler:         marshaler,
-		TxConfig:          tx.NewTxConfig(marshaler, tx.DefaultSignModes),
-		Amino:             cdc,
+		Codec:             marshaler,
+		TxConfig:          txCfg,
+		Amino:             amino,
 	}
 
 	enccodec.RegisterLegacyAminoCodec(encodingConfig.Amino)
