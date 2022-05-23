@@ -21,6 +21,8 @@ import (
 	mh "github.com/multiformats/go-multihash"
 )
 
+var store = memstore.Store{}
+
 func init() {
 	multicodec.RegisterEncoder(0x71, dagcbor.Encode)
 	multicodec.RegisterDecoder(0x71, dagcbor.Decode)
@@ -68,7 +70,6 @@ func GetAttributeAsString(obj map[string]interface{}, attr string) (string, erro
 // CIDFromJSONBytesUsingIpldPrime returns CID (dagcbor) for json (as bytes).
 func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 	lsys := cidlink.DefaultLinkSystem()
-	var store = memstore.Store{}
 
 	// We want to store the serialized data somewhere.
 	// We'll use an in-memory store for this.  (It's a package scoped variable.)
