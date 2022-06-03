@@ -7,6 +7,7 @@ package utils
 import (
 	"bytes"
 	"errors"
+
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -83,8 +84,8 @@ func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,    // Usually '1'.
 		Codec:    0x71, // 0x71 means "dag-cbor" -- See the multicodecs table: https://github.com/multiformats/multicodec/
-		MhType:   0x13, // 0x20 means "sha2-512" -- See the multicodecs table: https://github.com/multiformats/multicodec/
-		MhLength: 64,   // sha2-512 hash has a 64-byte sum.
+		MhType:   0x12, // 0x12 means "sha2-256" -- See the multicodecs table: https://github.com/multiformats/multicodec/
+		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
 
 	// And we need some data to link to!  Here's a quick piece of example data:
