@@ -4,6 +4,7 @@ import (
 	"math/big"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,7 +26,7 @@ func SetupContract(b *testing.B) (*KeeperTestSuite, common.Address) {
 	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)
 	require.NoError(b, err)
 
-	contractAddr := suite.DeployTestContract(b, suite.address, sdk.NewIntWithDecimal(1000, 18).BigInt())
+	contractAddr := suite.DeployTestContract(b, suite.address, math.NewIntWithDecimal(1000, 18).BigInt())
 	suite.Commit()
 
 	return &suite, contractAddr

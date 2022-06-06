@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"cosmossdk.io/math"
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	// . "github.com/onsi/ginkgo"
@@ -567,7 +567,7 @@ func (s *IntegrationTestSuite) deployContract(data []byte) (transaction common.H
 // Deploys erc20 contract, commits block and returns contract address
 func (s *IntegrationTestSuite) deployERC20Contract() (transaction common.Hash, contractAddr common.Address) {
 	owner := common.BytesToAddress(s.network.Validators[0].Address)
-	supply := sdk.NewIntWithDecimal(1000, 18).BigInt()
+	supply := math.NewIntWithDecimal(1000, 18).BigInt()
 
 	ctorArgs, err := evmtypes.ERC20Contract.ABI.Pack("", owner, supply)
 	s.Require().NoError(err)
