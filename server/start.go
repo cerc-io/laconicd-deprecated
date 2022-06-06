@@ -29,7 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/rosetta"
 	crgserver "github.com/cosmos/cosmos-sdk/server/rosetta/lib/server"
 	"github.com/cosmos/cosmos-sdk/server/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	abciclient "github.com/tendermint/tendermint/abci/client"
 	abciserver "github.com/tendermint/tendermint/abci/server"
 	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
@@ -38,11 +37,11 @@ import (
 	"github.com/tendermint/tendermint/rpc/client/local"
 	tmtypes "github.com/tendermint/tendermint/types"
 
+	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
+	"github.com/tharsis/ethermint/gql"
 	ethdebug "github.com/tharsis/ethermint/rpc/ethereum/namespaces/debug"
 	"github.com/tharsis/ethermint/server/config"
 	srvflags "github.com/tharsis/ethermint/server/flags"
-
-	"github.com/tharsis/ethermint/gql"
 )
 
 const (
@@ -146,7 +145,7 @@ which accepts a path for the resulting pprof file.
 	cmd.Flags().Bool(server.FlagInterBlockCache, true, "Enable inter-block caching")
 	cmd.Flags().String(srvflags.CPUProfile, "", "Enable CPU profiling and write to the provided file")
 	cmd.Flags().Bool(server.FlagTrace, false, "Provide full stack traces for errors in ABCI Log")
-	cmd.Flags().String(server.FlagPruning, storetypes.PruningOptionDefault, "Pruning strategy (default|nothing|everything|custom)")
+	cmd.Flags().String(server.FlagPruning, pruningtypes.PruningOptionDefault, "Pruning strategy (default|nothing|everything|custom)")
 	cmd.Flags().Uint64(server.FlagPruningKeepRecent, 0, "Number of recent heights to keep on disk (ignored if pruning is not 'custom')")
 	cmd.Flags().Uint64(server.FlagPruningInterval, 0, "Height interval at which pruned heights are removed from disk (ignored if pruning is not 'custom')")
 	cmd.Flags().Uint(server.FlagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
@@ -378,7 +377,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 		grpcWebSrv *http.Server
 	)
 	if config.GRPC.Enable {
-		grpcSrv, err = servergrpc.StartGRPCServer(clientCtx, app, config.GRPC.Address)
+		grpcSrv, err = servergrpc.StartGRPCServer(clientCtx, app, config.GRPC)
 		if err != nil {
 			return err
 		}

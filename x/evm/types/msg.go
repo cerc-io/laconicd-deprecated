@@ -11,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 
@@ -23,9 +22,8 @@ import (
 )
 
 var (
-	_ sdk.Msg              = &MsgEthereumTx{}
-	_ sdk.Tx               = &MsgEthereumTx{}
-	_ authmiddleware.GasTx = &MsgEthereumTx{}
+	_ sdk.Msg = &MsgEthereumTx{}
+	_ sdk.Tx  = &MsgEthereumTx{}
 
 	_ codectypes.UnpackInterfacesMessage = MsgEthereumTx{}
 )

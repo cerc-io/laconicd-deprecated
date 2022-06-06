@@ -17,6 +17,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/snapshots"
+	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
@@ -30,12 +31,12 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/tharsis/ethermint/app"
 	ethermintclient "github.com/tharsis/ethermint/client"
 	"github.com/tharsis/ethermint/client/debug"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/encoding"
-	"github.com/tharsis/ethermint/server"
 	servercfg "github.com/tharsis/ethermint/server/config"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 	ethermint "github.com/tharsis/ethermint/types"
@@ -232,6 +233,10 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore 
 	if err != nil {
 		panic(err)
 	}
+	snapshotOptions := snapshottypes.NewSnapshotOptions(
+		cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval)),
+		cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent)),
+	)
 
 	ethermintApp := app.NewEthermintApp(
 		logger, db, traceStore, true, skipUpgradeHeights,
@@ -247,9 +252,7 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore 
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(sdkserver.FlagTrace))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(sdkserver.FlagIndexEvents))),
-		baseapp.SetSnapshotStore(snapshotStore),
-		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(sdkserver.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetSnapshot(snapshotStore, snapshotOptions),
 	)
 
 	return ethermintApp
