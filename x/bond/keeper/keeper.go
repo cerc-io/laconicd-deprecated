@@ -267,7 +267,7 @@ func (k Keeper) WithdrawBond(ctx sdk.Context, id string, ownerAddress sdk.AccAdd
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
 	}
 
-	updatedBalance, isNeg := bond.Balance.SafeSub(coins)
+	updatedBalance, isNeg := bond.Balance.SafeSub(coins...)
 	if isNeg {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInsufficientFunds, "Insufficient bond balance.")
 	}
@@ -336,7 +336,7 @@ func (k Keeper) TransferCoinsToModuleAccount(ctx sdk.Context, id, moduleAccount 
 	bondObj := k.GetBond(ctx, id)
 
 	// Deduct rent from bond.
-	updatedBalance, isNeg := bondObj.Balance.SafeSub(coins)
+	updatedBalance, isNeg := bondObj.Balance.SafeSub(coins...)
 
 	if isNeg {
 		// Check if bond has sufficient funds.

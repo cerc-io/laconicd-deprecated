@@ -1,12 +1,9 @@
-package middleware_test
+package ante_test
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"math/big"
 	"strings"
-
-	"github.com/cosmos/cosmos-sdk/types/tx"
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -16,7 +13,7 @@ import (
 	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
-func (suite MiddlewareTestSuite) TestAnteHandler() {
+func (suite AnteTestSuite) TestAnteHandler() {
 	suite.enableFeemarket = false
 	suite.SetupTest() // reset
 
@@ -300,7 +297,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"success - DeliverTx EIP712 signed Cosmos Tx with MsgSend",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
+				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgSend(from, privKey, "ethermint_9000-1", gas, amount)
 				return txBuilder.GetTx()
@@ -310,7 +307,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"success - DeliverTx EIP712 signed Cosmos Tx with DelegateMsg",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				coinAmount := sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000))
+				coinAmount := sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20))
 				amount := sdk.NewCoins(coinAmount)
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgDelegate(from, privKey, "ethermint_9000-1", gas, amount)
@@ -321,7 +318,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"fails - DeliverTx EIP712 signed Cosmos Tx with wrong Chain ID",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
+				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgSend(from, privKey, "ethermint_9002-1", gas, amount)
 				return txBuilder.GetTx()
@@ -331,7 +328,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"fails - DeliverTx EIP712 signed Cosmos Tx with different gas fees",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
+				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgSend(from, privKey, "ethermint_9001-1", gas, amount)
 				txBuilder.SetGasLimit(uint64(300000))
@@ -343,7 +340,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"fails - DeliverTx EIP712 signed Cosmos Tx with empty signature",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
+				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgSend(from, privKey, "ethermint_9001-1", gas, amount)
 				sigsV2 := signing.SignatureV2{}
@@ -355,7 +352,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"fails - DeliverTx EIP712 signed Cosmos Tx with invalid sequence",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
+				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgSend(from, privKey, "ethermint_9001-1", gas, amount)
 				nonce, err := suite.app.AccountKeeper.GetSequence(suite.ctx, acc.GetAddress())
@@ -375,7 +372,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			"fails - DeliverTx EIP712 signed Cosmos Tx with invalid signMode",
 			func() sdk.Tx {
 				from := acc.GetAddress()
-				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(200000)))
+				amount := sdk.NewCoins(sdk.NewCoin(evmtypes.DefaultEVMDenom, sdk.NewInt(20)))
 				gas := uint64(200000)
 				txBuilder := suite.CreateTestEIP712TxBuilderMsgSend(from, privKey, "ethermint_9001-1", gas, amount)
 				nonce, err := suite.app.AccountKeeper.GetSequence(suite.ctx, acc.GetAddress())
@@ -398,7 +395,8 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 			suite.ctx = suite.ctx.WithIsCheckTx(tc.checkTx).WithIsReCheckTx(tc.reCheckTx)
 
 			// expConsumed := params.TxGasContractCreation + params.TxGas
-			_, _, err := suite.anteHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.txFn()}, tx.RequestCheckTx{})
+			_, err := suite.anteHandler(suite.ctx, tc.txFn(), false)
+
 			// suite.Require().Equal(consumed, ctx.GasMeter().GasConsumed())
 
 			if tc.expPass {
@@ -411,7 +409,7 @@ func (suite MiddlewareTestSuite) TestAnteHandler() {
 	}
 }
 
-func (suite MiddlewareTestSuite) TestAnteHandlerWithDynamicTxFee() {
+func (suite AnteTestSuite) TestAnteHandlerWithDynamicTxFee() {
 	addr, privKey := tests.NewAddrKey()
 	to := tests.GenerateAddress()
 
@@ -676,7 +674,7 @@ func (suite MiddlewareTestSuite) TestAnteHandlerWithDynamicTxFee() {
 
 			suite.ctx = suite.ctx.WithIsCheckTx(tc.checkTx).WithIsReCheckTx(tc.reCheckTx)
 			suite.app.EvmKeeper.SetBalance(suite.ctx, addr, big.NewInt((ethparams.InitialBaseFee+10)*100000))
-			_, _, err := suite.anteHandler.CheckTx(sdk.WrapSDKContext(suite.ctx), txtypes.Request{Tx: tc.txFn()}, tx.RequestCheckTx{})
+			_, err := suite.anteHandler(suite.ctx, tc.txFn(), false)
 			if tc.expPass {
 				suite.Require().NoError(err)
 			} else {

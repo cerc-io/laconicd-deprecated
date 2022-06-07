@@ -11,21 +11,19 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	"github.com/tharsis/ethermint/app/middleware"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/db"
-	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	"github.com/tharsis/ethermint/app/ante"
+	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/store/streaming"
@@ -36,7 +34,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -219,8 +216,6 @@ type EthermintApp struct {
 	cdc               *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
-	MsgSvcRouter      *authmiddleware.MsgServiceRouter
-	LegacyRouter      sdk.Router
 	invCheckPeriod    uint
 
 	// keys to access the substores
@@ -347,6 +342,7 @@ func NewEthermintApp(
 		appName,
 		logger,
 		db,
+		encodingConfig.TxConfig.TxDecoder(),
 		baseAppOptions...,
 	)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -367,8 +363,6 @@ func NewEthermintApp(
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
-		LegacyRouter:      authmiddleware.NewLegacyRouter(),
-		MsgSvcRouter:      authmiddleware.NewMsgServiceRouter(interfaceRegistry),
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
@@ -422,7 +416,7 @@ func NewEthermintApp(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
-	app.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey], appCodec, app.MsgSvcRouter, app.AccountKeeper)
+	app.AuthzKeeper = authzkeeper.NewKeeper(keys[authzkeeper.StoreKey], appCodec, app.MsgServiceRouter(), app.AccountKeeper)
 
 	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
 
@@ -479,7 +473,7 @@ func NewEthermintApp(
 
 	govKeeper := govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govRouter, app.MsgSvcRouter, govConfig,
+		&stakingKeeper, govRouter, app.MsgServiceRouter(), govConfig,
 	)
 
 	app.GovKeeper = *govKeeper.SetHooks(
@@ -650,8 +644,8 @@ func NewEthermintApp(
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.LegacyRouter, app.QueryRouter(), encodingConfig.Amino)
-	app.configurator = module.NewConfigurator(app.appCodec, app.MsgSvcRouter, app.GRPCQueryRouter())
+	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
 	// add test gRPC service for testing gRPC queries in isolation
@@ -686,42 +680,32 @@ func NewEthermintApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
+	// use Ethermint's custom AnteHandler
+
 	maxGasWanted := cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted))
-	options := middleware.HandlerOptions{
-		Codec:            app.appCodec,
-		Debug:            app.Trace(),
-		LegacyRouter:     app.LegacyRouter,
-		MsgServiceRouter: app.MsgSvcRouter,
-		AccountKeeper:    app.AccountKeeper,
-		BankKeeper:       app.BankKeeper,
-		EvmKeeper:        app.EvmKeeper,
-		FeegrantKeeper:   app.FeeGrantKeeper,
-		FeeMarketKeeper:  app.FeeMarketKeeper,
-		SignModeHandler:  encodingConfig.TxConfig.SignModeHandler(),
-		SigGasConsumer:   middleware.DefaultSigVerificationGasConsumer,
-		MaxTxGasWanted:   maxGasWanted,
-		TxDecoder:        encodingConfig.TxConfig.TxDecoder(),
+	options := ante.HandlerOptions{
+		AccountKeeper:   app.AccountKeeper,
+		BankKeeper:      app.BankKeeper,
+		EvmKeeper:       app.EvmKeeper,
+		FeegrantKeeper:  app.FeeGrantKeeper,
+		IBCKeeper:       app.IBCKeeper,
+		FeeMarketKeeper: app.FeeMarketKeeper,
+		SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+		SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+		MaxTxGasWanted:  maxGasWanted,
 	}
 
-	app.setTxHandler(options, encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
+	if err := options.Validate(); err != nil {
+		panic(err)
+	}
+
+	app.SetAnteHandler(ante.NewAnteHandler(options))
 	app.SetEndBlocker(app.EndBlocker)
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
 
 	return app
-}
-
-func (app *EthermintApp) setTxHandler(options middleware.HandlerOptions, txConfig client.TxConfig, indexEventsStr []string) {
-	indexEvents := map[string]struct{}{}
-	for _, e := range indexEventsStr {
-		indexEvents[e] = struct{}{}
-	}
-
-	options.IndexEvents = indexEvents
-
-	txHandler := middleware.NewTxHandler(options)
-	app.SetTxHandler(txHandler)
 }
 
 // Name returns the name of the App
@@ -842,8 +826,7 @@ func (app *EthermintApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.
 	// Register new tendermint queries routes from grpc-gateway.
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
+	// Register  grpc-gateway routes for all modules.
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
@@ -857,7 +840,12 @@ func (app *EthermintApp) RegisterTxService(clientCtx client.Context) {
 }
 
 func (app *EthermintApp) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
+	tmservice.RegisterTendermintService(
+		clientCtx,
+		app.BaseApp.GRPCQueryRouter(),
+		app.interfaceRegistry,
+		app.Query,
+	)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server

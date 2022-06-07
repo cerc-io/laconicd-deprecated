@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -127,7 +128,7 @@ func SimulateEthCreateContract(ak types.AccountKeeper, k *keeper.Keeper) simtype
 		from := common.BytesToAddress(simAccount.Address)
 		nonce := k.GetNonce(ctx, from)
 
-		ctorArgs, err := types.ERC20Contract.ABI.Pack("", from, sdk.NewIntWithDecimal(1000, 18).BigInt())
+		ctorArgs, err := types.ERC20Contract.ABI.Pack("", from, math.NewIntWithDecimal(1000, 18).BigInt())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgEthereumTx, "can not pack owner and supply"), nil, err
 		}

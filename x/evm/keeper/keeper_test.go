@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	cmath "cosmossdk.io/math"
+
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
@@ -44,7 +46,7 @@ import (
 	"github.com/tendermint/tendermint/version"
 )
 
-var testTokens = sdk.NewIntWithDecimal(1000, 18)
+var testTokens = cmath.NewIntWithDecimal(1000, 18)
 
 type KeeperTestSuite struct {
 	suite.Suite
@@ -148,6 +150,7 @@ func (suite *KeeperTestSuite) DoSetupTest(t require.TestingT) {
 
 	valAddr := sdk.ValAddress(suite.address.Bytes())
 	validator, err := stakingtypes.NewValidator(valAddr, priv.PubKey(), stakingtypes.Description{})
+	require.NoError(t, err)
 	err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)
 	require.NoError(t, err)
 	err = suite.app.StakingKeeper.SetValidatorByConsAddr(suite.ctx, validator)

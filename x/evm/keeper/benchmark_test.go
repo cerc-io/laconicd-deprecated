@@ -4,12 +4,13 @@ import (
 	"math/big"
 	"testing"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
 
-	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
+	ante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	ethermint "github.com/tharsis/ethermint/types"
 	"github.com/tharsis/ethermint/x/evm/types"
@@ -25,7 +26,7 @@ func SetupContract(b *testing.B) (*KeeperTestSuite, common.Address) {
 	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)
 	require.NoError(b, err)
 
-	contractAddr := suite.DeployTestContract(b, suite.address, sdk.NewIntWithDecimal(1000, 18).BigInt())
+	contractAddr := suite.DeployTestContract(b, suite.address, math.NewIntWithDecimal(1000, 18).BigInt())
 	suite.Commit()
 
 	return &suite, contractAddr
@@ -67,7 +68,7 @@ func DoBenchmark(b *testing.B, txBuilder TxBuilder) {
 		require.NoError(b, err)
 
 		fees := sdk.Coins{sdk.NewCoin(suite.EvmDenom(), sdk.NewIntFromBigInt(txData.Fee()))}
-		err = authmiddleware.DeductFees(suite.app.BankKeeper, suite.ctx, suite.app.AccountKeeper.GetAccount(ctx, msg.GetFrom()), fees)
+		err = ante.DeductFees(suite.app.BankKeeper, suite.ctx, suite.app.AccountKeeper.GetAccount(ctx, msg.GetFrom()), fees)
 		require.NoError(b, err)
 
 		rsp, err := suite.app.EvmKeeper.EthereumTx(sdk.WrapSDKContext(ctx), msg)
@@ -134,7 +135,7 @@ func BenchmarkMessageCall(b *testing.B) {
 		require.NoError(b, err)
 
 		fees := sdk.Coins{sdk.NewCoin(suite.EvmDenom(), sdk.NewIntFromBigInt(txData.Fee()))}
-		err = authmiddleware.DeductFees(suite.app.BankKeeper, suite.ctx, suite.app.AccountKeeper.GetAccount(ctx, msg.GetFrom()), fees)
+		err = ante.DeductFees(suite.app.BankKeeper, suite.ctx, suite.app.AccountKeeper.GetAccount(ctx, msg.GetFrom()), fees)
 		require.NoError(b, err)
 
 		rsp, err := suite.app.EvmKeeper.EthereumTx(sdk.WrapSDKContext(ctx), msg)
