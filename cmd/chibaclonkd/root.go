@@ -31,12 +31,12 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 
-	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/tharsis/ethermint/app"
 	ethermintclient "github.com/tharsis/ethermint/client"
 	"github.com/tharsis/ethermint/client/debug"
 	"github.com/tharsis/ethermint/crypto/hd"
 	"github.com/tharsis/ethermint/encoding"
+	"github.com/tharsis/ethermint/server"
 	servercfg "github.com/tharsis/ethermint/server/config"
 	srvflags "github.com/tharsis/ethermint/server/flags"
 	ethermint "github.com/tharsis/ethermint/types"
@@ -234,8 +234,8 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore 
 		panic(err)
 	}
 	snapshotOptions := snapshottypes.NewSnapshotOptions(
-		cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval)),
-		cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent)),
+		cast.ToUint64(appOpts.Get(sdkserver.FlagStateSyncSnapshotInterval)),
+		cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent)),
 	)
 
 	ethermintApp := app.NewEthermintApp(
