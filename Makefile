@@ -73,8 +73,10 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=chibaclonk \
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
+
 ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
+  BUILD_TAGS += badgerdb
 endif
 # handle rocksdb
 ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
@@ -87,6 +89,12 @@ ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
   BUILD_TAGS += boltdb
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
 endif
+
+ldflags += $(LDFLAGS)
+ldflags := $(strip $(ldflags))
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
@@ -101,8 +109,6 @@ ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
   ldflags += -w -s
 endif
-ldflags += $(LDFLAGS)
-ldflags := $(strip $(ldflags))
 
 all: tools build lint test
 # # The below include contains the tools and runsim targets.
