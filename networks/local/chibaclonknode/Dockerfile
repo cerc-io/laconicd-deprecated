@@ -14,7 +14,8 @@ WORKDIR /go/src/github.com/vulcanize/chiba-clonk
 COPY . .
 
 # build binary
-RUN make build-linux
+# RUN make build-linux
+RUN COSMOS_BUILD_OPTIONS=badgerdb make build
 
 
 # Final image
@@ -30,4 +31,4 @@ COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/chibaclonkd
 EXPOSE 26656 26657 1317 9090 8545 8546
 
 # Run ethermintd by default
-CMD ["chibaclonkd","start","--gql-playground","--gql-server","--home","/chibaclonk"]
+CMD ["chibaclonkd","start","--gql-playground","--gql-server","--home","/chibaclonk","--mode","validator","--db-backend","badgerdb"]
