@@ -6,7 +6,7 @@
 
 ### 1.Run Full Node
 
-- Check "[Run Full Node](full-node.md)" section to Run a Full Node
+- Check "[Run Full Node](full_node.md)" section to Run a Full Node
 
 ### 2. Create Account & Get test tokens
 
