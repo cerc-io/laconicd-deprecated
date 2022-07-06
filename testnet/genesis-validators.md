@@ -116,7 +116,7 @@ NOTE: Save `mnemonic` and related account details (public key). You will need to
 recover accounts at a later point in time.
 
 ## 7) Add Genesis Account
-**Note: don't add more than 12,000 CHK , if you add more than that, your gentx will be ignored.**
+**Note: don't add more than 12,900 CHK , if you add more than that, your gentx will be ignored.**
 ```
 chibaclonkd add-genesis-account <key-name> 12900000000000000000000achk --keyring-backend os
 ```
@@ -159,7 +159,7 @@ To submit the gentx file, follow the below process:
 
 **Execute below instructions only after publishing of final genesis file**
 
-genesis file will be published to [testnets/chibaclonk_9000-1]()
+genesis file will be published to [testnets/chibaclonk_81337-2]()
 
 # B) Starting the validator
 
@@ -179,7 +179,7 @@ After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which chibaclonkd) start
+ExecStart=$(which chibaclonkd) start --mode validator --gql-playground --gql-server 
 Restart=always
 RestartSec=3
 LimitNOFILE=65535
