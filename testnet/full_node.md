@@ -88,7 +88,7 @@ server_name: chibaclonkd
 **Not required if you have already initialized before**
 
 ```
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-1
+chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-2
 ```
 
 On running the above command, node will be initialized with default configuration. (config files will be saved in node's
