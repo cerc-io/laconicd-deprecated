@@ -42,7 +42,7 @@ chibaclonkd tx staking create-validator \
   --moniker="my-moniker" \
   --website="https://myweb.site" \
   --details="description of your validator" \
-  --chain-id="chibaclonk_81337-1" \
+  --chain-id="chibaclonk_81337-2" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \

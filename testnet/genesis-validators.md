@@ -1,4 +1,4 @@
-# Setting up a Genesis Validator for Vulcanize chibaclonk Testnet (chibaclonk_81337-1)
+# Setting up a Genesis Validator for Vulcanize chibaclonk Testnet (chibaclonk_81337-2)
 
 Hardware
 ---
@@ -88,7 +88,7 @@ server_name: chibaclonkd
 **Not required if you have already initialized before**
 
 ```
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-1
+chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-2
 ```
 
 On running the above command, node will be initialized with default configuration. (config files will be saved in node's
@@ -118,15 +118,15 @@ recover accounts at a later point in time.
 ## 7) Add Genesis Account
 **Note: don't add more than 12,000 CHK , if you add more than that, your gentx will be ignored.**
 ```
-chibaclonkd add-genesis-account <key-name> 12000000000000000000000achk --keyring-backend os
+chibaclonkd add-genesis-account <key-name> 12900000000000000000000achk --keyring-backend os
 ```
 
 ## 8) Create Your `gentx`
 
 ```
-chibaclonkd gentx <key-name> 12000000000000000000000achk \
+chibaclonkd gentx <key-name> 12900000000000000000000achk \
   --pubkey=$(chibaclonkd tendermint show-validator) \
-  --chain-id="chibaclonk_81337-1" \
+  --chain-id="chibaclonk_81337-2" \
   --moniker="YOUR_MONIKER_NAME" \
   --website="https://yourweb.site" \
   --details="description of my validator" \
@@ -152,7 +152,7 @@ NOTE: (Do NOT use space in the file name)
 To submit the gentx file, follow the below process:
 
 - Fork the [testnets]() repository
-- Upload your gentx file in `chibaclonk_81337-1/config/gentxs` folder
+- Upload your gentx file in `chibaclonk_81337-2/config/gentxs` folder
 - Submit Pull Request to [testnets]() with name `ADD <your-moniker> gentx`
 
 ---
