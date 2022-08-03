@@ -1,42 +1,51 @@
-# Setting up a Genesis Validator for Vulcanize chibaclonk Testnet (chibaclonk_81337-2)
+# Validator Guide for chibaclonk_81337-3 Testnet
 
-Hardware
----
+## Hardware Prerequisites
 
-#### Supported
+### Supported
 
 - **Operating System (OS):** Ubuntu 20.04
 - **CPU:** 1 core
 - **RAM:** 2GB
 - **Storage:** 25GB SSD
 
-#### Recommended
+### Recommended
 
 - **Operating System (OS):** Ubuntu 20.04
 - **CPU:** 2 core
 - **RAM:** 4GB
 - **Storage:** 50GB SSD
 
-# A) Setup
+## Network Prerequisites
 
-## 1) Install Golang (go)
+- **TCP 26656** for Peer-to-Peer Network Communication
+- **TCP 26660** for Prometheus Metrics (doesn't have to be exposed publicly)
 
-1.1) Remove any existing installation of `go`
+# Validator Setup
 
+## Install required software packages
+
+```sh
+# Update Ubuntu
+sudo apt update
+sudo apt upgrade -y
+
+# Install required software packages
+sudo apt install git curl build-essential make jq -y
 ```
+
+---
+
+## Install Go
+
+```sh
+# Remove any existing installation of `go`
 sudo rm -rf /usr/local/go
-```
 
-1.2) Install latest/required Go version (installing `go1.17.2`)
+# Install Go version 1.17.2
+curl https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz | sudo tar -C/usr/local -zxvf -
 
-```
-curl -O https://golang.org/dl/go1.17.2.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.17.2.linux-amd64.tar.gz
-```
-
-1.3) Update env variables to include `go`
-
-```
+# Update env variables to include go
 cat <<'EOF' >>$HOME/.profile
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
@@ -47,131 +56,154 @@ EOF
 source $HOME/.profile
 ```
 
-1.4) Check the version of go installed
+Check the version of go installed
 
-```
+```sh
 go version
+
+# Should return something like: go version go1.17.2 linux/amd64
 ```
 
-### 2) Install required software packages
+---
 
-```
-sudo apt-get update && sudo apt-get install git curl build-essential make jq -y
-```
+## Install `chibaclonk`
 
-### 3) Install `chibaclonk`
-
-```
+```sh
 git clone https://github.com/vulcanize/chiba-clonk.git
 cd chiba-clonk
+
+# Checkout main branch
 git fetch --all
 git checkout main
+
+# Build and install chibaclonk
 make install
 ```
 
-### 4) Verify your installation
+Verify your installation
 
-```
+```sh
 chibaclonkd version --long
 ```
 
 On running the above command, you should see a similar response like this. Make sure that the *version* and *commit
 hash* are accurate
 
-```
+```sh
 name: chibaclonk
 server_name: chibaclonkd
 ```
 
-### 5) Initialize Node
+---
 
-**Not required if you have already initialized before**
+## Initialize Validator Node
 
+First we have to reset the previous genesis state (only because the `chibaclonk_81337-2` testnet failed) whereafter we can initialize the validator node for `chibaclonk_81337-3`
+
+```sh
+# Stop your node (in case it was still running)
+systemctl stop chibaclonkd
+
+# Keep a backup of your old validator directory
+cp -a ~/.chibaclonkd ~/backup-chibaclonk_81337-2
+
+# Reset the state of your validator
+chibaclonkd tendermint unsafe-reset-all --home $HOME/.chibaclonkd
+
+# Remove your previous genesis transactions
+rm $HOME/.chibaclonkd/config/gentx/gentx*.json
+
+# Overwrite your genesis state with the new chain-id
+chibaclonkd init --overwrite <your-node-moniker> --chain-id chibaclonk_81337-3
+
+# Initialize the validator node
+chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-3
 ```
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-2
-```
 
-On running the above command, node will be initialized with default configuration. (config files will be saved in node's
-default home directory (~/.chibaclonkd/config)
+Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
 
-NOTE: Backup node and validator keys. You will need to use these keys at a later point in time.
+**NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
 
 ---
 
-## 6) Create Account keys
+## Create Account keys
 
-if you have participated in previous testnet and have mnemonic phrase, use below command to recover your account
+If you have participated in a previous testnet and have a mnemonic phrase, use below command to recover your account:
 
-```
+```sh
 chibaclonkd keys add <key-name> --recover
 ```
 
-to create new account
+To create a new account use:
 
-```
+```sh
 chibaclonkd keys add <key-name>
 ```
 
-NOTE: Save `mnemonic` and related account details (public key). You will need to use the need mnemonic/private key to
-recover accounts at a later point in time.
+**NOTE:** Save the `mnemonic` and related account details (public key). You will need to use the mnemonic and / or private key to recover accounts at a later point in time.
 
-## 7) Add Genesis Account
-**Note: don't add more than 12,900 CHK , if you add more than that, your gentx will be ignored.**
-```
+---
+
+## Add Genesis Account
+
+**NOTE:** Don't add more than 12,900 CHK , if you add more than that, your gentx will be ignored.
+
+```sh
 chibaclonkd add-genesis-account <key-name> 12900000000000000000000achk --keyring-backend os
 ```
 
-## 8) Create Your `gentx`
+Create Your `gentx` transaction file
 
-```
+```sh
 chibaclonkd gentx <key-name> 12900000000000000000000achk \
   --pubkey=$(chibaclonkd tendermint show-validator) \
-  --chain-id="chibaclonk_81337-2" \
-  --moniker="YOUR_MONIKER_NAME" \
-  --website="https://yourweb.site" \
-  --details="description of my validator" \
+  --chain-id="chibaclonk_81337-3" \
+  --moniker="<your-moniker-name>" \
+  --website="<your-validator-website>" \
+  --details="<your-validator-description>" \
+  --identity="<your-keybase-public-key>" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1" 
 ```    
 
-Note:
+**NOTE:**
 
 - `<key-name>` and `chain-id` are required. other flags are optional
-- Don't change amount value while creating your gentx
+- Don't change the amount value while creating your gentx
 - Genesis transaction file will be saved in `~/.chibaclonkd/config/gentx` folder
 
-## 9) Submit Your gentx
+---
 
-Submit your `gentx` file to the [testnets]() in the format of
+## Submit Your gentx
+
+Submit your `gentx` file to the [testnets]() repository in the following format:
 `<validator-moniker>-gentx.json`
 
-NOTE: (Do NOT use space in the file name)
+**NOTE:** (Do NOT use spaces in the file name)
 
 To submit the gentx file, follow the below process:
 
 - Fork the [testnets]() repository
-- Upload your gentx file in `chibaclonk_81337-2/config/gentxs` folder
+- Upload your gentx file in `chibaclonk_81337-3/config/gentxs` folder
 - Submit Pull Request to [testnets]() with name `ADD <your-moniker> gentx`
 
----
+The genesis file will be published to [testnets/chibaclonk_81337-3]()
 
-**Execute below instructions only after publishing of final genesis file**
+# CONTINUE WITH BELOW STEPS ONLY AFTER GENESIS FILE HAS BEEN PUBLISHED
 
-genesis file will be published to [testnets/chibaclonk_81337-2]()
+## Adjust validator node configuration
 
-# B) Starting the validator
+```sh
+# Set seed & peers variable
+seeds="<seeds node list here>"
+peers="<peers node list here>"
 
-TBU
+# Update seeds, persistent_peers and prometheus parameters in config.toml
+sed -i.bak -e "s/^seeds *=.*/seeds = \"$seeds\"/; s/^persistent_peers *=.*/persistent_peers = \"$peers\"/; s/^prometheus *=.*/prometheus = true/" $HOME/.chibaclonkd/config/config.toml
 
-## 3) Start the Node
-
-#### 3.1) Start node as `systemctl` service
-
-3.1.1) Create the service file Note: this step is not required if you did setup before
-
-```
+# Create systemd validator service
 sudo tee /etc/systemd/system/chibaclonkd.service > /dev/null <<EOF
 [Unit]
 Description=chibaclonkd Daemon
@@ -179,7 +211,7 @@ After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which chibaclonkd) start --mode validator --gql-playground --gql-server 
+ExecStart=$(which chibaclonkd) start --mode validator --gql-playground --gql-server --log_level=warn
 Restart=always
 RestartSec=3
 LimitNOFILE=65535
@@ -187,45 +219,42 @@ LimitNOFILE=65535
 [Install]
 WantedBy=multi-user.target
 EOF
-```
 
-3.1.2) Load service and start
-
-```
+#Reload systemd and start the validator node
 sudo systemctl daemon-reload
 sudo systemctl enable chibaclonkd
 sudo systemctl start chibaclonkd
 ```
 
-3.1.3) Check status of service
+Check status of service
 
-```
+```sh
 sudo systemctl status chibaclonkd
 ```
 
-`NOTE:`
-A helpful command here is `journalctl` that can be used to:
+---
 
-a) check logs
+## Helpful Commands
 
-  ```
-  journalctl -u chibaclonkd
-  ```
+```sh
+# Check logs
+journalctl -u chibaclonkd
 
-b) most recent logs
+# Most recent logs
+journalctl -xeu chibaclonkd
 
-  ```
-  journalctl -xeu chibaclonkd
-  ```
+# Logs from previous day
+journalctl --since "1 day ago" -u chibaclonkd
 
-c) logs from previous day
+# Check logs with follow flag
+journalctl -f -u chibaclonkd
 
-  ```
-  journalctl --since "1 day ago" -u chibaclonkd
-  ```
+# Check discovered peers
+curl http://localhost:26657/net_info
 
-d) Check logs with follow flag
+# Check network consensus state
+curl http://localhost:26657/consensus_state
 
-  ```
-  journalctl -f -u chibaclonkd
-  ```
+# Check the sync status of your validator node
+chibaclonkd status | jq .SyncInfo
+```
