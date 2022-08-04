@@ -98,6 +98,23 @@ server_name: chibaclonkd
 
 ## Initialize Validator Node
 
+**Not required if you have already initialized before**
+
+```sh
+# Initialize the validator node
+chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-3
+```
+
+Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
+
+**NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
+
+---
+
+## Overwrite Validator Initialization from previous testnet
+
+**Required for `chibaclonk_81337-3`**
+
 First we have to reset the previous genesis state (only because the `chibaclonk_81337-2` testnet failed) whereafter we can initialize the validator node for `chibaclonk_81337-3`
 
 ```sh
@@ -115,12 +132,9 @@ rm $HOME/.chibaclonkd/config/gentx/gentx*.json
 
 # Overwrite your genesis state with the new chain-id
 chibaclonkd init --overwrite <your-node-moniker> --chain-id chibaclonk_81337-3
-
-# Initialize the validator node
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-3
 ```
 
-Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
+Running the above commands will re-initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
 
 **NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
 
