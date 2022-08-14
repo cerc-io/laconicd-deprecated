@@ -1,4 +1,4 @@
-# Validator Guide for chibaclonk_81337-3 Testnet
+# Validator Guide for chibaclonk_81337-4 Testnet
 
 ## Hardware Prerequisites
 
@@ -102,7 +102,7 @@ server_name: chibaclonkd
 
 ```sh
 # Initialize the validator node
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-3
+chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-4
 ```
 
 Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
@@ -113,9 +113,9 @@ Running the above commands will initialize the validator node with default confi
 
 ## Overwrite Validator Initialization from previous testnet
 
-**Required for `chibaclonk_81337-3`**
+**Required for `chibaclonk_81337-4`**
 
-First we have to reset the previous genesis state (only because the `chibaclonk_81337-2` testnet failed) whereafter we can initialize the validator node for `chibaclonk_81337-3`
+First we have to reset the previous genesis state (only because the `chibaclonk_81337-3` testnet failed) whereafter we can initialize the validator node for `chibaclonk_81337-4`
 
 ```sh
 # Stop your node (in case it was still running)
@@ -131,7 +131,7 @@ chibaclonkd tendermint unsafe-reset-all --home $HOME/.chibaclonkd
 rm $HOME/.chibaclonkd/config/gentx/gentx*.json
 
 # Overwrite your genesis state with the new chain-id
-chibaclonkd init --overwrite <your-node-moniker> --chain-id chibaclonk_81337-3
+chibaclonkd init --overwrite <your-node-moniker> --chain-id chibaclonk_81337-4
 ```
 
 Running the above commands will re-initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
@@ -171,7 +171,7 @@ Create Your `gentx` transaction file
 ```sh
 chibaclonkd gentx <key-name> 12900000000000000000000achk \
   --pubkey=$(chibaclonkd tendermint show-validator) \
-  --chain-id="chibaclonk_81337-3" \
+  --chain-id="chibaclonk_81337-4" \
   --moniker="<your-moniker-name>" \
   --website="<your-validator-website>" \
   --details="<your-validator-description>" \
@@ -192,18 +192,18 @@ chibaclonkd gentx <key-name> 12900000000000000000000achk \
 
 ## Submit Your gentx
 
-Submit your `gentx` file to the [testnets]() repository in the following format:
+Submit your `gentx` file to the [https://github.com/vulcanize/laconic-testnet]() repository in the following format:
 `<validator-moniker>-gentx.json`
 
 **NOTE:** (Do NOT use spaces in the file name)
 
 To submit the gentx file, follow the below process:
 
-- Fork the [testnets]() repository
-- Upload your gentx file in `chibaclonk_81337-3/config/gentxs` folder
-- Submit Pull Request to [testnets]() with name `ADD <your-moniker> gentx`
+- Fork the [https://github.com/vulcanize/laconic-testnet]() repository
+- Upload your gentx file in the `chibaclonk_81337-4/config/gentxs` folder
+- Submit Pull Request to [https://github.com/vulcanize/laconic-testnet]() with name `ADD <your-moniker> gentx`
 
-The genesis file will be published to [testnets/chibaclonk_81337-3]()
+The genesis file will be published in the `chibaclonk_81337-4/config/` folder within the [https://github.com/vulcanize/laconic-testnet]() repository.
 
 # CONTINUE WITH BELOW STEPS ONLY AFTER GENESIS FILE HAS BEEN PUBLISHED
 
