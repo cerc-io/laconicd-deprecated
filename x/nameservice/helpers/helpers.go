@@ -7,9 +7,9 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
+
 	set "github.com/deckarep/golang-set"
-	cbor "github.com/ipfs/go-ipld-cbor"
-	mh "github.com/multiformats/go-multihash"
+	wnsUtils "github.com/tharsis/ethermint/utils"
 
 	"sort"
 )
@@ -72,12 +72,7 @@ func UnMarshalMapFromJSONBytes(bytes []byte) map[string]interface{} {
 
 // GetCid gets the content ID.
 func GetCid(content []byte) (string, error) {
-	node, err := cbor.FromJSON(bytes.NewReader(content), mh.SHA2_256, -1)
-	if err != nil {
-		return "", err
-	}
-
-	return node.Cid().String(), nil
+	return wnsUtils.CIDFromJSONBytesUsingIpldPrime(content)
 }
 
 // BytesToBase64 encodes a byte array as a base64 string.
