@@ -22,7 +22,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/holiman/uint256 v1.2.0
 	github.com/improbable-eng/grpc-web v0.15.0
-	github.com/ipfs/go-cid v0.0.4
+	github.com/ipfs/go-cid v0.3.0
 	github.com/ipfs/go-ipld-cbor v0.0.6
 	github.com/ipld/go-ipld-prime v0.16.0
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
@@ -149,7 +149,8 @@ require (
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/multiformats/go-base32 v0.0.3 // indirect
-	github.com/multiformats/go-multibase v0.0.1 // indirect
+	github.com/multiformats/go-base36 v0.1.0 // indirect
+	github.com/multiformats/go-multibase v0.0.3 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/oasisprotocol/curve25519-voi v0.0.0-20210609091139-0a56a4bca00b // indirect
