@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/whois/%s"
-	var authorityName = "QueryWhoIS"
+	authorityName := "QueryWhoIS"
 	testCases := []struct {
 		name      string
 		url       string
@@ -78,7 +78,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -132,7 +131,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?crn=%s"
-	var authorityName = "QueryLookUp"
+	authorityName := "QueryLookUp"
 
 	testCases := []struct {
 		name      string
@@ -147,7 +146,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -199,7 +197,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -271,7 +268,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -307,7 +303,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 			if !tc.expectErr {
 				tc.preRun("QueryAuthorityExpiryQueue")
 			}
-			// wait 12 seconds to name authorites expires
+			// wait 12 seconds to name authorities expires
 			time.Sleep(time.Second * 12)
 
 			resp, _ := rest.GetRequest(tc.url)
@@ -343,7 +339,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -483,7 +478,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -538,7 +532,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetNameServiceModuleBalance() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -590,7 +583,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{

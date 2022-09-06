@@ -79,7 +79,6 @@ func (s msgServer) CommitBid(c context.Context, msg *types.MsgCommitBid) (*types
 	return &types.MsgCommitBidResponse{Bid: resp}, nil
 }
 
-//RevealBid is the command for revealing a bid
 func (s msgServer) RevealBid(c context.Context, msg *types.MsgRevealBid) (*types.MsgRevealBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 

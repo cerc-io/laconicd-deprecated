@@ -55,7 +55,6 @@ func (e *EVMBackend) SetTxDefaults(args evmtypes.TransactionArgs) (evmtypes.Tran
 			if args.MaxFeePerGas.ToInt().Cmp(args.MaxPriorityFeePerGas.ToInt()) < 0 {
 				return args, fmt.Errorf("maxFeePerGas (%v) < maxPriorityFeePerGas (%v)", args.MaxFeePerGas, args.MaxPriorityFeePerGas)
 			}
-
 		} else {
 			if args.MaxFeePerGas != nil || args.MaxPriorityFeePerGas != nil {
 				return args, errors.New("maxFeePerGas or maxPriorityFeePerGas specified but london is not active yet")

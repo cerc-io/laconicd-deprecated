@@ -371,7 +371,6 @@ $ %s tx %s delete-name [crn]
 	return cmd
 }
 
-//GetPayloadFromFile  Load payload object from YAML file.
 func GetPayloadFromFile(filePath string) (*types.PayloadType, error) {
 	var payload types.PayloadType
 

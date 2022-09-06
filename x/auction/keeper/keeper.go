@@ -382,7 +382,7 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Bid, 
 	return &bid, nil
 }
 
-// RevealBid reeals a bid comitted earlier.
+// RevealBid reeals a bid committed earlier.
 func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Auction, error) {
 	if !k.HasAuction(ctx, msg.AuctionId) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Auction not found.")
@@ -561,7 +561,6 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 
 			ctx.Logger().Info(fmt.Sprintf("Updated 1st bid %s %s", highestBid.BidderAddress, highestBid.BidAmount.String()))
 			ctx.Logger().Info(fmt.Sprintf("Updated 2nd bid %s %s", secondHighestBid.BidderAddress, secondHighestBid.BidAmount.String()))
-
 		} else if secondHighestBid == nil || secondHighestBid.BidAmount.IsLT(bid.BidAmount) {
 			ctx.Logger().Info(fmt.Sprintf("New 2nd highest bid %s %s", bid.BidderAddress, bid.BidAmount.String()))
 
@@ -588,7 +587,6 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 		ctx.Logger().Info(fmt.Sprintf("Auction %s winner %s.", auction.Id, auction.WinnerAddress))
 		ctx.Logger().Info(fmt.Sprintf("Auction %s winner bid %s.", auction.Id, auction.WinningBid.String()))
 		ctx.Logger().Info(fmt.Sprintf("Auction %s winner price %s.", auction.Id, auction.WinningPrice.String()))
-
 	} else {
 		ctx.Logger().Info(fmt.Sprintf("Auction %s has no valid revealed bids (no winner).", auction.Id))
 	}

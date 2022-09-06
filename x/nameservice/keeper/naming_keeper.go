@@ -653,7 +653,6 @@ func (k Keeper) GetAllExpiredAuthorities(ctx sdk.Context, currTime time.Time) (e
 	for ; itr.Valid(); itr.Next() {
 		timeslice := []string{}
 		timeslice, err := helpers.BytesArrToStringArr(itr.Value())
-
 		if err != nil {
 			panic(err)
 		}

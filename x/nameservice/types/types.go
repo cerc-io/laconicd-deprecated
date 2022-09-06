@@ -22,7 +22,7 @@ type PayloadType struct {
 // ToPayload converts PayloadType to Payload object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
 func (payloadObj *PayloadType) ToPayload() Payload {
-	var payload = Payload{
+	payload := Payload{
 		Record: &Record{
 			Deleted:    false,
 			Owners:     nil,

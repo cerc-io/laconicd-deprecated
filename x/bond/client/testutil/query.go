@@ -251,7 +251,6 @@ func (s *IntegrationTestSuite) TestGetQueryBondListsByOwner() {
 			},
 			true,
 			func() {
-
 			},
 		},
 		{

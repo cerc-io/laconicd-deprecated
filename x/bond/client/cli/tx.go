@@ -104,7 +104,7 @@ func WithdrawBondCmd() *cobra.Command {
 	return cmd
 }
 
-// CancelBondCmd is the CLI command for cancelling a bond.
+// CancelBondCmd is the CLI command for canceling a bond.
 func CancelBondCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cancel [bond Id]",

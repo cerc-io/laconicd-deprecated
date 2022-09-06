@@ -56,7 +56,7 @@ func (b AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEnc
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
-	// Once json successfully marshalled, passes along to genesis.go
+	// Once json successfully marshaled, passes along to genesis.go
 	return ValidateGenesis(data)
 }
 

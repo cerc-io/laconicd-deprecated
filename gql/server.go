@@ -2,12 +2,13 @@ package gql
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/spf13/viper"
-	"net/http"
 )
 
 // Server configures and starts the GQL server.

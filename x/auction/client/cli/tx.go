@@ -134,7 +134,7 @@ func GetCmdCommitBid() *cobra.Command {
 			}
 
 			// Save reveal file.
-			ioutil.WriteFile(fmt.Sprintf("%s-%s.json", clientCtx.GetFromName(), commitHash), content, 0600)
+			ioutil.WriteFile(fmt.Sprintf("%s-%s.json", clientCtx.GetFromName(), commitHash), content, 0o600)
 
 			msg := types.NewMsgCommitBid(auctionID, commitHash, clientCtx.GetFromAddress())
 			err = msg.ValidateBasic()

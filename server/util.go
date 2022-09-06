@@ -82,7 +82,6 @@ func MountGRPCWebServices(
 	logger tmlog.Logger,
 ) {
 	for _, res := range grpcResources {
-
 		logger.Info("[GRPC Web] HTTP POST mounted", "resource", res)
 
 		s := router.Methods("POST").Subrouter()

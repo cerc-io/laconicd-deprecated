@@ -162,7 +162,6 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 	// Check if renewal is required (i.e. expired record marked as deleted).
 	record := k.GetRecord(ctx, msg.RecordId)
 	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
-
 	if err != nil {
 		panic(err)
 	}
@@ -182,7 +181,6 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 
 // ProcessAssociateBond associates a record with a bond.
 func (k Keeper) ProcessAssociateBond(ctx sdk.Context, msg types.MsgAssociateBond) error {
-
 	if !k.HasRecord(ctx, msg.RecordId) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Record not found.")
 	}

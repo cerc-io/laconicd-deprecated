@@ -253,12 +253,12 @@ func WriteFile(name string, dir string, contents []byte) error {
 	writePath := filepath.Join(dir)
 	file := filepath.Join(writePath, name)
 
-	err := tmos.EnsureDir(writePath, 0755)
+	err := tmos.EnsureDir(writePath, 0o755)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(file, contents, 0644) // nolint: gosec
+	err = ioutil.WriteFile(file, contents, 0o644) //nolint: gosec
 	if err != nil {
 		return err
 	}

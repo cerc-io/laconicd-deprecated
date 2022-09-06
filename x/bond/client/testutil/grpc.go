@@ -28,7 +28,6 @@ func (s *IntegrationTestSuite) TestGRPCGetBonds() {
 			true,
 			"",
 			func() {
-
 			},
 		},
 		{
@@ -87,7 +86,6 @@ func (s *IntegrationTestSuite) TestGRPCGetBondsByOwner() {
 			fmt.Sprintf(reqUrl, "asdasd"),
 			true,
 			func() {
-
 			},
 		},
 		{

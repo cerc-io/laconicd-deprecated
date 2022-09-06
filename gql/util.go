@@ -38,6 +38,7 @@ func getGQLCoins(coins sdk.Coins) []*Coin {
 
 	return gqlCoins
 }
+
 func GetGQLNameAuthorityRecord(record *nstypes.NameAuthority) (*AuthorityRecord, error) {
 	if record == nil {
 		return nil, nil

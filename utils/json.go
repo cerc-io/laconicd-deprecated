@@ -36,7 +36,6 @@ func GenerateHash(json map[string]interface{}) (string, []byte, error) {
 		return "", nil, err
 	}
 
-	//cid, err := CIDFromJSONBytes(content)
 	cidString, err := CIDFromJSONBytesUsingIpldPrime(content)
 	if err != nil {
 		return "", nil, err

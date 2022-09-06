@@ -31,7 +31,6 @@ func (msg MsgSetName) Type() string { return "set-name" }
 
 // ValidateBasic Implements Msg.
 func (msg MsgSetName) ValidateBasic() error {
-
 	if msg.Crn == "" {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "CRN is required.")
 	}
@@ -76,7 +75,6 @@ func (msg MsgReserveAuthority) Type() string { return "reserve-authority" }
 
 // ValidateBasic Implements Msg.
 func (msg MsgReserveAuthority) ValidateBasic() error {
-
 	if len(msg.Name) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "name is required.")
 	}

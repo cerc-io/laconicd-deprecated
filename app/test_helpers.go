@@ -121,7 +121,6 @@ func NewTestAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOpti
 
 // Setup initializes a new EthermintApp. A Nop logger is set in EthermintApp.
 func Setup(t *testing.T, isCheckTx bool, patchGenesis func(*EthermintApp, simapp.GenesisState) simapp.GenesisState) *EthermintApp {
-
 	t.Helper()
 
 	privVal := mock.NewPV()
@@ -202,7 +201,8 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, patchGen
 }
 
 func genesisStateWithValSet(t *testing.T, app *EthermintApp, genesisState simapp.GenesisState,
-	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) simapp.GenesisState {
+	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance,
+) simapp.GenesisState {
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
@@ -232,7 +232,6 @@ func genesisStateWithValSet(t *testing.T, app *EthermintApp, genesisState simapp
 		}
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()))
-
 	}
 	// set validators and delegations
 	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)

@@ -3,9 +3,10 @@ package types
 import (
 	"bytes"
 	"fmt"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"time"
 )
 
 // Default parameter values.
@@ -75,8 +76,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func NewParams(recordRent sdk.Coin, recordRentDuration time.Duration,
 	authorityRent sdk.Coin, authorityRentDuration time.Duration, authorityGracePeriod time.Duration,
 	authorityAuctionEnabled bool, commitsDuration time.Duration, revealsDuration time.Duration,
-	commitFee sdk.Coin, revealFee sdk.Coin, minimumBid sdk.Coin) Params {
-
+	commitFee sdk.Coin, revealFee sdk.Coin, minimumBid sdk.Coin,
+) Params {
 	return Params{
 		RecordRent:         recordRent,
 		RecordRentDuration: recordRentDuration,
