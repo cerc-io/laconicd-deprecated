@@ -1,4 +1,4 @@
-# Validator Guide for chibaclonk_81337-4 Testnet
+# Validator Guide for laconic_81337-4 Testnet
 
 ## Hardware Prerequisites
 
@@ -66,32 +66,32 @@ go version
 
 ---
 
-## Install `chibaclonk`
+## Install `laconic`
 
 ```sh
-git clone https://github.com/vulcanize/chiba-clonk.git
-cd chiba-clonk
+git clone https://github.com/cerc-io/laconicd.git
+cd laconicd
 
 # Checkout main branch
 git fetch --all
 git checkout main
 
-# Build and install chibaclonk
+# Build and install laconic
 make install
 ```
 
 Verify your installation
 
 ```sh
-chibaclonkd version --long
+laconicd version --long
 ```
 
-On running the above command, you should see a similar response like this. Make sure that the *version* and *commit
-hash* are accurate
+On running the above command, you should see a similar response like this. Make sure that the _version_ and _commit
+hash_ are accurate
 
 ```sh
-name: chibaclonk
-server_name: chibaclonkd
+name: laconic
+server_name: laconicd
 ```
 
 ---
@@ -102,10 +102,10 @@ server_name: chibaclonkd
 
 ```sh
 # Initialize the validator node
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-4
+laconicd init <your-node-moniker> --chain-id laconic_81337-4
 ```
 
-Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
+Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.laconicd/config`).
 
 **NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
 
@@ -113,28 +113,28 @@ Running the above commands will initialize the validator node with default confi
 
 ## Overwrite Validator Initialization from previous testnet
 
-**Required for `chibaclonk_81337-4`**
+**Required for `laconic_81337-4`**
 
-First we have to reset the previous genesis state (only because the `chibaclonk_81337-3` testnet failed) whereafter we can initialize the validator node for `chibaclonk_81337-4`
+First we have to reset the previous genesis state (only because the `laconic_81337-3` testnet failed) whereafter we can initialize the validator node for `laconic_81337-4`
 
 ```sh
 # Stop your node (in case it was still running)
-systemctl stop chibaclonkd
+systemctl stop laconicd
 
 # Keep a backup of your old validator directory
-cp -a ~/.chibaclonkd ~/backup-chibaclonk_81337-2
+cp -a ~/.laconicd ~/backup-laconic_81337-2
 
 # Reset the state of your validator
-chibaclonkd tendermint unsafe-reset-all --home $HOME/.chibaclonkd
+laconicd tendermint unsafe-reset-all --home $HOME/.laconicd
 
 # Remove your previous genesis transactions
-rm $HOME/.chibaclonkd/config/gentx/gentx*.json
+rm $HOME/.laconicd/config/gentx/gentx*.json
 
 # Overwrite your genesis state with the new chain-id
-chibaclonkd init --overwrite <your-node-moniker> --chain-id chibaclonk_81337-4
+laconicd init --overwrite <your-node-moniker> --chain-id laconic_81337-4
 ```
 
-Running the above commands will re-initialize the validator node with default configuration. The config files will be saved in the default location (`~/.chibaclonkd/config`).
+Running the above commands will re-initialize the validator node with default configuration. The config files will be saved in the default location (`~/.laconicd/config`).
 
 **NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
 
@@ -145,13 +145,13 @@ Running the above commands will re-initialize the validator node with default co
 If you have participated in a previous testnet and have a mnemonic phrase, use below command to recover your account:
 
 ```sh
-chibaclonkd keys add <key-name> --recover
+laconicd keys add <key-name> --recover
 ```
 
 To create a new account use:
 
 ```sh
-chibaclonkd keys add <key-name>
+laconicd keys add <key-name>
 ```
 
 **NOTE:** Save the `mnemonic` and related account details (public key). You will need to use the mnemonic and / or private key to recover accounts at a later point in time.
@@ -163,15 +163,15 @@ chibaclonkd keys add <key-name>
 **NOTE:** Don't add more than 12,900 CHK , if you add more than that, your gentx will be ignored.
 
 ```sh
-chibaclonkd add-genesis-account <key-name> 12900000000000000000000achk --keyring-backend os
+laconicd add-genesis-account <key-name> 12900000000000000000000achk --keyring-backend os
 ```
 
 Create Your `gentx` transaction file
 
 ```sh
-chibaclonkd gentx <key-name> 12900000000000000000000achk \
-  --pubkey=$(chibaclonkd tendermint show-validator) \
-  --chain-id="chibaclonk_81337-4" \
+laconicd gentx <key-name> 12900000000000000000000achk \
+  --pubkey=$(laconicd tendermint show-validator) \
+  --chain-id="laconic_81337-4" \
   --moniker="<your-moniker-name>" \
   --website="<your-validator-website>" \
   --details="<your-validator-description>" \
@@ -179,31 +179,31 @@ chibaclonkd gentx <key-name> 12900000000000000000000achk \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
-  --min-self-delegation="1" 
-```    
+  --min-self-delegation="1"
+```
 
 **NOTE:**
 
 - `<key-name>` and `chain-id` are required. other flags are optional
 - Don't change the amount value while creating your gentx
-- Genesis transaction file will be saved in `~/.chibaclonkd/config/gentx` folder
+- Genesis transaction file will be saved in `~/.laconicd/config/gentx` folder
 
 ---
 
 ## Submit Your gentx
 
-Submit your `gentx` file to the [https://github.com/vulcanize/laconic-testnet]() repository in the following format:
+Submit your `gentx` file to the [https://github.com/cerc-io/laconic-testnet]() repository in the following format:
 `<validator-moniker>-gentx.json`
 
 **NOTE:** (Do NOT use spaces in the file name)
 
 To submit the gentx file, follow the below process:
 
-- Fork the [https://github.com/vulcanize/laconic-testnet]() repository
-- Upload your gentx file in the `chibaclonk_81337-4/config/gentxs` folder
-- Submit Pull Request to [https://github.com/vulcanize/laconic-testnet]() with name `ADD <your-moniker> gentx`
+- Fork the [https://github.com/cerc-io/laconic-testnet]() repository
+- Upload your gentx file in the `laconic_81337-4/config/gentxs` folder
+- Submit Pull Request to [https://github.com/cerc-io/laconic-testnet]() with name `ADD <your-moniker> gentx`
 
-The genesis file will be published in the `chibaclonk_81337-4/config/` folder within the [https://github.com/vulcanize/laconic-testnet]() repository.
+The genesis file will be published in the `laconic_81337-4/config/` folder within the [https://github.com/cerc-io/laconic-testnet]() repository.
 
 # CONTINUE WITH BELOW STEPS ONLY AFTER GENESIS FILE HAS BEEN PUBLISHED
 
@@ -215,17 +215,17 @@ seeds="<seeds node list here>"
 peers="<peers node list here>"
 
 # Update seeds, persistent_peers and prometheus parameters in config.toml
-sed -i.bak -e "s/^seeds *=.*/seeds = \"$seeds\"/; s/^persistent_peers *=.*/persistent_peers = \"$peers\"/; s/^prometheus *=.*/prometheus = true/" $HOME/.chibaclonkd/config/config.toml
+sed -i.bak -e "s/^seeds *=.*/seeds = \"$seeds\"/; s/^persistent_peers *=.*/persistent_peers = \"$peers\"/; s/^prometheus *=.*/prometheus = true/" $HOME/.laconicd/config/config.toml
 
 # Create systemd validator service
-sudo tee /etc/systemd/system/chibaclonkd.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/laconicd.service > /dev/null <<EOF
 [Unit]
-Description=chibaclonkd Daemon
+Description=laconicd Daemon
 After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which chibaclonkd) start --mode validator --gql-playground --gql-server --log_level=warn
+ExecStart=$(which laconicd) start --mode validator --gql-playground --gql-server --log_level=warn
 Restart=always
 RestartSec=3
 LimitNOFILE=65535
@@ -236,14 +236,14 @@ EOF
 
 #Reload systemd and start the validator node
 sudo systemctl daemon-reload
-sudo systemctl enable chibaclonkd
-sudo systemctl start chibaclonkd
+sudo systemctl enable laconicd
+sudo systemctl start laconicd
 ```
 
 Check status of service
 
 ```sh
-sudo systemctl status chibaclonkd
+sudo systemctl status laconicd
 ```
 
 ---
@@ -252,16 +252,16 @@ sudo systemctl status chibaclonkd
 
 ```sh
 # Check logs
-journalctl -u chibaclonkd
+journalctl -u laconicd
 
 # Most recent logs
-journalctl -xeu chibaclonkd
+journalctl -xeu laconicd
 
 # Logs from previous day
-journalctl --since "1 day ago" -u chibaclonkd
+journalctl --since "1 day ago" -u laconicd
 
 # Check logs with follow flag
-journalctl -f -u chibaclonkd
+journalctl -f -u laconicd
 
 # Check discovered peers
 curl http://localhost:26657/net_info
@@ -270,5 +270,5 @@ curl http://localhost:26657/net_info
 curl http://localhost:26657/consensus_state
 
 # Check the sync status of your validator node
-chibaclonkd status | jq .SyncInfo
+laconicd status | jq .SyncInfo
 ```

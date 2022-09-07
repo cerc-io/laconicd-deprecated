@@ -8,18 +8,18 @@ $ make build
 # Setup Chain
 
 ```bash
-./build/chibaclonkd keys add root
-./build/chibaclonkd init test-moniker --chain-id ethermint_9000-1
-./build/chibaclonkd add-genesis-account $(./build/chibaclonkd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
-./build/chibaclonkd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
-./build/chibaclonkd collect-gentxs
-./build/chibaclonkd start
+./build/laconicd keys add root
+./build/laconicd init test-moniker --chain-id ethermint_9000-1
+./build/laconicd add-genesis-account $(./build/laconicd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
+./build/laconicd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
+./build/laconicd collect-gentxs
+./build/laconicd start
 ```
 
 ## Get Params
 
 ```bash
-$ ./build/chibaclonkd q nameservice params -o json | jq .
+$ ./build/laconicd q nameservice params -o json | jq .
 {
   "params": {
     "record_rent": {
@@ -58,7 +58,7 @@ $ ./build/chibaclonkd q nameservice params -o json | jq .
 > First you have to Create bond
 
 ```bash
-$ ./build/chibaclonkd tx nameservice set ~/Desktop/examples/records/example1.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id ethermint_9000-1 --yes -o json
+$ ./build/laconicd tx nameservice set ~/Desktop/examples/records/example1.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id ethermint_9000-1 --yes -o json
 {
   "height": "0",
   "txhash": "BA44ABE1194724694E7CB290F9F3121DB4E63E1A030D95CB84813EEA132CF95F",
@@ -78,7 +78,7 @@ $ ./build/chibaclonkd tx nameservice set ~/Desktop/examples/records/example1.yml
 ## Get records list
 
 ```bash
-$ ./build/chibaclonkd q nameservice list -o json  | jq
+$ ./build/laconicd q nameservice list -o json  | jq
 [
   {
     "id": "bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae",
@@ -104,7 +104,7 @@ $ ./build/chibaclonkd q nameservice list -o json  | jq
 ## Get record by id
 
 ```bash
-$ ./build/chibaclonkd q nameservice get bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae -o json | jq .
+$ ./build/laconicd q nameservice get bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae -o json | jq .
 {
   "record": {
     "id": "bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae",
@@ -121,7 +121,7 @@ $ ./build/chibaclonkd q nameservice get bafyreih7un2ntk235wshncebus5emlozdhdixrr
 ## Reserve name
 
 ```bash
- ./build/chibaclonkd tx nameservice reserve-name hello --from root --chain-id ethermint_9000-1 --owner $(./build/chibaclonkd key
+ ./build/laconicd tx nameservice reserve-name hello --from root --chain-id ethermint_9000-1 --owner $(./build/laconicd key
 s show root -a) -y -o json | jq .
 {
   "height": "0",
@@ -143,7 +143,7 @@ s show root -a) -y -o json | jq .
 ## Query Whois for name authority
 
 ```bash
- ./build/chibaclonkd q nameservice whois hello -o json | jq .
+ ./build/laconicd q nameservice whois hello -o json | jq .
 {
   "name_authority": {
     "owner_public_key": "Au3hH1tzL1KgZfXfA71jGYSe5RV9Wg95kwhBWs8V+N+h",
@@ -161,7 +161,7 @@ s show root -a) -y -o json | jq .
 ## Query the nameservice module balance
 
 ```bash
-$ ./build/chibaclonkd q nameservice  balance -o json | jq .
+$ ./build/laconicd q nameservice  balance -o json | jq .
 {
   "balances": [
     {
@@ -181,14 +181,14 @@ $ ./build/chibaclonkd q nameservice  balance -o json | jq .
 ## add bond to the authority
 
 ```bash
-$ ./build/chibaclonkd tx nameservice authority-bond [Authority Name] [Bond ID ]  --from root --chain-id ethermint_9000-1  -y -o json | jq .
-$ ./build/chibaclonkd tx nameservice authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id ethermint_9000-1  -y -o json | jq .
- ```
+$ ./build/laconicd tx nameservice authority-bond [Authority Name] [Bond ID ]  --from root --chain-id ethermint_9000-1  -y -o json | jq .
+$ ./build/laconicd tx nameservice authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id ethermint_9000-1  -y -o json | jq .
+```
 
 ## Query the records by associate bond id
 
 ```bash
-$ ./build/chibaclonkd q nameservice query-by-bond 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d -o json | jq .
+$ ./build/laconicd q nameservice query-by-bond 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d -o json | jq .
 {
   "records": [
     {
@@ -209,7 +209,7 @@ $ ./build/chibaclonkd q nameservice query-by-bond 95f68b1b862bfd1609b0c9aaf73002
 ## dissociate bond from record
 
 ```bash
-$ ./build/chibaclonkd tx nameservice dissociate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae  --from root --chain-id ethermint_9000-1
+$ ./build/laconicd tx nameservice dissociate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae  --from root --chain-id ethermint_9000-1
 {"body":{"messages":[{"@type":"/vulcanize.nameservice.v1beta1.MsgDissociateBond","record_id":"bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
 confirm transaction before signing and broadcasting [y/N]: y
@@ -231,7 +231,7 @@ txhash: 7AFEF524CB0D92D6576FC08601A787786E802449888FD8DDAA7635698CC85060
 ## Associate bond with record
 
 ```bash
-./build/chibaclonkd tx nameservice associate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
+./build/laconicd tx nameservice associate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
 {
   "height": "0",
   "txhash": "F75C2BF2FE73668AE1332E1237F924AC549E31E822A56394DE5AC17200B199F9",
@@ -252,7 +252,7 @@ txhash: 7AFEF524CB0D92D6576FC08601A787786E802449888FD8DDAA7635698CC85060
 ## dissociate-records => remove all record from bond
 
 ```bash
-$./build/chibaclonkd tx nameservice dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
+$./build/laconicd tx nameservice dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
 {
   "height": "0",
   "txhash": "0316F503E5DEA47CB108AE6C7C7FFAF3F71CC56BC22F63CB97322E1BE48B33B9",
@@ -274,14 +274,14 @@ $./build/chibaclonkd tx nameservice dissociate-records c3f7a78c5042d2003880962ba
 > When a record is expires , needs to renew record
 
 ```bash
-$ ./build/chibaclonkd tx nameservice renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1
+$ ./build/laconicd tx nameservice renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1
 
 ```
 
 ## Set the authority name
 
 ```bash
-$ ./build/chibaclonkd tx nameservice set-name crn://hello/test test_hello_cid  --from root --chain-id ethermint_9000-1 -y -o json | jq .
+$ ./build/laconicd tx nameservice set-name crn://hello/test test_hello_cid  --from root --chain-id ethermint_9000-1 -y -o json | jq .
 {
   "height": "0",
   "txhash": "66A63C73B076EEE9A2F7605354448EDEB161F0115D4D03AF68C01BA28DB97486",
@@ -301,7 +301,7 @@ $ ./build/chibaclonkd tx nameservice set-name crn://hello/test test_hello_cid  -
 ## Delete the name
 
 ```bash
-$./build/chibaclonkd tx nameservice delete-name crn://hello/test --from root --chain-id ethermint_9000-1 -y
+$./build/laconicd tx nameservice delete-name crn://hello/test --from root --chain-id ethermint_9000-1 -y
 code: 0
 codespace: ""
 data: ""
@@ -320,7 +320,7 @@ txhash: A3FF4C46BAC7BD6E54BBB743A49830AE8C6F6FE59282384789CBA323C1FE540C
 ## List of Authorities Expire Queue
 
 ```bash
-$ ./build/chibaclonkd q nameservice authority-expiry  -o json | jq .
+$ ./build/laconicd q nameservice authority-expiry  -o json | jq .
 {
   "authorities": [],
   "pagination": null
@@ -331,7 +331,7 @@ $ ./build/chibaclonkd q nameservice authority-expiry  -o json | jq .
 ## List of Records Expire Queue
 
 ```bash
-$  ./build/chibaclonkd q nameservice record-expiry -o json | jq .
+$  ./build/laconicd q nameservice record-expiry -o json | jq .
 {
   "records": [],
   "pagination": null

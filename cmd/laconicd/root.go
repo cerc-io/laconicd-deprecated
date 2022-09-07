@@ -42,7 +42,7 @@ import (
 	ethermint "github.com/cerc-io/laconicd/types"
 )
 
-const EnvPrefix = "CHIBACLONK"
+const EnvPrefix = "LACONIC"
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
@@ -61,8 +61,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithViper(EnvPrefix)
 
 	rootCmd := &cobra.Command{
-		Use:   "chibaclonkd",
-		Short: "Chiba-Clonk Daemon",
+		Use:   "laconicd",
+		Short: "Laconic Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 echo "prepare genesis: Run validate-genesis to ensure everything worked and that the genesis file is setup correctly"
-chibaclonkd validate-genesis --home /chibaclonk
+laconicd validate-genesis --home /laconic
 
-echo "starting chibaclonk node $ID in background ..."
-chibaclonkd start \
---home /chibaclonk \
+echo "starting laconic node $ID in background ..."
+laconicd start \
+--home /laconic \
 --keyring-backend test \ 
 --mode validator
 

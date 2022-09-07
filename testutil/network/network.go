@@ -333,8 +333,8 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		ctx.Logger = logger
 
 		nodeDirName := fmt.Sprintf("node%d", i)
-		nodeDir := filepath.Join(network.BaseDir, nodeDirName, "chibaclonkd")
-		clientDir := filepath.Join(network.BaseDir, nodeDirName, "chibaclonkcli")
+		nodeDir := filepath.Join(network.BaseDir, nodeDirName, "laconicd")
+		clientDir := filepath.Join(network.BaseDir, nodeDirName, "laconiccli")
 		gentxsDir := filepath.Join(network.BaseDir, "gentxs")
 
 		err := os.MkdirAll(filepath.Join(nodeDir, "config"), 0o750)

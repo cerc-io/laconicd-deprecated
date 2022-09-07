@@ -135,10 +135,10 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, ".chibaclonkd")
+	DefaultNodeHome = filepath.Join(userHomeDir, ".laconicd")
 }
 
-const appName = "chibaclonkd"
+const appName = "laconicd"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -172,7 +172,7 @@ var (
 		// Ethermint modules
 		evm.AppModuleBasic{},
 		feemarket.AppModuleBasic{},
-		// Vulcanize chiba-clonk modules
+		// Cerc-io laconic modules
 		auction.AppModuleBasic{},
 		bond.AppModuleBasic{},
 		nameservice.AppModuleBasic{},
@@ -249,7 +249,7 @@ type EthermintApp struct {
 	EvmKeeper       *evmkeeper.Keeper
 	FeeMarketKeeper feemarketkeeper.Keeper
 
-	// chiba-clonk keepers
+	// laconic keepers
 	AuctionKeeper           auctionkeeper.Keeper
 	BondKeeper              bondkeeper.Keeper
 	NameServiceKeeper       nameservicekeeper.Keeper
@@ -293,7 +293,7 @@ func NewEthermintApp(
 		ibchost.StoreKey, ibctransfertypes.StoreKey,
 		// ethermint keys
 		evmtypes.StoreKey, feemarkettypes.StoreKey,
-		// chiba-clonk keys
+		// laconic keys
 		auctiontypes.StoreKey,
 		bondtypes.StoreKey,
 		nameservicetypes.StoreKey,
@@ -425,7 +425,7 @@ func NewEthermintApp(
 		appCodec, keys[feemarkettypes.StoreKey], app.GetSubspace(feemarkettypes.ModuleName),
 	)
 
-	// Create Vulcanize chiba-clonk keepers
+	// Create Cerc-io laconic keepers
 	app.AuctionKeeper = auctionkeeper.NewKeeper(
 		app.AccountKeeper, app.BankKeeper, keys[auctiontypes.StoreKey],
 		appCodec, app.GetSubspace(auctiontypes.ModuleName),
@@ -538,7 +538,7 @@ func NewEthermintApp(
 		// Ethermint app modules
 		evm.NewAppModule(app.EvmKeeper, app.AccountKeeper),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
-		// chiba-clonk modules
+		// laconic modules
 		auction.NewAppModule(appCodec, app.AuctionKeeper),
 		bond.NewAppModule(appCodec, app.BondKeeper),
 		nameservice.NewAppModule(app.NameServiceKeeper),
@@ -572,7 +572,7 @@ func NewEthermintApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		// chiba-clonk modules
+		// laconic modules
 		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
 		nameservicetypes.ModuleName,
@@ -601,7 +601,7 @@ func NewEthermintApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		// chiba-clonk modules
+		// laconic modules
 		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
 		nameservicetypes.ModuleName,
@@ -634,7 +634,7 @@ func NewEthermintApp(
 		// Ethermint modules
 		evmtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		// chiba-clonk modules
+		// laconic modules
 		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
 		nameservicetypes.ModuleName,
@@ -889,7 +889,7 @@ func initParamsKeeper(
 	// ethermint subspaces
 	paramsKeeper.Subspace(evmtypes.ModuleName)
 	paramsKeeper.Subspace(feemarkettypes.ModuleName)
-	// chiba-clonk subspaces
+	// laconic subspaces
 	paramsKeeper.Subspace(auctiontypes.ModuleName)
 	paramsKeeper.Subspace(bondtypes.ModuleName)
 	paramsKeeper.Subspace(nameservicetypes.ModuleName)

@@ -61,8 +61,8 @@ if [[ ! "$DATA_CLI_DIR" ]]; then
     exit 1
 fi
 
-# Compile chibaclonk
-echo "compiling chibaclonk"
+# Compile laconic
+echo "compiling laconic"
 make build
 
 # PID array declaration
@@ -73,31 +73,31 @@ arrcli=()
 
 init_func() {
     echo "create and add new keys"
-    "$PWD"/build/chibaclonkd keys add $KEY"$i" --home "$DATA_DIR$i" --no-backup --chain-id $CHAINID --algo "eth_secp256k1" --keyring-backend test
+    "$PWD"/build/laconicd keys add $KEY"$i" --home "$DATA_DIR$i" --no-backup --chain-id $CHAINID --algo "eth_secp256k1" --keyring-backend test
     echo "init Ethermint with moniker=$MONIKER and chain-id=$CHAINID"
-    "$PWD"/build/chibaclonkd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
     echo "prepare genesis: Allocate genesis accounts"
-    "$PWD"/build/chibaclonkd add-genesis-account \
-    "$("$PWD"/build/chibaclonkd keys show "$KEY$i" -a --home "$DATA_DIR$i" --keyring-backend test)" 1000000000000000000aphoton,1000000000000000000stake \
+    "$PWD"/build/laconicd add-genesis-account \
+    "$("$PWD"/build/laconicd keys show "$KEY$i" -a --home "$DATA_DIR$i" --keyring-backend test)" 1000000000000000000aphoton,1000000000000000000stake \
     --home "$DATA_DIR$i" --keyring-backend test
     echo "prepare genesis: Sign genesis transaction"
-    "$PWD"/build/chibaclonkd gentx $KEY"$i" 1000000000000000000stake --keyring-backend test --home "$DATA_DIR$i" --keyring-backend test --chain-id $CHAINID
+    "$PWD"/build/laconicd gentx $KEY"$i" 1000000000000000000stake --keyring-backend test --home "$DATA_DIR$i" --keyring-backend test --chain-id $CHAINID
     echo "prepare genesis: Collect genesis tx"
-    "$PWD"/build/chibaclonkd collect-gentxs --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd collect-gentxs --home "$DATA_DIR$i"
     echo "prepare genesis: Run validate-genesis to ensure everything worked and that the genesis file is setup correctly"
-    "$PWD"/build/chibaclonkd validate-genesis --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd validate-genesis --home "$DATA_DIR$i"
 }
 
 start_func() {
-    echo "starting chibaclonk node $i in background ..."
-    "$PWD"/build/chibaclonkd start --pruning=nothing --rpc.unsafe \
+    echo "starting laconic node $i in background ..."
+    "$PWD"/build/laconicd start --pruning=nothing --rpc.unsafe \
     --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
     --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
     --keyring-backend test --mode validator --home "$DATA_DIR$i" \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
     
     ETHERMINT_PID=$!
-    echo "started chibaclonk node, pid=$ETHERMINT_PID"
+    echo "started laconic node, pid=$ETHERMINT_PID"
     # add PID to array
     arr+=("$ETHERMINT_PID")
 }
@@ -123,7 +123,7 @@ if [[ -z $TEST || $TEST == "rpc" ]]; then
     
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test chibaclonk node $HOST_RPC ..."
+        echo "going to test laconic node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/e2e/... -timeout=300s -v -short
         MODE=$MODE HOST=$HOST_RPC go test ./tests/rpc/... -timeout=300s -v -short
 
@@ -136,7 +136,7 @@ stop_func() {
     ETHERMINT_PID=$i
     echo "shutting down node, pid=$ETHERMINT_PID ..."
     
-    # Shutdown chibaclonk node
+    # Shutdown laconic node
     kill -9 "$ETHERMINT_PID"
     wait "$ETHERMINT_PID"
 }

@@ -24,7 +24,7 @@ RUN apk add --update ca-certificates jq
 WORKDIR /
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/chibaclonkd /usr/bin/chibaclonkd
+COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/laconicd /usr/bin/laconicd
 
-# Run chibaclonkd by default
-CMD ["chibaclonkd"]
+# Run laconicd by default
+CMD ["laconicd"]
