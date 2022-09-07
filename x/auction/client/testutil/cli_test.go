@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/tharsis/ethermint/testutil/network"
+	"github.com/cerc-io/laconicd/testutil/network"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {

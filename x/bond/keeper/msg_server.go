@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"context"
+
+	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 type msgServer struct {

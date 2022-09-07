@@ -8,7 +8,7 @@ import (
 
 	ante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"

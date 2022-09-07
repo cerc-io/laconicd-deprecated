@@ -1,12 +1,12 @@
 package cli
 
 import (
+	"github.com/cerc-io/laconicd/server/flags"
+	"github.com/cerc-io/laconicd/x/bond/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
-	"github.com/tharsis/ethermint/server/flags"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/bond transaction commands.

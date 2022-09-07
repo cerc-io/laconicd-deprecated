@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 type msgServer struct {

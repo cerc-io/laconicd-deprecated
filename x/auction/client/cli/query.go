@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/tharsis/ethermint/x/auction/types"
+	"github.com/cerc-io/laconicd/x/auction/types"
 )
 
 func GetQueryCmd() *cobra.Command {

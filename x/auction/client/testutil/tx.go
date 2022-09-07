@@ -3,13 +3,13 @@ package testutil
 import (
 	"fmt"
 
+	"github.com/cerc-io/laconicd/x/auction/client/cli"
+	"github.com/cerc-io/laconicd/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/x/auction/client/cli"
-	"github.com/tharsis/ethermint/x/auction/types"
 )
 
 const (

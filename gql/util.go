@@ -6,10 +6,10 @@ import (
 	"reflect"
 	"strconv"
 
+	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
+	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
+	nstypes "github.com/cerc-io/laconicd/x/nameservice/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
-	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // OwnerAttributeName denotes the owner attribute name for a bond.

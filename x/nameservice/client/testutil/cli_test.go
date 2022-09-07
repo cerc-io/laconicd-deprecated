@@ -3,8 +3,8 @@ package testutil
 import (
 	"testing"
 
+	"github.com/cerc-io/laconicd/testutil/network"
 	"github.com/stretchr/testify/suite"
-	"github.com/tharsis/ethermint/testutil/network"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {

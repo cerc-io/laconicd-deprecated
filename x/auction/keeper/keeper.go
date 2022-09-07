@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cerc-io/laconicd/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,9 +14,8 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tharsis/ethermint/x/auction/types"
 
-	wnsUtils "github.com/tharsis/ethermint/utils"
+	wnsUtils "github.com/cerc-io/laconicd/utils"
 )
 
 // CompletedAuctionDeleteTimeout => Completed auctions are deleted after this timeout (after reveals end time).

@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // RegisterInvariants registers all nameservice module invariants.

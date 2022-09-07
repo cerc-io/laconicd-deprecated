@@ -40,13 +40,13 @@ import (
 	mintypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/tharsis/ethermint/crypto/hd"
-	"github.com/tharsis/ethermint/server/config"
-	srvflags "github.com/tharsis/ethermint/server/flags"
-	ethermint "github.com/tharsis/ethermint/types"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	"github.com/cerc-io/laconicd/crypto/hd"
+	"github.com/cerc-io/laconicd/server/config"
+	srvflags "github.com/cerc-io/laconicd/server/flags"
+	ethermint "github.com/cerc-io/laconicd/types"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
-	"github.com/tharsis/ethermint/testutil/network"
+	"github.com/cerc-io/laconicd/testutil/network"
 )
 
 var (

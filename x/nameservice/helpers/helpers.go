@@ -8,8 +8,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
+	wnsUtils "github.com/cerc-io/laconicd/utils"
 	set "github.com/deckarep/golang-set"
-	wnsUtils "github.com/tharsis/ethermint/utils"
 
 	"sort"
 )

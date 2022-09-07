@@ -4,7 +4,7 @@ package vulcanize.auction.v1beta1;
 import "gogoproto/gogo.proto";
 import "vulcanize/auction/v1beta1/types.proto";
 
-option go_package = "github.com/tharsis/ethermint/x/auction/types";
+option go_package = "github.com/cerc-io/laconicd/x/auction/types";
 
 // GenesisState defines the genesis state of the auction module
 message GenesisState {

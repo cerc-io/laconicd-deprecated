@@ -14,9 +14,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/tharsis/ethermint/x/auction/types"
+	"github.com/cerc-io/laconicd/x/auction/types"
 
-	wnsUtils "github.com/tharsis/ethermint/utils"
+	wnsUtils "github.com/cerc-io/laconicd/utils"
 )
 
 // GetTxCmd returns transaction commands for this module.

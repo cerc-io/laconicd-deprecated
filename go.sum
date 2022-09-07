@@ -269,6 +269,10 @@ github.com/cenkalti/backoff/v4 v4.1.1 h1:G2HAfAmvm/GcKan2oOQpBXOd2tT2G57ZnZGWa1P
 github.com/cenkalti/backoff/v4 v4.1.1/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/census-instrumentation/opencensus-proto v0.3.0/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
+github.com/cerc-io/cosmos-sdk v0.46.0-smt-0.0.5-alpha h1:rfMUv+8w1fEky66eseXEUhXo8qaIyjI9/6WsIZftujM=
+github.com/cerc-io/cosmos-sdk v0.46.0-smt-0.0.5-alpha/go.mod h1:n6VE/k+jRjm0Ij0c6pirmxPcOcdT3RLyR3oW1UoY0rg=
+github.com/cerc-io/cosmos-sdk/db v1.0.0-beta.1 h1:6Se3pPCkXu+rQe8CX3LCkf2XptaNirk2BC+kh+/nT/Q=
+github.com/cerc-io/cosmos-sdk/db v1.0.0-beta.1/go.mod h1:n79xAGrkFZLzudBwLIgQCa62PTHx9mCymwC+lSvoR2s=
 github.com/cespare/cp v0.1.0 h1:SE+dxFebS7Iik5LK0tsi1k9ZCxEaFX4AjQmoyA+1dJk=
 github.com/cespare/cp v0.1.0/go.mod h1:SOGHArjBr4JWaSDEVpWpo/hNg6RoKrls6Oh40hiwW+s=
 github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
@@ -1529,10 +1533,6 @@ github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYp
 github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df/go.mod h1:JP3t17pCcGlemwknint6hfoeCVQrEMVwxRLRjXpq+BU=
 github.com/vmihailenco/msgpack/v5 v5.3.5/go.mod h1:7xyJ9e+0+9SaZT0Wt1RGleJXzli6Q/V5KbhBonMG9jc=
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
-github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.5-alpha h1:ffjYJoKmXel0TREjVV+uAXnV92EV1M0MCRv+bqQ6FR8=
-github.com/vulcanize/cosmos-sdk v0.46.0-smt-0.0.5-alpha/go.mod h1:n6VE/k+jRjm0Ij0c6pirmxPcOcdT3RLyR3oW1UoY0rg=
-github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1 h1:fLVdRk/JEWN5SGdOERhjHWU/zq3Efxeofu3VmJsrk90=
-github.com/vulcanize/cosmos-sdk/db v1.0.0-beta.1/go.mod h1:n79xAGrkFZLzudBwLIgQCa62PTHx9mCymwC+lSvoR2s=
 github.com/warpfork/go-testmark v0.3.0/go.mod h1:jhEf8FVxd+F17juRubpmut64NEG6I2rgkUhlcqqXwE0=
 github.com/warpfork/go-wish v0.0.0-20180510122957-5ad1f5abf436/go.mod h1:x6AKhvSSexNrVSrViXSHUEbICjmGXhtgABaHIySUSGw=
 github.com/warpfork/go-wish v0.0.0-20200122115046-b9ea61034e4a h1:G++j5e0OC488te356JvdhaM8YS6nMsjLAYF7JxCv07w=

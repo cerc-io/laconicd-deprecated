@@ -15,12 +15,12 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 
+	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
+	"github.com/cerc-io/laconicd/encoding"
+	ethermint "github.com/cerc-io/laconicd/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/stretchr/testify/require"
 	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tharsis/ethermint/crypto/ethsecp256k1"
-	"github.com/tharsis/ethermint/encoding"
-	ethermint "github.com/tharsis/ethermint/types"
 
 	"github.com/cosmos/cosmos-sdk/db/memdb"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"

@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/tharsis/ethermint/x/evm/types"
 )
 
 // NewDecodeStore returns a decoder function closure that unmarshals the KVPair's

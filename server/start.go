@@ -37,11 +37,11 @@ import (
 	"github.com/tendermint/tendermint/rpc/client/local"
 	tmtypes "github.com/tendermint/tendermint/types"
 
+	"github.com/cerc-io/laconicd/gql"
+	ethdebug "github.com/cerc-io/laconicd/rpc/ethereum/namespaces/debug"
+	"github.com/cerc-io/laconicd/server/config"
+	srvflags "github.com/cerc-io/laconicd/server/flags"
 	pruningtypes "github.com/cosmos/cosmos-sdk/pruning/types"
-	"github.com/tharsis/ethermint/gql"
-	ethdebug "github.com/tharsis/ethermint/rpc/ethereum/namespaces/debug"
-	"github.com/tharsis/ethermint/server/config"
-	srvflags "github.com/tharsis/ethermint/server/flags"
 )
 
 const (

@@ -3,8 +3,8 @@ package types
 import (
 	"crypto/sha256"
 
+	"github.com/cerc-io/laconicd/x/nameservice/helpers"
 	canonicalJson "github.com/gibson042/canonicaljson-go"
-	"github.com/tharsis/ethermint/x/nameservice/helpers"
 )
 
 const (

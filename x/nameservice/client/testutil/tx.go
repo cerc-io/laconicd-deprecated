@@ -6,6 +6,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/cerc-io/laconicd/testutil/network"
+	bondcli "github.com/cerc-io/laconicd/x/bond/client/cli"
+	"github.com/cerc-io/laconicd/x/bond/types"
+	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
+	nstypes "github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -15,11 +20,6 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/testutil/network"
-	bondcli "github.com/tharsis/ethermint/x/bond/client/cli"
-	"github.com/tharsis/ethermint/x/bond/types"
-	"github.com/tharsis/ethermint/x/nameservice/client/cli"
-	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 var (

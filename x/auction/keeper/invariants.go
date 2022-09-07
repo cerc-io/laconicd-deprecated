@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/tharsis/ethermint/x/auction/types"
+	"github.com/cerc-io/laconicd/x/auction/types"
 )
 
 // RegisterInvariants registers all auction module invariants.

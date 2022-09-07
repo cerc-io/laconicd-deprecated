@@ -11,6 +11,8 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
+	"github.com/cerc-io/laconicd/app/ante"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -22,8 +24,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/tharsis/ethermint/app/ante"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/store/streaming"
@@ -102,31 +102,31 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/tharsis/ethermint/client/docs/statik"
+	_ "github.com/cerc-io/laconicd/client/docs/statik"
 
-	srvflags "github.com/tharsis/ethermint/server/flags"
-	ethermint "github.com/tharsis/ethermint/types"
-	"github.com/tharsis/ethermint/x/evm"
+	srvflags "github.com/cerc-io/laconicd/server/flags"
+	ethermint "github.com/cerc-io/laconicd/types"
+	"github.com/cerc-io/laconicd/x/evm"
 
-	// evmrest "github.com/tharsis/ethermint/x/evm/client/rest"
-	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
-	"github.com/tharsis/ethermint/x/feemarket"
-	feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
-	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
+	// evmrest "github.com/cerc-io/laconicd/x/evm/client/rest"
+	evmkeeper "github.com/cerc-io/laconicd/x/evm/keeper"
+	"github.com/cerc-io/laconicd/x/feemarket"
+	feemarketkeeper "github.com/cerc-io/laconicd/x/feemarket/keeper"
+	feemarkettypes "github.com/cerc-io/laconicd/x/feemarket/types"
 
 	// Force-load the tracer engines to trigger registration due to Go-Ethereum v1.10.15 changes
 	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
 	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
-	"github.com/tharsis/ethermint/x/auction"
-	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
-	"github.com/tharsis/ethermint/x/bond"
-	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
-	"github.com/tharsis/ethermint/x/nameservice"
-	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
-	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
+	"github.com/cerc-io/laconicd/x/auction"
+	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
+	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
+	"github.com/cerc-io/laconicd/x/bond"
+	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
+	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
+	"github.com/cerc-io/laconicd/x/nameservice"
+	nameservicekeeper "github.com/cerc-io/laconicd/x/nameservice/keeper"
+	nameservicetypes "github.com/cerc-io/laconicd/x/nameservice/types"
 )
 
 func init() {

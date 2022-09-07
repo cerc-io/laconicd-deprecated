@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "vulcanize/auction/v1beta1/types.proto";
 
-option go_package = "github.com/tharsis/ethermint/x/auction/types";
+option go_package = "github.com/cerc-io/laconicd/x/auction/types";
 
 // AuctionsRequest is the format for querying all the auctions
 message AuctionsRequest {

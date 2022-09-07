@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/tharsis/ethermint/x/feemarket/types"
+	"github.com/cerc-io/laconicd/x/feemarket/types"
 )
 
 func (suite *KeeperTestSuite) TestSetGetParams() {

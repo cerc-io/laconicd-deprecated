@@ -1,10 +1,10 @@
 package bond
 
 import (
+	"github.com/cerc-io/laconicd/x/bond/keeper"
+	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tharsis/ethermint/x/bond/keeper"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 // InitGenesis initializes genesis state based on exported genesis
