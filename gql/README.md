@@ -1,4 +1,4 @@
-# Vulcanize laconic gql
+# Cerc-io laconic gql
 
 > Browser : http://localhost:9473 for gql
 
