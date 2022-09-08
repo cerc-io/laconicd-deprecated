@@ -131,7 +131,7 @@ func (e *EVMBackend) BlockNumber() (hexutil.Uint64, error) {
 		return 0, fmt.Errorf("unexpected '%s' gRPC header length; got %d, expected: %d", grpctypes.GRPCBlockHeightHeader, headerLen, 1)
 	}
 
-	height, err := strconv.ParseUint(blockHeightHeader[0], 10, 64)
+	height, err := strconv.ParseUint(blockHeightHeader[0], 10, 63)
 	if err != nil {
 		return 0, fmt.Errorf("failed to parse block height: %w", err)
 	}
