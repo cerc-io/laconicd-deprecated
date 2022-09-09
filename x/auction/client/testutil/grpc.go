@@ -3,8 +3,8 @@ package testutil
 import (
 	"fmt"
 
+	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
 )
 
 const (

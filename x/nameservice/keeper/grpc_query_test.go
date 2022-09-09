@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/tharsis/ethermint/x/nameservice/client/cli"
-	nameservicetypes "github.com/tharsis/ethermint/x/nameservice/types"
+	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
+	nameservicetypes "github.com/cerc-io/laconicd/x/nameservice/types"
 )
 
 func (suite *KeeperTestSuite) TestGrpcQueryParams() {

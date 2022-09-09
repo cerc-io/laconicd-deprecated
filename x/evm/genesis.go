@@ -10,9 +10,9 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	ethermint "github.com/tharsis/ethermint/types"
-	"github.com/tharsis/ethermint/x/evm/keeper"
-	"github.com/tharsis/ethermint/x/evm/types"
+	ethermint "github.com/cerc-io/laconicd/types"
+	"github.com/cerc-io/laconicd/x/evm/keeper"
+	"github.com/cerc-io/laconicd/x/evm/types"
 )
 
 // InitGenesis initializes genesis state based on exported genesis

@@ -48,13 +48,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/tharsis/ethermint/crypto/hd"
-	"github.com/tharsis/ethermint/encoding"
-	"github.com/tharsis/ethermint/server/config"
-	ethermint "github.com/tharsis/ethermint/types"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	"github.com/cerc-io/laconicd/crypto/hd"
+	"github.com/cerc-io/laconicd/encoding"
+	"github.com/cerc-io/laconicd/server/config"
+	ethermint "github.com/cerc-io/laconicd/types"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
-	"github.com/tharsis/ethermint/app"
+	"github.com/cerc-io/laconicd/app"
 )
 
 // package-wide network lock to only allow one test network at a time
@@ -333,8 +333,8 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		ctx.Logger = logger
 
 		nodeDirName := fmt.Sprintf("node%d", i)
-		nodeDir := filepath.Join(network.BaseDir, nodeDirName, "chibaclonkd")
-		clientDir := filepath.Join(network.BaseDir, nodeDirName, "chibaclonkcli")
+		nodeDir := filepath.Join(network.BaseDir, nodeDirName, "laconicd")
+		clientDir := filepath.Join(network.BaseDir, nodeDirName, "laconiccli")
 		gentxsDir := filepath.Join(network.BaseDir, "gentxs")
 
 		err := os.MkdirAll(filepath.Join(nodeDir, "config"), 0o750)

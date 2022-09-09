@@ -3,9 +3,9 @@ package keeper
 import (
 	"context"
 
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // BondIDAttributeName denotes the record bond ID.

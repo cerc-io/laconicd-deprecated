@@ -10,31 +10,31 @@ parent:
 ![banner](docs/ethermint.jpg)
 
 <div align="center">
-  <a href="https://github.com/tharsis/ethermint/releases/latest">
-    <img alt="Version" src="https://img.shields.io/github/tag/tharsis/ethermint.svg" />
+  <a href="https://github.com/cerc-io/laconicd/releases/latest">
+    <img alt="Version" src="https://img.shields.io/github/tag/cerc-io/laconicd.svg" />
   </a>
-  <a href="https://github.com/tharsis/ethermint/blob/main/LICENSE">
-    <img alt="License: Apache-2.0" src="https://img.shields.io/github/license/tharsis/ethermint.svg" />
+  <a href="https://github.com/cerc-io/laconicd/blob/main/LICENSE">
+    <img alt="License: Apache-2.0" src="https://img.shields.io/github/license/cerc-io/laconicd.svg" />
   </a>
-  <a href="https://pkg.go.dev/github.com/tharsis/ethermint">
-    <img alt="GoDoc" src="https://godoc.org/github.com/tharsis/ethermint?status.svg" />
+  <a href="https://pkg.go.dev/github.com/cerc-io/laconicd">
+    <img alt="GoDoc" src="https://godoc.org/github.com/cerc-io/laconicd?status.svg" />
   </a>
-  <a href="https://goreportcard.com/report/github.com/tharsis/ethermint">
-    <img alt="Go report card" src="https://goreportcard.com/badge/github.com/tharsis/ethermint"/>
+  <a href="https://goreportcard.com/report/github.com/cerc-io/laconicd">
+    <img alt="Go report card" src="https://goreportcard.com/badge/github.com/cerc-io/laconicd"/>
   </a>
   <a href="https://bestpractices.coreinfrastructure.org/projects/5018">
-    <img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/tharsis/ethermint">
+    <img alt="Lines of code" src="https://img.shields.io/tokei/lines/github/cerc-io/laconicd">
   </a>
 </div>
 <div align="center">
   <a href="https://discord.gg/trje9XuAmy">
     <img alt="Discord" src="https://img.shields.io/discord/809048090249134080.svg" />
   </a>
-  <a href="https://github.com/tharsis/ethermint/actions?query=branch%3Amain+workflow%3ALint">
-    <img alt="Lint Status" src="https://github.com/tharsis/ethermint/actions/workflows/lint.yml/badge.svg?branch=main" />
+  <a href="https://github.com/cerc-io/laconicd/actions?query=branch%3Amain+workflow%3ALint">
+    <img alt="Lint Status" src="https://github.com/cerc-io/laconicd/actions/workflows/lint.yml/badge.svg?branch=main" />
   </a>
-  <a href="https://codecov.io/gh/tharsis/ethermint">
-    <img alt="Code Coverage" src="https://codecov.io/gh/tharsis/ethermint/branch/main/graph/badge.svg" />
+  <a href="https://codecov.io/gh/cerc-io/laconicd">
+    <img alt="Code Coverage" src="https://codecov.io/gh/cerc-io/laconicd/branch/main/graph/badge.svg" />
   </a>
 </div>
 
@@ -50,7 +50,7 @@ For prerequisites and detailed build instructions please read the Evmos [Install
 make install
 ```
 
-Or check out the latest [release](https://github.com/tharsis/ethermint/releases).
+Or check out the latest [release](https://github.com/cerc-io/laconicd/releases).
 
 ## Quick Start
 
@@ -69,7 +69,7 @@ The following chat channels and forums are a great spot to ask questions about E
 
 ## Contributing
 
-Looking for a good place to start contributing? Check out some [`good first issues`](https://github.com/tharsis/ethermint/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
+Looking for a good place to start contributing? Check out some [`good first issues`](https://github.com/cerc-io/laconicd/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
 
 For additional instructions, standards and style guides, please refer to the [Contributing](./CONTRIBUTING.md) document.
 

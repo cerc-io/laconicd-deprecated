@@ -3,6 +3,9 @@ package testutil
 import (
 	"fmt"
 
+	"github.com/cerc-io/laconicd/testutil/network"
+	"github.com/cerc-io/laconicd/x/bond/client/cli"
+	"github.com/cerc-io/laconicd/x/bond/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -12,9 +15,6 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/testutil/network"
-	"github.com/tharsis/ethermint/x/bond/client/cli"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 type IntegrationTestSuite struct {

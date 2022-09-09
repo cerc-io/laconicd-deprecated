@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cerc-io/laconicd/app"
+	"github.com/cerc-io/laconicd/x/auction/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
-	"github.com/tharsis/ethermint/app"
-	"github.com/tharsis/ethermint/x/auction/types"
 )
 
 const testCommitHash = "71D8CF34026E32A3A34C2C2D4ADF25ABC8D7943A4619761BE27F196603D91B9D"

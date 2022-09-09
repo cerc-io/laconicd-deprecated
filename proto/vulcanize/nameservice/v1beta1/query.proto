@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
+option go_package = "github.com/cerc-io/laconicd/x/nameservice/types";
 
 // Query defines the gRPC querier service for nameservice module
 service Query {

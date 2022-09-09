@@ -5,12 +5,12 @@ import (
 	"encoding/base64"
 	"strconv"
 
+	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
+	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
+	nstypes "github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
-	nstypes "github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // DefaultLogNumLines is the number of log lines to tail by default.

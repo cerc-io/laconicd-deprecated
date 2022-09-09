@@ -8,7 +8,7 @@ RUN apk add --no-cache $PACKAGES
 ENV PACKAGES git build-base
 
 # Set working directory for the build
-WORKDIR /go/src/github.com/vulcanize/chiba-clonk
+WORKDIR /go/src/github.com/cerc-io/laconicd
 
 # Add source files
 COPY . .
@@ -26,9 +26,9 @@ RUN apk add --update ca-certificates jq
 WORKDIR /
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/chibaclonkd /usr/bin/chibaclonkd
+COPY --from=build-env /go/src/github.com/cerc-io/laconicd/build/laconicd /usr/bin/laconicd
 
 EXPOSE 26656 26657 1317 9090 8545 8546
 
 # Run ethermintd by default
-CMD ["chibaclonkd","start","--gql-playground","--gql-server","--home","/chibaclonk","--mode","validator","--db-backend","badgerdb"]
+CMD ["laconicd","start","--gql-playground","--gql-server","--home","/laconic","--mode","validator","--db-backend","badgerdb"]

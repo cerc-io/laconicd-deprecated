@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/cerc-io/laconicd/x/bond/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,6 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 // prefixIDToBondIndex is the prefix for ID -> Bond index in the KVStore.

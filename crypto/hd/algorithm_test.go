@@ -11,10 +11,10 @@ import (
 
 	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 
+	cryptocodec "github.com/cerc-io/laconicd/crypto/codec"
+	ethermint "github.com/cerc-io/laconicd/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	cryptocodec "github.com/tharsis/ethermint/crypto/codec"
-	ethermint "github.com/tharsis/ethermint/types"
 )
 
 var protoCodec codec.Codec

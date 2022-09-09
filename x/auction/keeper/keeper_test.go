@@ -3,15 +3,15 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/cerc-io/laconicd/app"
+	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
+	"github.com/cerc-io/laconicd/x/auction/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tharsis/ethermint/app"
-	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
-	"github.com/tharsis/ethermint/x/auction/types"
 )
 
 type KeeperTestSuite struct {

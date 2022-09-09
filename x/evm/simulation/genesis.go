@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/tharsis/ethermint/x/evm/types"
+	"github.com/cerc-io/laconicd/x/evm/types"
 )
 
 // GenExtraEIPs randomly generates specific extra eips or not.

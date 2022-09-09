@@ -3,7 +3,7 @@ export GOPATH=~/go
 export PATH=$PATH:$GOPATH/bin
 
 # remove existing daemon
-rm -rf ~/.chibaclonk*
+rm -rf ~/.laconic*
 
 # build ethermint binary
 make install

@@ -28,11 +28,11 @@ import (
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 
-	"github.com/tharsis/ethermint/encoding"
-	"github.com/tharsis/ethermint/server/config"
-	"github.com/tharsis/ethermint/tests"
-	"github.com/tharsis/ethermint/x/evm/keeper"
-	"github.com/tharsis/ethermint/x/evm/types"
+	"github.com/cerc-io/laconicd/encoding"
+	"github.com/cerc-io/laconicd/server/config"
+	"github.com/cerc-io/laconicd/tests"
+	"github.com/cerc-io/laconicd/x/evm/keeper"
+	"github.com/cerc-io/laconicd/x/evm/types"
 )
 
 const (

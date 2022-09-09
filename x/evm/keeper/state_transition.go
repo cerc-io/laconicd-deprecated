@@ -11,9 +11,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	ethermint "github.com/tharsis/ethermint/types"
-	"github.com/tharsis/ethermint/x/evm/statedb"
-	"github.com/tharsis/ethermint/x/evm/types"
+	ethermint "github.com/cerc-io/laconicd/types"
+	"github.com/cerc-io/laconicd/x/evm/statedb"
+	"github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"

@@ -7,11 +7,11 @@ TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::'
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
-CHIBACLONK_BINARY = chibaclonkd
-CHIBACLONK_DIR = chibaclonk
+LACONIC_BINARY = laconicd
+LACONIC_DIR = laconic
 BUILDDIR ?= $(CURDIR)/build
 SIMAPP = ./app
-HTTPS_GIT := https://github.com/vulcanize/chiba-clonk.git
+HTTPS_GIT := https://github.com/cerc-io/laconicd.git
 DOCKER := $(shell which docker)
 DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
@@ -62,8 +62,8 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # process linker flags
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=chibaclonk \
-		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(CHIBACLONK_BINARY) \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=laconic \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(LACONIC_BINARY) \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 			-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
@@ -140,7 +140,7 @@ docker-build:
 	# update old container
 	docker rm ethermint || true
 	# create a new container from the latest image
-	docker create --name ethermint -t -i tharsis/ethermint:latest ethermint
+	docker create --name ethermint -t -i cerc-io/laconicd:latest ethermint
 	# move the binaries to the ./build directory
 	mkdir -p ./build/
 	docker cp ethermint:/usr/bin/ethermintd ./build/
@@ -166,7 +166,7 @@ build-all: tools build lint test
 ###                                Releasing                                ###
 ###############################################################################
 
-PACKAGE_NAME:=github.com/tharsis/ethermint
+PACKAGE_NAME:=github.com/cerc-io/laconicd
 GOLANG_CROSS_VERSION  = v1.17.1
 GOPATH ?= '$(HOME)/go'
 release-dry-run:
@@ -299,7 +299,7 @@ update-swagger-docs: statik
 .PHONY: update-swagger-docs
 
 godocs:
-	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/tharsis/ethermint/types"
+	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/cerc-io/laconicd/types"
 	godoc -http=:6060
 
 ###############################################################################
@@ -333,7 +333,7 @@ else
 endif
 
 test-import:
-	go test -run TestImporterTestSuite -v --vet=off github.com/tharsis/ethermint/tests/importer
+	go test -run TestImporterTestSuite -v --vet=off github.com/cerc-io/laconicd/tests/importer
 
 test-rpc:
 	./scripts/integration-test-all.sh -t "rpc" -q 1 -z 1 -s 2 -m "rpc" -r "true"
@@ -358,8 +358,8 @@ test-sim-nondeterminism:
 
 test-sim-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
-	@echo "By default, ${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json will be used."
-	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json \
+	@echo "By default, ${HOME}/.$(LACONIC_DIR)/config/genesis.json will be used."
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.$(LACONIC_DIR)/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 test-sim-import-export: runsim
@@ -372,8 +372,8 @@ test-sim-after-import: runsim
 
 test-sim-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json will be used."
-	@$(BINDIR)/runsim -Genesis=${HOME}/.$(CHIBACLONK_DIR)/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
+	@echo "By default, ${HOME}/.$(LACONIC_DIR)/config/genesis.json will be used."
+	@$(BINDIR)/runsim -Genesis=${HOME}/.$(LACONIC_DIR)/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
@@ -508,13 +508,13 @@ ifeq ($(OS),Windows_NT)
 	mkdir localnet-setup &
 	@$(MAKE) localnet-build
 
-	IF not exist "build/node0/$(CHIBACLONK_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\ethermint\Z chibaclonkd/node sh -c "chibaclonkd testnet init-files --v 4 --keyring-backend=test"
+	IF not exist "build/node0/$(LACONIC_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\ethermint\Z laconicd/node sh -c "laconicd testnet init-files --v 4 --keyring-backend=test"
 	docker-compose up -d
 else
 	mkdir -p localnet-setup
 	@$(MAKE) localnet-build
 
-	if ! [ -f localnet-setup/node0/$(CHIBACLONK_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/localnet-setup:Z chibaclonkd/node sh -c "chibaclonkd testnet init-files --v 4 --keyring-backend=test"; fi
+	if ! [ -f localnet-setup/node0/$(LACONIC_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/localnet-setup:Z laconicd/node sh -c "laconicd testnet init-files --v 4 --keyring-backend=test"; fi
 	docker-compose up -d
 endif
 
@@ -531,15 +531,15 @@ localnet-clean:
 localnet-unsafe-reset:
 	docker-compose down
 ifeq ($(OS),Windows_NT)
-	@docker run --rm -v $(CURDIR)\localnet-setup\node0\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node1\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node2\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node3\chibaclonkd:chibaclonk\Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node0\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node1\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node2\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node3\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 else
-	@docker run --rm -v $(CURDIR)/localnet-setup/node0/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node1/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node2/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node3/chibaclonkd:/chibaclonk:Z chibaclonkd/node "chibaclonkd unsafe-reset-all --home=/chibaclonk"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node0/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node1/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node2/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node3/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 endif
 
 # Clean testnet

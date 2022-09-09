@@ -31,18 +31,18 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 
-	"github.com/tharsis/ethermint/app"
-	ethermintclient "github.com/tharsis/ethermint/client"
-	"github.com/tharsis/ethermint/client/debug"
-	"github.com/tharsis/ethermint/crypto/hd"
-	"github.com/tharsis/ethermint/encoding"
-	"github.com/tharsis/ethermint/server"
-	servercfg "github.com/tharsis/ethermint/server/config"
-	srvflags "github.com/tharsis/ethermint/server/flags"
-	ethermint "github.com/tharsis/ethermint/types"
+	"github.com/cerc-io/laconicd/app"
+	ethermintclient "github.com/cerc-io/laconicd/client"
+	"github.com/cerc-io/laconicd/client/debug"
+	"github.com/cerc-io/laconicd/crypto/hd"
+	"github.com/cerc-io/laconicd/encoding"
+	"github.com/cerc-io/laconicd/server"
+	servercfg "github.com/cerc-io/laconicd/server/config"
+	srvflags "github.com/cerc-io/laconicd/server/flags"
+	ethermint "github.com/cerc-io/laconicd/types"
 )
 
-const EnvPrefix = "CHIBACLONK"
+const EnvPrefix = "LACONIC"
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
@@ -61,8 +61,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithViper(EnvPrefix)
 
 	rootCmd := &cobra.Command{
-		Use:   "chibaclonkd",
-		Short: "Chiba-Clonk Daemon",
+		Use:   "laconicd",
+		Short: "Laconic Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())

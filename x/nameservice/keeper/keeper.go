@@ -6,6 +6,10 @@ import (
 	"sort"
 	"time"
 
+	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
+	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
+	"github.com/cerc-io/laconicd/x/nameservice/helpers"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -14,10 +18,6 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
-	bondkeeper "github.com/tharsis/ethermint/x/bond/keeper"
-	"github.com/tharsis/ethermint/x/nameservice/helpers"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 var (

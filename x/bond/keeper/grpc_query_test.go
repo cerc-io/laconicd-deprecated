@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cerc-io/laconicd/app"
+	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
-	"github.com/tharsis/ethermint/app"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {

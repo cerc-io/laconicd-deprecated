@@ -3,10 +3,10 @@ package testutil
 import (
 	"fmt"
 
+	"github.com/cerc-io/laconicd/x/auction/client/cli"
+	"github.com/cerc-io/laconicd/x/auction/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/x/auction/client/cli"
-	"github.com/tharsis/ethermint/x/auction/types"
 )
 
 var queryJSONFlag = []string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
