@@ -3,7 +3,7 @@ package app
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	cmdcfg "github.com/tharsis/ethermint/cmd/config"
+	cmdcfg "github.com/cerc-io/laconicd/cmd/config"
 )
 
 // sdk config

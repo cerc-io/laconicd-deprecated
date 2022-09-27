@@ -3,9 +3,9 @@ package keeper
 import (
 	"context"
 
+	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 type Querier struct {

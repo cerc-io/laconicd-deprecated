@@ -4,7 +4,7 @@ package vulcanize.bond.v1beta1;
 import "gogoproto/gogo.proto";
 import "vulcanize/bond/v1beta1/bond.proto";
 
-option go_package = "github.com/tharsis/ethermint/x/bond/types";
+option go_package = "github.com/cerc-io/laconicd/x/bond/types";
 
 // GenesisState defines the bond module's genesis state.
 message GenesisState {

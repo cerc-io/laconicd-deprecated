@@ -3,6 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/cerc-io/laconicd/app"
+	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
+	nameservicekeeper "github.com/cerc-io/laconicd/x/nameservice/keeper"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,10 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"github.com/tharsis/ethermint/app"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
-	nameservicekeeper "github.com/tharsis/ethermint/x/nameservice/keeper"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 type KeeperTestSuite struct {

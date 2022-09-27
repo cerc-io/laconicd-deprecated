@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
+	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
+	"github.com/cerc-io/laconicd/x/nameservice/helpers"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
-	"github.com/tharsis/ethermint/x/nameservice/helpers"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 func getAuthorityPubKey(pubKey cryptotypes.PubKey) string {

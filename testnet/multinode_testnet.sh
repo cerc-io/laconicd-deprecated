@@ -1,7 +1,7 @@
 #/bin/sh
 
 # clean the existed  chain
-rm -rf ~/.testchibaclonk*
+rm -rf ~/.testlaconic*
 
 echo "Installing the require tools "
 sudo apt-get install git curl build-essential make nohup jq -y
@@ -37,12 +37,12 @@ else
 fi
 
 # chain env variables
-export DAEMON_HOME=~/.testchibaclonk
-export CHAINID=chibaclonk_9000-1
+export DAEMON_HOME=~/.testlaconic
+export CHAINID=laconic_9000-1
 export DENOM=achk
-export GH_URL=https://github.com/vulcanize/chiba-clonk.git
+export GH_URL=https://github.com/cerc-io/laconicd.git
 export CHAIN_VERSION=main
-export DAEMON=chibaclonkd
+export DAEMON=laconicd
 
 display_usage() {
   printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n DaemonHome : $DAEMON_HOME\n \n Github URL : $GH_URL\n Chain Version : $CHAIN_VERSION\n"

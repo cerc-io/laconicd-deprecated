@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 )
 
-// NodeDataPath is the path to the chibaclonkd data folder.
-var NodeDataPath = os.ExpandEnv("$HOME/.chibaclonkd/data")
+// NodeDataPath is the path to the laconicd data folder.
+var NodeDataPath = os.ExpandEnv("$HOME/.laconicd/data")
 
 func getStatusInfo(client client.Context) (*NodeInfo, *SyncInfo, *ValidatorInfo, error) {
 	nodeClient, err := client.GetNode()

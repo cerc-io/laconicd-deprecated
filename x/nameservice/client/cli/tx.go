@@ -5,13 +5,13 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/cerc-io/laconicd/server/flags"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
-	"github.com/tharsis/ethermint/server/flags"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 	"gopkg.in/yaml.v3"
 )
 

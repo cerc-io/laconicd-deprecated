@@ -4,7 +4,7 @@ package vulcanize.nameservice.v1beta1;
 import "gogoproto/gogo.proto";
 import "vulcanize/nameservice/v1beta1/nameservice.proto";
 
-option go_package = "github.com/tharsis/ethermint/x/nameservice/types";
+option go_package = "github.com/cerc-io/laconicd/x/nameservice/types";
 
 // GenesisState defines the nameservice module's genesis state.
 message GenesisState {

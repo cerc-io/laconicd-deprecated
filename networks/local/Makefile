@@ -1,4 +1,4 @@
 all:
-	docker build --no-cache --tag chibaclonkd/node ../.. -f chibaclonknode/Dockerfile
+	docker build --no-cache --tag laconicd/node ../.. -f laconicnode/Dockerfile
 
 .PHONY: all

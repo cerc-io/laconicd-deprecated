@@ -6,12 +6,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/x/nameservice/client/cli"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 func (s *IntegrationTestSuite) TestGetCmdQueryParams() {

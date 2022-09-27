@@ -3,10 +3,10 @@ package nameservice
 import (
 	"time"
 
+	"github.com/cerc-io/laconicd/x/nameservice/keeper"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tharsis/ethermint/x/nameservice/keeper"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState) []abci.ValidatorUpdate {

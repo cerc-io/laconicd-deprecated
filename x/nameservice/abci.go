@@ -1,9 +1,9 @@
 package nameservice
 
 import (
+	"github.com/cerc-io/laconicd/x/nameservice/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tharsis/ethermint/x/nameservice/keeper"
 )
 
 // BeginBlocker will persist the current header and validator set as a historical entry

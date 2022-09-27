@@ -1,9 +1,9 @@
 package auction
 
 import (
+	"github.com/cerc-io/laconicd/x/auction/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tharsis/ethermint/x/auction/keeper"
 )
 
 // EndBlocker is called every block, returns updated validator set.

@@ -5,8 +5,8 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/tharsis/ethermint/x/auction/keeper"
-	"github.com/tharsis/ethermint/x/auction/types"
+	"github.com/cerc-io/laconicd/x/auction/keeper"
+	"github.com/cerc-io/laconicd/x/auction/types"
 )
 
 // func NewGenesisState(params types.Params, auctions []types.Auction) types.GenesisState {

@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  chibaclonkdnode0:
-    container_name: chibaclonkdnode0
-    image: "chibaclonkd/node"
+  laconicdnode0:
+    container_name: laconicdnode0
+    image: "laconicd/node"
     ports:
       - "26656-26657:26656-26657"
       - "1317:1317"
@@ -13,16 +13,16 @@ services:
       - "8125:8125"
     environment:
       - ID=0
-      - LOG=${LOG:-chibaclonkd.log}
+      - LOG=${LOG:-laconicd.log}
     volumes:
-      - ./localnet-setup/node0/chibaclonkd:/chibaclonk:Z
+      - ./localnet-setup/node0/laconicd:/laconic:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.1
 
-  chibaclonkdnode1:
-    container_name: chibaclonkdnode1
-    image: "chibaclonkd/node"
+  laconicdnode1:
+    container_name: laconicdnode1
+    image: "laconicd/node"
     ports:
       - "26666-26667:26656-26657"
       - "1318:1317"
@@ -32,19 +32,19 @@ services:
       - "8126:8125"
     environment:
       - ID=1
-      - LOG=${LOG:-chibaclonkd.log}
+      - LOG=${LOG:-laconicd.log}
     volumes:
-      - ./localnet-setup/node1/chibaclonkd:/chibaclonk:Z
+      - ./localnet-setup/node1/laconicd:/laconic:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.2
 
-  chibaclonkdnode2:
-    container_name: chibaclonkdnode2
-    image: "chibaclonkd/node"
+  laconicdnode2:
+    container_name: laconicdnode2
+    image: "laconicd/node"
     environment:
       - ID=2
-      - LOG=${LOG:-chibaclonkd.log}
+      - LOG=${LOG:-laconicd.log}
     ports:
       - "26676-26677:26656-26657"
       - "1319:1317"
@@ -53,17 +53,17 @@ services:
       - "8566:8546"
       - "8127:8125"
     volumes:
-      - ./localnet-setup/node2/chibaclonkd:/chibaclonk:Z
+      - ./localnet-setup/node2/laconicd:/laconic:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.3
 
-  chibaclonkdnode3:
-    container_name: chibaclonkdnode3
-    image: "chibaclonkd/node"
+  laconicdnode3:
+    container_name: laconicdnode3
+    image: "laconicd/node"
     environment:
       - ID=3
-      - LOG=${LOG:-chibaclonkd.log}
+      - LOG=${LOG:-laconicd.log}
     ports:
       - "26686-26687:26656-26657"
       - "1320:1317"
@@ -72,7 +72,7 @@ services:
       - "8576:8546"
       - "8128:8125"
     volumes:
-      - ./localnet-setup/node3/chibaclonkd:/chibaclonk:Z
+      - ./localnet-setup/node3/laconicd:/laconic:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.4

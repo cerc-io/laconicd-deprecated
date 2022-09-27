@@ -8,7 +8,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/tharsis/ethermint/encoding"
+	"github.com/cerc-io/laconicd/encoding"
 )
 
 func TestEthermintAppExport(t *testing.T) {

@@ -10,23 +10,23 @@ The `x/evm` module is responsible for executing Ethereum Virtual Machine (EVM) s
    import (
       "github.com/cosmos/cosmos-sdk/x/auth"
       "github.com/cosmos/cosmos-sdk/x/bank"
-       
-      "github.com/tharsis/ethermint/app/ante"
-      ethermint "github.com/tharsis/ethermint/types"
-      "github.com/tharsis/ethermint/x/evm"
+
+      "github.com/cerc-io/laconicd/app/ante"
+      ethermint "github.com/cerc-io/laconicd/types"
+      "github.com/cerc-io/laconicd/x/evm"
    )
    ```
 
 2. Add `AppModuleBasic` to your `ModuleBasics`.
 
-    ```go
-    var (
-      ModuleBasics = module.NewBasicManager(
-        // ...
-        evm.AppModuleBasic{},
-      )
-    )
-    ```
+   ```go
+   var (
+     ModuleBasics = module.NewBasicManager(
+       // ...
+       evm.AppModuleBasic{},
+     )
+   )
+   ```
 
 3. Create the module's parameter subspace in your application constructor.
 
@@ -74,27 +74,27 @@ The `x/evm` module is responsible for executing Ethereum Virtual Machine (EVM) s
 
 7. Set the `x/evm` module `BeginBlock` and `EndBlock` ordering:
 
-    ```go
-      app.mm.SetOrderBeginBlockers(
-        evm.ModuleName, ...
-      )
-      app.mm.SetOrderEndBlockers(
-        evm.ModuleName, ...
-      )
-    ```
+   ```go
+     app.mm.SetOrderBeginBlockers(
+       evm.ModuleName, ...
+     )
+     app.mm.SetOrderEndBlockers(
+       evm.ModuleName, ...
+     )
+   ```
 
 8. Set the `x/evm` module genesis order. The module must go after the `auth` and `bank` modules.
 
-    ```go
-    func NewApp(...) *App {
-      // ...
-      app.mm.SetOrderInitGenesis(auth.ModuleName, bank.ModuleName, ... , evm.ModuleName, ...)
-    }
-    ```
+   ```go
+   func NewApp(...) *App {
+     // ...
+     app.mm.SetOrderInitGenesis(auth.ModuleName, bank.ModuleName, ... , evm.ModuleName, ...)
+   }
+   ```
 
 9. Set the Ethermint `AnteHandler` to support EVM transactions. Note,
-the default `AnteHandler` provided by the `x/evm` module depends on the `x/auth` and `x/supply`
-modules.
+   the default `AnteHandler` provided by the `x/evm` module depends on the `x/auth` and `x/supply`
+   modules.
 
    ```go
    func NewApp(...) *App {
@@ -178,4 +178,4 @@ See the Ethermint [JSON-RPC docs](https://evmos.dev/basics/json_rpc.html) for re
 
 ## Documentation and Specification
 
-* Ethermint documentation: [https://evmos.dev](https://evmos.dev)
+- Ethermint documentation: [https://evmos.dev](https://evmos.dev)

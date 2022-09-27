@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"time"
 
+	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
+	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
+	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	auctionkeeper "github.com/tharsis/ethermint/x/auction/keeper"
-	auctiontypes "github.com/tharsis/ethermint/x/auction/types"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // RecordKeeper exposes the bare minimal read-only API for other modules.

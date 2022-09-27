@@ -1,7 +1,6 @@
 # Instructions to Run Full Node
 
-Hardware
----
+## Hardware
 
 #### Supported
 
@@ -59,11 +58,11 @@ go version
 sudo apt-get install git curl build-essential make jq -y
 ```
 
-### 3) Install `chibaclonkd`
+### 3) Install `laconicd`
 
 ```
-git clone https://github.com/vulcanize/chiba-clonk.git
-cd chiba-clonk
+git clone https://github.com/cerc-io/laconicd.git
+cd laconicd
 git fetch --all
 git checkout main
 make install
@@ -72,15 +71,15 @@ make install
 ### 4) Verify your installation
 
 ```
-chibaclonkd version --long
+laconicd version --long
 ```
 
-On running the above command, you should see a similar response like this. Make sure that the *version* and *commit
-hash* are accurate
+On running the above command, you should see a similar response like this. Make sure that the _version_ and _commit
+hash_ are accurate
 
 ```
-name: chibaclonkd
-server_name: chibaclonkd
+name: laconicd
+server_name: laconicd
 ```
 
 ### 5) Initialize Node
@@ -88,11 +87,11 @@ server_name: chibaclonkd
 **Not required if you have already initialized before**
 
 ```
-chibaclonkd init <your-node-moniker> --chain-id chibaclonk_81337-2
+laconicd init <your-node-moniker> --chain-id laconic_81337-2
 ```
 
 On running the above command, node will be initialized with default configuration. (config files will be saved in node's
-default home directory (~/.chibaclonkd/config)
+default home directory (~/.laconicd/config)
 
 NOTE: Backup node and validator keys . You will need to use these keys at a later point in time.
 
@@ -106,14 +105,14 @@ Use `curl` to download the genesis file
 **Replace your **genesis** file with published genesis file**
 
 ```shell
-# Will be updated 
-curl {GENESIS_LINK} | jq .result.genesis > ~/.chibaclonkd/config/genesis.json
+# Will be updated
+curl {GENESIS_LINK} | jq .result.genesis > ~/.laconicd/config/genesis.json
 ```
 
 Verify sha256 hash of genesis file with the below command
 
 ```
-jq -S -c -M '' ~/.chibaclonkd/config/genesis.json | shasum -a 256
+jq -S -c -M '' ~/.laconicd/config/genesis.json | shasum -a 256
 ```
 
 genesis sha256 hash should be
@@ -125,11 +124,11 @@ genesis sha256 hash should be
 ## 2) Update Peers & Seeds in config.toml
 
 ```
-<!-- Note: don't use peers 
+<!-- Note: don't use peers
 peers="5ad2e6c35f2c84ff3ee31d89a95b34d92cb6afb1@157.230.101.237:26656,defc95b08547b6ef254723ad9621967a7e819020@161.35.223.44:26656" -->
 
 {peers={WILL BE UPDATED}}
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.chibaclonkd/config/config.toml
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.laconicd/config/config.toml
 ```
 
 ## 3) Start the Full Node
@@ -139,20 +138,20 @@ sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.chiba
 3.1.1) Create the service file
 
 ```
-sudo tee /etc/systemd/system/chibaclonkd.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/laconicd.service > /dev/null <<EOF
 [Unit]
-Description=chibaclonkd Daemon 
+Description=laconicd Daemon
 After=network-online.target
 
 [Service]
-User=$USER 
-ExecStart=$(which chibaclonkd) start --gql-playground --gql-server 
-Restart=always 
+User=$USER
+ExecStart=$(which laconicd) start --gql-playground --gql-server
+Restart=always
 RestartSec=3
 LimitNOFILE=65535
 
 [Install]
-WantedBy=multi-user.target 
+WantedBy=multi-user.target
 EOF
 
 ```
@@ -160,46 +159,51 @@ EOF
 3.1.2) Load service and start
 
 ```
-sudo systemctl daemon-reload 
-sudo systemctl enable chibaclonkd 
-sudo systemctl start chibaclonkd
+sudo systemctl daemon-reload
+sudo systemctl enable laconicd
+sudo systemctl start laconicd
 
 ```
 
 3.1.3) Check status of service
+
 ```
 
-sudo systemctl status chibaclonkd
+sudo systemctl status laconicd
 
 ```
 
 `NOTE:`
 A helpful command here is `journalctl` that can be used to:
 
-  a) check logs
-  ```
+a) check logs
 
-journalctl -u chibaclonkd
+```
 
-  ```
+journalctl -u laconicd
 
-  b) most recent logs
-  ```
+```
 
-journalctl -xeu chibaclonkd
+b) most recent logs
 
-  ```
+```
 
-  c) logs from previous day
-  ```
+journalctl -xeu laconicd
 
-journalctl --since "1 day ago" -u chibaclonkd
+```
 
-  ```
+c) logs from previous day
 
-  d) Check logs with follow flag
-  ```
+```
 
-journalctl -f -u chibaclonkd
+journalctl --since "1 day ago" -u laconicd
 
-  ```
+```
+
+d) Check logs with follow flag
+
+```
+
+journalctl -f -u laconicd
+
+```

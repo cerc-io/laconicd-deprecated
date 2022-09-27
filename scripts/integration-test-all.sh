@@ -17,10 +17,10 @@ RPC_PORT="854"
 IP_ADDR="0.0.0.0"
 
 KEY="mykey"
-CHAINID="chibaclonk_9000-1"
+CHAINID="laconic_9000-1"
 MONIKER="mymoniker"
 
-## default port prefixes for chibaclonkd
+## default port prefixes for laconicd
 NODE_P2P_PORT="2660"
 NODE_PORT="2663"
 NODE_RPC_PORT="2666"
@@ -54,28 +54,28 @@ done
 set -euxo pipefail
 
 
-DATA_DIR=$(mktemp -d -t chibaclonk-datadir.XXXXX)
+DATA_DIR=$(mktemp -d -t laconic-datadir.XXXXX)
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"
     exit 1
 fi
 
-# Compile chibaclonk
-echo "compiling chibaclonk"
+# Compile laconic
+echo "compiling laconic"
 make build
 
 # PID array declaration
 arr=()
 
 init_func() {
-    "$PWD"/build/chibaclonkd keys add $KEY"$i" --keyring-backend test --home "$DATA_DIR$i" --no-backup --algo "eth_secp256k1"
-    "$PWD"/build/chibaclonkd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
-    "$PWD"/build/chibaclonkd add-genesis-account \
-    "$("$PWD"/build/chibaclonkd keys show "$KEY$i" --keyring-backend test -a --home "$DATA_DIR$i")" 1000000000000000000aphoton,1000000000000000000stake \
+    "$PWD"/build/laconicd keys add $KEY"$i" --keyring-backend test --home "$DATA_DIR$i" --no-backup --algo "eth_secp256k1"
+    "$PWD"/build/laconicd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd add-genesis-account \
+    "$("$PWD"/build/laconicd keys show "$KEY$i" --keyring-backend test -a --home "$DATA_DIR$i")" 1000000000000000000aphoton,1000000000000000000stake \
     --keyring-backend test --home "$DATA_DIR$i"
-    "$PWD"/build/chibaclonkd gentx "$KEY$i" 1000000000000000000stake --chain-id $CHAINID --keyring-backend test --home "$DATA_DIR$i"
-    "$PWD"/build/chibaclonkd collect-gentxs --home "$DATA_DIR$i"
-    "$PWD"/build/chibaclonkd validate-genesis --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd gentx "$KEY$i" 1000000000000000000stake --chain-id $CHAINID --keyring-backend test --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd collect-gentxs --home "$DATA_DIR$i"
+    "$PWD"/build/laconicd validate-genesis --home "$DATA_DIR$i"
 
     if [[ $MODE == "pending" ]]; then
       ls $DATA_DIR$i
@@ -104,8 +104,8 @@ init_func() {
 }
 
 start_func() {
-    echo "starting chibaclonk node $i in background ..."
-    "$PWD"/build/chibaclonkd start \
+    echo "starting laconic node $i in background ..."
+    "$PWD"/build/laconicd start \
           --pruning=nothing --rpc.unsafe \
           --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" \
           --address tcp://$IP_ADDR:$NODE_PORT"$i" \
@@ -116,10 +116,10 @@ start_func() {
           --log_level debug \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
 
-    CHIBACLONK_PID=$!
-    echo "started chibaclonk node, pid=$CHIBACLONK_PID"
+    LACONIC_PID=$!
+    echo "started laconic node, pid=$LACONIC_PID"
     # add PID to array
-    arr+=("$CHIBACLONK_PID")
+    arr+=("$LACONIC_PID")
 
     if [[ $MODE == "pending" ]]; then
       echo "waiting for the first block..."
@@ -149,7 +149,7 @@ if [[ -z $TEST || $TEST == "integration" ]] ; then
 
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test chibaclonk node $HOST_RPC ..."
+        echo "going to test laconic node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/e2e/... -timeout=$time_out -v -short
         TEST_FAIL=$?
     done
@@ -163,7 +163,7 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
 
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test chibaclonk node $HOST_RPC ..."
+        echo "going to test laconic node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/rpc/... -timeout=$time_out -v -short
 
         TEST_FAIL=$?
@@ -171,12 +171,12 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
 fi
 
 stop_func() {
-    CHIBACLONK_PID=$i
-    echo "shutting down node, pid=$CHIBACLONK_PID ..."
+    LACONIC_PID=$i
+    echo "shutting down node, pid=$LACONIC_PID ..."
 
-    # Shutdown chibaclonk node
-    kill -9 "$CHIBACLONK_PID"
-    wait "$CHIBACLONK_PID"
+    # Shutdown laconic node
+    kill -9 "$LACONIC_PID"
+    wait "$LACONIC_PID"
 
     if [ $REMOVE_DATA_DIR == "true" ]
     then

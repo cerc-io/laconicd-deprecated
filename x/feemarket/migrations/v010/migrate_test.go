@@ -9,13 +9,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/tharsis/ethermint/encoding"
+	"github.com/cerc-io/laconicd/encoding"
 
-	"github.com/tharsis/ethermint/app"
-	feemarketkeeper "github.com/tharsis/ethermint/x/feemarket/keeper"
-	v010 "github.com/tharsis/ethermint/x/feemarket/migrations/v010"
-	"github.com/tharsis/ethermint/x/feemarket/types"
-	feemarkettypes "github.com/tharsis/ethermint/x/feemarket/types"
+	"github.com/cerc-io/laconicd/app"
+	feemarketkeeper "github.com/cerc-io/laconicd/x/feemarket/keeper"
+	v010 "github.com/cerc-io/laconicd/x/feemarket/migrations/v010"
+	"github.com/cerc-io/laconicd/x/feemarket/types"
+	feemarkettypes "github.com/cerc-io/laconicd/x/feemarket/types"
 )
 
 func TestMigrateStore(t *testing.T) {

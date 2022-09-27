@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 // GetMaxBondAmount max bond amount

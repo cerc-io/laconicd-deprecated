@@ -13,9 +13,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 
-	"github.com/tharsis/ethermint/app"
-	"github.com/tharsis/ethermint/encoding"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	"github.com/cerc-io/laconicd/app"
+	"github.com/cerc-io/laconicd/encoding"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/ethereum/go-ethereum/common"
 )

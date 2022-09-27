@@ -9,7 +9,6 @@ The Source of Proof. Laconic is a next generation data availability & verifiabil
 make install
 ```
 
-
 ## Community
 
 The following chat channels and forums are a great spot to ask questions about Ethermint:

@@ -1,21 +1,25 @@
 # Build chain
-```bash 
-# it will create binary in build folder with `ethermintd` 
-$ make build 
-```
-# Setup Chain
+
 ```bash
-./build/chibaclonkd keys add root 
-./build/chibaclonkd init test-moniker --chain-id ethermint_9000-1
-./build/chibaclonkd add-genesis-account $(./build/chibaclonkd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
-./build/chibaclonkd gentx root 1000000000000000000stake --chain-id ethermint_9000-1 
-./build/chibaclonkd collect-gentxs
-./build/chibaclonkd start
+# it will create binary in build folder with `ethermintd`
+$ make build
+```
+
+# Setup Chain
+
+```bash
+./build/laconicd keys add root
+./build/laconicd init test-moniker --chain-id ethermint_9000-1
+./build/laconicd add-genesis-account $(./build/laconicd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
+./build/laconicd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
+./build/laconicd collect-gentxs
+./build/laconicd start
 ```
 
 # Params
+
 ```
-$ ./build/chibaclonkd q bond params -o json | jq .
+$ ./build/laconicd q bond params -o json | jq .
 
 {
   "params": {
@@ -28,8 +32,9 @@ $ ./build/chibaclonkd q bond params -o json | jq .
 ```
 
 # Create Bond
+
 ```
- $ ./build/chibaclonkd tx bond create 100aphoton --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)
+ $ ./build/laconicd tx bond create 100aphoton --from root --chain-id $(./build/laconicd status | jq .NodeInfo.network -r)
 
 {"body":{"messages":[{"@type":"/vulcanize.bond.v1beta1.MsgCreateBond","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk","coins":[{"denom":"aphoton","amount":"100"}]}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
@@ -47,9 +52,11 @@ timestamp: ""
 tx: null
 txhash: C6D362E11D4C9FB06D620F3CCAF363A69A074297A00E9CAECBDA5BE1CC302EB8
 ```
+
 # Refill Bond
+
 ```
- $ ./build/chibaclonkd tx bond refill c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 1000aphoton --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)
+ $ ./build/laconicd tx bond refill c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 1000aphoton --from root --chain-id $(./build/laconicd status | jq .NodeInfo.network -r)
 {"body":{"messages":[{"@type":"/vulcanize.bond.v1beta1.MsgRefillBond","id":"c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk","coins":[{"denom":"aphoton","amount":"1000"}]}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
 confirm transaction before signing and broadcasting [y/N]: y
@@ -67,9 +74,11 @@ tx: null
 txhash: 025B04E2C923EFE2299CD171B40829CB1FE4D1A69DA7563C64AAC3D5C27BDFC9
 
 ```
+
 # Withdraw from bond
+
 ```
- $ ./build/chibaclonkd tx bond withdraw c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 1000aphoton --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)
+ $ ./build/laconicd tx bond withdraw c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 1000aphoton --from root --chain-id $(./build/laconicd status | jq .NodeInfo.network -r)
 {"body":{"messages":[{"@type":"/vulcanize.bond.v1beta1.MsgWithdrawBond","id":"c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk","coins":[{"denom":"aphoton","amount":"1000"}]}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
 confirm transaction before signing and broadcasting [y/N]: y
@@ -86,9 +95,11 @@ timestamp: ""
 tx: null
 txhash: 7C5E2FE674577CD6BFFF9F92FCCBC61EDFE8F1A00CE29AC84D58FB8F013D2F03
 ```
+
 # List Bond
+
 ```
- $ ./build/chibaclonkd q bond list -o json | jq .
+ $ ./build/laconicd q bond list -o json | jq .
 {
   "bonds": [
     {
@@ -106,9 +117,11 @@ txhash: 7C5E2FE674577CD6BFFF9F92FCCBC61EDFE8F1A00CE29AC84D58FB8F013D2F03
 }
 
 ```
+
 # Get Bond by Id
+
 ```
-$ ./build/chibaclonkd q bond get c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440  -o json | jq .
+$ ./build/laconicd q bond get c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440  -o json | jq .
 {
   "bond": {
     "id": "c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440",
@@ -125,8 +138,9 @@ $ ./build/chibaclonkd q bond get c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc
 ```
 
 # Get Bond Module Balance
+
 ```
-$ ./build/chibaclonkd q bond balance -o json | jq .                                                              
+$ ./build/laconicd q bond balance -o json | jq .
 {
   "balance": [
     {
@@ -138,8 +152,9 @@ $ ./build/chibaclonkd q bond balance -o json | jq .
 ```
 
 # Get Bonds By Owner
+
 ```
-$ ./build/chibaclonkd q bond by-owner ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk -o json | jq .
+$ ./build/laconicd q bond by-owner ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk -o json | jq .
 {
   "bonds": [
     {
@@ -158,8 +173,9 @@ $ ./build/chibaclonkd q bond by-owner ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqz
 ```
 
 # Cancel the bond
+
 ```
- $ ./build/chibaclonkd tx bond cancel c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440  --from root --chain-id $(./build/chibaclonkd status | jq .NodeInfo.network -r)           
+ $ ./build/laconicd tx bond cancel c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440  --from root --chain-id $(./build/laconicd status | jq .NodeInfo.network -r)
 {"body":{"messages":[{"@type":"/vulcanize.bond.v1beta1.MsgCancelBond","id":"c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
 confirm transaction before signing and broadcasting [y/N]: y
@@ -179,8 +195,9 @@ txhash: 06440D0B35A862E3A6783E147F0E1CDD3374870DAE07E471D465E2830DAF7044
 ```
 
 Note : After the bond create and withdraw bond and cancel bond , account amount needs change as per module
+
 ```
-$ ./build/chibaclonkd q bank balances $(./build/chibaclonkd keys show root -a) -o json | jq .
+$ ./build/laconicd q bank balances $(./build/laconicd keys show root -a) -o json | jq .
 {
   "balances": [
     {
@@ -193,4 +210,4 @@ $ ./build/chibaclonkd q bank balances $(./build/chibaclonkd keys show root -a) -
     "total": "0"
   }
 }
-``` 
+```

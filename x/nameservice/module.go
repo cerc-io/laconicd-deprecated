@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
+	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
+	"github.com/cerc-io/laconicd/x/nameservice/keeper"
+	"github.com/cerc-io/laconicd/x/nameservice/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -13,9 +17,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tharsis/ethermint/x/nameservice/client/cli"
-	"github.com/tharsis/ethermint/x/nameservice/keeper"
-	"github.com/tharsis/ethermint/x/nameservice/types"
 )
 
 // type check to ensure the interface is properly implemented

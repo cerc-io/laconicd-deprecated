@@ -8,10 +8,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 
-	ethermint "github.com/tharsis/ethermint/types"
-	evmkeeper "github.com/tharsis/ethermint/x/evm/keeper"
-	"github.com/tharsis/ethermint/x/evm/statedb"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
+	ethermint "github.com/cerc-io/laconicd/types"
+	evmkeeper "github.com/cerc-io/laconicd/x/evm/keeper"
+	"github.com/cerc-io/laconicd/x/evm/statedb"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"

@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cerc-io/laconicd/encoding"
 	"github.com/cosmos/cosmos-sdk/db/memdb"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tharsis/ethermint/encoding"
 )
 
 func BenchmarkEthermintApp_ExportAppStateAndValidators(b *testing.B) {

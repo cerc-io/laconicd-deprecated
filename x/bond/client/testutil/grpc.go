@@ -3,11 +3,11 @@ package testutil
 import (
 	"fmt"
 
+	"github.com/cerc-io/laconicd/x/bond/client/cli"
+	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/rest"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/x/bond/client/cli"
-	bondtypes "github.com/tharsis/ethermint/x/bond/types"
 )
 
 func (s *IntegrationTestSuite) TestGRPCGetBonds() {

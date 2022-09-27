@@ -3,12 +3,12 @@ package testutil
 import (
 	"fmt"
 
+	"github.com/cerc-io/laconicd/x/bond/client/cli"
+	"github.com/cerc-io/laconicd/x/bond/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tharsis/ethermint/x/bond/client/cli"
-	"github.com/tharsis/ethermint/x/bond/types"
 )
 
 func (s *IntegrationTestSuite) TestTxCreateBond() {

@@ -1,16 +1,17 @@
 package ante_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"math/big"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/cerc-io/laconicd/tests"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/ethereum/go-ethereum/core/types"
 	ethparams "github.com/ethereum/go-ethereum/params"
-	"github.com/tharsis/ethermint/tests"
-	evmtypes "github.com/tharsis/ethermint/x/evm/types"
 )
 
 func (suite AnteTestSuite) TestAnteHandler() {

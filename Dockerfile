@@ -4,7 +4,7 @@ FROM golang:alpine AS build-env
 ENV PACKAGES git build-base
 
 # Set working directory for the build
-WORKDIR /go/src/github.com/vulcanize/chiba-clonk
+WORKDIR /go/src/github.com/cerc-io/laconicd
 
 # Install dependencies
 RUN apk add --update $PACKAGES
@@ -24,7 +24,7 @@ RUN apk add --update ca-certificates jq
 WORKDIR /
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/src/github.com/vulcanize/chiba-clonk/build/chibaclonkd /usr/bin/chibaclonkd
+COPY --from=build-env /go/src/github.com/cerc-io/laconicd/build/laconicd /usr/bin/laconicd
 
-# Run chibaclonkd by default
-CMD ["chibaclonkd"]
+# Run laconicd by default
+CMD ["laconicd"]
