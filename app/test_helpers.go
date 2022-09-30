@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -22,7 +21,6 @@ import (
 	"github.com/stretchr/testify/require"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 
-	"github.com/cosmos/cosmos-sdk/db/memdb"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -31,6 +29,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 )
 
 // GenesisState of the blockchain is represented here as a map of raw json
@@ -43,8 +42,8 @@ import (
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
 // EthermintApp testing.
-var DefaultConsensusParams = &tmproto.ConsensusParams{
-	Block: &tmproto.BlockParams{
+var DefaultConsensusParams = &abci.ConsensusParams{
+	Block: &abci.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   -1, // no limit
 	},
@@ -63,7 +62,7 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 // SetupOptions defines arguments that are passed into `Simapp` constructor.
 type SetupOptions struct {
 	Logger             log.Logger
-	DB                 *memdb.MemDB
+	DB                 dbm.DB
 	InvCheckPeriod     uint
 	HomePath           string
 	SkipUpgradeHeights map[int64]bool
@@ -75,7 +74,7 @@ func NewTestAppWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOpti
 	t.Helper()
 
 	privVal := mock.NewPV()
-	pubKey, err := privVal.GetPubKey(context.TODO())
+	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
 	// create validator set with single validator
 	validator := tmtypes.NewValidator(pubKey, 1)
@@ -125,7 +124,7 @@ func Setup(t *testing.T, isCheckTx bool, patchGenesis func(*EthermintApp, simapp
 	t.Helper()
 
 	privVal := mock.NewPV()
-	pubKey, err := privVal.GetPubKey(context.TODO())
+	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
 
 	// create validator set with single validator
@@ -153,7 +152,7 @@ func Setup(t *testing.T, isCheckTx bool, patchGenesis func(*EthermintApp, simapp
 
 func setup(withGenesis bool, invCheckPeriod uint, patchGenesis func(*EthermintApp, simapp.GenesisState) simapp.GenesisState) (*EthermintApp, simapp.GenesisState) {
 	encCdc := encoding.MakeConfig(ModuleBasics)
-	app := NewEthermintApp(log.NewNopLogger(), memdb.NewDB(), nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
+	app := NewEthermintApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
 	if withGenesis {
 		genesisState := NewDefaultGenesisState(encCdc.Codec)
 		if patchGenesis != nil {

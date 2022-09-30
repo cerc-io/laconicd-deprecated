@@ -8,12 +8,16 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/ethclient"
-	abciclient "github.com/tendermint/tendermint/abci/client"
+	"github.com/tendermint/tendermint/p2p"
+
+	pvm "github.com/tendermint/tendermint/privval"
+	"github.com/tendermint/tendermint/proxy"
+
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmtime "github.com/tendermint/tendermint/libs/time"
 	"github.com/tendermint/tendermint/node"
 	"github.com/tendermint/tendermint/rpc/client/local"
 	"github.com/tendermint/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cerc-io/laconicd/server"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
@@ -41,16 +45,26 @@ func startInProcess(cfg Config, val *Validator) error {
 	}
 
 	app := cfg.AppConstructor(*val)
-	genDoc, err := types.GenesisDocFromFile(tmCfg.GenesisFile())
+	// genDoc, err := types.GenesisDocFromFile(tmCfg.GenesisFile())
+	// if err != nil {
+	// 	return err
+	// }
+
+	nodeKey, err := p2p.LoadOrGenNodeKey(tmCfg.NodeKeyFile())
 	if err != nil {
 		return err
 	}
 
-	val.tmNode, err = node.New(
+	genDocProvider := node.DefaultGenesisDocProviderFunc(tmCfg)
+	tmNode, err := node.NewNode(
 		tmCfg,
+		pvm.LoadOrGenFilePV(tmCfg.PrivValidatorKeyFile(), tmCfg.PrivValidatorStateFile()),
+		nodeKey,
+		proxy.NewLocalClientCreator(app),
+		genDocProvider,
+		node.DefaultDBProvider,
+		node.DefaultMetricsProvider(tmCfg.Instrumentation),
 		logger.With("module", val.Moniker),
-		abciclient.NewLocalCreator(app),
-		genDoc,
 	)
 	if err != nil {
 		return err
@@ -60,15 +74,10 @@ func startInProcess(cfg Config, val *Validator) error {
 		return err
 	}
 
+	val.tmNode = tmNode
+
 	if val.RPCAddress != "" {
-		node, ok := val.tmNode.(local.NodeService)
-		if !ok {
-			panic("can't cast service.Service to NodeService")
-		}
-		val.RPCClient, err = local.New(node)
-		if err != nil {
-			panic("cant create a local node")
-		}
+		val.RPCClient = local.New(tmNode)
 	}
 
 	// We'll need a RPC client if the validator exposes a gRPC or REST endpoint.

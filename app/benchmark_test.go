@@ -2,18 +2,20 @@ package app
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/cerc-io/laconicd/encoding"
-	"github.com/cosmos/cosmos-sdk/db/memdb"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
 )
 
 func BenchmarkEthermintApp_ExportAppStateAndValidators(b *testing.B) {
-	db := memdb.NewDB()
-	logger, _ := log.NewDefaultLogger("plain", "info", false)
+	db := dbm.NewMemDB()
+	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+
 	app := NewEthermintApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
 
 	genesisState := NewDefaultGenesisState(app.appCodec)

@@ -9,7 +9,7 @@ import (
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/rpc"
-	tmrpctypes "github.com/tendermint/tendermint/rpc/coretypes"
+	tmrpctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
 type (

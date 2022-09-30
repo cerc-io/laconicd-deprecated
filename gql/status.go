@@ -54,7 +54,7 @@ func getNetInfo(client client.Context) (string, []*PeerInfo, error) {
 	for index, peer := range netInfo.Peers {
 		peersInfo[index] = &PeerInfo{
 			Node: &NodeInfo{
-				ID: string(peer.ID),
+				ID: string(peer.NodeInfo.DefaultNodeID),
 				// Moniker: peer.Node.Moniker,
 				// Network: peer.Node.Network,
 			},

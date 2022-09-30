@@ -1,9 +1,11 @@
 package app
 
 import (
+	"os"
 	"testing"
 
-	memdb "github.com/cosmos/cosmos-sdk/db/memdb"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -13,8 +15,8 @@ import (
 
 func TestEthermintAppExport(t *testing.T) {
 	encCfg := encoding.MakeConfig(ModuleBasics)
-	db := memdb.NewDB()
-	logger, _ := log.NewDefaultLogger("plain", "info", false)
+	db := dbm.NewMemDB()
+	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 	app := NewTestAppWithCustomOptions(t, false, SetupOptions{
 		Logger:             logger,
 		DB:                 db,
@@ -35,7 +37,7 @@ func TestEthermintAppExport(t *testing.T) {
 	}
 
 	app.Commit()
-	logger2, _ := log.NewDefaultLogger("plain", "info", false)
+	logger2 := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 
 	// Making a new app object with the db, so that initchain hasn't been called
 	app2 := NewEthermintApp(logger2, db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, EmptyAppOptions{})

@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	tmrpctypes "github.com/tendermint/tendermint/rpc/coretypes"
+	tmrpctypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 

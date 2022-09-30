@@ -16,12 +16,15 @@ import (
 
 	"github.com/spf13/cobra"
 
-	tmservice "github.com/tendermint/tendermint/libs/service"
 	"google.golang.org/grpc"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	dbm "github.com/cosmos/cosmos-sdk/db"
+	"github.com/tendermint/tendermint/p2p"
+	pvm "github.com/tendermint/tendermint/privval"
+	"github.com/tendermint/tendermint/proxy"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
@@ -29,7 +32,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/rosetta"
 	crgserver "github.com/cosmos/cosmos-sdk/server/rosetta/lib/server"
 	"github.com/cosmos/cosmos-sdk/server/types"
-	abciclient "github.com/tendermint/tendermint/abci/client"
 	abciserver "github.com/tendermint/tendermint/abci/server"
 	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -283,7 +285,11 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 		return err
 	}
 
-	config := config.GetConfig(ctx.Viper)
+	config, err := config.GetConfig(ctx.Viper)
+	if err != nil {
+		logger.Error("failed to get server config", "error", err.Error())
+		return err
+	}
 
 	if err := config.ValidateBasic(); err != nil {
 		if strings.Contains(err.Error(), "set min gas price in app.toml or flag or env variable") {
@@ -299,46 +305,42 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 
 	app := appCreator(ctx.Logger, db, traceWriter, ctx.Viper)
 
-	genDoc, err := tmtypes.GenesisDocFromFile(cfg.GenesisFile())
+	nodeKey, err := p2p.LoadOrGenNodeKey(cfg.NodeKeyFile())
 	if err != nil {
+		logger.Error("failed load or gen node key", "error", err.Error())
 		return err
 	}
 
-	var (
-		tmNode   tmservice.Service
-		gRPCOnly = ctx.Viper.GetBool(flagGRPCOnly)
+	ctx.Logger.Info("starting node with ABCI Tendermint in-process")
+
+	genDocProvider := node.DefaultGenesisDocProviderFunc(cfg)
+	tmNode, err := node.NewNode(
+		cfg,
+		pvm.LoadOrGenFilePV(cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile()),
+		nodeKey,
+		proxy.NewLocalClientCreator(app),
+		genDocProvider,
+		node.DefaultDBProvider,
+		node.DefaultMetricsProvider(cfg.Instrumentation),
+		ctx.Logger.With("server", "node"),
 	)
-	if gRPCOnly {
-		ctx.Logger.Info("starting node in gRPC only mode; Tendermint is disabled")
-		config.GRPC.Enable = true
-	} else {
-		ctx.Logger.Info("starting node with ABCI Tendermint in-process")
 
-		tmNode, err = node.New(cfg, ctx.Logger, abciclient.NewLocalCreator(app), genDoc)
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		logger.Error("failed init node", "error", err.Error())
+		return err
+	}
 
-		if err := tmNode.Start(); err != nil {
-			return err
-		}
+	if err := tmNode.Start(); err != nil {
+		logger.Error("failed start tendermint server", "error", err.Error())
+		return err
 	}
 
 	// Add the tx service to the gRPC router. We only need to register this
 	// service if API or gRPC or JSONRPC is enabled, and avoid doing so in the general
 	// case, because it spawns a new local tendermint RPC client.
 	if config.API.Enable || config.GRPC.Enable || config.JSONRPC.Enable {
-		node, ok := tmNode.(local.NodeService)
-		if !ok {
-			return fmt.Errorf("unable to set node type; please try re-installing the binary")
-		}
 
-		localNode, err := local.New(node)
-		if err != nil {
-			return err
-		}
-
-		clientCtx = clientCtx.WithClient(localNode)
+		clientCtx = clientCtx.WithClient(local.New(tmNode))
 
 		app.RegisterTxService(clientCtx)
 		app.RegisterTendermintService(clientCtx)
@@ -494,7 +496,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 	return server.WaitForQuitSignals()
 }
 
-func openDB(rootDir string, backendType dbm.BackendType) (dbm.DBConnection, error) {
+func openDB(rootDir string, backendType dbm.BackendType) (dbm.DB, error) {
 	dataDir := filepath.Join(rootDir, "data")
 	return dbm.NewDB("application", backendType, dataDir)
 }

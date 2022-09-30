@@ -15,7 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	tmrpctypes "github.com/tendermint/tendermint/rpc/coretypes"
+	tmrpctypes "github.com/tendermint/tendermint/rpc/core/types"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -103,7 +103,10 @@ func NewEVMBackend(ctx *server.Context, logger log.Logger, clientCtx client.Cont
 		panic(err)
 	}
 
-	appConf := config.GetConfig(ctx.Viper)
+	appConf, err := config.GetConfig(ctx.Viper)
+	if err != nil {
+		panic(err)
+	}
 
 	return &EVMBackend{
 		ctx:         context.Background(),
@@ -334,7 +337,7 @@ func (e *EVMBackend) BlockBloom(height *int64) (ethtypes.Bloom, error) {
 		}
 
 		for _, attr := range event.Attributes {
-			if attr.Key == string(bAttributeKeyEthereumBloom) {
+			if string(attr.Key) == string(bAttributeKeyEthereumBloom) {
 				return ethtypes.BytesToBloom([]byte(attr.Value)), nil
 			}
 		}
