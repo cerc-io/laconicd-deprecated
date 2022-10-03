@@ -70,7 +70,7 @@ func startInProcess(cfg Config, val *Validator) error {
 		return err
 	}
 
-	if err := val.tmNode.Start(); err != nil {
+	if err := tmNode.Start(); err != nil {
 		return err
 	}
 
