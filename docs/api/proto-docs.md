@@ -152,6 +152,11 @@
   
     - [Msg](#vulcanize.bond.v1beta1.Msg)
   
+- [vulcanize/nameservice/v1beta1/attributes.proto](#vulcanize/nameservice/v1beta1/attributes.proto)
+    - [ServiceProviderRegistration](#vulcanize.nameservice.v1beta1.ServiceProviderRegistration)
+    - [WebsiteRegistrationRecord](#vulcanize.nameservice.v1beta1.WebsiteRegistrationRecord)
+    - [X500](#vulcanize.nameservice.v1beta1.X500)
+  
 - [vulcanize/nameservice/v1beta1/nameservice.proto](#vulcanize/nameservice/v1beta1/nameservice.proto)
     - [AuctionBidInfo](#vulcanize.nameservice.v1beta1.AuctionBidInfo)
     - [AuthorityEntry](#vulcanize.nameservice.v1beta1.AuthorityEntry)
@@ -2202,6 +2207,77 @@ Msg defines the bond Msg service.
 
 
 
+<a name="vulcanize/nameservice/v1beta1/attributes.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## vulcanize/nameservice/v1beta1/attributes.proto
+
+
+
+<a name="vulcanize.nameservice.v1beta1.ServiceProviderRegistration"></a>
+
+### ServiceProviderRegistration
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `bond_id` | [string](#string) |  |  |
+| `laconic_id` | [string](#string) |  |  |
+| `x500` | [X500](#vulcanize.nameservice.v1beta1.X500) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.WebsiteRegistrationRecord"></a>
+
+### WebsiteRegistrationRecord
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `url` | [string](#string) |  |  |
+| `repo_registration_record_cid` | [string](#string) |  |  |
+| `build_atrifact_cid` | [string](#string) |  |  |
+| `TLS_cert_cid` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="vulcanize.nameservice.v1beta1.X500"></a>
+
+### X500
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `common_name` | [string](#string) |  |  |
+| `organization_unit` | [string](#string) |  |  |
+| `organization_name` | [string](#string) |  |  |
+| `locality_name` | [string](#string) |  |  |
+| `state_name` | [string](#string) |  |  |
+| `country` | [string](#string) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
 <a name="vulcanize/nameservice/v1beta1/nameservice.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -2369,8 +2445,9 @@ Params defines the nameservice module records
 | `expiry_time` | [string](#string) |  |  |
 | `deleted` | [bool](#bool) |  |  |
 | `owners` | [string](#string) | repeated |  |
-| `attributes` | [string](#string) |  |  |
+| `attributes` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
 | `names` | [string](#string) | repeated |  |
+| `type` | [string](#string) |  |  |
 
 
 

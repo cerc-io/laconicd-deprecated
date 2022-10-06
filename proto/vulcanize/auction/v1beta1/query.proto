@@ -86,8 +86,7 @@ message AuctionsByOwnerResponse {
 }
 
 // QueryParamsRequest is the format to query the parameters of the auction module
-message QueryParamsRequest {
-}
+message QueryParamsRequest {}
 
 // QueryParamsResponse returns parameters of the auction module
 message QueryParamsResponse {
@@ -95,14 +94,11 @@ message QueryParamsResponse {
 }
 
 // BalanceRequest is the format to fetch all balances
-message BalanceRequest {
-}
+message BalanceRequest {}
 
 message BalanceResponse {
   // Set of all balances within the auction
-  repeated cosmos.base.v1beta1.Coin balance = 1 [
-    (gogoproto.nullable) = false
-  ];
+  repeated cosmos.base.v1beta1.Coin balance = 1 [(gogoproto.nullable) = false];
 }
 
 // Query defines the gRPC querier interface for the auction module

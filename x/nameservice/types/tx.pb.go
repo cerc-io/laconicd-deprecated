@@ -572,7 +572,7 @@ func (m *MsgDeleteNameAuthorityResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDeleteNameAuthorityResponse proto.InternalMessageInfo
 
-//MsgRenewRecord is SDK message for Renew a record
+// MsgRenewRecord is SDK message for Renew a record
 type MsgRenewRecord struct {
 	RecordId string `protobuf:"bytes,1,opt,name=record_id,json=recordId,proto3" json:"record_id,omitempty" json:"recordId" yaml:"recordId"`
 	Signer   string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`

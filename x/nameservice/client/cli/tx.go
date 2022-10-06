@@ -61,12 +61,17 @@ $ %s tx %s set [payload file path] [bond-id]
 				return err
 			}
 
-			payload, err := GetPayloadFromFile(args[0])
+			payloadType, err := GetPayloadFromFile(args[0])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSetRecord(payload.ToPayload(), args[1], clientCtx.GetFromAddress())
+			payload, err := payloadType.ToPayload()
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSetRecord(payload, args[1], clientCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

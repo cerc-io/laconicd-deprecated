@@ -421,7 +421,7 @@ func (m *QueryListRecordsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-//QueryRecordByIdRequest is request type for nameservice records by id
+// QueryRecordByIdRequest is request type for nameservice records by id
 type QueryRecordByIdRequest struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }

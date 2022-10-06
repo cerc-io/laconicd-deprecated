@@ -12,7 +12,5 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
 
   // bonds defines all the bonds
-  repeated Bond bonds = 2 [
-    (gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""
-  ];
+  repeated Bond bonds = 2 [(gogoproto.moretags) = "json:\"bonds\" yaml:\"bonds\""];
 }

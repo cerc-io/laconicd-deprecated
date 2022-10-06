@@ -2,9 +2,12 @@ package types
 
 import (
 	"crypto/sha256"
+	"fmt"
 
 	"github.com/cerc-io/laconicd/x/nameservice/helpers"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	canonicalJson "github.com/gibson042/canonicaljson-go"
+	"github.com/golang/protobuf/proto"
 )
 
 const (
@@ -21,24 +24,62 @@ type PayloadType struct {
 
 // ToPayload converts PayloadType to Payload object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func (payloadObj *PayloadType) ToPayload() Payload {
+func (payloadObj *PayloadType) ToPayload() (Payload, error) {
+
+	attributes, err := payLoadAttributes(payloadObj.Record)
+	if err != nil {
+		return Payload{}, err
+	}
+
 	var payload = Payload{
 		Record: &Record{
 			Deleted:    false,
 			Owners:     nil,
-			Attributes: helpers.BytesToBase64(helpers.MarshalMapToJSONBytes(payloadObj.Record)),
+			Attributes: attributes,
 		},
 		Signatures: payloadObj.Signatures,
 	}
-	return payload
+	return payload, nil
+}
+
+func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, error) {
+
+	recordType, ok := recordPayLoad["Type"]
+	if !ok {
+		return &codectypes.Any{}, fmt.Errorf("cannot get type from payload")
+	}
+	bz := helpers.MarshalMapToJSONBytes(recordPayLoad)
+
+	switch recordType.(string) {
+	case "ServiceProviderRegistration":
+		{
+			var attributes ServiceProviderRegistration
+			err := proto.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "WebsiteRegistrationRecord":
+		{
+			var attributes WebsiteRegistrationRecord
+			err := proto.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	default:
+		return &codectypes.Any{}, fmt.Errorf("unsupported record type %s", recordType.(string))
+	}
+
 }
 
 // ToReadablePayload converts Payload to PayloadType
 // It will unmarshal with record attributes
 func (payload Payload) ToReadablePayload() PayloadType {
 	var payloadType PayloadType
-
-	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(helpers.BytesFromBase64(payload.Record.Attributes))
+	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(payload.Record.Attributes.Value)
 
 	payloadType.Signatures = payload.Signatures
 
@@ -57,7 +98,7 @@ func (r *Record) ToRecordType() RecordType {
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
 	resourceObj.Names = r.Names
-	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(helpers.BytesFromBase64(r.Attributes))
+	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(r.Attributes.Value)
 
 	return resourceObj
 }
@@ -76,7 +117,12 @@ type RecordType struct {
 
 // ToRecordObj converts Record to RecordObj.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func (r *RecordType) ToRecordObj() Record {
+func (r *RecordType) ToRecordObj() (Record, error) {
+	attributes, err := payLoadAttributes(r.Attributes)
+	if err != nil {
+		return Record{}, err
+	}
+
 	var resourceObj Record
 
 	resourceObj.Id = r.Id
@@ -85,9 +131,9 @@ func (r *RecordType) ToRecordObj() Record {
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
-	resourceObj.Attributes = helpers.BytesToBase64(helpers.MarshalMapToJSONBytes(r.Attributes))
+	resourceObj.Attributes = attributes
 
-	return resourceObj
+	return resourceObj, nil
 }
 
 // CanonicalJSON returns the canonical JSON representation of the record.
