@@ -61,12 +61,14 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			if test.createRecord {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
+				payloadType, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
+				sr.NoError(err)
+				payload, err := payloadType.ToPayload()
 				sr.NoError(err)
 				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
 					BondId:  suite.bond.GetId(),
 					Signer:  suite.accounts[0].String(),
-					Payload: payload.ToPayload(),
+					Payload: payload,
 				})
 				sr.NoError(err)
 				sr.NotNil(record.Id)
@@ -192,12 +194,14 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 			if test.createRecord {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
+				payloadType, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
+				sr.NoError(err)
+				payload, err := payloadType.ToPayload()
 				sr.NoError(err)
 				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
 					BondId:  suite.bond.GetId(),
 					Signer:  suite.accounts[0].String(),
-					Payload: payload.ToPayload(),
+					Payload: payload,
 				})
 				sr.NoError(err)
 				sr.NotNil(record.Id)

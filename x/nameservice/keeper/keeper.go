@@ -228,8 +228,12 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
 	record.Deleted = false
 
-	k.PutRecord(ctx, record.ToRecordObj())
-	k.InsertRecordExpiryQueue(ctx, record.ToRecordObj())
+	recordObj, err := record.ToRecordObj()
+	if err != nil {
+		return err
+	}
+	k.PutRecord(ctx, recordObj)
+	k.InsertRecordExpiryQueue(ctx, recordObj)
 
 	// Renewal doesn't change the name and bond indexes.
 	if !isRenewal {
