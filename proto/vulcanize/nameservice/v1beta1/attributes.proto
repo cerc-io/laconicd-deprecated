@@ -1,0 +1,29 @@
+syntax = "proto3";
+package vulcanize.nameservice.v1beta1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/cerc-io/laconicd/x/nameservice/types";
+
+message ServiceProviderRegistration {
+  string bond_id    = 1 [(gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""];
+  string laconic_id = 2 [(gogoproto.moretags) = "json:\"laconicId\" yaml:\"laconicId\""];
+  X500   x500       = 3 [(gogoproto.moretags) = "json:\"x500\" yaml:\"x500\""];
+}
+
+message X500 {
+  string common_name       = 1 [(gogoproto.moretags) = "json:\"commonName\" yaml:\"commonName\""];
+  string organization_unit = 2 [(gogoproto.moretags) = "json:\"organizationUnit\" yaml:\"organizationUnit\""];
+  string organization_name = 3 [(gogoproto.moretags) = "json:\"organizationName\" yaml:\"organizationName\""];
+  string locality_name     = 4 [(gogoproto.moretags) = "json:\"localityName\" yaml:\"localityName\""];
+  string state_name        = 5 [(gogoproto.moretags) = "json:\"stateName\" yaml:\"stateName\""];
+  string country           = 6 [(gogoproto.moretags) = "json:\"country\" yaml:\"country\""];
+}
+
+message WebsiteRegistrationRecord {
+  string url                          = 1 [(gogoproto.moretags) = "json:\"url\" yaml:\"url\""];
+  string repo_registration_record_cid = 2
+      [(gogoproto.moretags) = "json:\"repoRegistrationRecordCID\" yaml:\"repoRegistrationRecordCID\""];
+  string build_atrifact_cid = 3 [(gogoproto.moretags) = "json:\"buildArtifactCID\" yaml:\"buildArtifactCID\""];
+  string TLS_cert_cid       = 4 [(gogoproto.moretags) = "json:\"TLSCertCID\" yaml:\"TLSCertCID\""];
+}
