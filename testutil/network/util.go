@@ -45,10 +45,6 @@ func startInProcess(cfg Config, val *Validator) error {
 	}
 
 	app := cfg.AppConstructor(*val)
-	// genDoc, err := types.GenesisDocFromFile(tmCfg.GenesisFile())
-	// if err != nil {
-	// 	return err
-	// }
 
 	nodeKey, err := p2p.LoadOrGenNodeKey(tmCfg.NodeKeyFile())
 	if err != nil {
