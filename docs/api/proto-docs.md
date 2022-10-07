@@ -2225,6 +2225,7 @@ Msg defines the bond Msg service.
 | `bond_id` | [string](#string) |  |  |
 | `laconic_id` | [string](#string) |  |  |
 | `x500` | [X500](#vulcanize.nameservice.v1beta1.X500) |  |  |
+| `type` | [string](#string) |  |  |
 
 
 
@@ -2243,6 +2244,7 @@ Msg defines the bond Msg service.
 | `repo_registration_record_cid` | [string](#string) |  |  |
 | `build_atrifact_cid` | [string](#string) |  |  |
 | `TLS_cert_cid` | [string](#string) |  |  |
+| `type` | [string](#string) |  |  |
 
 
 

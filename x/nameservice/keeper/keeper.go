@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"time"
@@ -44,6 +45,8 @@ var (
 
 	// PrefixBondIDToAuthoritiesIndex is the prefix for the Bond ID -> [Authority] index.
 	PrefixBondIDToAuthoritiesIndex = []byte{0x06}
+
+	PrefixAttributesIndex = []byte{0x07}
 
 	// PrefixExpiryTimeToRecordsIndex is the prefix for the Expiry Time -> [Record] index.
 	PrefixExpiryTimeToRecordsIndex = []byte{0x10}
@@ -233,6 +236,11 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 		return err
 	}
 	k.PutRecord(ctx, recordObj)
+
+	if err := k.ProcessAttributes(ctx, *record); err != nil {
+		return err
+	}
+
 	k.InsertRecordExpiryQueue(ctx, recordObj)
 
 	// Renewal doesn't change the name and bond indexes.
@@ -248,6 +256,68 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(GetRecordIndexKey(record.Id), k.cdc.MustMarshal(&record))
 	k.updateBlockChangeSetForRecord(ctx, record.Id)
+}
+
+func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
+
+	switch record.Attributes["type"] {
+	case "ServiceProviderRegistration":
+		{
+			for key, val := range record.Attributes {
+				if key == "x500" {
+					for x500Key, x500Val := range val.(map[string]string) {
+						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
+						if err := k.SetAttributeMapping(ctx, indexKey, record.Id); err != nil {
+							return err
+						}
+					}
+				} else {
+					indexKey := GetAttributesIndexKey(key, val)
+					if err := k.SetAttributeMapping(ctx, indexKey, record.Id); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	case "WebsiteRegistrationRecord":
+		{
+			for key, val := range record.Attributes {
+				indexKey := GetAttributesIndexKey(key, val)
+				if err := k.SetAttributeMapping(ctx, indexKey, record.Id); err != nil {
+					return err
+				}
+			}
+		}
+	default:
+		return fmt.Errorf("unsupported record type %s", record.Attributes["type"])
+	}
+
+	return nil
+}
+
+func GetAttributesIndexKey(key string, value interface{}) []byte {
+	keyString := fmt.Sprintf("%s%s", key, value)
+	return append(PrefixAttributesIndex, []byte(keyString)...)
+}
+
+func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordId string) error {
+	store := ctx.KVStore(k.storeKey)
+	var recordIds []string
+	if store.Has(key) {
+		err := json.Unmarshal(store.Get(key), &recordIds)
+		if err != nil {
+			return fmt.Errorf("cannot unmarshal byte array, error, %w", err)
+		}
+	} else {
+		recordIds = []string{}
+	}
+	recordIds = append(recordIds, recordId)
+	bz, err := json.Marshal(recordIds)
+	if err != nil {
+		return fmt.Errorf("cannot marshal string array, error, %w", err)
+	}
+	store.Set(key, bz)
+	return nil
 }
 
 // AddBondToRecordIndexEntry adds the Bond ID -> [Record] index entry.
