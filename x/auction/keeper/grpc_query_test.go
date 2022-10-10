@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/cerc-io/laconicd/app"
 	"github.com/cerc-io/laconicd/x/auction/types"
@@ -11,6 +12,10 @@ import (
 )
 
 const testCommitHash = "71D8CF34026E32A3A34C2C2D4ADF25ABC8D7943A4619761BE27F196603D91B9D"
+
+var (
+	seed = int64(233)
+)
 
 func (suite *KeeperTestSuite) TestGrpcGetAllAuctions() {
 	client, ctx, k := suite.queryClient, suite.ctx, suite.app.AuctionKeeper
@@ -39,7 +44,9 @@ func (suite *KeeperTestSuite) TestGrpcGetAllAuctions() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", test.msg), func() {
 			if test.createAuctions {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(
 					sdk.Coin{Amount: sdk.NewInt(100), Denom: sdk.DefaultBondDenom},
 				))
@@ -327,9 +334,10 @@ func (suite *KeeperTestSuite) createAuctionAndCommitBid(commitBid bool) (*types.
 		accCount++
 	}
 
-	accounts := app.CreateRandomAccounts(accCount)
+	r := rand.New(rand.NewSource(seed))
+	accounts := app.RandomAccounts(r, 1)
 	for _, account := range accounts {
-		err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(
+		err := testutil.FundAccount(suite.app.BankKeeper, ctx, account.Address, sdk.NewCoins(
 			sdk.Coin{Amount: sdk.NewInt(100), Denom: sdk.DefaultBondDenom},
 		))
 		if err != nil {
@@ -337,13 +345,13 @@ func (suite *KeeperTestSuite) createAuctionAndCommitBid(commitBid bool) (*types.
 		}
 	}
 
-	auction, err := k.CreateAuction(ctx, types.NewMsgCreateAuction(k.GetParams(ctx), accounts[0]))
+	auction, err := k.CreateAuction(ctx, types.NewMsgCreateAuction(k.GetParams(ctx), accounts[0].Address))
 	if err != nil {
 		return nil, nil, err
 	}
 
 	if commitBid {
-		bid, err := k.CommitBid(ctx, types.NewMsgCommitBid(auction.Id, testCommitHash, accounts[1]))
+		bid, err := k.CommitBid(ctx, types.NewMsgCommitBid(auction.Id, testCommitHash, accounts[1].Address))
 		if err != nil {
 			return nil, nil, err
 		}

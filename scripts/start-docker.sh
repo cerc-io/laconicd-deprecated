@@ -1,13 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "prepare genesis: Run validate-genesis to ensure everything worked and that the genesis file is setup correctly"
-laconicd validate-genesis --home /laconic
+./ethermintd validate-genesis --home /ethermint
 
-echo "starting laconic node $ID in background ..."
-laconicd start \
---home /laconic \
---keyring-backend test \ 
---mode validator
+echo "starting ethermint node $ID in background ..."
+./ethermintd start \
+--home /ethermint \
+--keyring-backend test
 
 echo "started ethermint node"
 tail -f /dev/null

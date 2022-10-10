@@ -1,7 +1,7 @@
 #!/bin/bash
 
 KEY="mykey"
-CHAINID="laconic_9000-1"
+CHAINID="ethermint_9000-1"
 MONIKER="localtestnet"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
@@ -14,7 +14,7 @@ TRACE="--trace"
 command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"; exit 1; }
 
 # remove existing daemon and client
-rm -rf ~/.laconic*
+rm -rf ~/.laconicd*
 
 make install
 
@@ -24,7 +24,7 @@ laconicd config chain-id $CHAINID
 # if $KEY exists it should be deleted
 laconicd keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
 
-# Set moniker and chain-id for laconic (Moniker can be anything, chain-id must be an integer)
+# Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 laconicd init $MONIKER --chain-id $CHAINID
 
 # Change parameter token denominations to aphoton
@@ -32,33 +32,6 @@ cat $HOME/.laconicd/config/genesis.json | jq '.app_state["staking"]["params"]["b
 cat $HOME/.laconicd/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
 cat $HOME/.laconicd/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
 cat $HOME/.laconicd/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-# Custom modules
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["record_rent"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_rent"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_commit_fee"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_reveal_fee"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_minimum_bid"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-
-if [[ "$TEST_NAMESERVICE_EXPIRY" == "true" ]]; then
-  echo "Setting timers for expiry tests."
-
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["record_rent_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_grace_period"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_rent_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-fi
-
-if [[ "$TEST_AUCTION_ENABLED" == "true" ]]; then
-  echo "Enabling auction and setting timers."
-
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_enabled"]=true' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_rent_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_grace_period"]="300s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_commits_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["nameservice"]["params"]["authority_auction_reveals_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-fi
-
-# increase block time (?)
-cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
 
 # Set gas limit in genesis
 cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
@@ -111,4 +84,4 @@ if [[ $1 == "pending" ]]; then
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-laconicd start --mode validator --pruning=nothing --evm.tracer=json $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner --api.enable --gql-server --gql-playground
+laconicd start --pruning=nothing --evm.tracer=json $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner --api.enable

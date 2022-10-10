@@ -3,11 +3,16 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/cerc-io/laconicd/app"
 	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
+)
+
+var (
+	seed = int64(233)
 )
 
 func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
@@ -39,7 +44,9 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
@@ -102,7 +109,9 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
@@ -156,7 +165,9 @@ func (suite *KeeperTestSuite) TestGrpcGetBondsByOwner() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				_ = testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
@@ -200,7 +211,9 @@ func (suite *KeeperTestSuite) TestGrpcGetModuleBalance() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				_ = testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),

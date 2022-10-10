@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"os"
+	"io"
 	"testing"
 
 	"github.com/cerc-io/laconicd/encoding"
@@ -14,11 +14,9 @@ import (
 
 func BenchmarkEthermintApp_ExportAppStateAndValidators(b *testing.B) {
 	db := dbm.NewMemDB()
-	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+	app := NewEthermintApp(log.NewTMLogger(io.Discard), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
 
-	app := NewEthermintApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
-
-	genesisState := NewDefaultGenesisState(app.appCodec)
+	genesisState := NewTestGenesisState(app.AppCodec())
 	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
 	if err != nil {
 		b.Fatal(err)
@@ -38,7 +36,7 @@ func BenchmarkEthermintApp_ExportAppStateAndValidators(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		// Making a new app object with the db, so that initchain hasn't been called
-		app2 := NewEthermintApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
+		app2 := NewEthermintApp(log.NewTMLogger(log.NewSyncWriter(io.Discard)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encoding.MakeConfig(ModuleBasics), simapp.EmptyAppOptions{})
 		if _, err := app2.ExportAppStateAndValidators(false, []string{}); err != nil {
 			b.Fatal(err)
 		}

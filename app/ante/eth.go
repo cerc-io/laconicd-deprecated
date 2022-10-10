@@ -2,7 +2,11 @@ package ante
 
 import (
 	"errors"
+	"math"
 	"math/big"
+	"strconv"
+
+	sdkmath "cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -49,12 +53,18 @@ func (esvd EthSigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
-		sender, err := signer.Sender(msgEthTx.AsTransaction())
+		ethTx := msgEthTx.AsTransaction()
+		if !params.AllowUnprotectedTxs && !ethTx.Protected() {
+			return ctx, sdkerrors.Wrapf(
+				sdkerrors.ErrNotSupported,
+				"rejected unprotected Ethereum txs. Please EIP155 sign your transaction to protect it against replay-attacks")
+		}
+
+		sender, err := signer.Sender(ethTx)
 		if err != nil {
 			return ctx, sdkerrors.Wrapf(
 				sdkerrors.ErrorInvalidSigner,
-				"couldn't retrieve sender address ('%s') from the ethereum transaction: %s",
-				msgEthTx.From,
+				"couldn't retrieve sender address from the ethereum transaction: %s",
 				err.Error(),
 			)
 		}
@@ -68,17 +78,15 @@ func (esvd EthSigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, s
 
 // EthAccountVerificationDecorator validates an account balance checks
 type EthAccountVerificationDecorator struct {
-	ak         evmtypes.AccountKeeper
-	bankKeeper evmtypes.BankKeeper
-	evmKeeper  EVMKeeper
+	ak        evmtypes.AccountKeeper
+	evmKeeper EVMKeeper
 }
 
 // NewEthAccountVerificationDecorator creates a new EthAccountVerificationDecorator
-func NewEthAccountVerificationDecorator(ak evmtypes.AccountKeeper, bankKeeper evmtypes.BankKeeper, ek EVMKeeper) EthAccountVerificationDecorator {
+func NewEthAccountVerificationDecorator(ak evmtypes.AccountKeeper, ek EVMKeeper) EthAccountVerificationDecorator {
 	return EthAccountVerificationDecorator{
-		ak:         ak,
-		bankKeeper: bankKeeper,
-		evmKeeper:  ek,
+		ak:        ak,
+		evmKeeper: ek,
 	}
 }
 
@@ -88,7 +96,12 @@ func NewEthAccountVerificationDecorator(ak evmtypes.AccountKeeper, bankKeeper ev
 // - any of the msgs is not a MsgEthereumTx
 // - from address is empty
 // - account balance is lower than the transaction cost
-func (avd EthAccountVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (avd EthAccountVerificationDecorator) AnteHandle(
+	ctx sdk.Context,
+	tx sdk.Tx,
+	simulate bool,
+	next sdk.AnteHandler,
+) (newCtx sdk.Context, err error) {
 	if !ctx.IsCheckTx() {
 		return next(ctx, tx, simulate)
 	}
@@ -123,10 +136,9 @@ func (avd EthAccountVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx
 				"the sender is not EOA: address %s, codeHash <%s>", fromAddr, acct.CodeHash)
 		}
 
-		if err := evmkeeper.CheckSenderBalance(sdk.NewIntFromBigInt(acct.Balance), txData); err != nil {
+		if err := evmkeeper.CheckSenderBalance(sdkmath.NewIntFromBigInt(acct.Balance), txData); err != nil {
 			return ctx, sdkerrors.Wrap(err, "failed to check sender balance")
 		}
-
 	}
 	return next(ctx, tx, simulate)
 }
@@ -163,7 +175,7 @@ func NewEthGasConsumeDecorator(
 // - user doesn't have enough balance to deduct the transaction fees (gas_limit * gas_price)
 // - transaction or block gas meter runs out of gas
 // - sets the gas meter limit
-func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (sdk.Context, error) {
 	params := egcd.evmKeeper.GetParams(ctx)
 
 	ethCfg := params.ChainConfig.EthereumConfig(egcd.evmKeeper.ChainID())
@@ -176,6 +188,9 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 	gasWanted := uint64(0)
 	var events sdk.Events
 
+	// Use the lowest priority of all the messages as the final one.
+	minPriority := int64(math.MaxInt64)
+
 	for _, msg := range tx.GetMsgs() {
 		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
 		if !ok {
@@ -187,7 +202,7 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 			return ctx, sdkerrors.Wrap(err, "failed to unpack tx data")
 		}
 
-		if ctx.IsCheckTx() {
+		if ctx.IsCheckTx() && egcd.maxGasWanted != 0 {
 			// We can't trust the tx gas limit, because we'll refund the unused gas.
 			if txData.GetGas() > egcd.maxGasWanted {
 				gasWanted += egcd.maxGasWanted
@@ -198,7 +213,7 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 			gasWanted += txData.GetGas()
 		}
 
-		fees, err := egcd.evmKeeper.DeductTxCostsFromUserBalance(
+		fees, priority, err := egcd.evmKeeper.DeductTxCostsFromUserBalance(
 			ctx,
 			*msgEthTx,
 			txData,
@@ -212,6 +227,9 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 		}
 
 		events = append(events, sdk.NewEvent(sdk.EventTypeTx, sdk.NewAttribute(sdk.AttributeKeyFee, fees.String())))
+		if priority < minPriority {
+			minPriority = priority
+		}
 	}
 
 	// TODO: change to typed events
@@ -233,8 +251,10 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 	ctx = ctx.WithGasMeter(ethermint.NewInfiniteGasMeterWithLimit(gasWanted))
 	ctx.GasMeter().ConsumeGas(gasConsumed, "copy gas consumed")
 
+	newCtx := ctx.WithPriority(minPriority)
+
 	// we know that we have enough gas on the pool to cover the intrinsic gas
-	return next(ctx, tx, simulate)
+	return next(newCtx, tx, simulate)
 }
 
 // CanTransferDecorator checks if the sender is allowed to transfer funds according to the EVM block
@@ -263,7 +283,7 @@ func (ctd CanTransferDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate 
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
-		baseFee := ctd.evmKeeper.BaseFee(ctx, ethCfg)
+		baseFee := ctd.evmKeeper.GetBaseFee(ctx, ethCfg)
 
 		coreMsg, err := msgEthTx.AsMessage(signer, baseFee)
 		if err != nil {
@@ -285,7 +305,7 @@ func (ctd CanTransferDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate 
 
 		// check that caller has enough balance to cover asset transfer for **topmost** call
 		// NOTE: here the gas consumed is from the context with the infinite gas meter
-		if coreMsg.Value().Sign() > 0 && !evm.Context.CanTransfer(stateDB, coreMsg.From(), coreMsg.Value()) {
+		if coreMsg.Value().Sign() > 0 && !evm.Context().CanTransfer(stateDB, coreMsg.From(), coreMsg.Value()) {
 			return ctx, sdkerrors.Wrapf(
 				sdkerrors.ErrInsufficientFunds,
 				"failed to transfer %s from address %s using the EVM block context transfer function",
@@ -397,65 +417,82 @@ func (vbd EthValidateBasicDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simu
 
 	// For eth type cosmos tx, some fields should be veified as zero values,
 	// since we will only verify the signature against the hash of the MsgEthereumTx.Data
-	if wrapperTx, ok := tx.(protoTxProvider); ok {
-		protoTx := wrapperTx.GetProtoTx()
-		body := protoTx.Body
-		if body.Memo != "" || body.TimeoutHeight != uint64(0) || len(body.NonCriticalExtensionOptions) > 0 {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest,
-				"for eth tx body Memo TimeoutHeight NonCriticalExtensionOptions should be empty")
+	wrapperTx, ok := tx.(protoTxProvider)
+	if !ok {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid tx type %T, didn't implement interface protoTxProvider", tx)
+	}
+
+	protoTx := wrapperTx.GetProtoTx()
+	body := protoTx.Body
+	if body.Memo != "" || body.TimeoutHeight != uint64(0) || len(body.NonCriticalExtensionOptions) > 0 {
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest,
+			"for eth tx body Memo TimeoutHeight NonCriticalExtensionOptions should be empty")
+	}
+
+	if len(body.ExtensionOptions) != 1 {
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx length of ExtensionOptions should be 1")
+	}
+
+	txFee := sdk.Coins{}
+	txGasLimit := uint64(0)
+
+	params := vbd.evmKeeper.GetParams(ctx)
+	chainID := vbd.evmKeeper.ChainID()
+	ethCfg := params.ChainConfig.EthereumConfig(chainID)
+	baseFee := vbd.evmKeeper.GetBaseFee(ctx, ethCfg)
+
+	for _, msg := range protoTx.GetMsgs() {
+		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
+		if !ok {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
 		}
 
-		if len(body.ExtensionOptions) != 1 {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx length of ExtensionOptions should be 1")
+		// Validate `From` field
+		if msgEthTx.From != "" {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid From %s, expect empty string", msgEthTx.From)
 		}
 
-		txFee := sdk.Coins{}
-		txGasLimit := uint64(0)
+		txGasLimit += msgEthTx.GetGas()
 
-		for _, msg := range protoTx.GetMsgs() {
-			msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
-			if !ok {
-				return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
-			}
-			txGasLimit += msgEthTx.GetGas()
-
-			txData, err := evmtypes.UnpackTxData(msgEthTx.Data)
-			if err != nil {
-				return ctx, sdkerrors.Wrap(err, "failed to unpack MsgEthereumTx Data")
-			}
-
-			params := vbd.evmKeeper.GetParams(ctx)
-			chainID := vbd.evmKeeper.ChainID()
-			ethCfg := params.ChainConfig.EthereumConfig(chainID)
-			baseFee := vbd.evmKeeper.BaseFee(ctx, ethCfg)
-			if baseFee == nil && txData.TxType() == ethtypes.DynamicFeeTxType {
-				return ctx, sdkerrors.Wrap(ethtypes.ErrTxTypeNotSupported, "dynamic fee tx not supported")
-			}
-
-			txFee = txFee.Add(sdk.NewCoin(params.EvmDenom, sdk.NewIntFromBigInt(txData.Fee())))
+		txData, err := evmtypes.UnpackTxData(msgEthTx.Data)
+		if err != nil {
+			return ctx, sdkerrors.Wrap(err, "failed to unpack MsgEthereumTx Data")
 		}
 
-		authInfo := protoTx.AuthInfo
-		if len(authInfo.SignerInfos) > 0 {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx AuthInfo SignerInfos should be empty")
+		// return error if contract creation or call are disabled through governance
+		if !params.EnableCreate && txData.GetTo() == nil {
+			return ctx, sdkerrors.Wrap(evmtypes.ErrCreateDisabled, "failed to create new contract")
+		} else if !params.EnableCall && txData.GetTo() != nil {
+			return ctx, sdkerrors.Wrap(evmtypes.ErrCallDisabled, "failed to call contract")
 		}
 
-		if authInfo.Fee.Payer != "" || authInfo.Fee.Granter != "" {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx AuthInfo Fee payer and granter should be empty")
+		if baseFee == nil && txData.TxType() == ethtypes.DynamicFeeTxType {
+			return ctx, sdkerrors.Wrap(ethtypes.ErrTxTypeNotSupported, "dynamic fee tx not supported")
 		}
 
-		if !authInfo.Fee.Amount.IsEqual(txFee) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid AuthInfo Fee Amount (%s != %s)", authInfo.Fee.Amount, txFee)
-		}
+		txFee = txFee.Add(sdk.NewCoin(params.EvmDenom, sdkmath.NewIntFromBigInt(txData.Fee())))
+	}
 
-		if authInfo.Fee.GasLimit != txGasLimit {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid AuthInfo Fee GasLimit (%d != %d)", authInfo.Fee.GasLimit, txGasLimit)
-		}
+	authInfo := protoTx.AuthInfo
+	if len(authInfo.SignerInfos) > 0 {
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx AuthInfo SignerInfos should be empty")
+	}
 
-		sigs := protoTx.Signatures
-		if len(sigs) > 0 {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx Signatures should be empty")
-		}
+	if authInfo.Fee.Payer != "" || authInfo.Fee.Granter != "" {
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx AuthInfo Fee payer and granter should be empty")
+	}
+
+	if !authInfo.Fee.Amount.IsEqual(txFee) {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid AuthInfo Fee Amount (%s != %s)", authInfo.Fee.Amount, txFee)
+	}
+
+	if authInfo.Fee.GasLimit != txGasLimit {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid AuthInfo Fee GasLimit (%d != %d)", authInfo.Fee.GasLimit, txGasLimit)
+	}
+
+	sigs := protoTx.Signatures
+	if len(sigs) > 0 {
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "for eth tx Signatures should be empty")
 	}
 
 	return next(ctx, tx, simulate)
@@ -511,7 +548,7 @@ func (mfd EthMempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	if ctx.IsCheckTx() && !simulate {
 		params := mfd.evmKeeper.GetParams(ctx)
 		ethCfg := params.ChainConfig.EthereumConfig(mfd.evmKeeper.ChainID())
-		baseFee := mfd.evmKeeper.BaseFee(ctx, ethCfg)
+		baseFee := mfd.evmKeeper.GetBaseFee(ctx, ethCfg)
 		if baseFee == nil {
 			for _, msg := range tx.GetMsgs() {
 				ethMsg, ok := msg.(*evmtypes.MsgEthereumTx)
@@ -528,6 +565,39 @@ func (mfd EthMempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 				}
 			}
 		}
+	}
+
+	return next(ctx, tx, simulate)
+}
+
+// EthEmitEventDecorator emit events in ante handler in case of tx execution failed (out of block gas limit).
+type EthEmitEventDecorator struct {
+	evmKeeper EVMKeeper
+}
+
+// NewEthEmitEventDecorator creates a new EthEmitEventDecorator
+func NewEthEmitEventDecorator(evmKeeper EVMKeeper) EthEmitEventDecorator {
+	return EthEmitEventDecorator{evmKeeper}
+}
+
+// AnteHandle emits some basic events for the eth messages
+func (eeed EthEmitEventDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+	// After eth tx passed ante handler, the fee is deducted and nonce increased, it shouldn't be ignored by json-rpc,
+	// we need to emit some basic events at the very end of ante handler to be indexed by tendermint.
+	txIndex := eeed.evmKeeper.GetTxIndexTransient(ctx)
+	for i, msg := range tx.GetMsgs() {
+		msgEthTx, ok := msg.(*evmtypes.MsgEthereumTx)
+		if !ok {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "invalid message type %T, expected %T", msg, (*evmtypes.MsgEthereumTx)(nil))
+		}
+
+		// emit ethereum tx hash as event, should be indexed by tm tx indexer for query purpose.
+		// it's emitted in ante handler so we can query failed transaction (out of block gas limit).
+		ctx.EventManager().EmitEvent(sdk.NewEvent(
+			evmtypes.EventTypeEthereumTx,
+			sdk.NewAttribute(evmtypes.AttributeKeyEthereumTxHash, msgEthTx.Hash),
+			sdk.NewAttribute(evmtypes.AttributeKeyTxIndex, strconv.FormatUint(txIndex+uint64(i), 10)),
+		))
 	}
 
 	return next(ctx, tx, simulate)

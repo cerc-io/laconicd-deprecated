@@ -49,7 +49,11 @@ func NewEip712SigVerificationDecorator(ak evmtypes.AccountKeeper, signModeHandle
 
 // AnteHandle handles validation of EIP712 signed cosmos txs.
 // it is not run on RecheckTx
-func (svd Eip712SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (svd Eip712SigVerificationDecorator) AnteHandle(ctx sdk.Context,
+	tx sdk.Tx,
+	simulate bool,
+	next sdk.AnteHandler,
+) (newCtx sdk.Context, err error) {
 	// no need to verify signatures on recheck tx
 	if ctx.IsReCheckTx() {
 		return next(ctx, tx, simulate)
@@ -188,13 +192,7 @@ func VerifySignature(
 			return sdkerrors.Wrap(sdkerrors.ErrUnknownExtensionOptions, "tx doesnt contain expected amount of extension options")
 		}
 
-		var optIface ethermint.ExtensionOptionsWeb3TxI
-
-		if err := ethermintCodec.UnpackAny(opts[0], &optIface); err != nil {
-			return sdkerrors.Wrap(err, "failed to proto-unpack ExtensionOptionsWeb3Tx")
-		}
-
-		extOpt, ok := optIface.(*ethermint.ExtensionOptionsWeb3Tx)
+		extOpt, ok := opts[0].GetCachedValue().(*ethermint.ExtensionOptionsWeb3Tx)
 		if !ok {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidChainID, "unknown extension option")
 		}

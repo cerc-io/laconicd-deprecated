@@ -6,15 +6,20 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/gogo/protobuf/proto"
+
+	abci "github.com/tendermint/tendermint/abci/types"
+	tmjson "github.com/tendermint/tendermint/libs/json"
 
 	feemarkettypes "github.com/cerc-io/laconicd/x/feemarket/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/require"
@@ -57,7 +62,7 @@ type EvmTestSuite struct {
 	dynamicTxFee bool
 }
 
-/// DoSetupTest setup test environment, it uses`require.TestingT` to support both `testing.T` and `testing.B`.
+// DoSetupTest setup test environment, it uses`require.TestingT` to support both `testing.T` and `testing.B`.
 func (suite *EvmTestSuite) DoSetupTest(t require.TestingT) {
 	checkTx := false
 
@@ -72,7 +77,7 @@ func (suite *EvmTestSuite) DoSetupTest(t require.TestingT) {
 	require.NoError(t, err)
 	consAddress := sdk.ConsAddress(priv.PubKey().Address())
 
-	suite.app = app.Setup(suite.T(), checkTx, func(app *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	suite.app = app.Setup(checkTx, func(app *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
 		if suite.dynamicTxFee {
 			feemarketGenesis := feemarkettypes.DefaultGenesisState()
 			feemarketGenesis.Params.EnableHeight = 1
@@ -81,6 +86,39 @@ func (suite *EvmTestSuite) DoSetupTest(t require.TestingT) {
 		}
 		return genesis
 	})
+
+	coins := sdk.NewCoins(sdk.NewCoin(types.DefaultEVMDenom, sdkmath.NewInt(100000000000000)))
+	genesisState := app.NewTestGenesisState(suite.app.AppCodec())
+	b32address := sdk.MustBech32ifyAddressBytes(sdk.GetConfig().GetBech32AccountAddrPrefix(), priv.PubKey().Address().Bytes())
+	balances := []banktypes.Balance{
+		{
+			Address: b32address,
+			Coins:   coins,
+		},
+		{
+			Address: suite.app.AccountKeeper.GetModuleAddress(authtypes.FeeCollectorName).String(),
+			Coins:   coins,
+		},
+	}
+	var bankGenesis banktypes.GenesisState
+	suite.app.AppCodec().MustUnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis)
+	// Update balances and total supply
+	bankGenesis.Balances = append(bankGenesis.Balances, balances...)
+	bankGenesis.Supply = bankGenesis.Supply.Add(coins...).Add(coins...)
+	genesisState[banktypes.ModuleName] = suite.app.AppCodec().MustMarshalJSON(&bankGenesis)
+
+	stateBytes, err := tmjson.MarshalIndent(genesisState, "", " ")
+	require.NoError(t, err)
+
+	// Initialize the chain
+	suite.app.InitChain(
+		abci.RequestInitChain{
+			ChainId:         "ethermint_9000-1",
+			Validators:      []abci.ValidatorUpdate{},
+			ConsensusParams: app.DefaultConsensusParams,
+			AppStateBytes:   stateBytes,
+		},
+	)
 
 	suite.ctx = suite.app.BaseApp.NewContext(checkTx, tmproto.Header{
 		Height:          1,
@@ -106,25 +144,10 @@ func (suite *EvmTestSuite) DoSetupTest(t require.TestingT) {
 		LastResultsHash:    tmhash.Sum([]byte("last_result")),
 	})
 
-	coins := sdk.NewCoins(sdk.NewCoin(types.DefaultEVMDenom, sdk.NewInt(100000000000000)))
-	b32address := sdk.MustBech32ifyAddressBytes(sdk.GetConfig().GetBech32AccountAddrPrefix(), priv.PubKey().Address().Bytes())
-	accAddr, err := sdk.AccAddressFromBech32(b32address)
-	require.NoError(t, err)
-	acc := &ethermint.EthAccount{
-		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(accAddr.Bytes()), nil, 0, 0),
-		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
-	}
-
-	err = testutil.FundAccount(suite.app.BankKeeper, suite.ctx, accAddr, coins)
-	require.NoError(t, err)
-
-	err = testutil.FundModuleAccount(suite.app.BankKeeper, suite.ctx, authtypes.FeeCollectorName, coins)
-	require.NoError(t, err)
-
 	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
 
-	acc = &ethermint.EthAccount{
+	acc := &ethermint.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(address.Bytes()), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}
@@ -546,13 +569,14 @@ func (suite *EvmTestSuite) TestERC20TransferReverted() {
 			k.SetHooks(tc.hooks)
 
 			// add some fund to pay gas fee
-			k.SetBalance(suite.ctx, suite.from, big.NewInt(10000000000))
+			k.SetBalance(suite.ctx, suite.from, big.NewInt(1000000000000000))
 
 			contract := suite.deployERC20Contract()
 
 			data, err := types.ERC20Contract.ABI.Pack("transfer", suite.from, big.NewInt(10))
 			suite.Require().NoError(err)
 
+			gasPrice := big.NewInt(1000000000) // must be bigger than or equal to baseFee
 			nonce := k.GetNonce(suite.ctx, suite.from)
 			tx := types.NewTx(
 				suite.chainID,
@@ -560,7 +584,7 @@ func (suite *EvmTestSuite) TestERC20TransferReverted() {
 				&contract,
 				big.NewInt(0),
 				tc.gasLimit,
-				big.NewInt(1),
+				gasPrice,
 				nil,
 				nil,
 				data,
@@ -572,7 +596,7 @@ func (suite *EvmTestSuite) TestERC20TransferReverted() {
 
 			txData, err := types.UnpackTxData(tx.Data)
 			suite.Require().NoError(err)
-			_, err = k.DeductTxCostsFromUserBalance(suite.ctx, *tx, txData, "aphoton", true, true, true)
+			_, _, err = k.DeductTxCostsFromUserBalance(suite.ctx, *tx, txData, "aphoton", true, true, true)
 			suite.Require().NoError(err)
 
 			res, err := k.EthereumTx(sdk.WrapSDKContext(suite.ctx), tx)
@@ -580,6 +604,7 @@ func (suite *EvmTestSuite) TestERC20TransferReverted() {
 
 			suite.Require().True(res.Failed())
 			suite.Require().Equal(tc.expErr, res.VmError)
+			suite.Require().Empty(res.Logs)
 
 			after := k.GetBalance(suite.ctx, suite.from)
 
@@ -590,7 +615,7 @@ func (suite *EvmTestSuite) TestERC20TransferReverted() {
 			}
 
 			// check gas refund works: only deducted fee for gas used, rather than gas limit.
-			suite.Require().Equal(big.NewInt(int64(res.GasUsed)), new(big.Int).Sub(before, after))
+			suite.Require().Equal(new(big.Int).Mul(gasPrice, big.NewInt(int64(res.GasUsed))), new(big.Int).Sub(before, after))
 
 			// nonce should not be increased.
 			nonce2 := k.GetNonce(suite.ctx, suite.from)
@@ -661,13 +686,13 @@ func (suite *EvmTestSuite) TestContractDeploymentRevert() {
 // DummyHook implements EvmHooks interface
 type DummyHook struct{}
 
-func (dh *DummyHook) PostTxProcessing(ctx sdk.Context, from common.Address, to *common.Address, receipt *ethtypes.Receipt) error {
+func (dh *DummyHook) PostTxProcessing(ctx sdk.Context, msg core.Message, receipt *ethtypes.Receipt) error {
 	return nil
 }
 
 // FailureHook implements EvmHooks interface
 type FailureHook struct{}
 
-func (dh *FailureHook) PostTxProcessing(ctx sdk.Context, from common.Address, to *common.Address, receipt *ethtypes.Receipt) error {
+func (dh *FailureHook) PostTxProcessing(ctx sdk.Context, msg core.Message, receipt *ethtypes.Receipt) error {
 	return errors.New("mock error")
 }

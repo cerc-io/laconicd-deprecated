@@ -7,32 +7,29 @@ import (
 	"math/rand"
 	"time"
 
-	"cosmossdk.io/math"
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
-
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/x/auth/signing"
+	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-
 	"github.com/cerc-io/laconicd/encoding"
-	"github.com/cerc-io/laconicd/server/config"
 	"github.com/cerc-io/laconicd/tests"
 	"github.com/cerc-io/laconicd/x/evm/keeper"
 	"github.com/cerc-io/laconicd/x/evm/types"
+	"github.com/cosmos/cosmos-sdk/client"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 const (
@@ -118,7 +115,8 @@ func SimulateEthSimpleTransfer(ak types.AccountKeeper, k *keeper.Keeper) simtype
 }
 
 // SimulateEthCreateContract simulate create an ERC20 contract.
-// It makes operationSimulateEthCallContract the future operations of SimulateEthCreateContract to ensure valid contract call.
+// It makes operationSimulateEthCallContract the future operations of SimulateEthCreateContract
+// to ensure valid contract call.
 func SimulateEthCreateContract(ak types.AccountKeeper, k *keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, bapp *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
@@ -128,7 +126,7 @@ func SimulateEthCreateContract(ak types.AccountKeeper, k *keeper.Keeper) simtype
 		from := common.BytesToAddress(simAccount.Address)
 		nonce := k.GetNonce(ctx, from)
 
-		ctorArgs, err := types.ERC20Contract.ABI.Pack("", from, math.NewIntWithDecimal(1000, 18).BigInt())
+		ctorArgs, err := types.ERC20Contract.ABI.Pack("", from, sdkmath.NewIntWithDecimal(1000, 18).BigInt())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgEthereumTx, "can not pack owner and supply"), nil, err
 		}
@@ -206,21 +204,28 @@ func SimulateEthTx(
 }
 
 // CreateRandomValidEthTx create the ethereum tx with valid random values
-func CreateRandomValidEthTx(ctx *simulateContext, from, to *common.Address, amount *big.Int, data *hexutil.Bytes) (ethTx *types.MsgEthereumTx, err error) {
-	estimateGas, err := EstimateGas(ctx, from, to, data)
+func CreateRandomValidEthTx(ctx *simulateContext,
+	from,
+	to *common.Address,
+	amount *big.Int,
+	data *hexutil.Bytes,
+) (ethTx *types.MsgEthereumTx, err error) {
+	gasCap := ctx.rand.Uint64()
+	estimateGas, err := EstimateGas(ctx, from, to, data, gasCap)
 	if err != nil {
 		return nil, err
 	}
+	// we suppose that gasLimit should be larger than estimateGas to ensure tx validity
 	gasLimit := estimateGas + uint64(ctx.rand.Intn(int(sdktx.MaxGasWanted-estimateGas)))
 	ethChainID := ctx.keeper.ChainID()
 	chainConfig := ctx.keeper.GetParams(ctx.context).ChainConfig.EthereumConfig(ethChainID)
-	gasPrice := ctx.keeper.BaseFee(ctx.context, chainConfig)
+	gasPrice := ctx.keeper.GetBaseFee(ctx.context, chainConfig)
 	gasFeeCap := new(big.Int).Add(gasPrice, big.NewInt(int64(ctx.rand.Int())))
 	gasTipCap := big.NewInt(int64(ctx.rand.Int()))
 	nonce := ctx.keeper.GetNonce(ctx.context, *from)
 
 	if amount == nil {
-		amount, err = RandomTransferableAmount(ctx, *from, gasLimit, gasFeeCap)
+		amount, err = RandomTransferableAmount(ctx, *from, estimateGas, gasFeeCap)
 		if err != nil {
 			return nil, err
 		}
@@ -231,8 +236,51 @@ func CreateRandomValidEthTx(ctx *simulateContext, from, to *common.Address, amou
 	return ethTx, nil
 }
 
+// EstimateGas estimates the gas used by quering the keeper.
+func EstimateGas(ctx *simulateContext, from, to *common.Address, data *hexutil.Bytes, gasCap uint64) (gas uint64, err error) {
+	args, err := json.Marshal(&types.TransactionArgs{To: to, From: from, Data: data})
+	if err != nil {
+		return 0, err
+	}
+
+	res, err := ctx.keeper.EstimateGas(sdk.WrapSDKContext(ctx.context), &types.EthCallRequest{
+		Args:   args,
+		GasCap: gasCap,
+	})
+	if err != nil {
+		return 0, err
+	}
+	return res.Gas, nil
+}
+
+// RandomTransferableAmount generates a random valid transferable amount.
+// Transferable amount is between the range [0, spendable), spendable = balance - gasFeeCap * GasLimit.
+func RandomTransferableAmount(ctx *simulateContext, address common.Address, estimateGas uint64, gasFeeCap *big.Int) (amount *big.Int, err error) {
+	balance := ctx.keeper.GetBalance(ctx.context, address)
+	feeLimit := new(big.Int).Mul(gasFeeCap, big.NewInt(int64(estimateGas)))
+	if (feeLimit.Cmp(balance)) > 0 {
+		return nil, ErrNoEnoughBalance
+	}
+	spendable := new(big.Int).Sub(balance, feeLimit)
+	if spendable.Cmp(big.NewInt(0)) == 0 {
+		amount = new(big.Int).Set(spendable)
+		return amount, nil
+	}
+	simAmount, err := simtypes.RandPositiveInt(ctx.rand, sdkmath.NewIntFromBigInt(spendable))
+	if err != nil {
+		return nil, err
+	}
+	amount = simAmount.BigInt()
+	return amount, nil
+}
+
 // GetSignedTx sign the ethereum tx and packs it as a signing.Tx .
-func GetSignedTx(ctx *simulateContext, txBuilder client.TxBuilder, msg *types.MsgEthereumTx, prv cryptotypes.PrivKey) (signedTx signing.Tx, err error) {
+func GetSignedTx(
+	ctx *simulateContext,
+	txBuilder client.TxBuilder,
+	msg *types.MsgEthereumTx,
+	prv cryptotypes.PrivKey,
+) (signedTx signing.Tx, err error) {
 	builder, ok := txBuilder.(tx.ExtensionOptionsTxBuilder)
 	if !ok {
 		return nil, fmt.Errorf("can not initiate ExtensionOptionsTxBuilder")
@@ -256,48 +304,10 @@ func GetSignedTx(ctx *simulateContext, txBuilder client.TxBuilder, msg *types.Ms
 		return nil, err
 	}
 
-	fees := sdk.NewCoins(sdk.NewCoin(ctx.keeper.GetParams(ctx.context).EvmDenom, sdk.NewIntFromBigInt(txData.Fee())))
+	fees := sdk.NewCoins(sdk.NewCoin(ctx.keeper.GetParams(ctx.context).EvmDenom, sdkmath.NewIntFromBigInt(txData.Fee())))
 	builder.SetFeeAmount(fees)
 	builder.SetGasLimit(msg.GetGas())
 
 	signedTx = builder.GetTx()
 	return signedTx, nil
-}
-
-// RandomTransferableAmount generates a random valid transferable amount.
-// Transferable amount is between the range [0, spendable), spendable = balance - gasFeeCap * GasLimit.
-func RandomTransferableAmount(ctx *simulateContext, address common.Address, gasLimit uint64, gasFeeCap *big.Int) (amount *big.Int, err error) {
-	balance := ctx.keeper.GetBalance(ctx.context, address)
-	feeLimit := new(big.Int).Mul(gasFeeCap, big.NewInt(int64(gasLimit)))
-	if (feeLimit.Cmp(balance)) > 0 {
-		return nil, ErrNoEnoughBalance
-	}
-	spendable := new(big.Int).Sub(balance, feeLimit)
-	if spendable.Cmp(big.NewInt(0)) == 0 {
-		amount = new(big.Int).Set(spendable)
-		return amount, nil
-	}
-	simAmount, err := simtypes.RandPositiveInt(ctx.rand, sdk.NewIntFromBigInt(spendable))
-	if err != nil {
-		return nil, err
-	}
-	amount = simAmount.BigInt()
-	return amount, nil
-}
-
-// EstimateGas estimates the gas used by quering the keeper.
-func EstimateGas(ctx *simulateContext, from, to *common.Address, data *hexutil.Bytes) (gas uint64, err error) {
-	args, err := json.Marshal(&types.TransactionArgs{To: to, From: from, Data: data})
-	if err != nil {
-		return 0, err
-	}
-
-	res, err := ctx.keeper.EstimateGas(sdk.WrapSDKContext(ctx.context), &types.EthCallRequest{
-		Args:   args,
-		GasCap: config.DefaultGasCap,
-	})
-	if err != nil {
-		return 0, err
-	}
-	return res.Gas, nil
 }

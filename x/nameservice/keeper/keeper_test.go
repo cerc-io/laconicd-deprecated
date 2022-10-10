@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/cerc-io/laconicd/app"
@@ -16,6 +17,10 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
+var (
+	seed = int64(233)
+)
+
 type KeeperTestSuite struct {
 	suite.Suite
 	app         *app.EthermintApp
@@ -26,7 +31,7 @@ type KeeperTestSuite struct {
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	testApp := app.Setup(suite.T(), false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	testApp := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
@@ -37,7 +42,9 @@ func (suite *KeeperTestSuite) SetupTest() {
 	types.RegisterQueryServer(queryHelper, querier)
 	queryClient := types.NewQueryClient(queryHelper)
 
-	suite.accounts = app.CreateRandomAccounts(1)
+	r := rand.New(rand.NewSource(seed))
+	accs := app.RandomAccounts(r, 1)
+	suite.accounts = []sdk.AccAddress{accs[0].Address}
 	account := suite.accounts[0]
 	_ = testutil.FundAccount(testApp.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 		Denom:  sdk.DefaultBondDenom,
@@ -53,7 +60,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 }
 
 func TestParams(t *testing.T) {
-	testApp := app.Setup(t, false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	testApp := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})

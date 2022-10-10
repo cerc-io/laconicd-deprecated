@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	cryptocodec "github.com/cerc-io/laconicd/crypto/codec"
 	ethermint "github.com/cerc-io/laconicd/types"
@@ -11,7 +12,9 @@ import (
 
 // RegisterLegacyAminoCodec registers Interfaces from types, crypto, and SDK std.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	std.RegisterLegacyAminoCodec(cdc)
+	sdk.RegisterLegacyAminoCodec(cdc)
+	cryptocodec.RegisterCrypto(cdc)
+	codec.RegisterEvidences(cdc)
 }
 
 // RegisterInterfaces registers Interfaces from types, crypto, and SDK std.

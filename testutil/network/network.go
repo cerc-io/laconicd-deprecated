@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
@@ -16,12 +15,17 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
-	"github.com/tendermint/tendermint/libs/service"
+	tmcfg "github.com/tendermint/tendermint/config"
+	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
+	"github.com/tendermint/tendermint/libs/log"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/tendermint/tendermint/node"
 	tmclient "github.com/tendermint/tendermint/rpc/client"
+	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -50,7 +54,6 @@ import (
 	"github.com/cerc-io/laconicd/server/config"
 	ethermint "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cerc-io/laconicd/app"
 )
@@ -87,9 +90,9 @@ type Config struct {
 	AppConstructor    AppConstructor      // the ABCI application constructor
 	GenesisState      simapp.GenesisState // custom gensis state to provide
 	TimeoutCommit     time.Duration       // the consensus commitment timeout
-	AccountTokens     sdk.Int             // the amount of unique validator tokens (e.g. 1000node0)
-	StakingTokens     sdk.Int             // the amount of tokens each validator has available to stake
-	BondedTokens      sdk.Int             // the amount of tokens each validator stakes
+	AccountTokens     sdkmath.Int         // the amount of unique validator tokens (e.g. 1000node0)
+	StakingTokens     sdkmath.Int         // the amount of tokens each validator has available to stake
+	BondedTokens      sdkmath.Int         // the amount of tokens each validator stakes
 	NumValidators     int                 // the total number of validators to create and bond
 	ChainID           string              // the network chain-id
 	BondDenom         string              // the staking bond denomination
@@ -119,7 +122,7 @@ func DefaultConfig() Config {
 		AppConstructor:    NewAppConstructor(encCfg),
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
 		TimeoutCommit:     2 * time.Second,
-		ChainID:           fmt.Sprintf("ethermint_%d-1", rand.Int63n(9999999999999)+1),
+		ChainID:           fmt.Sprintf("ethermint_%d-1", tmrand.Int63n(9999999999999)+1),
 		NumValidators:     4,
 		BondDenom:         ethermint.AttoPhoton,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", ethermint.AttoPhoton),
@@ -172,7 +175,7 @@ type (
 		RPCClient     tmclient.Client
 		JSONRPCClient *ethclient.Client
 
-		tmNode      service.Service
+		tmNode      *node.Node
 		api         *api.Server
 		grpc        *grpc.Server
 		grpcWeb     *http.Server
@@ -320,18 +323,17 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			appCfg.JSONRPC.API = config.GetAPINamespaces()
 		}
 
-		logger := server.ZeroLogWrapper{Logger: zerolog.Nop()}
+		logger := log.NewNopLogger()
 		if cfg.EnableTMLogging {
-			logWriter := zerolog.ConsoleWriter{Out: os.Stderr}
-			logger = server.ZeroLogWrapper{Logger: zerolog.New(logWriter).Level(zerolog.InfoLevel).With().Timestamp().Logger()}
+			logger = log.NewTMLogger(log.NewSyncWriter(os.Stdout))
+			logger, _ = tmflags.ParseLogLevel("info", logger, tmcfg.DefaultLogLevel)
 		}
 
 		ctx.Logger = logger
-		ctx.Logger = logger
 
 		nodeDirName := fmt.Sprintf("node%d", i)
-		nodeDir := filepath.Join(network.BaseDir, nodeDirName, "laconicd")
-		clientDir := filepath.Join(network.BaseDir, nodeDirName, "laconiccli")
+		nodeDir := filepath.Join(network.BaseDir, nodeDirName, "evmosd")
+		clientDir := filepath.Join(network.BaseDir, nodeDirName, "evmoscli")
 		gentxsDir := filepath.Join(network.BaseDir, "gentxs")
 
 		err := os.MkdirAll(filepath.Join(nodeDir, "config"), 0o750)
@@ -428,7 +430,6 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			stakingtypes.NewCommissionRates(commission, sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
 		)
-
 		if err != nil {
 			return nil, err
 		}
@@ -439,7 +440,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 		}
 
 		memo := fmt.Sprintf("%s@%s:%s", nodeIDs[i], p2pURL.Hostname(), p2pURL.Port())
-		fee := sdk.NewCoins(sdk.NewCoin(cfg.BondDenom, sdk.NewInt(0)))
+		fee := sdk.NewCoins(sdk.NewCoin(cfg.BondDenom, sdkmath.NewInt(0)))
 		txBuilder := cfg.TxConfig.NewTxBuilder()
 		err = txBuilder.SetMsgs(createValMsg)
 		if err != nil {
@@ -526,13 +527,6 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 
 	l.Log("started test network")
 
-	height, err := network.LatestHeight()
-	if err != nil {
-		return nil, err
-	}
-
-	l.Log("started test network at height:", height)
-
 	// Ensure we cleanup incase any test was abruptly halted (e.g. SIGINT) as any
 	// defer in a test would not be called.
 	server.TrapSignal(network.Cleanup)
@@ -566,22 +560,22 @@ func (n *Network) WaitForHeight(h int64) (int64, error) {
 // provide a custom timeout.
 func (n *Network) WaitForHeightWithTimeout(h int64, t time.Duration) (int64, error) {
 	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-
-	timeout := time.NewTimer(t)
-	defer timeout.Stop()
+	timeout := time.After(t)
 
 	if len(n.Validators) == 0 {
 		return 0, errors.New("no validators available")
 	}
 
 	var latestHeight int64
+	val := n.Validators[0]
+
 	for {
 		select {
-		case <-timeout.C:
+		case <-timeout:
+			ticker.Stop()
 			return latestHeight, errors.New("timeout exceeded waiting for block")
 		case <-ticker.C:
-			status, err := n.Validators[0].RPCClient.Status(context.Background())
+			status, err := val.RPCClient.Status(context.Background())
 			if err == nil && status != nil {
 				latestHeight = status.SyncInfo.LatestBlockHeight
 				if latestHeight >= h {
@@ -633,6 +627,21 @@ func (n *Network) Cleanup() {
 			v.grpc.Stop()
 			if v.grpcWeb != nil {
 				_ = v.grpcWeb.Close()
+			}
+		}
+
+		if v.jsonrpc != nil {
+			shutdownCtx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancelFn()
+
+			if err := v.jsonrpc.Shutdown(shutdownCtx); err != nil {
+				v.tmNode.Logger.Error("HTTP server shutdown produced a warning", "error", err.Error())
+			} else {
+				v.tmNode.Logger.Info("HTTP server shut down, waiting 5 sec")
+				select {
+				case <-time.Tick(5 * time.Second):
+				case <-v.jsonrpcDone:
+				}
 			}
 		}
 	}
