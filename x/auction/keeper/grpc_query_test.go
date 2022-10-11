@@ -335,7 +335,7 @@ func (suite *KeeperTestSuite) createAuctionAndCommitBid(commitBid bool) (*types.
 	}
 
 	r := rand.New(rand.NewSource(seed))
-	accounts := app.RandomAccounts(r, 1)
+	accounts := app.RandomAccounts(r, accCount)
 	for _, account := range accounts {
 		err := testutil.FundAccount(suite.app.BankKeeper, ctx, account.Address, sdk.NewCoins(
 			sdk.Coin{Amount: sdk.NewInt(100), Denom: sdk.DefaultBondDenom},
