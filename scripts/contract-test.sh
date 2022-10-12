@@ -5,22 +5,22 @@ CHAINID="ethermint_9000-1"
 MONIKER="localtestnet"
 
 # stop and remove existing daemon and client data and process(es)
-rm -rf ~/.ethermint*
-pkill -f "ethermint*"
+rm -rf ~/.laconic*
+pkill -f "laconic*"
 
-make build-ethermint
+make build-laconic
 
 # if $KEY exists it should be override
 "$PWD"/build/laconicd keys add $KEY --keyring-backend test --algo "eth_secp256k1"
 
-# Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
+# Set moniker and chain-id for laconic (Moniker can be anything, chain-id must be an integer)
 "$PWD"/build/laconicd init $MONIKER --chain-id $CHAINID
 
 # Change parameter token denominations to aphoton
-cat $HOME/.ethermint/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="stake"' > $HOME/.ethermint/config/tmp_genesis.json && mv $HOME/.ethermint/config/tmp_genesis.json $HOME/.ethermint/config/genesis.json
-cat $HOME/.ethermint/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.ethermint/config/tmp_genesis.json && mv $HOME/.ethermint/config/tmp_genesis.json $HOME/.ethermint/config/genesis.json
-cat $HOME/.ethermint/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.ethermint/config/tmp_genesis.json && mv $HOME/.ethermint/config/tmp_genesis.json $HOME/.ethermint/config/genesis.json
-cat $HOME/.ethermint/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.ethermint/config/tmp_genesis.json && mv $HOME/.ethermint/config/tmp_genesis.json $HOME/.ethermint/config/genesis.json
+cat $HOME/.laconic/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="stake"' > $HOME/.laconic/config/tmp_genesis.json && mv $HOME/.laconic/config/tmp_genesis.json $HOME/.laconic/config/genesis.json
+cat $HOME/.laconic/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.laconic/config/tmp_genesis.json && mv $HOME/.laconic/config/tmp_genesis.json $HOME/.laconic/config/genesis.json
+cat $HOME/.laconic/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.laconic/config/tmp_genesis.json && mv $HOME/.laconic/config/tmp_genesis.json $HOME/.laconic/config/genesis.json
+cat $HOME/.laconic/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.laconic/config/tmp_genesis.json && mv $HOME/.laconic/config/tmp_genesis.json $HOME/.laconic/config/genesis.json
 
 # Allocate genesis accounts (cosmos formatted addresses)
 "$PWD"/build/laconicd add-genesis-account "$("$PWD"/build/laconicd keys show "$KEY" -a --keyring-backend test)" 100000000000000000000aphoton,10000000000000000000stake --keyring-backend test
@@ -60,4 +60,4 @@ cd tests/solidity/suites/basic/ && go get && go run main.go $ACCT
 # kill test laconicd
 echo "going to shutdown laconicd in 3 seconds..."
 sleep 3
-pkill -f "ethermint*"
+pkill -f "laconic*"

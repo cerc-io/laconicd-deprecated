@@ -61,9 +61,9 @@ if [[ ! "$DATA_CLI_DIR" ]]; then
     exit 1
 fi
 
-# Compile ethermint
-echo "compiling ethermint"
-make build-ethermint
+# Compile laconic
+echo "compiling laconic"
+make build
 
 # PID array declaration
 arr=()

@@ -24,38 +24,38 @@ USER4_KEY="user4"
 USER4_MNEMONIC="doll midnight silk carpet brush boring pluck office gown inquiry duck chief aim exit gain never tennis crime fragile ship cloud surface exotic patch"
 
 # remove existing daemon and client
-rm -rf ~/.ethermint*
+rm -rf ~/.laconic*
 
 # Import keys from mnemonics
-echo $VAL_MNEMONIC   | ethermintd keys add $VAL_KEY   --recover --keyring-backend test --algo "eth_secp256k1"
-echo $USER1_MNEMONIC | ethermintd keys add $USER1_KEY --recover --keyring-backend test --algo "eth_secp256k1"
-echo $USER2_MNEMONIC | ethermintd keys add $USER2_KEY --recover --keyring-backend test --algo "eth_secp256k1"
-echo $USER3_MNEMONIC | ethermintd keys add $USER3_KEY --recover --keyring-backend test --algo "eth_secp256k1"
-echo $USER4_MNEMONIC | ethermintd keys add $USER4_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $VAL_MNEMONIC   | laconicd keys add $VAL_KEY   --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER1_MNEMONIC | laconicd keys add $USER1_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER2_MNEMONIC | laconicd keys add $USER2_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER3_MNEMONIC | laconicd keys add $USER3_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER4_MNEMONIC | laconicd keys add $USER4_KEY --recover --keyring-backend test --algo "eth_secp256k1"
 
-ethermintd init $MONIKER --chain-id $CHAINID
+laconicd init $MONIKER --chain-id $CHAINID
 
 # Set gas limit in genesis
-cat $HOME/.ethermintd/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.ethermintd/config/tmp_genesis.json && mv $HOME/.ethermintd/config/tmp_genesis.json $HOME/.ethermintd/config/genesis.json
+cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
 
 # Reduce the block time to 1s
-sed -i -e '/^timeout_commit =/ s/= .*/= "850ms"/' $HOME/.ethermintd/config/config.toml
+sed -i -e '/^timeout_commit =/ s/= .*/= "850ms"/' $HOME/.laconicd/config/config.toml
 
 # Allocate genesis accounts (cosmos formatted addresses)
-ethermintd add-genesis-account "$(ethermintd keys show $VAL_KEY   -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
-ethermintd add-genesis-account "$(ethermintd keys show $USER1_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
-ethermintd add-genesis-account "$(ethermintd keys show $USER2_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
-ethermintd add-genesis-account "$(ethermintd keys show $USER3_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
-ethermintd add-genesis-account "$(ethermintd keys show $USER4_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
+laconicd add-genesis-account "$(laconicd keys show $VAL_KEY   -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
+laconicd add-genesis-account "$(laconicd keys show $USER1_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
+laconicd add-genesis-account "$(laconicd keys show $USER2_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
+laconicd add-genesis-account "$(laconicd keys show $USER3_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
+laconicd add-genesis-account "$(laconicd keys show $USER4_KEY -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
 
 # Sign genesis transaction
-ethermintd gentx $VAL_KEY 1000000000000000000stake --amount=1000000000000000000000aphoton --chain-id $CHAINID --keyring-backend test
+laconicd gentx $VAL_KEY 1000000000000000000stake --amount=1000000000000000000000aphoton --chain-id $CHAINID --keyring-backend test
 
 # Collect genesis tx
-ethermintd collect-gentxs
+laconicd collect-gentxs
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
-ethermintd validate-genesis
+laconicd validate-genesis
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-ethermintd start --pruning=nothing --rpc.unsafe --keyring-backend test --log_level info --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable
+laconicd start --pruning=nothing --rpc.unsafe --keyring-backend test --log_level info --json-rpc.api eth,txpool,personal,net,debug,web3 --api.enable

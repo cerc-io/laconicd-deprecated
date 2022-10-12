@@ -51,6 +51,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
+				suite.Require().NoError(err)
 				_, err = k.CreateBond(ctx, account, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))))
 				suite.Require().NoError(err)
 			}
@@ -116,6 +117,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
+				suite.Require().NoError(err)
 				bond, err := k.CreateBond(ctx, account, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))))
 				suiteRequire.NoError(err)
 				test.req.Id = bond.Id
