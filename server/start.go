@@ -43,6 +43,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/cerc-io/laconicd/gql"
 	"github.com/cerc-io/laconicd/indexer"
 	ethdebug "github.com/cerc-io/laconicd/rpc/namespaces/ethereum/debug"
 	"github.com/cerc-io/laconicd/server/config"
@@ -508,6 +509,9 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 			return err
 		}
 	}
+
+	// Start the GQL Server
+	go gql.Server(clientCtx)
 
 	defer func() {
 		if tmNode.IsRunning() {

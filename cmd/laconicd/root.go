@@ -130,6 +130,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	// add rosetta
 	rootCmd.AddCommand(sdkserver.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Codec))
 
+	// Add flags for GQL server.
+	rootCmd = srvflags.AddGQLFlags(rootCmd)
+
 	return rootCmd, encodingConfig
 }
 
