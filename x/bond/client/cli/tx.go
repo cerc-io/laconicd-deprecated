@@ -1,9 +1,9 @@
 package cli
 
 import (
+	"github.com/cerc-io/laconicd/server/flags"
 	"github.com/cerc-io/laconicd/x/bond/types"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -50,7 +50,7 @@ func NewCreateBondCmd() *cobra.Command {
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -75,7 +75,7 @@ func RefillBondCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlags(cmd)
 
 	return cmd
 }
@@ -101,7 +101,7 @@ func WithdrawBondCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
+	flags.AddTxFlags(cmd)
 
 	return cmd
 }
@@ -122,7 +122,6 @@ func CancelBondCmd() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-
+	flags.AddTxFlags(cmd)
 	return cmd
 }
