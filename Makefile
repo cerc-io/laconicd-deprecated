@@ -7,8 +7,8 @@ TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::'
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
-LACONICD_BINARY = laconicd
-LACONICD_DIR = laconicd
+LACONIC_BINARY = laconicd
+LACONIC_DIR = laconic
 BUILDDIR ?= $(CURDIR)/build
 SIMAPP = ./app
 HTTPS_GIT := https://github.com/cerc-io/laconicd.git
@@ -62,8 +62,8 @@ build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 # process linker flags
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=laconicd \
-		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(LACONICD_BINARY) \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=laconic \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=$(LACONIC_BINARY) \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 			-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
@@ -138,10 +138,10 @@ docker-build:
 	# update old container
 	docker rm laconicd || true
 	# create a new container from the latest image
-	docker create --name laconicd -t -i tharsis/laconicd:latest laconicd
+	docker create --name laconic -t -i cerc-io/laconicd:latest laconicd
 	# move the binaries to the ./build directory
 	mkdir -p ./build/
-	docker cp laconicd:/usr/bin/laconicd ./build/
+	docker cp laconic:/usr/bin/laconicd ./build/
 
 $(MOCKS_DIR):
 	mkdir -p $(MOCKS_DIR)
@@ -508,13 +508,13 @@ ifeq ($(OS),Windows_NT)
 	mkdir localnet-setup &
 	@$(MAKE) localnet-build
 
-	IF not exist "build/node0/$(LACONICD_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\laconicd\Z laconicd/node "./laconicd testnet --v 4 -o /laconicd --keyring-backend=test --ip-addresses laconicdnode0,laconicdnode1,laconicdnode2,laconicdnode3"
+	IF not exist "build/node0/$(LACONIC_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\laconicd\Z laconicd/node "./laconicd testnet --v 4 -o /laconicd --keyring-backend=test --ip-addresses laconicdnode0,laconicdnode1,laconicdnode2,laconicdnode3"
 	docker-compose up -d
 else
 	mkdir -p localnet-setup
 	@$(MAKE) localnet-build
 
-	if ! [ -f localnet-setup/node0/$(LACONICD_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/laconicd:Z laconicd/node "./laconicd testnet --v 4 -o /laconicd --keyring-backend=test --ip-addresses laconicdnode0,laconicdnode1,laconicdnode2,laconicdnode3"; fi
+	if ! [ -f localnet-setup/node0/$(LACONIC_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/localnet-setup:Z laconicd/node "./laconicd testnet --v 4 -o /laconicd --keyring-backend=test --ip-addresses laconicdnode0,laconicdnode1,laconicdnode2,laconicdnode3"; fi
 	docker-compose up -d
 endif
 
@@ -531,19 +531,19 @@ localnet-clean:
 localnet-unsafe-reset:
 	docker-compose down
 ifeq ($(OS),Windows_NT)
-	@docker run --rm -v $(CURDIR)\localnet-setup\node0\ethermitd:laconicd\Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node1\ethermitd:laconicd\Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node2\ethermitd:laconicd\Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
-	@docker run --rm -v $(CURDIR)\localnet-setup\node3\ethermitd:laconicd\Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node1\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node0\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node2\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node3\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 else
-	@docker run --rm -v $(CURDIR)/localnet-setup/node0/ethermitd:/laconicd:Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node1/ethermitd:/laconicd:Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node2/ethermitd:/laconicd:Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
-	@docker run --rm -v $(CURDIR)/localnet-setup/node3/ethermitd:/laconicd:Z laconicd/node "./laconicd unsafe-reset-all --home=/laconicd"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node0/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node1/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node2/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)/localnet-setup/node3/laconicd:/laconic:Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 endif
 
 # Clean testnet
 localnet-show-logstream:
 	docker-compose logs --tail=1000 -f
 
-.PHONY: build-docker-local-laconicd localnet-start localnet-stop
+.PHONY: build-docker-local-laconic localnet-start localnet-stop
