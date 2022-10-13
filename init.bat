@@ -17,26 +17,26 @@ set LOGLEVEL="info"
 rem to trace evm
 rem TRACE="--trace"
 set TRACE=""
-set HOME=%USERPROFILE%\.ethermintd
+set HOME=%USERPROFILE%\.laconicd
 echo %HOME%
 set ETHCONFIG=%HOME%\config\config.toml
 set GENESIS=%HOME%\config\genesis.json
 set TMPGENESIS=%HOME%\config\tmp_genesis.json
 
 @echo build binary
-go build .\cmd\ethermintd
+go build .\cmd\laconicd
 
 
 @echo clear home folder
 del /s /q %HOME%
 
-ethermintd config keyring-backend %KEYRING%
-ethermintd config chain-id %CHAINID%
+laconicd config keyring-backend %KEYRING%
+laconicd config chain-id %CHAINID%
 
-ethermintd keys add %KEY% --keyring-backend %KEYRING% --algo %KEYALGO%
+laconicd keys add %KEY% --keyring-backend %KEYRING% --algo %KEYALGO%
 
 rem Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
-ethermintd init %MONIKER% --chain-id %CHAINID% 
+laconicd init %MONIKER% --chain-id %CHAINID% 
 
 rem Change parameter token denominations to aphoton
 cat %GENESIS% | jq ".app_state[\"staking\"][\"params\"][\"bond_denom\"]=\"aphoton\""   >   %TMPGENESIS% && move %TMPGENESIS% %GENESIS%
@@ -54,18 +54,18 @@ rem setup
 sed -i "s/create_empty_blocks = true/create_empty_blocks = false/g" %ETHCONFIG%
 
 rem Allocate genesis accounts (cosmos formatted addresses)
-ethermintd add-genesis-account %KEY% 100000000000000000000000000aphoton --keyring-backend %KEYRING%
+laconicd add-genesis-account %KEY% 100000000000000000000000000aphoton --keyring-backend %KEYRING%
 
 rem Sign genesis transaction
-ethermintd gentx %KEY% 1000000000000000000000aphoton --keyring-backend %KEYRING% --chain-id %CHAINID%
+laconicd gentx %KEY% 1000000000000000000000aphoton --keyring-backend %KEYRING% --chain-id %CHAINID%
 
 rem Collect genesis tx
-ethermintd collect-gentxs
+laconicd collect-gentxs
 
 rem Run this to ensure everything worked and that the genesis file is setup correctly
-ethermintd validate-genesis
+laconicd validate-genesis
 
 
 
 rem Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-ethermintd start --pruning=nothing %TRACE% --log_level %LOGLEVEL% --minimum-gas-prices=0.0001aphoton
+laconicd start --pruning=nothing %TRACE% --log_level %LOGLEVEL% --minimum-gas-prices=0.0001aphoton

@@ -1,7 +1,7 @@
 {
   dotenv: '../../../scripts/.env',
   'ethermint_9000-1': {
-    cmd: 'ethermintd',
+    cmd: 'laconicd',
     'start-flags': '--trace',
     config: {
       consensus: {

@@ -1,7 +1,7 @@
 # Build chain
 
 ```bash
-# it will create binary in build folder with `ethermintd`
+# it will create binary in build folder with `laconicd`
 $ make build
 ```
 
