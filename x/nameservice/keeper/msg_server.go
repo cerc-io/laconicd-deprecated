@@ -161,6 +161,9 @@ func (m msgServer) DeleteName(c context.Context, msg *types.MsgDeleteNameAuthori
 func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*types.MsgRenewRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return nil, err
+	}
 	err = m.Keeper.ProcessRenewRecord(ctx, *msg)
 	if err != nil {
 		return nil, err
@@ -264,6 +267,9 @@ func (m msgServer) ReAssociateRecords(c context.Context, msg *types.MsgReAssocia
 		return nil, err
 	}
 	err = m.Keeper.ProcessReAssociateRecords(ctx, *msg)
+	if err != nil {
+		return nil, err
+	}
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeReAssociateRecords,

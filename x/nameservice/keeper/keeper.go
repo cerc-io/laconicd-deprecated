@@ -131,29 +131,61 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 	return records
 }
 
-// MatchRecords - get all matching records.
-func (k Keeper) MatchRecords(ctx sdk.Context, matchFn func(*types.RecordType) bool) []types.Record {
-	var records []types.Record
-
-	store := ctx.KVStore(k.storeKey)
-	itr := sdk.KVStorePrefixIterator(store, PrefixCIDToRecordIndex)
-	defer itr.Close()
-	for ; itr.Valid(); itr.Next() {
-		bz := store.Get(itr.Key())
-		if bz != nil {
-			var obj types.Record
-			k.cdc.MustUnmarshal(bz, &obj)
-			obj = recordObjToRecord(store, k.cdc, obj)
-			record := obj.ToRecordType()
-			if matchFn(&record) {
-				records = append(records, obj)
-			}
+func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
+	resultRecordIds := []string{}
+	for i, attr := range attributes {
+		attributeIndex := GetAttributesIndexKey(attr.Key, attr.Value)
+		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
+		if err != nil {
+			return nil, err
+		}
+		if i == 0 {
+			resultRecordIds = recordIds
+		} else {
+			resultRecordIds = getIntersection(recordIds, resultRecordIds)
 		}
 	}
 
-	return records
+	records := []types.Record{}
+	for _, id := range resultRecordIds {
+		record := k.GetRecord(ctx, id)
+		if record.Deleted {
+			continue
+		}
+		if !all && len(record.Names) == 0 {
+			continue
+		}
+		records = append(records, record)
+	}
+	return records, nil
 }
 
+func getIntersection(a []string, b []string) []string {
+	result := []string{}
+	if len(a) < len(b) {
+		for _, str := range a {
+			if contains(b, str) {
+				result = append(result, str)
+			}
+		}
+	} else {
+		for _, str := range b {
+			if contains(a, str) {
+				result = append(result, str)
+			}
+		}
+	}
+	return result
+}
+
+func contains(arr []string, str string) bool {
+	for _, s := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
+}
 func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord {
 	var records []*types.ExpiryQueueRecord
 
@@ -292,6 +324,9 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 		return fmt.Errorf("unsupported record type %s", record.Attributes["type"])
 	}
 
+	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
+	k.SetAttributeMapping(ctx, expiryTimeKey, record.Id)
+
 	return nil
 }
 
@@ -318,6 +353,22 @@ func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordId string
 	}
 	store.Set(key, bz)
 	return nil
+}
+
+func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, error) {
+	store := ctx.KVStore(k.storeKey)
+
+	if !store.Has(key) {
+		return nil, fmt.Errorf("store doesn't have key")
+	}
+
+	var recordIds []string
+	if err := json.Unmarshal(store.Get(key), &recordIds); err != nil {
+		return nil, fmt.Errorf("cannont unmarshal byte array, error, %w", err)
+	}
+
+	return recordIds, nil
+
 }
 
 // AddBondToRecordIndexEntry adds the Bond ID -> [Record] index entry.
