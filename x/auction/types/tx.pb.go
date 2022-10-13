@@ -362,7 +362,7 @@ type MsgClient interface {
 	CreateAuction(ctx context.Context, in *MsgCreateAuction, opts ...grpc.CallOption) (*MsgCreateAuctionResponse, error)
 	// CommitBid is the command for committing a bid
 	CommitBid(ctx context.Context, in *MsgCommitBid, opts ...grpc.CallOption) (*MsgCommitBidResponse, error)
-	//RevealBid is the command for revealing a bid
+	// RevealBid is the command for revealing a bid
 	RevealBid(ctx context.Context, in *MsgRevealBid, opts ...grpc.CallOption) (*MsgRevealBidResponse, error)
 }
 
@@ -407,7 +407,7 @@ type MsgServer interface {
 	CreateAuction(context.Context, *MsgCreateAuction) (*MsgCreateAuctionResponse, error)
 	// CommitBid is the command for committing a bid
 	CommitBid(context.Context, *MsgCommitBid) (*MsgCommitBidResponse, error)
-	//RevealBid is the command for revealing a bid
+	// RevealBid is the command for revealing a bid
 	RevealBid(context.Context, *MsgRevealBid) (*MsgRevealBidResponse, error)
 }
 
