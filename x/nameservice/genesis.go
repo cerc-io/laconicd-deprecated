@@ -59,7 +59,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) types.GenesisState {
 	records := keeper.ListRecords(ctx)
 
 	authorities := keeper.ListNameAuthorityRecords(ctx)
-	var authorityEntries []types.AuthorityEntry
+	authorityEntries := []types.AuthorityEntry{}
 	for name, record := range authorities {
 		authorityEntries = append(authorityEntries, types.AuthorityEntry{
 			Name:  name,

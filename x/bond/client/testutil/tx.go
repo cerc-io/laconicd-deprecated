@@ -242,7 +242,7 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 	testCases := []struct {
 		name      string
 		args      []string
-		getBondId bool
+		getBondID bool
 		err       bool
 	}{
 		{
@@ -275,7 +275,7 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			clientCtx := val.ClientCtx
 			cmd := cli.CancelBondCmd()
-			if tc.getBondId {
+			if tc.getBondID {
 				cmd := cli.GetQueryBondLists()
 
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{

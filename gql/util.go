@@ -3,6 +3,7 @@ package gql
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strconv"
 
@@ -85,7 +86,7 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record nstypes.Re
 
 func getGQLNameRecord(record *nstypes.NameRecord) (*NameRecord, error) {
 	if record == nil {
-		return nil, nil
+		return nil, fmt.Errorf("got nil record")
 	}
 
 	records := make([]*NameRecordEntry, len(record.History))
@@ -166,6 +167,7 @@ func getReferences(ctx context.Context, resolver QueryResolver, r *nstypes.Recor
 	var ids []string
 
 	for _, value := range r.Attributes {
+		//nolint: all
 		switch value.(type) {
 		case interface{}:
 			if obj, ok := value.(map[string]interface{}); ok {
@@ -186,7 +188,7 @@ func getAttributes(r *nstypes.RecordType) ([]*KeyValue, error) {
 }
 
 func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
-	var kvPairs []*KeyValue
+	kvPairs := []*KeyValue{}
 
 	trueVal := true
 	falseVal := false

@@ -32,7 +32,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 	return &IntegrationTestSuite{cfg: cfg}
 }
 
-func (s *IntegrationTestSuite) SetupSuite() {
+func (s *IntegrationTestSuite) SetupSuite() { //nolint: all
 	s.T().Log("setting up integration test suite")
 
 	var err error

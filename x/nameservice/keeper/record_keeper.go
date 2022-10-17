@@ -112,7 +112,7 @@ func (k RecordKeeper) GetAuctionToAuthorityMapping(ctx sdk.Context, auctionID st
 
 // UsesBond returns true if the bond has associated records.
 func (k RecordKeeper) UsesBond(ctx sdk.Context, bondId string) bool {
-	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondId)...)
+	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondId)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, bondIDPrefix)
 	defer itr.Close()
@@ -138,7 +138,7 @@ func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey storetypes.Sto
 func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types.Record {
 	var records []types.Record
 
-	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondID)...)
+	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondID)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, bondIDPrefix)
 	defer itr.Close()
@@ -148,7 +148,7 @@ func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, k.cdc, obj))
+			records = append(records, recordObjToRecord(store, obj))
 		}
 	}
 

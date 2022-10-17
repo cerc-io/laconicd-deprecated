@@ -274,7 +274,7 @@ func (suite *IntegrationTestSuite) TestGetCmdAuctionsByBidder() {
 	}
 }
 
-func (suite IntegrationTestSuite) createAuctionAndBid(createAuction, createBid bool) string {
+func (suite *IntegrationTestSuite) createAuctionAndBid(createAuction, createBid bool) string {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
 	auctionID := ""

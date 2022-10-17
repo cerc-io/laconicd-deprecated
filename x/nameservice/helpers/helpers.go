@@ -43,7 +43,7 @@ func BytesArrToStringArr(val []byte) ([]string, error) {
 
 func Int64ToBytes(num int64) []byte {
 	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.BigEndian, num)
+	_ = binary.Write(buf, binary.BigEndian, num)
 	return buf.Bytes()
 }
 

@@ -122,7 +122,7 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, k.cdc, obj))
+			records = append(records, recordObjToRecord(store, obj))
 		}
 	}
 
@@ -141,7 +141,7 @@ func (k Keeper) MatchRecords(ctx sdk.Context, matchFn func(*types.RecordType) bo
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			obj = recordObjToRecord(store, k.cdc, obj)
+			obj = recordObjToRecord(store, obj)
 			record := obj.ToRecordType()
 			if matchFn(&record) {
 				records = append(records, obj)
@@ -419,7 +419,7 @@ func (k Keeper) GetModuleBalances(ctx sdk.Context) []*types.AccountBalance {
 	return balances
 }
 
-func recordObjToRecord(store sdk.KVStore, codec codec.BinaryCodec, record types.Record) types.Record {
+func recordObjToRecord(store sdk.KVStore, record types.Record) types.Record {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(record.Id)
 
 	if store.Has(reverseNameIndexKey) {

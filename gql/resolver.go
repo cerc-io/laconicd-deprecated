@@ -34,7 +34,7 @@ type queryResolver struct{ *Resolver }
 func (q queryResolver) LookupAuthorities(ctx context.Context, names []string) ([]*AuthorityRecord, error) {
 	nsQueryClient := nstypes.NewQueryClient(q.ctx)
 	auctionQueryClient := auctiontypes.NewQueryClient(q.ctx)
-	var gqlResponse []*AuthorityRecord
+	gqlResponse := []*AuthorityRecord{}
 
 	for _, name := range names {
 		res, err := nsQueryClient.Whois(context.Background(), &nstypes.QueryWhoisRequest{Name: name})

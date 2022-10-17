@@ -119,10 +119,7 @@ func (k Keeper) CreateBond(ctx sdk.Context, ownerAddress sdk.AccAddress, coins s
 		Sequence: account.GetSequence(),
 	}.Generate()
 
-	maxBondAmount, err := k.getMaxBondAmount(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid max bond amount.")
-	}
+	maxBondAmount := k.getMaxBondAmount(ctx)
 
 	bond := types.Bond{Id: bondID, Owner: ownerAddress.String(), Balance: coins}
 	if bond.Balance.IsAnyGT(maxBondAmount) {
@@ -130,7 +127,7 @@ func (k Keeper) CreateBond(ctx sdk.Context, ownerAddress sdk.AccAddress, coins s
 	}
 
 	// Move funds into the bond account module.
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, bond.Balance)
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, bond.Balance)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +195,7 @@ func (k Keeper) ListBonds(ctx sdk.Context) []*types.Bond {
 func (k Keeper) QueryBondsByOwner(ctx sdk.Context, ownerAddress string) []types.Bond {
 	var bonds []types.Bond
 
-	ownerPrefix := append(prefixOwnerToBondsIndex, []byte(ownerAddress)...)
+	ownerPrefix := append(prefixOwnerToBondsIndex, []byte(ownerAddress)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, ownerPrefix)
 	defer itr.Close()
@@ -233,10 +230,7 @@ func (k Keeper) RefillBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddre
 		}
 	}
 
-	maxBondAmount, err := k.getMaxBondAmount(ctx)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid max bond amount.")
-	}
+	maxBondAmount := k.getMaxBondAmount(ctx)
 
 	updatedBalance := bond.Balance.Add(coins...)
 	if updatedBalance.IsAnyGT(maxBondAmount) {
@@ -244,7 +238,7 @@ func (k Keeper) RefillBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddre
 	}
 
 	// Move funds into the bond account module.
-	err = k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins)
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, ownerAddress, types.ModuleName, coins)
 	if err != nil {
 		return nil, err
 	}
@@ -314,10 +308,10 @@ func (k Keeper) CancelBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddre
 	return &bond, nil
 }
 
-func (k Keeper) getMaxBondAmount(ctx sdk.Context) (sdk.Coins, error) {
+func (k Keeper) getMaxBondAmount(ctx sdk.Context) sdk.Coins {
 	params := k.GetParams(ctx)
 	maxBondAmount := params.MaxBondAmount
-	return sdk.NewCoins(maxBondAmount), nil
+	return sdk.NewCoins(maxBondAmount)
 }
 
 // GetBondModuleBalances gets the bond module account(s) balances.

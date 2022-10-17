@@ -15,21 +15,21 @@ func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 // (2) associated bond exists, if bondID is not null.
 func RecordInvariants(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		//store := ctx.KVStore(k.storeKey)
-		//itr := sdk.KVStorePrefixIterator(store, PrefixCIDToRecordIndex)
-		//defer itr.Close()
-		//for ; itr.Valid(); itr.Next() {
-		//	bz := store.Get(itr.Key())
-		//	if bz != nil {
-		//		var obj types.RecordObj
-		//		k.cdc.MustUnmarshalBinaryBare(bz, &obj)
-		//		record := obj.ToRecord()
-		//
-		//		if record.BondID != "" && !k.bondKeeper.HasBond(ctx, record.BondID) {
-		//			return sdk.FormatInvariant(types.ModuleName, "record-bond", fmt.Sprintf("Bond not found for record ID: '%s'.", record.ID)), true
-		//		}
-		//	}
-		//}
+		// store := ctx.KVStore(k.storeKey)
+		// itr := sdk.KVStorePrefixIterator(store, PrefixCIDToRecordIndex)
+		// defer itr.Close()
+		// for ; itr.Valid(); itr.Next() {
+		// 	bz := store.Get(itr.Key())
+		// 	if bz != nil {
+		// 		var obj types.RecordObj
+		// 		k.cdc.MustUnmarshalBinaryBare(bz, &obj)
+		// 		record := obj.ToRecord()
+
+		// 		if record.BondID != "" && !k.bondKeeper.HasBond(ctx, record.BondID) {
+		// 			return sdk.FormatInvariant(types.ModuleName, "record-bond", fmt.Sprintf("Bond not found for record ID: '%s'.", record.ID)), true
+		// 		}
+		// 	}
+		// }
 
 		return "", false
 	}
