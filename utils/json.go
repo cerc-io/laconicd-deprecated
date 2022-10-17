@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/linking"
@@ -17,6 +16,7 @@ import (
 	"github.com/ipld/go-ipld-prime/storage/memstore"
 
 	canonicalJson "github.com/gibson042/canonicaljson-go"
+	"github.com/ipfs/go-cid"
 	cbor "github.com/ipfs/go-ipld-cbor"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	mh "github.com/multiformats/go-multihash"
