@@ -22,7 +22,7 @@ service Query {
   }
 
   // GetBondById
-  rpc GetBondById(QueryGetBondByIdRequest) returns (QueryGetBondByIdResponse) {
+  rpc GetBondByID(QueryGetBondByIDRequest) returns (QueryGetBondByIDResponse) {
     option (google.api.http).get = "/vulcanize/bond/v1beta1/bonds/{id}";
   }
 
@@ -58,13 +58,13 @@ message QueryGetBondsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryGetBondById
-message QueryGetBondByIdRequest {
+// QueryGetBondByID
+message QueryGetBondByIDRequest {
   string id = 1 [(gogoproto.moretags) = "json:\"id\" yaml:\"id\""];
 }
 
-// QueryGetBondByIdResponse returns QueryGetBondById query response
-message QueryGetBondByIdResponse {
+// QueryGetBondByIDResponse returns QueryGetBondByID query response
+message QueryGetBondByIDResponse {
   Bond bond = 1 [(gogoproto.moretags) = "json:\"bond\" yaml:\"bond\""];
 }
 

@@ -84,21 +84,21 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 
 	testCases := []struct {
 		msg         string
-		req         *types.QueryGetBondByIdRequest
+		req         *types.QueryGetBondByIDRequest
 		createBonds bool
 		errResponse bool
 		bondId      string
 	}{
 		{
 			"empty request",
-			&types.QueryGetBondByIdRequest{},
+			&types.QueryGetBondByIDRequest{},
 			false,
 			true,
 			"",
 		},
 		{
 			"Get Bond By ID",
-			&types.QueryGetBondByIdRequest{},
+			&types.QueryGetBondByIDRequest{},
 			true,
 			false,
 			"",
@@ -120,11 +120,11 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 				suiteRequire.NoError(err)
 				test.req.Id = bond.Id
 			}
-			resp, err := grpcClient.GetBondById(context.Background(), test.req)
+			resp, err := grpcClient.GetBondByID(context.Background(), test.req)
 			if !test.errResponse {
 				suiteRequire.Nil(err)
 				suiteRequire.NotNil(resp.GetBond())
-				suiteRequire.Equal(test.req.Id, resp.GetBond().GetId())
+				suiteRequire.Equal(test.req.Id, resp.GetBond().GetID())
 			} else {
 				suiteRequire.NotNil(err)
 				suiteRequire.Error(err)

@@ -51,7 +51,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	var recordID string
-	var bondId string
+	var bondID string
 
 	testCases := []struct {
 		name        string
@@ -76,12 +76,12 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 			func() {
 				CreateBond(s)
 				// get the bond id from bond list
-				bondId := GetBondId(s)
+				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
 				payloadPath := dir + "/example1.yml"
 				args := []string{
-					payloadPath, bondId,
+					payloadPath, bondID,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
@@ -118,8 +118,8 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 				err := json.Unmarshal(out.Bytes(), &records)
 				sr.NoError(err)
 				sr.Equal(tc.noOfRecords, len(records))
-				recordID = records[0].Id
-				bondId = GetBondId(s)
+				recordID = records[0].ID
+				bondID = GetBondID(s)
 			}
 		})
 	}
@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 				sr.Error(err)
 			} else {
 				sr.NoError(err)
-				var response types.QueryRecordByIdResponse
+				var response types.QueryRecordByIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
 				sr.NoError(err)
 				sr.NotNil(response.GetRecord())
@@ -173,7 +173,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 		},
 		{
 			"get records by bond-id",
-			[]string{bondId, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{bondID, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 		},
 	}
@@ -188,7 +188,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 				sr.Error(err)
 			} else {
 				sr.NoError(err)
-				var response types.QueryRecordByBondIdResponse
+				var response types.QueryRecordByBondIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
 				sr.NoError(err)
 			}
@@ -542,11 +542,11 @@ func createNameRecord(authorityName string, s *IntegrationTestSuite) {
 	CreateBond(s)
 
 	// Get the bond-id
-	bondId := GetBondId(s)
+	bondID := GetBondID(s)
 
 	// adding bond-id to name authority
 	args = []string{
-		authorityName, bondId,
+		authorityName, bondID,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=json", tmcli.OutputFlag),

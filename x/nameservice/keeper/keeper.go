@@ -175,7 +175,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 // ProcessSetRecord creates a record.
 func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordType, error) {
 	payload := msg.Payload.ToReadablePayload()
-	record := types.RecordType{Attributes: payload.Record, BondId: msg.BondId}
+	record := types.RecordType{Attributes: payload.Record, BondID: msg.BondId}
 
 	// Check signatures.
 	resourceSignBytes, _ := record.GetSignBytes()
@@ -184,9 +184,9 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
 	}
 
-	record.Id = cid
+	record.ID = cid
 
-	if exists := k.HasRecord(ctx, record.Id); exists {
+	if exists := k.HasRecord(ctx, record.ID); exists {
 		// Immutable record already exists. No-op.
 		return &record, nil
 	}
@@ -220,7 +220,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	params := k.GetParams(ctx)
 	rent := params.RecordRent
 
-	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondId, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
+	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondID, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
 	if err != nil {
 		return err
 	}
@@ -234,7 +234,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 
 	// Renewal doesn't change the name and bond indexes.
 	if !isRenewal {
-		k.AddBondToRecordIndexEntry(ctx, record.BondId, record.Id)
+		k.AddBondToRecordIndexEntry(ctx, record.BondID, record.ID)
 	}
 
 	return nil

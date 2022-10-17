@@ -25,8 +25,8 @@ func (k RecordKeeper) UsesAuction(ctx sdk.Context, auctionID string) bool {
 	return k.GetAuctionToAuthorityMapping(ctx, auctionID) != ""
 }
 
-func (k RecordKeeper) OnAuction(ctx sdk.Context, auctionId string) {
-	updateBlockChangeSetForAuction(ctx, k, auctionId)
+func (k RecordKeeper) OnAuction(ctx sdk.Context, auctionID string) {
+	updateBlockChangeSetForAuction(ctx, k, auctionID)
 }
 
 func (k RecordKeeper) OnAuctionBid(ctx sdk.Context, auctionID string, bidderAddress string) {
@@ -111,8 +111,8 @@ func (k RecordKeeper) GetAuctionToAuthorityMapping(ctx sdk.Context, auctionID st
 }
 
 // UsesBond returns true if the bond has associated records.
-func (k RecordKeeper) UsesBond(ctx sdk.Context, bondId string) bool {
-	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondId)...) //nolint: all
+func (k RecordKeeper) UsesBond(ctx sdk.Context, bondID string) bool {
+	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondID)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, bondIDPrefix)
 	defer itr.Close()

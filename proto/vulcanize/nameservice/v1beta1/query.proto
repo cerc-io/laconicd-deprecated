@@ -20,11 +20,11 @@ service Query {
     option (google.api.http).get = "/vulcanize/nameservice/v1beta1/records";
   }
   // Get record by id
-  rpc GetRecord(QueryRecordByIdRequest) returns (QueryRecordByIdResponse) {
+  rpc GetRecord(QueryRecordByIDRequest) returns (QueryRecordByIDResponse) {
     option (google.api.http).get = "/vulcanize/nameservice/v1beta1/records/{id}";
   }
   // Get records by bond id
-  rpc GetRecordByBondId(QueryRecordByBondIdRequest) returns (QueryRecordByBondIdResponse) {
+  rpc GetRecordByBondID(QueryRecordByBondIDRequest) returns (QueryRecordByBondIDResponse) {
     option (google.api.http).get = "/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}";
   }
   // Get nameservice module balance
@@ -98,25 +98,25 @@ message QueryListRecordsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryRecordByIdRequest is request type for nameservice records by id
-message QueryRecordByIdRequest {
+// QueryRecordByIDRequest is request type for nameservice records by id
+message QueryRecordByIDRequest {
   string id = 1;
 }
 
-// QueryRecordByIdResponse is response type for nameservice records by id
-message QueryRecordByIdResponse {
+// QueryRecordByIDResponse is response type for nameservice records by id
+message QueryRecordByIDResponse {
   Record record = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryRecordByBondIdRequest is request type for get the records by bond-id
-message QueryRecordByBondIdRequest {
+message QueryRecordByBondIDRequest {
   string id = 1;
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 // QueryRecordByBondIdResponse is response type for records list by bond-id
-message QueryRecordByBondIdResponse {
+message QueryRecordByBondIDResponse {
   repeated Record records = 1 [(gogoproto.nullable) = false];
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

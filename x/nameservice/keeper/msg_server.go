@@ -38,7 +38,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		sdk.NewEvent(
 			types.EventTypeSetRecord,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.GetSigner()),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.GetBondId()),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.GetBondId()),
 			sdk.NewAttribute(types.AttributeKeyPayload, msg.Payload.String()),
 		),
 		sdk.NewEvent(
@@ -48,7 +48,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		),
 	})
 
-	return &types.MsgSetRecordResponse{Id: record.Id}, nil
+	return &types.MsgSetRecordResponse{Id: record.ID}, nil
 }
 
 //nolint: all
@@ -124,7 +124,7 @@ func (m msgServer) SetAuthorityBond(c context.Context, msg *types.MsgSetAuthorit
 			types.EventTypeAuthorityBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 			sdk.NewAttribute(types.AttributeKeyName, msg.Name),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.BondId),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.BondId),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -163,6 +163,9 @@ func (m msgServer) DeleteName(c context.Context, msg *types.MsgDeleteNameAuthori
 func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*types.MsgRenewRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
+	if err != nil {
+		return nil, err
+	}
 	err = m.Keeper.ProcessRenewRecord(ctx, *msg)
 	if err != nil {
 		return nil, err
@@ -171,7 +174,7 @@ func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*t
 		sdk.NewEvent(
 			types.EventTypeRenewRecord,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyRecordId, msg.RecordId),
+			sdk.NewAttribute(types.AttributeKeyRecordID, msg.RecordId),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -198,8 +201,8 @@ func (m msgServer) AssociateBond(c context.Context, msg *types.MsgAssociateBond)
 		sdk.NewEvent(
 			types.EventTypeAssociateBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyRecordId, msg.RecordId),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.BondId),
+			sdk.NewAttribute(types.AttributeKeyRecordID, msg.RecordId),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.BondId),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -224,7 +227,7 @@ func (m msgServer) DissociateBond(c context.Context, msg *types.MsgDissociateBon
 		sdk.NewEvent(
 			types.EventTypeDissociateBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyRecordId, msg.RecordId),
+			sdk.NewAttribute(types.AttributeKeyRecordID, msg.RecordId),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -249,7 +252,7 @@ func (m msgServer) DissociateRecords(c context.Context, msg *types.MsgDissociate
 		sdk.NewEvent(
 			types.EventTypeDissociateRecords,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.BondId),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.BondId),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -260,19 +263,23 @@ func (m msgServer) DissociateRecords(c context.Context, msg *types.MsgDissociate
 	return &types.MsgDissociateRecordsResponse{}, nil
 }
 
-func (m msgServer) ReAssociateRecords(c context.Context, msg *types.MsgReAssociateRecords) (*types.MsgReAssociateRecordsResponse, error) {
+func (m msgServer) ReAssociateRecords(c context.Context, msg *types.MsgReAssociateRecords) (*types.MsgReAssociateRecordsResponse, error) { //nolint: all
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
 	}
 	err = m.Keeper.ProcessReAssociateRecords(ctx, *msg)
+	if err != nil {
+		return nil, err
+	}
+
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeReAssociateRecords,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyOldBondId, msg.OldBondId),
-			sdk.NewAttribute(types.AttributeKeyNewBondId, msg.NewBondId),
+			sdk.NewAttribute(types.AttributeKeyOldBondID, msg.OldBondId),
+			sdk.NewAttribute(types.AttributeKeyNewBondID, msg.NewBondId),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

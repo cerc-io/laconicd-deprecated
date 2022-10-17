@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestTxRefillBond() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				tc.args = append([]string{bond.GetId()}, tc.args...)
+				tc.args = append([]string{bond.GetID()}, tc.args...)
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.err {
@@ -131,14 +131,14 @@ func (s *IntegrationTestSuite) TestTxRefillBond() {
 				sr.Zero(d.Code)
 
 				// checking the balance of bond
-				cmd := cli.GetBondByIdCmd()
+				cmd := cli.GetBondByIDCmd()
 
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{
 					fmt.Sprintf(tc.args[0]),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				})
 				sr.NoError(err)
-				var queryResponse types.QueryGetBondByIdResponse
+				var queryResponse types.QueryGetBondByIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
 				sr.NoError(err)
 
@@ -204,7 +204,7 @@ func (s *IntegrationTestSuite) TestTxWithdrawAmountFromBond() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				tc.args = append([]string{bond.GetId()}, tc.args...)
+				tc.args = append([]string{bond.GetID()}, tc.args...)
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.err {
@@ -217,14 +217,14 @@ func (s *IntegrationTestSuite) TestTxWithdrawAmountFromBond() {
 				sr.Zero(d.Code)
 
 				// checking the balance of bond
-				cmd := cli.GetBondByIdCmd()
+				cmd := cli.GetBondByIDCmd()
 
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{
 					fmt.Sprintf(tc.args[0]),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				})
 				sr.NoError(err)
-				var queryResponse types.QueryGetBondByIdResponse
+				var queryResponse types.QueryGetBondByIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
 				sr.NoError(err)
 
@@ -288,7 +288,7 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				tc.args = append([]string{bond.GetId()}, tc.args...)
+				tc.args = append([]string{bond.GetID()}, tc.args...)
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.err {
@@ -301,18 +301,18 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 				sr.Zero(d.Code)
 
 				// checking the bond exists or not after cancel
-				cmd := cli.GetBondByIdCmd()
+				cmd := cli.GetBondByIDCmd()
 
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{
 					fmt.Sprintf(tc.args[0]),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				})
 				sr.NoError(err)
-				var queryResponse types.QueryGetBondByIdResponse
+				var queryResponse types.QueryGetBondByIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
 				sr.NoError(err)
 
-				sr.Zero(queryResponse.GetBond().GetId())
+				sr.Zero(queryResponse.GetBond().GetID())
 			}
 		})
 	}

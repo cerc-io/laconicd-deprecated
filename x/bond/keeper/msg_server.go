@@ -62,7 +62,7 @@ func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*typ
 		sdk.NewEvent(
 			types.EventTypeRefillBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.Id),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Coins.String()),
 		),
 		sdk.NewEvent(
@@ -92,7 +92,7 @@ func (k msgServer) WithdrawBond(c context.Context, msg *types.MsgWithdrawBond) (
 		sdk.NewEvent(
 			types.EventTypeWithdrawBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.Id),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Coins.String()),
 		),
 		sdk.NewEvent(
@@ -120,7 +120,7 @@ func (k msgServer) CancelBond(c context.Context, msg *types.MsgCancelBond) (*typ
 		sdk.NewEvent(
 			types.EventTypeCancelBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.Id),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

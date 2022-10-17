@@ -29,7 +29,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) types.GenesisState {
 
 	genesisAuctions := []*types.Auction{}
 	for _, auction := range auctions {
-		genesisAuctions = append(genesisAuctions, &auction)
+		genesisAuctions = append(genesisAuctions, &auction) //nolint: all
 	}
 	return types.GenesisState{Params: params, Auctions: genesisAuctions}
 }

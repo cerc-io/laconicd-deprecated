@@ -99,11 +99,11 @@ func (msg MsgReserveAuthority) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgSetAuthorityBond is the constructor function for MsgSetAuthorityBond.
-func NewMsgSetAuthorityBond(name string, bondId string, signer sdk.AccAddress) MsgSetAuthorityBond {
+func NewMsgSetAuthorityBond(name string, bondID string, signer sdk.AccAddress) MsgSetAuthorityBond {
 	return MsgSetAuthorityBond{
 		Name:   name,
 		Signer: signer.String(),
-		BondId: bondId,
+		BondId: bondID,
 	}
 }
 

@@ -65,13 +65,13 @@ func RefillBondCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bondId := args[0]
+			bondID := args[0]
 			coin, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRefillBond(bondId, coin, clientCtx.GetFromAddress())
+			msg := types.NewMsgRefillBond(bondID, coin, clientCtx.GetFromAddress())
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
@@ -91,13 +91,13 @@ func WithdrawBondCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bondId := args[0]
+			bondID := args[0]
 			coin, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawBond(bondId, coin, clientCtx.GetFromAddress())
+			msg := types.NewMsgWithdrawBond(bondID, coin, clientCtx.GetFromAddress())
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
@@ -117,8 +117,8 @@ func CancelBondCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bondId := args[0]
-			msg := types.NewMsgCancelBond(bondId, clientCtx.GetFromAddress())
+			bondID := args[0]
+			msg := types.NewMsgCancelBond(bondID, clientCtx.GetFromAddress())
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}

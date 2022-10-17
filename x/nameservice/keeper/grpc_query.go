@@ -30,8 +30,7 @@ func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsReque
 	ctx := sdk.UnwrapSDKContext(c)
 	attributes := req.GetAttributes()
 	all := req.GetAll()
-	records := []types.Record{}
-
+	var records []types.Record
 	if len(attributes) > 0 {
 		records = q.Keeper.MatchRecords(ctx, func(record *types.RecordType) bool {
 			return MatchOnAttributes(record, attributes, all)
@@ -43,20 +42,20 @@ func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsReque
 	return &types.QueryListRecordsResponse{Records: records}, nil
 }
 
-func (q Querier) GetRecord(c context.Context, req *types.QueryRecordByIdRequest) (*types.QueryRecordByIdResponse, error) {
+func (q Querier) GetRecord(c context.Context, req *types.QueryRecordByIDRequest) (*types.QueryRecordByIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	id := req.GetId()
 	if !q.Keeper.HasRecord(ctx, id) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "Record not found.")
 	}
 	record := q.Keeper.GetRecord(ctx, id)
-	return &types.QueryRecordByIdResponse{Record: record}, nil
+	return &types.QueryRecordByIDResponse{Record: record}, nil
 }
 
-func (q Querier) GetRecordByBondId(c context.Context, req *types.QueryRecordByBondIdRequest) (*types.QueryRecordByBondIdResponse, error) {
+func (q Querier) GetRecordByBondID(c context.Context, req *types.QueryRecordByBondIDRequest) (*types.QueryRecordByBondIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	records := q.recordKeeper.QueryRecordsByBond(ctx, req.GetId())
-	return &types.QueryRecordByBondIdResponse{Records: records}, nil
+	return &types.QueryRecordByBondIDResponse{Records: records}, nil
 }
 
 func (q Querier) GetNameServiceModuleBalance(c context.Context, _ *types.GetNameServiceModuleBalanceRequest) (*types.GetNameServiceModuleBalanceResponse, error) {
@@ -122,7 +121,7 @@ func matchOnRecordField(record *types.RecordType, attr *types.QueryListRecordsRe
 	case BondIDAttributeName:
 		{
 			fieldFound = true
-			if record.BondId != attr.Value.GetString_() {
+			if record.BondID != attr.Value.GetString_() {
 				matched = false
 				return
 			}
