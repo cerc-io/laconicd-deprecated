@@ -36,7 +36,6 @@ func GenerateHash(json map[string]interface{}) (string, []byte, error) {
 		return "", nil, err
 	}
 
-	//cid, err := CIDFromJSONBytes(content)
 	cidString, err := CIDFromJSONBytesUsingIpldPrime(content)
 	if err != nil {
 		return "", nil, err
@@ -81,7 +80,7 @@ func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 	// This gathers together any parameters that might be needed when making a link.
 	// (For CIDs, the version, the codec, and the multihash type are all parameters we'll need.)
 	// Often, you can probably make this a constant for your whole application.
-	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{ //nolint:golint
 		Version:  1,    // Usually '1'.
 		Codec:    0x71, // 0x71 means "dag-cbor" -- See the multicodecs table: https://github.com/multiformats/multicodec/
 		MhType:   0x12, // 0x12 means "sha2-256" -- See the multicodecs table: https://github.com/multiformats/multicodec/

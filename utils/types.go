@@ -12,10 +12,13 @@ import (
 	set "github.com/deckarep/golang-set"
 )
 
-func Int64ToBytes(num int64) []byte {
+func Int64ToBytes(num int64) ([]byte, error) {
 	buf := new(bytes.Buffer)
-	binary.Write(buf, binary.BigEndian, num)
-	return buf.Bytes()
+	if err := binary.Write(buf, binary.BigEndian, num); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
 
 func SetToSlice(set set.Set) []string {

@@ -31,19 +31,19 @@ type HandlerOptions struct {
 }
 
 func (options HandlerOptions) validate() error {
-	if options.AccountKeeper == nil {
+	if options.AccountKeeper == evmtypes.AccountKeeper(nil) {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
 	}
-	if options.BankKeeper == nil {
+	if options.BankKeeper == evmtypes.BankKeeper(nil) {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
-	if options.SignModeHandler == nil {
+	if options.SignModeHandler == authsigning.SignModeHandler(nil) {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
 	}
-	if options.FeeMarketKeeper == nil {
+	if options.FeeMarketKeeper == evmtypes.FeeMarketKeeper(nil) {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "fee market keeper is required for AnteHandler")
 	}
-	if options.EvmKeeper == nil {
+	if options.EvmKeeper == EVMKeeper(nil) {
 		return sdkerrors.Wrap(sdkerrors.ErrLogic, "evm keeper is required for AnteHandler")
 	}
 	return nil
