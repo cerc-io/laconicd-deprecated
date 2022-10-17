@@ -63,6 +63,7 @@ func (s *IntegrationTestSuite) TestTxCreateBond() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestTxRefillBond() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -148,6 +149,7 @@ func (s *IntegrationTestSuite) TestTxRefillBond() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestTxWithdrawAmountFromBond() {
 	val := s.network.Validators[0]
 	sr := s.Require()

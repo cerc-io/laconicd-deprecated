@@ -17,7 +17,6 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 
 		// Add to record expiry queue if expiry time is in the future.
 		expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
-
 		if err != nil {
 			panic(err)
 		}
@@ -33,7 +32,7 @@ func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, data types.GenesisState)
 	}
 
 	for _, authority := range data.Authorities {
-		//Only import authorities that are marked active.
+		// Only import authorities that are marked active.
 		if authority.Entry.Status == types.AuthorityActive {
 			keeper.SetNameAuthority(ctx, authority.Name, authority.Entry)
 

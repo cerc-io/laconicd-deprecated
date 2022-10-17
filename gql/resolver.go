@@ -125,7 +125,6 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 			All:        (all != nil && *all),
 		},
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +141,6 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 	}
 
 	return gqlResponse, nil
-
 }
 
 func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error) {

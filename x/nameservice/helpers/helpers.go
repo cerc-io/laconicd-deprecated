@@ -7,11 +7,10 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"encoding/json"
+	"sort"
 
 	wnsUtils "github.com/cerc-io/laconicd/utils"
 	set "github.com/deckarep/golang-set"
-
-	"sort"
 )
 
 func StringToBytes(val string) []byte {
@@ -62,7 +61,6 @@ func MarshalMapToJSONBytes(val map[string]interface{}) (bytes []byte) {
 func UnMarshalMapFromJSONBytes(bytes []byte) map[string]interface{} {
 	var val map[string]interface{}
 	err := json.Unmarshal(bytes, &val)
-
 	if err != nil {
 		panic("Marshal error.")
 	}

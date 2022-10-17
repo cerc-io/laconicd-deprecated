@@ -66,7 +66,6 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 			true,
 			0,
 			func() {
-
 			},
 		},
 		{
@@ -235,7 +234,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 func (s *IntegrationTestSuite) TestGetCmdWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "test2"
+	authorityName := "test2"
 	testCases := []struct {
 		name        string
 		args        []string
@@ -249,7 +248,6 @@ func (s *IntegrationTestSuite) TestGetCmdWhoIs() {
 			true,
 			1,
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -306,7 +304,7 @@ func (s *IntegrationTestSuite) TestGetCmdWhoIs() {
 func (s *IntegrationTestSuite) TestGetCmdLookupCRN() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "test1"
+	authorityName := "test1"
 	testCases := []struct {
 		name        string
 		args        []string
@@ -320,7 +318,6 @@ func (s *IntegrationTestSuite) TestGetCmdLookupCRN() {
 			true,
 			0,
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -400,7 +397,7 @@ func (s *IntegrationTestSuite) TestGetCmdLookupCRN() {
 func (s *IntegrationTestSuite) GetRecordExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "GetRecordExpiryQueue"
+	authorityName := "GetRecordExpiryQueue"
 
 	testCasesForRecordsExpiry := []struct {
 		name        string
@@ -415,7 +412,6 @@ func (s *IntegrationTestSuite) GetRecordExpiryQueue() {
 			true,
 			0,
 			func(authorityName string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{
@@ -451,10 +447,11 @@ func (s *IntegrationTestSuite) GetRecordExpiryQueue() {
 		})
 	}
 }
+
 func (s *IntegrationTestSuite) TestGetAuthorityExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetAuthorityExpiryQueue"
+	authorityName := "TestGetAuthorityExpiryQueue"
 
 	testCases := []struct {
 		name   string
@@ -467,7 +464,6 @@ func (s *IntegrationTestSuite) TestGetAuthorityExpiryQueue() {
 			[]string{"invalid", fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			true,
 			func(authorityName string) {
-
 			},
 		},
 		{

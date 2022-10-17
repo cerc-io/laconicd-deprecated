@@ -13,9 +13,7 @@ import (
 
 const testCommitHash = "71D8CF34026E32A3A34C2C2D4ADF25ABC8D7943A4619761BE27F196603D91B9D"
 
-var (
-	seed = int64(233)
-)
+var seed = int64(233)
 
 func (suite *KeeperTestSuite) TestGrpcGetAllAuctions() {
 	client, ctx, k := suite.queryClient, suite.ctx, suite.app.AuctionKeeper

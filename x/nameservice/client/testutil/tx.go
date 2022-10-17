@@ -42,7 +42,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	var genesisState = s.cfg.GenesisState
+	genesisState := s.cfg.GenesisState
 	var nsData nstypes.GenesisState
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[nstypes.ModuleName], &nsData))
 
@@ -222,7 +222,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 func (s *IntegrationTestSuite) TestGetCmdReserveName() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "testtest"
+	authorityName := "testtest"
 	testCases := []struct {
 		name string
 		args []string
@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) TestGetCmdReserveName() {
 func (s *IntegrationTestSuite) TestGetCmdSetName() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetCmdSetName"
+	authorityName := "TestGetCmdSetName"
 	testCases := []struct {
 		name   string
 		args   []string
@@ -307,7 +307,6 @@ func (s *IntegrationTestSuite) TestGetCmdSetName() {
 			},
 			true,
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -394,7 +393,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetName() {
 func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetCmdSetAuthorityBond"
+	authorityName := "TestGetCmdSetAuthorityBond"
 
 	testCases := []struct {
 		name   string
@@ -413,7 +412,6 @@ func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 			},
 			true,
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -480,7 +478,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetCmdDeleteName"
+	authorityName := "TestGetCmdDeleteName"
 	testCasesForDeletingName := []struct {
 		name   string
 		args   []string
@@ -498,7 +496,6 @@ func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 			},
 			true,
 			func(authorityName string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{
@@ -564,7 +561,6 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				return ""
 			},
 			func(recordId string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{
@@ -807,7 +803,6 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 				return "", ""
 			},
 			func(recordId, bondId string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{

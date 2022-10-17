@@ -266,7 +266,6 @@ $ %s query %s query-by-bond [bond id]
 				return err
 			}
 			return clientCtx.PrintProto(res)
-
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

@@ -73,7 +73,8 @@ type Keeper struct {
 
 // NewKeeper creates new instances of the nameservice Keeper
 func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
-	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey storetypes.StoreKey, ps paramtypes.Subspace) Keeper {
+	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey storetypes.StoreKey, ps paramtypes.Subspace,
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
@@ -295,7 +296,6 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 // InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
 func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
 	expiryTime, err := time.Parse(time.RFC3339, val.ExpiryTime)
-
 	if err != nil {
 		panic(err)
 	}
@@ -308,7 +308,6 @@ func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
 // DeleteRecordExpiryQueue deletes a record CID from the record expiry queue.
 func (k Keeper) DeleteRecordExpiryQueue(ctx sdk.Context, record types.Record) {
 	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
-
 	if err != nil {
 		panic(err)
 	}
@@ -344,7 +343,6 @@ func (k Keeper) GetAllExpiredRecords(ctx sdk.Context, currTime time.Time) (expir
 
 	for ; itr.Valid(); itr.Next() {
 		timeslice, err := helpers.BytesArrToStringArr(itr.Value())
-
 		if err != nil {
 			panic(err)
 		}
@@ -426,7 +424,6 @@ func recordObjToRecord(store sdk.KVStore, codec codec.BinaryCodec, record types.
 
 	if store.Has(reverseNameIndexKey) {
 		names, err := helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
-
 		if err != nil {
 			panic(err)
 		}

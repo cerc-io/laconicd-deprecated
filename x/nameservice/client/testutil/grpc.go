@@ -60,11 +60,12 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/whois/%s"
-	var authorityName = "QueryWhoIS"
+	authorityName := "QueryWhoIS"
 	testCases := []struct {
 		name      string
 		url       string
@@ -78,7 +79,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -132,7 +132,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?crn=%s"
-	var authorityName = "QueryLookUp"
+	authorityName := "QueryLookUp"
 
 	testCases := []struct {
 		name      string
@@ -147,7 +147,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -181,6 +180,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -199,7 +199,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -253,6 +252,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -271,7 +271,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -325,6 +324,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -343,7 +343,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -483,7 +482,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -538,7 +536,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetNameServiceModuleBalance() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -590,7 +587,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{

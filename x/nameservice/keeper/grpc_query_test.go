@@ -220,7 +220,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 func (suite *KeeperTestSuite) TestGrpcQueryWhoIS() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
-	var authorityName = "TestGrpcQueryWhoIS"
+	authorityName := "TestGrpcQueryWhoIS"
 
 	testCases := []struct {
 		msg         string

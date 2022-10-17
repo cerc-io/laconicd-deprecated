@@ -38,6 +38,7 @@ func getGQLCoins(coins sdk.Coins) []*Coin {
 
 	return gqlCoins
 }
+
 func GetGQLNameAuthorityRecord(record *nstypes.NameAuthority) (*AuthorityRecord, error) {
 	if record == nil {
 		return nil, nil
@@ -116,26 +117,6 @@ func getGQLBond(bondObj *bondtypes.Bond) (*Bond, error) {
 		Owner:   bondObj.Owner,
 		Balance: getGQLCoins(bondObj.Balance),
 	}, nil
-}
-
-func matchBondOnAttributes(bondObj *bondtypes.Bond, attributes []*KeyValueInput) bool {
-	for _, attr := range attributes {
-		switch attr.Key {
-		case OwnerAttributeName:
-			{
-				if attr.Value.String == nil || bondObj.Owner != *attr.Value.String {
-					return false
-				}
-			}
-		default:
-			{
-				// Only attributes explicitly listed in the switch are queryable.
-				return false
-			}
-		}
-	}
-
-	return true
 }
 
 func getAuctionBid(bid *auctiontypes.Bid) *AuctionBid {

@@ -45,6 +45,7 @@ func (k msgServer) CreateBond(c context.Context, msg *types.MsgCreateBond) (*typ
 	return &types.MsgCreateBondResponse{}, nil
 }
 
+//nolint: all
 func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*types.MsgRefillBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -74,6 +75,7 @@ func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*typ
 	return &types.MsgRefillBondResponse{}, nil
 }
 
+//nolint: all
 func (k msgServer) WithdrawBond(c context.Context, msg *types.MsgWithdrawBond) (*types.MsgWithdrawBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)

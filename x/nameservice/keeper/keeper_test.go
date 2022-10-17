@@ -17,9 +17,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-var (
-	seed = int64(233)
-)
+var seed = int64(233)
 
 type KeeperTestSuite struct {
 	suite.Suite

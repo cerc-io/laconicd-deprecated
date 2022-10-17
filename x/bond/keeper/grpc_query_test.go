@@ -11,9 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 )
 
-var (
-	seed = int64(233)
-)
+var seed = int64(233)
 
 func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
 	grpcClient, ctx, k := suite.queryClient, suite.ctx, suite.app.BondKeeper

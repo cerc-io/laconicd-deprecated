@@ -50,6 +50,7 @@ func (s msgServer) CreateAuction(c context.Context, msg *types.MsgCreateAuction)
 }
 
 // CommitBid is the command for committing a bid
+//nolint: all
 func (s msgServer) CommitBid(c context.Context, msg *types.MsgCommitBid) (*types.MsgCommitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -80,6 +81,7 @@ func (s msgServer) CommitBid(c context.Context, msg *types.MsgCommitBid) (*types
 }
 
 //RevealBid is the command for revealing a bid
+//nolint: all
 func (s msgServer) RevealBid(c context.Context, msg *types.MsgRevealBid) (*types.MsgRevealBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 

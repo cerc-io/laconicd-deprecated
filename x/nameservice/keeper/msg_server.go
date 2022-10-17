@@ -51,6 +51,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 	return &types.MsgSetRecordResponse{Id: record.Id}, nil
 }
 
+//nolint: all
 func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.MsgSetNameResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -107,6 +108,7 @@ func (m msgServer) ReserveName(c context.Context, msg *types.MsgReserveAuthority
 	return &types.MsgReserveAuthorityResponse{}, nil
 }
 
+//nolint: all
 func (m msgServer) SetAuthorityBond(c context.Context, msg *types.MsgSetAuthorityBond) (*types.MsgSetAuthorityBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -180,6 +182,7 @@ func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*t
 	return &types.MsgRenewRecordResponse{}, nil
 }
 
+//nolint: all
 func (m msgServer) AssociateBond(c context.Context, msg *types.MsgAssociateBond) (*types.MsgAssociateBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)

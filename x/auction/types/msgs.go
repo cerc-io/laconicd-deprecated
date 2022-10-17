@@ -63,7 +63,6 @@ func (msg MsgCreateAuction) GetSigners() []sdk.AccAddress {
 
 // NewMsgCommitBid is the constructor function for MsgCommitBid.
 func NewMsgCommitBid(auctionID string, commitHash string, signer sdk.AccAddress) MsgCommitBid {
-
 	return MsgCommitBid{
 		AuctionId:  auctionID,
 		CommitHash: commitHash,
@@ -107,7 +106,6 @@ func (msg MsgCommitBid) GetSigners() []sdk.AccAddress {
 
 // NewMsgRevealBid is the constructor function for MsgRevealBid.
 func NewMsgRevealBid(auctionID string, reveal string, signer sdk.AccAddress) MsgRevealBid {
-
 	return MsgRevealBid{
 		AuctionId: auctionID,
 		Reveal:    reveal,
