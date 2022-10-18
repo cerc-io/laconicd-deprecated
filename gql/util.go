@@ -166,6 +166,7 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 func getReferences(ctx context.Context, resolver QueryResolver, r *nstypes.RecordType) ([]*Record, error) {
 	var ids []string
 
+	// #nosec G705
 	for key := range r.Attributes {
 		//nolint: all
 		switch r.Attributes[key].(type) {
