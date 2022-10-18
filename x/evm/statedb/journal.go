@@ -53,6 +53,7 @@ func newJournal() *journal {
 func (j *journal) sortedDirties() []common.Address {
 	keys := make([]common.Address, len(j.dirties))
 	i := 0
+	// #nosec G705
 	for k := range j.dirties {
 		keys[i] = k
 		i++

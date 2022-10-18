@@ -193,6 +193,7 @@ func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
 	trueVal := true
 	falseVal := false
 
+	// #nosec G705
 	for key, value := range attrs {
 		kvPair := &KeyValue{
 			Key:   key,
