@@ -2,7 +2,7 @@ package app
 
 import (
 	"encoding/json"
-	"math/rand"
+	"math/rand" // #nosec G702
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"

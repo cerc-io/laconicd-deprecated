@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	_ authtypes.AccountI                 = (*EthAccount)(nil)
-	_ EthAccountI                        = (*EthAccount)(nil)
-	_ authtypes.GenesisAccount           = (*EthAccount)(nil)
-	_ codectypes.UnpackInterfacesMessage = (*EthAccount)(nil)
+	_ authtypes.AccountI                 = (*EthAccount)(nil) //nolint: all
+	_ EthAccountI                        = (*EthAccount)(nil) //nolint: all
+	_ authtypes.GenesisAccount           = (*EthAccount)(nil) //nolint: all
+	_ codectypes.UnpackInterfacesMessage = (*EthAccount)(nil) //nolint: all
 )
 
 var emptyCodeHash = crypto.Keccak256(nil)

@@ -38,7 +38,7 @@ func Server(ctx client.Context) {
 	http.Handle("/graphql", srv)
 
 	log.Info("Connect to GraphQL playground", "url", fmt.Sprintf("http://localhost:%s", port))
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+port, nil) //nolint: all
 	if err != nil {
 		panic(err)
 	}

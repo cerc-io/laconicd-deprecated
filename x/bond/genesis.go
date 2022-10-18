@@ -10,8 +10,8 @@ import (
 // InitGenesis initializes genesis state based on exported genesis
 func InitGenesis(
 	ctx sdk.Context,
-	k keeper.Keeper, data types.GenesisState) []abci.ValidatorUpdate {
-
+	k keeper.Keeper, data types.GenesisState,
+) []abci.ValidatorUpdate {
 	k.SetParams(ctx, data.Params)
 
 	for _, bond := range data.Bonds {

@@ -87,7 +87,6 @@ func call(t *testing.T, method string, params interface{}) *Response {
 	require.NoError(t, err)
 
 	time.Sleep(1 * time.Second)
-	/* #nosec */
 	res, err := http.Post(HOST, "application/json", bytes.NewBuffer(req))
 	require.NoError(t, err)
 
@@ -110,7 +109,6 @@ func callWithError(method string, params interface{}) (*Response, error) {
 	}
 
 	time.Sleep(1 * time.Second)
-	/* #nosec */
 	res, err := http.Post(HOST, "application/json", bytes.NewBuffer(req))
 	if err != nil {
 		return nil, err
@@ -246,7 +244,6 @@ func TestEth_GetFilterChanges_WrongID(t *testing.T) {
 	req, err := json.Marshal(createRequest("eth_getFilterChanges", []string{"0x1122334400000077"}))
 	require.NoError(t, err)
 
-	/* #nosec */
 	res, err := http.Post(HOST, "application/json", bytes.NewBuffer(req))
 	require.NoError(t, err)
 

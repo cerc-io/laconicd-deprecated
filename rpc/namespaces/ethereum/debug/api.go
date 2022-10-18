@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
+	"runtime" // #nosec G702
 	"runtime/debug"
 	"runtime/pprof"
 	"sync"

@@ -768,6 +768,7 @@ func (app *EthermintApp) LoadHeight(height int64) error {
 // ModuleAccountAddrs returns all the app's module account addresses.
 func (app *EthermintApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
+	// #nosec G705
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
 	}
@@ -779,6 +780,7 @@ func (app *EthermintApp) ModuleAccountAddrs() map[string]bool {
 // allowed to receive external tokens.
 func (app *EthermintApp) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
+	// #nosec G705
 	for acc := range maccPerms {
 		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
 	}

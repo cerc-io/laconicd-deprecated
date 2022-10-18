@@ -240,6 +240,7 @@ func (es *EventSystem) eventLoop() {
 			delete(es.index[f.typ], f.id)
 
 			var channelInUse bool
+			// #nosec G705
 			for _, sub := range es.index[f.typ] {
 				if sub.event == f.event {
 					channelInUse = true

@@ -3,7 +3,8 @@ package gql
 import (
 	"context"
 	"encoding/json"
-	"reflect"
+	"fmt"
+	"reflect" // #nosec G702
 	"strconv"
 
 	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
@@ -38,6 +39,7 @@ func getGQLCoins(coins sdk.Coins) []*Coin {
 
 	return gqlCoins
 }
+
 func GetGQLNameAuthorityRecord(record *nstypes.NameAuthority) (*AuthorityRecord, error) {
 	if record == nil {
 		return nil, nil
@@ -84,7 +86,7 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record nstypes.Re
 
 func getGQLNameRecord(record *nstypes.NameRecord) (*NameRecord, error) {
 	if record == nil {
-		return nil, nil
+		return nil, fmt.Errorf("got nil record")
 	}
 
 	records := make([]*NameRecordEntry, len(record.History))
@@ -116,26 +118,6 @@ func getGQLBond(bondObj *bondtypes.Bond) (*Bond, error) {
 		Owner:   bondObj.Owner,
 		Balance: getGQLCoins(bondObj.Balance),
 	}, nil
-}
-
-func matchBondOnAttributes(bondObj *bondtypes.Bond, attributes []*KeyValueInput) bool {
-	for _, attr := range attributes {
-		switch attr.Key {
-		case OwnerAttributeName:
-			{
-				if attr.Value.String == nil || bondObj.Owner != *attr.Value.String {
-					return false
-				}
-			}
-		default:
-			{
-				// Only attributes explicitly listed in the switch are queryable.
-				return false
-			}
-		}
-	}
-
-	return true
 }
 
 func getAuctionBid(bid *auctiontypes.Bid) *AuctionBid {
@@ -184,10 +166,12 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 func getReferences(ctx context.Context, resolver QueryResolver, r *nstypes.RecordType) ([]*Record, error) {
 	var ids []string
 
-	for _, value := range r.Attributes {
-		switch value.(type) {
+	// #nosec G705
+	for key := range r.Attributes {
+		//nolint: all
+		switch r.Attributes[key].(type) {
 		case interface{}:
-			if obj, ok := value.(map[string]interface{}); ok {
+			if obj, ok := r.Attributes[key].(map[string]interface{}); ok {
 				if _, ok := obj["/"]; ok && len(obj) == 1 {
 					if _, ok := obj["/"].(string); ok {
 						ids = append(ids, obj["/"].(string))
@@ -205,11 +189,12 @@ func getAttributes(r *nstypes.RecordType) ([]*KeyValue, error) {
 }
 
 func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
-	var kvPairs []*KeyValue
+	kvPairs := []*KeyValue{}
 
 	trueVal := true
 	falseVal := false
 
+	// #nosec G705
 	for key, value := range attrs {
 		kvPair := &KeyValue{
 			Key:   key,

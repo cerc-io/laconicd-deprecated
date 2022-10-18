@@ -8,5 +8,5 @@ import (
 // Used to, for example, prevent deletion of a bond that's in use.
 type BondUsageKeeper interface {
 	ModuleName() string
-	UsesBond(ctx sdk.Context, bondId string) bool
+	UsesBond(ctx sdk.Context, bondID string) bool
 }

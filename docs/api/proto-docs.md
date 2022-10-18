@@ -135,8 +135,8 @@
     - [GenesisState](#vulcanize.bond.v1beta1.GenesisState)
   
 - [vulcanize/bond/v1beta1/query.proto](#vulcanize/bond/v1beta1/query.proto)
-    - [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest)
-    - [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse)
+    - [QueryGetBondByIDRequest](#vulcanize.bond.v1beta1.QueryGetBondByIDRequest)
+    - [QueryGetBondByIDResponse](#vulcanize.bond.v1beta1.QueryGetBondByIDResponse)
     - [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest)
     - [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse)
     - [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest)
@@ -195,10 +195,10 @@
     - [QueryLookupCrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupCrnResponse)
     - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
-    - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
-    - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
-    - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
-    - [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse)
+    - [QueryRecordByBondIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDRequest)
+    - [QueryRecordByBondIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDResponse)
+    - [QueryRecordByIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIDRequest)
+    - [QueryRecordByIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIDResponse)
     - [QueryResolveCrn](#vulcanize.nameservice.v1beta1.QueryResolveCrn)
     - [QueryResolveCrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveCrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
@@ -2004,10 +2004,10 @@ GenesisState defines the bond module's genesis state.
 
 
 
-<a name="vulcanize.bond.v1beta1.QueryGetBondByIdRequest"></a>
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIDRequest"></a>
 
-### QueryGetBondByIdRequest
-QueryGetBondById
+### QueryGetBondByIDRequest
+QueryGetBondByID
 
 
 | Field | Type | Label | Description |
@@ -2019,10 +2019,10 @@ QueryGetBondById
 
 
 
-<a name="vulcanize.bond.v1beta1.QueryGetBondByIdResponse"></a>
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIDResponse"></a>
 
-### QueryGetBondByIdResponse
-QueryGetBondByIdResponse returns QueryGetBondById query response
+### QueryGetBondByIDResponse
+QueryGetBondByIDResponse returns QueryGetBondByID query response
 
 
 | Field | Type | Label | Description |
@@ -2162,7 +2162,7 @@ Query defines the gRPC querier service for bond module
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Params` | [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Params queries bonds module params. | GET|/vulcanize/bond/v1beta1/params|
 | `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/vulcanize/bond/v1beta1/bonds|
-| `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
+| `GetBondByID` | [QueryGetBondByIDRequest](#vulcanize.bond.v1beta1.QueryGetBondByIDRequest) | [QueryGetBondByIDResponse](#vulcanize.bond.v1beta1.QueryGetBondByIDResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
 | `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/vulcanize/bond/v1beta1/by-owner/{owner}|
 | `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/vulcanize/bond/v1beta1/balance|
 
@@ -2841,9 +2841,9 @@ QueryParamsResponse is response type for nameservice params
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIDRequest"></a>
 
-### QueryRecordByBondIdRequest
+### QueryRecordByBondIDRequest
 QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
@@ -2857,9 +2857,9 @@ QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIDResponse"></a>
 
-### QueryRecordByBondIdResponse
+### QueryRecordByBondIDResponse
 QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
@@ -2873,10 +2873,10 @@ QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByIdRequest"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByIDRequest"></a>
 
-### QueryRecordByIdRequest
-QueryRecordByIdRequest is request type for nameservice records by id
+### QueryRecordByIDRequest
+QueryRecordByIDRequest is request type for nameservice records by id
 
 
 | Field | Type | Label | Description |
@@ -2888,10 +2888,10 @@ QueryRecordByIdRequest is request type for nameservice records by id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByIdResponse"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByIDResponse"></a>
 
-### QueryRecordByIdResponse
-QueryRecordByIdResponse is response type for nameservice records by id
+### QueryRecordByIDResponse
+QueryRecordByIDResponse is response type for nameservice records by id
 
 
 | Field | Type | Label | Description |
@@ -2978,8 +2978,8 @@ Query defines the gRPC querier service for nameservice module
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Params queries the nameservice module params. | GET|/vulcanize/nameservice/v1beta1/params|
 | `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/vulcanize/nameservice/v1beta1/records|
-| `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/vulcanize/nameservice/v1beta1/records/{id}|
-| `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}|
+| `GetRecord` | [QueryRecordByIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIDRequest) | [QueryRecordByIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIDResponse) | Get record by id | GET|/vulcanize/nameservice/v1beta1/records/{id}|
+| `GetRecordByBondID` | [QueryRecordByBondIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDRequest) | [QueryRecordByBondIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDResponse) | Get records by bond id | GET|/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}|
 | `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/vulcanize/nameservice/v1beta1/balance|
 | `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/vulcanize/nameservice/v1beta1/names|
 | `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/vulcanize/nameservice/v1beta1/whois/{name}|

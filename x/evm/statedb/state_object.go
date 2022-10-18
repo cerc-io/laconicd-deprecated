@@ -39,6 +39,7 @@ type Storage map[common.Hash]common.Hash
 func (s Storage) SortedKeys() []common.Hash {
 	keys := make([]common.Hash, len(s))
 	i := 0
+	// #nosec G705
 	for k := range s {
 		keys[i] = k
 		i++

@@ -24,7 +24,7 @@ func GetQueryCmd() *cobra.Command {
 	bondQueryCmd.AddCommand(
 		GetQueryParamsCmd(),
 		GetQueryBondLists(),
-		GetBondByIdCmd(),
+		GetBondByIDCmd(),
 		GetBondListByOwnerCmd(),
 		GetBondModuleBalanceCmd(),
 	)
@@ -99,7 +99,7 @@ $ %s query %s list
 }
 
 // GetBondByIdCmd implements the bond info by id query command.
-func GetBondByIdCmd() *cobra.Command {
+func GetBondByIDCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get [bond Id]",
 		Short: "Get bond.",
@@ -122,7 +122,7 @@ $ %s query bond get {BOND ID}
 
 			id := args[0]
 
-			res, err := queryClient.GetBondById(cmd.Context(), &types.QueryGetBondByIdRequest{Id: id})
+			res, err := queryClient.GetBondByID(cmd.Context(), &types.QueryGetBondByIDRequest{Id: id})
 			if err != nil {
 				return err
 			}
