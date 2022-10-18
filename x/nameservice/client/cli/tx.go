@@ -375,7 +375,7 @@ $ %s tx %s delete-name [crn]
 func GetPayloadFromFile(filePath string) (*types.PayloadType, error) {
 	var payload types.PayloadType
 
-	data, err := ioutil.ReadFile(filePath)
+	data, err := ioutil.ReadFile(filePath) // #nosec G304
 	if err != nil {
 		return nil, err
 	}

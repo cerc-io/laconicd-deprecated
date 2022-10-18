@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
+	"reflect" // #nosec G702
 	"strconv"
 
 	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
@@ -166,11 +166,11 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 func getReferences(ctx context.Context, resolver QueryResolver, r *nstypes.RecordType) ([]*Record, error) {
 	var ids []string
 
-	for _, value := range r.Attributes {
+	for key := range r.Attributes {
 		//nolint: all
-		switch value.(type) {
+		switch r.Attributes[key].(type) {
 		case interface{}:
-			if obj, ok := value.(map[string]interface{}); ok {
+			if obj, ok := r.Attributes[key].(map[string]interface{}); ok {
 				if _, ok := obj["/"]; ok && len(obj) == 1 {
 					if _, ok := obj["/"].(string); ok {
 						ids = append(ids, obj["/"].(string))

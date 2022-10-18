@@ -65,7 +65,7 @@ func ExportGenesis(ctx sdk.Context, keeper keeper.Keeper) types.GenesisState {
 		authorityEntries = append(authorityEntries, types.AuthorityEntry{
 			Name:  name,
 			Entry: &record, //nolint: all
-		})
+		}) // #nosec G601
 	}
 
 	names := keeper.ListNameRecords(ctx)

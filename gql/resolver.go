@@ -313,6 +313,7 @@ func (q queryResolver) GetBondsByOwner(ctx context.Context, address string) (*Ow
 
 	ownerBonds := make([]*Bond, len(bondResp.GetBonds()))
 	for i, bond := range bondResp.GetBonds() {
+		// #nosec G601
 		bondObj, err := getGQLBond(&bond) //nolint: all
 		if err != nil {
 			return nil, err

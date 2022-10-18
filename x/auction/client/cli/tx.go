@@ -169,7 +169,7 @@ func GetCmdRevealBid() *cobra.Command {
 			auctionID := args[0]
 			revealFilePath := args[1]
 
-			revealBytes, err := ioutil.ReadFile(revealFilePath)
+			revealBytes, err := ioutil.ReadFile(revealFilePath) // #nosec G304
 			if err != nil {
 				return err
 			}

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"reflect"
+	"reflect" // #nosec G702
 	"strings"
 	"time"
 
