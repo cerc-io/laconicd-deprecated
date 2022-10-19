@@ -197,7 +197,7 @@ $ %s query %s get [ID]
 				return err
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			record, err := queryClient.GetRecord(cmd.Context(), &types.QueryRecordByIdRequest{Id: args[0]})
+			record, err := queryClient.GetRecord(cmd.Context(), &types.QueryRecordByIDRequest{Id: args[0]})
 			if err != nil {
 				return err
 			}
@@ -261,12 +261,11 @@ $ %s query %s query-by-bond [bond id]
 			queryClient := types.NewQueryClient(clientCtx)
 
 			bondID := args[0]
-			res, err := queryClient.GetRecordByBondId(cmd.Context(), &types.QueryRecordByBondIdRequest{Id: bondID})
+			res, err := queryClient.GetRecordByBondID(cmd.Context(), &types.QueryRecordByBondIDRequest{Id: bondID})
 			if err != nil {
 				return err
 			}
 			return clientCtx.PrintProto(res)
-
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

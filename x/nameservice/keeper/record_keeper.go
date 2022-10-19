@@ -25,8 +25,8 @@ func (k RecordKeeper) UsesAuction(ctx sdk.Context, auctionID string) bool {
 	return k.GetAuctionToAuthorityMapping(ctx, auctionID) != ""
 }
 
-func (k RecordKeeper) OnAuction(ctx sdk.Context, auctionId string) {
-	updateBlockChangeSetForAuction(ctx, k, auctionId)
+func (k RecordKeeper) OnAuction(ctx sdk.Context, auctionID string) {
+	updateBlockChangeSetForAuction(ctx, k, auctionID)
 }
 
 func (k RecordKeeper) OnAuctionBid(ctx sdk.Context, auctionID string, bidderAddress string) {
@@ -89,8 +89,10 @@ func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string)
 }
 
 // Record keeper implements the bond usage keeper interface.
-var _ bondtypes.BondUsageKeeper = (*RecordKeeper)(nil)
-var _ auctiontypes.AuctionUsageKeeper = (*RecordKeeper)(nil)
+var (
+	_ bondtypes.BondUsageKeeper       = (*RecordKeeper)(nil)
+	_ auctiontypes.AuctionUsageKeeper = (*RecordKeeper)(nil)
+)
 
 // ModuleName returns the module name.
 func (k RecordKeeper) ModuleName() string {
@@ -109,8 +111,8 @@ func (k RecordKeeper) GetAuctionToAuthorityMapping(ctx sdk.Context, auctionID st
 }
 
 // UsesBond returns true if the bond has associated records.
-func (k RecordKeeper) UsesBond(ctx sdk.Context, bondId string) bool {
-	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondId)...)
+func (k RecordKeeper) UsesBond(ctx sdk.Context, bondID string) bool {
+	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondID)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, bondIDPrefix)
 	defer itr.Close()
@@ -136,7 +138,7 @@ func NewRecordKeeper(auctionKeeper auctionkeeper.Keeper, storeKey storetypes.Sto
 func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types.Record {
 	var records []types.Record
 
-	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondID)...)
+	bondIDPrefix := append(PrefixBondIDToRecordsIndex, []byte(bondID)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, bondIDPrefix)
 	defer itr.Close()
@@ -146,7 +148,7 @@ func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, k.cdc, obj))
+			records = append(records, recordObjToRecord(store, obj))
 		}
 	}
 
@@ -162,7 +164,6 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 	// Check if renewal is required (i.e. expired record marked as deleted).
 	record := k.GetRecord(ctx, msg.RecordId)
 	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
-
 	if err != nil {
 		panic(err)
 	}
@@ -182,7 +183,6 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 
 // ProcessAssociateBond associates a record with a bond.
 func (k Keeper) ProcessAssociateBond(ctx sdk.Context, msg types.MsgAssociateBond) error {
-
 	if !k.HasRecord(ctx, msg.RecordId) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Record not found.")
 	}

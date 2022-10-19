@@ -9,22 +9,13 @@ option go_package = "github.com/cerc-io/laconicd/x/nameservice/types";
 // GenesisState defines the nameservice module's genesis state.
 message GenesisState {
   // params defines all the params of nameservice module.
-  Params params = 1 [
-    (gogoproto.nullable) = false
-  ];
+  Params params = 1 [(gogoproto.nullable) = false];
   // records
-  repeated Record records = 2 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "json:\"records\" yaml:\"records\""
-  ];
+  repeated Record records = 2
+      [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"records\" yaml:\"records\""];
   // authorities
-  repeated AuthorityEntry authorities = 3 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "json:\"authorities\" yaml:\"authorities\""
-  ];
+  repeated AuthorityEntry authorities = 3
+      [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"authorities\" yaml:\"authorities\""];
   // names
-  repeated NameEntry names = 4 [
-    (gogoproto.nullable) = false,
-    (gogoproto.moretags) = "json:\"names\" yaml:\"names\""
-  ];
+  repeated NameEntry names = 4 [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"names\" yaml:\"names\""];
 }

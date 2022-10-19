@@ -19,6 +19,7 @@ import (
 	ethermint "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	"github.com/cerc-io/laconicd/x/evm/types"
+	evm "github.com/cerc-io/laconicd/x/evm/vm"
 )
 
 // Keeper grants access to the EVM module state and implements the go-ethereum StateDB interface.
@@ -54,14 +55,25 @@ type Keeper struct {
 
 	// EVM Hooks for tx post-processing
 	hooks types.EvmHooks
+
+	// custom stateless precompiled smart contracts
+	customPrecompiles evm.PrecompiledContracts
+
+	// evm constructor function
+	evmConstructor evm.Constructor
 }
 
 // NewKeeper generates new evm module keeper
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey, transientKey storetypes.StoreKey, paramSpace paramtypes.Subspace,
-	ak types.AccountKeeper, bankKeeper types.BankKeeper, sk types.StakingKeeper,
+	storeKey, transientKey storetypes.StoreKey,
+	paramSpace paramtypes.Subspace,
+	ak types.AccountKeeper,
+	bankKeeper types.BankKeeper,
+	sk types.StakingKeeper,
 	fmk types.FeeMarketKeeper,
+	customPrecompiles evm.PrecompiledContracts,
+	evmConstructor evm.Constructor,
 	tracer string,
 ) *Keeper {
 	// ensure evm module account is set
@@ -76,15 +88,17 @@ func NewKeeper(
 
 	// NOTE: we pass in the parameter space to the CommitStateDB in order to use custom denominations for the EVM operations
 	return &Keeper{
-		cdc:             cdc,
-		paramSpace:      paramSpace,
-		accountKeeper:   ak,
-		bankKeeper:      bankKeeper,
-		stakingKeeper:   sk,
-		feeMarketKeeper: fmk,
-		storeKey:        storeKey,
-		transientKey:    transientKey,
-		tracer:          tracer,
+		cdc:               cdc,
+		paramSpace:        paramSpace,
+		accountKeeper:     ak,
+		bankKeeper:        bankKeeper,
+		stakingKeeper:     sk,
+		feeMarketKeeper:   fmk,
+		storeKey:          storeKey,
+		transientKey:      transientKey,
+		customPrecompiles: customPrecompiles,
+		evmConstructor:    evmConstructor,
+		tracer:            tracer,
 	}
 }
 
@@ -213,7 +227,7 @@ func (k Keeper) GetAccountStorage(ctx sdk.Context, address common.Address) types
 // SetHooks sets the hooks for the EVM module
 // It should be called only once during initialization, it panic if called more than once.
 func (k *Keeper) SetHooks(eh types.EvmHooks) *Keeper {
-	if k.hooks != nil {
+	if k.hooks != types.EvmHooks(nil) {
 		panic("cannot set evm hooks twice")
 	}
 
@@ -222,11 +236,11 @@ func (k *Keeper) SetHooks(eh types.EvmHooks) *Keeper {
 }
 
 // PostTxProcessing delegate the call to the hooks. If no hook has been registered, this function returns with a `nil` error
-func (k *Keeper) PostTxProcessing(ctx sdk.Context, from common.Address, to *common.Address, receipt *ethtypes.Receipt) error {
-	if k.hooks == nil {
+func (k *Keeper) PostTxProcessing(ctx sdk.Context, msg core.Message, receipt *ethtypes.Receipt) error {
+	if k.hooks == types.EvmHooks(nil) {
 		return nil
 	}
-	return k.hooks.PostTxProcessing(ctx, from, to, receipt)
+	return k.hooks.PostTxProcessing(ctx, msg, receipt)
 }
 
 // Tracer return a default vm.Tracer based on current keeper state
@@ -283,17 +297,26 @@ func (k *Keeper) GetNonce(ctx sdk.Context, addr common.Address) uint64 {
 // GetBalance load account's balance of gas token
 func (k *Keeper) GetBalance(ctx sdk.Context, addr common.Address) *big.Int {
 	cosmosAddr := sdk.AccAddress(addr.Bytes())
-	params := k.GetParams(ctx)
-	coin := k.bankKeeper.GetBalance(ctx, cosmosAddr, params.EvmDenom)
+	evmDenom := ""
+	k.paramSpace.GetIfExists(ctx, types.ParamStoreKeyEVMDenom, &evmDenom)
+	// if node is pruned, params is empty. Return invalid value
+	if evmDenom == "" {
+		return big.NewInt(-1)
+	}
+	coin := k.bankKeeper.GetBalance(ctx, cosmosAddr, evmDenom)
 	return coin.Amount.BigInt()
 }
 
-// BaseFee returns current base fee, return values:
+// GetBaseFee returns current base fee, return values:
 // - `nil`: london hardfork not enabled.
 // - `0`: london hardfork enabled but feemarket is not enabled.
 // - `n`: both london hardfork and feemarket are enabled.
-func (k Keeper) BaseFee(ctx sdk.Context, ethCfg *params.ChainConfig) *big.Int {
-	if !types.IsLondon(ethCfg, ctx.BlockHeight()) {
+func (k Keeper) GetBaseFee(ctx sdk.Context, ethCfg *params.ChainConfig) *big.Int {
+	return k.getBaseFee(ctx, types.IsLondon(ethCfg, ctx.BlockHeight()))
+}
+
+func (k Keeper) getBaseFee(ctx sdk.Context, london bool) *big.Int {
+	if !london {
 		return nil
 	}
 	baseFee := k.feeMarketKeeper.GetBaseFee(ctx)
@@ -302,6 +325,16 @@ func (k Keeper) BaseFee(ctx sdk.Context, ethCfg *params.ChainConfig) *big.Int {
 		baseFee = big.NewInt(0)
 	}
 	return baseFee
+}
+
+// GetMinGasMultiplier returns the MinGasMultiplier param from the fee market module
+func (k Keeper) GetMinGasMultiplier(ctx sdk.Context) sdk.Dec {
+	fmkParmas := k.feeMarketKeeper.GetParams(ctx)
+	if fmkParmas.MinGasMultiplier.IsNil() {
+		// in case we are executing eth_call on a legacy block, returns a zero value.
+		return sdk.ZeroDec()
+	}
+	return fmkParmas.MinGasMultiplier
 }
 
 // ResetTransientGasUsed reset gas used to prepare for execution of current cosmos tx, called in ante handler.

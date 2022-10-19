@@ -1,5 +1,5 @@
 
-rem laconic compile on windows
+rem ethermint compile on windows
 rem install golang , gcc, sed for windows
 rem 1. install msys2 : https://www.msys2.org/
 rem 2. pacman -S mingw-w64-x86_64-toolchain
@@ -9,7 +9,7 @@ rem 3. add path C:\msys64\mingw64\bin
 rem             C:\msys64\usr\bin
 
 set KEY="mykey"
-set CHAINID="laconic_9000-1"
+set CHAINID="ethermint_9000-1"
 set MONIKER="localtestnet"
 set KEYRING="test"
 set KEYALGO="eth_secp256k1"
@@ -35,7 +35,7 @@ laconicd config chain-id %CHAINID%
 
 laconicd keys add %KEY% --keyring-backend %KEYRING% --algo %KEYALGO%
 
-rem Set moniker and chain-id for laconic (Moniker can be anything, chain-id must be an integer)
+rem Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 laconicd init %MONIKER% --chain-id %CHAINID% 
 
 rem Change parameter token denominations to aphoton

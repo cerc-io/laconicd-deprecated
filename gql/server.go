@@ -2,12 +2,13 @@ package gql
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/spf13/viper"
-	"net/http"
 )
 
 // Server configures and starts the GQL server.
@@ -37,7 +38,7 @@ func Server(ctx client.Context) {
 	http.Handle("/graphql", srv)
 
 	log.Info("Connect to GraphQL playground", "url", fmt.Sprintf("http://localhost:%s", port))
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":"+port, nil) //nolint: all
 	if err != nil {
 		panic(err)
 	}

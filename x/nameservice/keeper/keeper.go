@@ -73,7 +73,8 @@ type Keeper struct {
 
 // NewKeeper creates new instances of the nameservice Keeper
 func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, recordKeeper RecordKeeper,
-	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey storetypes.StoreKey, ps paramtypes.Subspace) Keeper {
+	bondKeeper bondkeeper.Keeper, auctionKeeper auctionkeeper.Keeper, storeKey storetypes.StoreKey, ps paramtypes.Subspace,
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
@@ -121,7 +122,7 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, k.cdc, obj))
+			records = append(records, recordObjToRecord(store, obj))
 		}
 	}
 
@@ -140,7 +141,7 @@ func (k Keeper) MatchRecords(ctx sdk.Context, matchFn func(*types.RecordType) bo
 		if bz != nil {
 			var obj types.Record
 			k.cdc.MustUnmarshal(bz, &obj)
-			obj = recordObjToRecord(store, k.cdc, obj)
+			obj = recordObjToRecord(store, obj)
 			record := obj.ToRecordType()
 			if matchFn(&record) {
 				records = append(records, obj)
@@ -174,7 +175,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 // ProcessSetRecord creates a record.
 func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordType, error) {
 	payload := msg.Payload.ToReadablePayload()
-	record := types.RecordType{Attributes: payload.Record, BondId: msg.BondId}
+	record := types.RecordType{Attributes: payload.Record, BondID: msg.BondId}
 
 	// Check signatures.
 	resourceSignBytes, _ := record.GetSignBytes()
@@ -183,9 +184,9 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
 	}
 
-	record.Id = cid
+	record.ID = cid
 
-	if exists := k.HasRecord(ctx, record.Id); exists {
+	if exists := k.HasRecord(ctx, record.ID); exists {
 		// Immutable record already exists. No-op.
 		return &record, nil
 	}
@@ -219,7 +220,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	params := k.GetParams(ctx)
 	rent := params.RecordRent
 
-	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondId, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
+	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondID, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
 	if err != nil {
 		return err
 	}
@@ -233,7 +234,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 
 	// Renewal doesn't change the name and bond indexes.
 	if !isRenewal {
-		k.AddBondToRecordIndexEntry(ctx, record.BondId, record.Id)
+		k.AddBondToRecordIndexEntry(ctx, record.BondID, record.ID)
 	}
 
 	return nil
@@ -295,7 +296,6 @@ func (k Keeper) GetRecordExpiryQueueTimeSlice(ctx sdk.Context, timestamp time.Ti
 // InsertRecordExpiryQueue inserts a record CID to the appropriate timeslice in the record expiry queue.
 func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
 	expiryTime, err := time.Parse(time.RFC3339, val.ExpiryTime)
-
 	if err != nil {
 		panic(err)
 	}
@@ -308,7 +308,6 @@ func (k Keeper) InsertRecordExpiryQueue(ctx sdk.Context, val types.Record) {
 // DeleteRecordExpiryQueue deletes a record CID from the record expiry queue.
 func (k Keeper) DeleteRecordExpiryQueue(ctx sdk.Context, record types.Record) {
 	expiryTime, err := time.Parse(time.RFC3339, record.ExpiryTime)
-
 	if err != nil {
 		panic(err)
 	}
@@ -344,7 +343,6 @@ func (k Keeper) GetAllExpiredRecords(ctx sdk.Context, currTime time.Time) (expir
 
 	for ; itr.Valid(); itr.Next() {
 		timeslice, err := helpers.BytesArrToStringArr(itr.Value())
-
 		if err != nil {
 			panic(err)
 		}
@@ -421,12 +419,11 @@ func (k Keeper) GetModuleBalances(ctx sdk.Context) []*types.AccountBalance {
 	return balances
 }
 
-func recordObjToRecord(store sdk.KVStore, codec codec.BinaryCodec, record types.Record) types.Record {
+func recordObjToRecord(store sdk.KVStore, record types.Record) types.Record {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(record.Id)
 
 	if store.Has(reverseNameIndexKey) {
 		names, err := helpers.BytesArrToStringArr(store.Get(reverseNameIndexKey))
-
 		if err != nil {
 			panic(err)
 		}

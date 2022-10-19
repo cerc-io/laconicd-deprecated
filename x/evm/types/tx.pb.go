@@ -37,7 +37,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type MsgEthereumTx struct {
 	// inner transaction data
 	Data *types.Any `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
-	// encoded storage size of the transaction
+	// DEPRECATED: encoded storage size of the transaction
 	Size_ float64 `protobuf:"fixed64,2,opt,name=size,proto3" json:"-"`
 	// transaction hash in hex format
 	Hash string `protobuf:"bytes,3,opt,name=hash,proto3" json:"hash,omitempty" rlp:"-"`
@@ -81,6 +81,8 @@ func (m *MsgEthereumTx) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgEthereumTx proto.InternalMessageInfo
 
 // LegacyTx is the transaction data of regular Ethereum transactions.
+// NOTE: All non-protected transactions (i.e non EIP155 signed) will fail if the
+// AllowUnprotectedTxs parameter is disabled.
 type LegacyTx struct {
 	// nonce corresponds to the account nonce (transaction sequence).
 	Nonce uint64 `protobuf:"varint,1,opt,name=nonce,proto3" json:"nonce,omitempty"`

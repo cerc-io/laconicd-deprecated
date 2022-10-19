@@ -45,6 +45,7 @@ func (k msgServer) CreateBond(c context.Context, msg *types.MsgCreateBond) (*typ
 	return &types.MsgCreateBondResponse{}, nil
 }
 
+//nolint: all
 func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*types.MsgRefillBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -61,7 +62,7 @@ func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*typ
 		sdk.NewEvent(
 			types.EventTypeRefillBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.Id),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Coins.String()),
 		),
 		sdk.NewEvent(
@@ -74,6 +75,7 @@ func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*typ
 	return &types.MsgRefillBondResponse{}, nil
 }
 
+//nolint: all
 func (k msgServer) WithdrawBond(c context.Context, msg *types.MsgWithdrawBond) (*types.MsgWithdrawBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -90,7 +92,7 @@ func (k msgServer) WithdrawBond(c context.Context, msg *types.MsgWithdrawBond) (
 		sdk.NewEvent(
 			types.EventTypeWithdrawBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.Id),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Coins.String()),
 		),
 		sdk.NewEvent(
@@ -118,7 +120,7 @@ func (k msgServer) CancelBond(c context.Context, msg *types.MsgCancelBond) (*typ
 		sdk.NewEvent(
 			types.EventTypeCancelBond,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
-			sdk.NewAttribute(types.AttributeKeyBondId, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyBondID, msg.Id),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

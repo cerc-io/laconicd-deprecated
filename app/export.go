@@ -6,18 +6,20 @@ import (
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/cerc-io/laconicd/encoding"
 )
 
 // NewDefaultGenesisState generates the default state for the application.
-func NewDefaultGenesisState(cdc codec.JSONCodec) simapp.GenesisState {
-	return ModuleBasics.DefaultGenesis(cdc)
+func NewDefaultGenesisState() simapp.GenesisState {
+	encCfg := encoding.MakeConfig(ModuleBasics)
+	return ModuleBasics.DefaultGenesis(encCfg.Codec)
 }
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
@@ -60,7 +62,7 @@ func (app *EthermintApp) ExportAppStateAndValidators(
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-//      in favor of export at a block height
+// in favor of export at a block height
 func (app *EthermintApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) error {
 	applyAllowedAddrs := false
 
@@ -123,7 +125,9 @@ func (app *EthermintApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAd
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		app.DistrKeeper.SetFeePool(ctx, feePool)
 
-		app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+		if err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator()); err != nil {
+			return true
+		}
 		return false
 	})
 
@@ -137,8 +141,12 @@ func (app *EthermintApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAd
 		if err != nil {
 			return err
 		}
-		app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
-		app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
+		if err := app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr); err != nil {
+			return err
+		}
+		if err := app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr); err != nil {
+			return err
+		}
 	}
 
 	// reset context height

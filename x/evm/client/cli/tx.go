@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	rpctypes "github.com/cerc-io/laconicd/rpc/ethereum/types"
+	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cerc-io/laconicd/x/evm/types"
 )
 

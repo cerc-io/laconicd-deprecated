@@ -39,6 +39,8 @@
     - [QueryAccountResponse](#ethermint.evm.v1.QueryAccountResponse)
     - [QueryBalanceRequest](#ethermint.evm.v1.QueryBalanceRequest)
     - [QueryBalanceResponse](#ethermint.evm.v1.QueryBalanceResponse)
+    - [QueryBaseFeeRequest](#ethermint.evm.v1.QueryBaseFeeRequest)
+    - [QueryBaseFeeResponse](#ethermint.evm.v1.QueryBaseFeeResponse)
     - [QueryCodeRequest](#ethermint.evm.v1.QueryCodeRequest)
     - [QueryCodeResponse](#ethermint.evm.v1.QueryCodeResponse)
     - [QueryCosmosAccountRequest](#ethermint.evm.v1.QueryCosmosAccountRequest)
@@ -76,6 +78,12 @@
   
 - [ethermint/types/v1/account.proto](#ethermint/types/v1/account.proto)
     - [EthAccount](#ethermint.types.v1.EthAccount)
+  
+- [ethermint/types/v1/dynamic_fee.proto](#ethermint/types/v1/dynamic_fee.proto)
+    - [ExtensionOptionDynamicFeeTx](#ethermint.types.v1.ExtensionOptionDynamicFeeTx)
+  
+- [ethermint/types/v1/indexer.proto](#ethermint/types/v1/indexer.proto)
+    - [TxResult](#ethermint.types.v1.TxResult)
   
 - [ethermint/types/v1/web3.proto](#ethermint/types/v1/web3.proto)
     - [ExtensionOptionsWeb3Tx](#ethermint.types.v1.ExtensionOptionsWeb3Tx)
@@ -127,8 +135,8 @@
     - [GenesisState](#vulcanize.bond.v1beta1.GenesisState)
   
 - [vulcanize/bond/v1beta1/query.proto](#vulcanize/bond/v1beta1/query.proto)
-    - [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest)
-    - [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse)
+    - [QueryGetBondByIDRequest](#vulcanize.bond.v1beta1.QueryGetBondByIDRequest)
+    - [QueryGetBondByIDResponse](#vulcanize.bond.v1beta1.QueryGetBondByIDResponse)
     - [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest)
     - [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse)
     - [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest)
@@ -187,10 +195,10 @@
     - [QueryLookupCrnResponse](#vulcanize.nameservice.v1beta1.QueryLookupCrnResponse)
     - [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse)
-    - [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest)
-    - [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse)
-    - [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest)
-    - [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse)
+    - [QueryRecordByBondIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDRequest)
+    - [QueryRecordByBondIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDResponse)
+    - [QueryRecordByIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIDRequest)
+    - [QueryRecordByIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIDResponse)
     - [QueryResolveCrn](#vulcanize.nameservice.v1beta1.QueryResolveCrn)
     - [QueryResolveCrnResponse](#vulcanize.nameservice.v1beta1.QueryResolveCrnResponse)
     - [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest)
@@ -323,7 +331,8 @@ instead of *big.Int.
 | `berlin_block` | [string](#string) |  | Berlin switch block (nil = no fork, 0 = already on berlin) |
 | `london_block` | [string](#string) |  | London switch block (nil = no fork, 0 = already on london) |
 | `arrow_glacier_block` | [string](#string) |  | Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already activated) |
-| `merge_fork_block` | [string](#string) |  | EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in merge proceedings) |
+| `gray_glacier_block` | [string](#string) |  | EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already activated) |
+| `merge_netsplit_block` | [string](#string) |  | Virtual fork after The Merge to use as a network splitter |
 
 
 
@@ -368,6 +377,7 @@ Params defines the EVM module parameters
 | `enable_call` | [bool](#bool) |  | enable call toggles state transitions that use the vm.Call function |
 | `extra_eips` | [int64](#int64) | repeated | extra eips defines the additional EIPs for the vm.Config |
 | `chain_config` | [ChainConfig](#ethermint.evm.v1.ChainConfig) |  | chain config defines the EVM chain configuration parameters |
+| `allow_unprotected_txs` | [bool](#bool) |  | Allow unprotected transactions defines if replay-protected (i.e non EIP155 signed) transactions can be executed on the state machine. |
 
 
 
@@ -584,6 +594,8 @@ DynamicFeeTx is the data of EIP-1559 dinamic fee transactions.
 
 ### LegacyTx
 LegacyTx is the transaction data of regular Ethereum transactions.
+NOTE: All non-protected transactions (i.e non EIP155 signed) will fail if the
+AllowUnprotectedTxs parameter is disabled.
 
 
 | Field | Type | Label | Description |
@@ -614,7 +626,7 @@ MsgEthereumTx encapsulates an Ethereum transaction as an SDK message.
 | `data` | [google.protobuf.Any](#google.protobuf.Any) |  | inner transaction data
 
 caches |
-| `size` | [double](#double) |  | encoded storage size of the transaction |
+| `size` | [double](#double) |  | DEPRECATED: encoded storage size of the transaction |
 | `hash` | [string](#string) |  | transaction hash in hex format |
 | `from` | [string](#string) |  | ethereum signer address in hex format. This address value is checked against the address derived from the signature (V, R, S) using the secp256k1 elliptic curve |
 
@@ -755,6 +767,32 @@ QueryBalanceResponse is the response type for the Query/Balance RPC method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `balance` | [string](#string) |  | balance is the balance of the EVM denomination. |
+
+
+
+
+
+
+<a name="ethermint.evm.v1.QueryBaseFeeRequest"></a>
+
+### QueryBaseFeeRequest
+QueryBaseFeeRequest defines the request type for querying the EIP1559 base
+fee.
+
+
+
+
+
+
+<a name="ethermint.evm.v1.QueryBaseFeeResponse"></a>
+
+### QueryBaseFeeResponse
+BaseFeeResponse returns the EIP1559 base fee.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `base_fee` | [string](#string) |  |  |
 
 
 
@@ -926,7 +964,6 @@ QueryTraceTxRequest defines TraceTx request
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `msg` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) |  | msgEthereumTx for the requested transaction |
-| `tx_index` | [uint64](#uint64) |  | transaction index |
 | `trace_config` | [TraceConfig](#ethermint.evm.v1.TraceConfig) |  | TraceConfig holds extra parameters to trace functions. |
 | `predecessors` | [MsgEthereumTx](#ethermint.evm.v1.MsgEthereumTx) | repeated | the predecessor transactions included in the same block need to be replayed first to get correct context for tracing. |
 | `block_number` | [int64](#int64) |  | block number of requested transaction |
@@ -1043,6 +1080,7 @@ Query defines the gRPC querier service.
 | `EstimateGas` | [EthCallRequest](#ethermint.evm.v1.EthCallRequest) | [EstimateGasResponse](#ethermint.evm.v1.EstimateGasResponse) | EstimateGas implements the `eth_estimateGas` rpc api | GET|/ethermint/evm/v1/estimate_gas|
 | `TraceTx` | [QueryTraceTxRequest](#ethermint.evm.v1.QueryTraceTxRequest) | [QueryTraceTxResponse](#ethermint.evm.v1.QueryTraceTxResponse) | TraceTx implements the `debug_traceTransaction` rpc api | GET|/ethermint/evm/v1/trace_tx|
 | `TraceBlock` | [QueryTraceBlockRequest](#ethermint.evm.v1.QueryTraceBlockRequest) | [QueryTraceBlockResponse](#ethermint.evm.v1.QueryTraceBlockResponse) | TraceBlock implements the `debug_traceBlockByNumber` and `debug_traceBlockByHash` rpc api | GET|/ethermint/evm/v1/trace_block|
+| `BaseFee` | [QueryBaseFeeRequest](#ethermint.evm.v1.QueryBaseFeeRequest) | [QueryBaseFeeResponse](#ethermint.evm.v1.QueryBaseFeeResponse) | BaseFee queries the base fee of the parent block of the current block, it's similar to feemarket module's method, but also checks london hardfork status. | GET|/ethermint/evm/v1/base_fee|
 
  <!-- end services -->
 
@@ -1068,6 +1106,8 @@ Params defines the EVM module parameters
 | `elasticity_multiplier` | [uint32](#uint32) |  | elasticity multiplier bounds the maximum gas limit an EIP-1559 block may have. |
 | `enable_height` | [int64](#int64) |  | height at which the base fee calculation is enabled. |
 | `base_fee` | [string](#string) |  | base fee for EIP-1559 blocks. |
+| `min_gas_price` | [string](#string) |  | min_gas_price defines the minimum gas price value for cosmos and eth transactions |
+| `min_gas_multiplier` | [string](#string) |  | min gas denominator bounds the minimum gasUsed to be charged to senders based on GasLimit |
 
 
 
@@ -1099,7 +1139,7 @@ GenesisState defines the feemarket module's genesis state.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `params` | [Params](#ethermint.feemarket.v1.Params) |  | params defines all the paramaters of the module. |
-| `block_gas` | [uint64](#uint64) |  | block gas is the amount of gas used on the last block before the upgrade. Zero by default. |
+| `block_gas` | [uint64](#uint64) |  | block gas is the amount of gas wanted on the last block before the upgrade. Zero by default. |
 
 
 
@@ -1212,9 +1252,9 @@ Query defines the gRPC querier service.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `Params` | [QueryParamsRequest](#ethermint.feemarket.v1.QueryParamsRequest) | [QueryParamsResponse](#ethermint.feemarket.v1.QueryParamsResponse) | Params queries the parameters of x/feemarket module. | GET|/feemarket/evm/v1/params|
-| `BaseFee` | [QueryBaseFeeRequest](#ethermint.feemarket.v1.QueryBaseFeeRequest) | [QueryBaseFeeResponse](#ethermint.feemarket.v1.QueryBaseFeeResponse) | BaseFee queries the base fee of the parent block of the current block. | GET|/feemarket/evm/v1/base_fee|
-| `BlockGas` | [QueryBlockGasRequest](#ethermint.feemarket.v1.QueryBlockGasRequest) | [QueryBlockGasResponse](#ethermint.feemarket.v1.QueryBlockGasResponse) | BlockGas queries the gas used at a given block height | GET|/feemarket/evm/v1/block_gas|
+| `Params` | [QueryParamsRequest](#ethermint.feemarket.v1.QueryParamsRequest) | [QueryParamsResponse](#ethermint.feemarket.v1.QueryParamsResponse) | Params queries the parameters of x/feemarket module. | GET|/ethermint/feemarket/v1/params|
+| `BaseFee` | [QueryBaseFeeRequest](#ethermint.feemarket.v1.QueryBaseFeeRequest) | [QueryBaseFeeResponse](#ethermint.feemarket.v1.QueryBaseFeeResponse) | BaseFee queries the base fee of the parent block of the current block. | GET|/ethermint/feemarket/v1/base_fee|
+| `BlockGas` | [QueryBlockGasRequest](#ethermint.feemarket.v1.QueryBlockGasRequest) | [QueryBlockGasResponse](#ethermint.feemarket.v1.QueryBlockGasResponse) | BlockGas queries the gas used at a given block height | GET|/ethermint/feemarket/v1/block_gas|
 
  <!-- end services -->
 
@@ -1238,6 +1278,74 @@ authtypes.BaseAccount type. It is compatible with the auth AccountKeeper.
 | ----- | ---- | ----- | ----------- |
 | `base_account` | [cosmos.auth.v1beta1.BaseAccount](#cosmos.auth.v1beta1.BaseAccount) |  |  |
 | `code_hash` | [string](#string) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="ethermint/types/v1/dynamic_fee.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ethermint/types/v1/dynamic_fee.proto
+
+
+
+<a name="ethermint.types.v1.ExtensionOptionDynamicFeeTx"></a>
+
+### ExtensionOptionDynamicFeeTx
+ExtensionOptionDynamicFeeTx is an extension option that specify the maxPrioPrice for cosmos tx
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `max_priority_price` | [string](#string) |  | the same as `max_priority_fee_per_gas` in eip-1559 spec |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="ethermint/types/v1/indexer.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ethermint/types/v1/indexer.proto
+
+
+
+<a name="ethermint.types.v1.TxResult"></a>
+
+### TxResult
+TxResult is the value stored in eth tx indexer
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `height` | [int64](#int64) |  | the block height |
+| `tx_index` | [uint32](#uint32) |  | cosmos tx index |
+| `msg_index` | [uint32](#uint32) |  | the msg index in a batch tx |
+| `eth_tx_index` | [int32](#int32) |  | eth tx index, the index in the list of valid eth tx in the block, aka. the transaction list returned by eth_getBlock api. |
+| `failed` | [bool](#bool) |  | if the eth tx is failed |
+| `gas_used` | [uint64](#uint64) |  | gas used by tx, if exceeds block gas limit, it's set to gas limit which is what's actually deducted by ante handler. |
+| `cumulative_gas_used` | [uint64](#uint64) |  | the cumulative gas used within current batch tx |
 
 
 
@@ -1896,10 +2004,10 @@ GenesisState defines the bond module's genesis state.
 
 
 
-<a name="vulcanize.bond.v1beta1.QueryGetBondByIdRequest"></a>
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIDRequest"></a>
 
-### QueryGetBondByIdRequest
-QueryGetBondById
+### QueryGetBondByIDRequest
+QueryGetBondByID
 
 
 | Field | Type | Label | Description |
@@ -1911,10 +2019,10 @@ QueryGetBondById
 
 
 
-<a name="vulcanize.bond.v1beta1.QueryGetBondByIdResponse"></a>
+<a name="vulcanize.bond.v1beta1.QueryGetBondByIDResponse"></a>
 
-### QueryGetBondByIdResponse
-QueryGetBondByIdResponse returns QueryGetBondById query response
+### QueryGetBondByIDResponse
+QueryGetBondByIDResponse returns QueryGetBondByID query response
 
 
 | Field | Type | Label | Description |
@@ -2054,7 +2162,7 @@ Query defines the gRPC querier service for bond module
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Params` | [QueryParamsRequest](#vulcanize.bond.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.bond.v1beta1.QueryParamsResponse) | Params queries bonds module params. | GET|/vulcanize/bond/v1beta1/params|
 | `Bonds` | [QueryGetBondsRequest](#vulcanize.bond.v1beta1.QueryGetBondsRequest) | [QueryGetBondsResponse](#vulcanize.bond.v1beta1.QueryGetBondsResponse) | Bonds queries bonds list. | GET|/vulcanize/bond/v1beta1/bonds|
-| `GetBondById` | [QueryGetBondByIdRequest](#vulcanize.bond.v1beta1.QueryGetBondByIdRequest) | [QueryGetBondByIdResponse](#vulcanize.bond.v1beta1.QueryGetBondByIdResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
+| `GetBondByID` | [QueryGetBondByIDRequest](#vulcanize.bond.v1beta1.QueryGetBondByIDRequest) | [QueryGetBondByIDResponse](#vulcanize.bond.v1beta1.QueryGetBondByIDResponse) | GetBondById | GET|/vulcanize/bond/v1beta1/bonds/{id}|
 | `GetBondsByOwner` | [QueryGetBondsByOwnerRequest](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerRequest) | [QueryGetBondsByOwnerResponse](#vulcanize.bond.v1beta1.QueryGetBondsByOwnerResponse) | Get Bonds List by Owner | GET|/vulcanize/bond/v1beta1/by-owner/{owner}|
 | `GetBondsModuleBalance` | [QueryGetBondModuleBalanceRequest](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceRequest) | [QueryGetBondModuleBalanceResponse](#vulcanize.bond.v1beta1.QueryGetBondModuleBalanceResponse) | Get Bonds module balance | GET|/vulcanize/bond/v1beta1/balance|
 
@@ -2733,9 +2841,9 @@ QueryParamsResponse is response type for nameservice params
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIDRequest"></a>
 
-### QueryRecordByBondIdRequest
+### QueryRecordByBondIDRequest
 QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
@@ -2749,9 +2857,9 @@ QueryRecordByBondIdRequest is request type for get the records by bond-id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByBondIDResponse"></a>
 
-### QueryRecordByBondIdResponse
+### QueryRecordByBondIDResponse
 QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
@@ -2765,10 +2873,10 @@ QueryRecordByBondIdResponse is response type for records list by bond-id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByIdRequest"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByIDRequest"></a>
 
-### QueryRecordByIdRequest
-QueryRecordByIdRequest is request type for nameservice records by id
+### QueryRecordByIDRequest
+QueryRecordByIDRequest is request type for nameservice records by id
 
 
 | Field | Type | Label | Description |
@@ -2780,10 +2888,10 @@ QueryRecordByIdRequest is request type for nameservice records by id
 
 
 
-<a name="vulcanize.nameservice.v1beta1.QueryRecordByIdResponse"></a>
+<a name="vulcanize.nameservice.v1beta1.QueryRecordByIDResponse"></a>
 
-### QueryRecordByIdResponse
-QueryRecordByIdResponse is response type for nameservice records by id
+### QueryRecordByIDResponse
+QueryRecordByIDResponse is response type for nameservice records by id
 
 
 | Field | Type | Label | Description |
@@ -2870,8 +2978,8 @@ Query defines the gRPC querier service for nameservice module
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Params` | [QueryParamsRequest](#vulcanize.nameservice.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#vulcanize.nameservice.v1beta1.QueryParamsResponse) | Params queries the nameservice module params. | GET|/vulcanize/nameservice/v1beta1/params|
 | `ListRecords` | [QueryListRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListRecordsRequest) | [QueryListRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListRecordsResponse) | List records | GET|/vulcanize/nameservice/v1beta1/records|
-| `GetRecord` | [QueryRecordByIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIdRequest) | [QueryRecordByIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIdResponse) | Get record by id | GET|/vulcanize/nameservice/v1beta1/records/{id}|
-| `GetRecordByBondId` | [QueryRecordByBondIdRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdRequest) | [QueryRecordByBondIdResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIdResponse) | Get records by bond id | GET|/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}|
+| `GetRecord` | [QueryRecordByIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByIDRequest) | [QueryRecordByIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByIDResponse) | Get record by id | GET|/vulcanize/nameservice/v1beta1/records/{id}|
+| `GetRecordByBondID` | [QueryRecordByBondIDRequest](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDRequest) | [QueryRecordByBondIDResponse](#vulcanize.nameservice.v1beta1.QueryRecordByBondIDResponse) | Get records by bond id | GET|/vulcanize/nameservice/v1beta1/records-by-bond-id/{id}|
 | `GetNameServiceModuleBalance` | [GetNameServiceModuleBalanceRequest](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceRequest) | [GetNameServiceModuleBalanceResponse](#vulcanize.nameservice.v1beta1.GetNameServiceModuleBalanceResponse) | Get nameservice module balance | GET|/vulcanize/nameservice/v1beta1/balance|
 | `ListNameRecords` | [QueryListNameRecordsRequest](#vulcanize.nameservice.v1beta1.QueryListNameRecordsRequest) | [QueryListNameRecordsResponse](#vulcanize.nameservice.v1beta1.QueryListNameRecordsResponse) | List name records | GET|/vulcanize/nameservice/v1beta1/names|
 | `Whois` | [QueryWhoisRequest](#vulcanize.nameservice.v1beta1.QueryWhoisRequest) | [QueryWhoisResponse](#vulcanize.nameservice.v1beta1.QueryWhoisResponse) | Whois method retrieve the name authority info | GET|/vulcanize/nameservice/v1beta1/whois/{name}|

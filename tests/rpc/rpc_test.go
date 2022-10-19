@@ -1,7 +1,7 @@
 // This is a test utility for Ethermint's Web3 JSON-RPC services.
 //
-// To run these tests please first ensure you have the ethermintd running
-// and have started the RPC service with `ethermintd rest-server`.
+// To run these tests please first ensure you have the laconicd running
+// and have started the RPC service with `laconicd rest-server`.
 //
 // You can configure the desired HOST and MODE as well
 package rpc
@@ -17,7 +17,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	rpctypes "github.com/cerc-io/laconicd/rpc/ethereum/types"
+	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	ethermint "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
@@ -87,7 +87,6 @@ func call(t *testing.T, method string, params interface{}) *Response {
 	require.NoError(t, err)
 
 	time.Sleep(1 * time.Second)
-	/* #nosec */
 	res, err := http.Post(HOST, "application/json", bytes.NewBuffer(req))
 	require.NoError(t, err)
 
@@ -110,7 +109,6 @@ func callWithError(method string, params interface{}) (*Response, error) {
 	}
 
 	time.Sleep(1 * time.Second)
-	/* #nosec */
 	res, err := http.Post(HOST, "application/json", bytes.NewBuffer(req))
 	if err != nil {
 		return nil, err
@@ -246,7 +244,6 @@ func TestEth_GetFilterChanges_WrongID(t *testing.T) {
 	req, err := json.Marshal(createRequest("eth_getFilterChanges", []string{"0x1122334400000077"}))
 	require.NoError(t, err)
 
-	/* #nosec */
 	res, err := http.Post(HOST, "application/json", bytes.NewBuffer(req))
 	require.NoError(t, err)
 
@@ -301,6 +298,17 @@ func deployTestContract(t *testing.T) (hexutil.Bytes, map[string]interface{}) {
 	return hash, receipt
 }
 
+func getTransactionReceipt(t *testing.T, hash hexutil.Bytes) map[string]interface{} {
+	param := []string{hash.String()}
+	rpcRes := call(t, "eth_getTransactionReceipt", param)
+
+	receipt := make(map[string]interface{})
+	err := json.Unmarshal(rpcRes.Result, &receipt)
+	require.NoError(t, err)
+
+	return receipt
+}
+
 func waitForReceipt(t *testing.T, hash hexutil.Bytes) map[string]interface{} {
 	timeout := time.After(12 * time.Second)
 	ticker := time.Tick(500 * time.Millisecond)
@@ -310,12 +318,30 @@ func waitForReceipt(t *testing.T, hash hexutil.Bytes) map[string]interface{} {
 		case <-timeout:
 			return nil
 		case <-ticker:
-			receipt := GetTransactionReceipt(t, hash)
+			receipt := getTransactionReceipt(t, hash)
 			if receipt != nil {
 				return receipt
 			}
 		}
 	}
+}
+
+func TestEth_IncompleteSendTransaction(t *testing.T) {
+	// get gasprice
+	gasPrice := GetGasPrice(t)
+
+	// make tx params without from address
+	param := make([]map[string]string, 1)
+	param[0] = make(map[string]string)
+	param[0]["from"] = ""
+	param[0]["to"] = "0x1122334455667788990011223344556677889900"
+	param[0]["value"] = "0x1"
+	param[0]["gasPrice"] = gasPrice
+	_, err := callWithError("eth_sendTransaction", param)
+
+	// require well-formatted error (should not be "method handler crashed")
+	require.Error(t, err)
+	require.NotEqual(t, err.Error(), "method handler crashed", "no from field dealt with incorrectly")
 }
 
 func TestEth_GetFilterChanges_NoTopics(t *testing.T) {

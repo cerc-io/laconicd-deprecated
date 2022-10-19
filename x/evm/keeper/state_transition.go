@@ -4,6 +4,8 @@ import (
 	"math"
 	"math/big"
 
+	sdkmath "cosmossdk.io/math"
+
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,6 +16,7 @@ import (
 	ethermint "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	"github.com/cerc-io/laconicd/x/evm/types"
+	evm "github.com/cerc-io/laconicd/x/evm/vm"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
@@ -46,7 +49,7 @@ func (k *Keeper) EVMConfig(ctx sdk.Context) (*types.EVMConfig, error) {
 		return nil, sdkerrors.Wrap(err, "failed to obtain coinbase address")
 	}
 
-	baseFee := k.BaseFee(ctx, ethCfg)
+	baseFee := k.GetBaseFee(ctx, ethCfg)
 	return &types.EVMConfig{
 		Params:      params,
 		ChainConfig: ethCfg,
@@ -55,7 +58,7 @@ func (k *Keeper) EVMConfig(ctx sdk.Context) (*types.EVMConfig, error) {
 	}, nil
 }
 
-// TxConfig load `TxConfig` from current transient storage
+// TxConfig loads `TxConfig` from current transient storage
 func (k *Keeper) TxConfig(ctx sdk.Context, txHash common.Hash) statedb.TxConfig {
 	return statedb.NewTxConfig(
 		common.BytesToHash(ctx.HeaderHash()), // BlockHash
@@ -75,7 +78,7 @@ func (k *Keeper) NewEVM(
 	cfg *types.EVMConfig,
 	tracer vm.EVMLogger,
 	stateDB vm.StateDB,
-) *vm.EVM {
+) evm.EVM {
 	blockCtx := vm.BlockContext{
 		CanTransfer: core.CanTransfer,
 		Transfer:    core.Transfer,
@@ -93,7 +96,7 @@ func (k *Keeper) NewEVM(
 		tracer = k.Tracer(ctx, msg, cfg.ChainConfig)
 	}
 	vmConfig := k.VMConfig(ctx, msg, cfg, tracer)
-	return vm.NewEVM(blockCtx, txCtx, stateDB, cfg.ChainConfig, vmConfig)
+	return k.evmConstructor(blockCtx, txCtx, stateDB, cfg.ChainConfig, vmConfig, k.customPrecompiles)
 }
 
 // VMConfig creates an EVM configuration from the debug setting and the extra EIPs enabled on the
@@ -176,7 +179,7 @@ func (k Keeper) GetHashFn(ctx sdk.Context) vm.GetHashFunc {
 // ApplyTransaction runs and attempts to perform a state transition with the given transaction (i.e Message), that will
 // only be persisted (committed) to the underlying KVStore if the transaction does not fail.
 //
-// Gas tracking
+// # Gas tracking
 //
 // Ethereum consumes gas according to the EVM opcodes instead of general reads and writes to store. Because of this, the
 // state transition needs to ignore the SDK gas consumption mechanism defined by the GasKVStore and instead consume the
@@ -212,7 +215,7 @@ func (k *Keeper) ApplyTransaction(ctx sdk.Context, tx *ethtypes.Transaction) (*t
 	// snapshot to contain the tx processing and post processing in same scope
 	var commit func()
 	tmpCtx := ctx
-	if k.hooks != nil {
+	if k.hooks != types.EvmHooks(nil) {
 		// Create a cache context to revert state when tx hooks fails,
 		// the cache context is only committed when both tx and hooks executed successfully.
 		// Didn't use `Snapshot` because the context stack has exponential complexity on certain operations,
@@ -235,42 +238,47 @@ func (k *Keeper) ApplyTransaction(ctx sdk.Context, tx *ethtypes.Transaction) (*t
 		bloomReceipt = ethtypes.BytesToBloom(bloom.Bytes())
 	}
 
+	cumulativeGasUsed := res.GasUsed
+	if ctx.BlockGasMeter() != nil {
+		limit := ctx.BlockGasMeter().Limit()
+		consumed := ctx.BlockGasMeter().GasConsumed()
+		cumulativeGasUsed = uint64(math.Min(float64(cumulativeGasUsed+consumed), float64(limit)))
+	}
+
+	var contractAddr common.Address
+	if msg.To() == nil {
+		contractAddr = crypto.CreateAddress(msg.From(), msg.Nonce())
+	}
+
+	receipt := &ethtypes.Receipt{
+		Type:              tx.Type(),
+		PostState:         nil, // TODO: intermediate state root
+		CumulativeGasUsed: cumulativeGasUsed,
+		Bloom:             bloomReceipt,
+		Logs:              logs,
+		TxHash:            txConfig.TxHash,
+		ContractAddress:   contractAddr,
+		GasUsed:           res.GasUsed,
+		BlockHash:         txConfig.BlockHash,
+		BlockNumber:       big.NewInt(ctx.BlockHeight()),
+		TransactionIndex:  txConfig.TxIndex,
+	}
+
 	if !res.Failed() {
-		cumulativeGasUsed := res.GasUsed
-		if ctx.BlockGasMeter() != nil {
-			limit := ctx.BlockGasMeter().Limit()
-			consumed := ctx.BlockGasMeter().GasConsumed()
-			cumulativeGasUsed = uint64(math.Min(float64(cumulativeGasUsed+consumed), float64(limit)))
-		}
-
-		var contractAddr common.Address
-		if msg.To() == nil {
-			contractAddr = crypto.CreateAddress(msg.From(), msg.Nonce())
-		}
-
-		receipt := &ethtypes.Receipt{
-			Type:              tx.Type(),
-			PostState:         nil, // TODO: intermediate state root
-			Status:            ethtypes.ReceiptStatusSuccessful,
-			CumulativeGasUsed: cumulativeGasUsed,
-			Bloom:             bloomReceipt,
-			Logs:              logs,
-			TxHash:            txConfig.TxHash,
-			ContractAddress:   contractAddr,
-			GasUsed:           res.GasUsed,
-			BlockHash:         txConfig.BlockHash,
-			BlockNumber:       big.NewInt(ctx.BlockHeight()),
-			TransactionIndex:  txConfig.TxIndex,
-		}
-
+		receipt.Status = ethtypes.ReceiptStatusSuccessful
 		// Only call hooks if tx executed successfully.
-		if err = k.PostTxProcessing(tmpCtx, msg.From(), tx.To(), receipt); err != nil {
+		if err = k.PostTxProcessing(tmpCtx, msg, receipt); err != nil {
 			// If hooks return error, revert the whole tx.
 			res.VmError = types.ErrPostTxProcessing.Error()
 			k.Logger(ctx).Error("tx post processing failed", "error", err)
+
+			// If the tx failed in post processing hooks, we should clear the logs
+			res.Logs = nil
 		} else if commit != nil {
 			// PostTxProcessing is successful, commit the tmpCtx
 			commit()
+			// Since the post processing can alter the log, we need to update the result
+			res.Logs = types.NewLogsFromEth(receipt.Logs)
 			ctx.EventManager().EmitEvents(tmpCtx.EventManager().Events())
 		}
 	}
@@ -280,11 +288,10 @@ func (k *Keeper) ApplyTransaction(ctx sdk.Context, tx *ethtypes.Transaction) (*t
 		return nil, sdkerrors.Wrapf(err, "failed to refund gas leftover gas to sender %s", msg.From())
 	}
 
-	if len(logs) > 0 {
+	if len(receipt.Logs) > 0 {
 		// Update transient block bloom filter
-		k.SetBlockBloomTransient(ctx, bloom)
-
-		k.SetLogSizeTransient(ctx, uint64(txConfig.LogIndex)+uint64(len(logs)))
+		k.SetBlockBloomTransient(ctx, receipt.Bloom.Big())
+		k.SetLogSizeTransient(ctx, uint64(txConfig.LogIndex)+uint64(len(receipt.Logs)))
 	}
 
 	k.SetTxIndexTransient(ctx, uint64(txConfig.TxIndex)+1)
@@ -303,18 +310,18 @@ func (k *Keeper) ApplyTransaction(ctx sdk.Context, tx *ethtypes.Transaction) (*t
 // If the message fails, the VM execution error with the reason will be returned to the client
 // and the transaction won't be committed to the store.
 //
-// Reverted state
+// # Reverted state
 //
 // The snapshot and rollback are supported by the `statedb.StateDB`.
 //
-// Different Callers
+// # Different Callers
 //
 // It's called in three scenarios:
 // 1. `ApplyTransaction`, in the transaction processing flow.
 // 2. `EthCall/EthEstimateGas` grpc query handler.
 // 3. Called by other native modules directly.
 //
-// Prechecks and Preprocessing
+// # Prechecks and Preprocessing
 //
 // All relevant state transition prechecks for the MsgEthereumTx are performed on the AnteHandler,
 // prior to running the transaction against the state. The prechecks run are the following:
@@ -330,14 +337,20 @@ func (k *Keeper) ApplyTransaction(ctx sdk.Context, tx *ethtypes.Transaction) (*t
 //
 // 1. set up the initial access list (iff fork > Berlin)
 //
-// Tracer parameter
+// # Tracer parameter
 //
 // It should be a `vm.Tracer` object or nil, if pass `nil`, it'll create a default one based on keeper options.
 //
-// Commit parameter
+// # Commit parameter
 //
 // If commit is true, the `StateDB` will be committed, otherwise discarded.
-func (k *Keeper) ApplyMessageWithConfig(ctx sdk.Context, msg core.Message, tracer vm.EVMLogger, commit bool, cfg *types.EVMConfig, txConfig statedb.TxConfig) (*types.MsgEthereumTxResponse, error) {
+func (k *Keeper) ApplyMessageWithConfig(ctx sdk.Context,
+	msg core.Message,
+	tracer vm.EVMLogger,
+	commit bool,
+	cfg *types.EVMConfig,
+	txConfig statedb.TxConfig,
+) (*types.MsgEthereumTxResponse, error) {
 	var (
 		ret   []byte // return bytes from evm execution
 		vmErr error  // vm errors do not effect consensus and are therefore not assigned to err
@@ -353,26 +366,38 @@ func (k *Keeper) ApplyMessageWithConfig(ctx sdk.Context, msg core.Message, trace
 	stateDB := statedb.New(ctx, k, txConfig)
 	evm := k.NewEVM(ctx, msg, cfg, tracer, stateDB)
 
+	leftoverGas := msg.Gas()
+
+	// Allow the tracer captures the tx level events, mainly the gas consumption.
+	vmCfg := evm.Config()
+	if vmCfg.Debug {
+		vmCfg.Tracer.CaptureTxStart(leftoverGas)
+		defer func() {
+			vmCfg.Tracer.CaptureTxEnd(leftoverGas)
+		}()
+	}
+
 	sender := vm.AccountRef(msg.From())
 	contractCreation := msg.To() == nil
-	isLondon := cfg.ChainConfig.IsLondon(evm.Context.BlockNumber)
+	isLondon := cfg.ChainConfig.IsLondon(evm.Context().BlockNumber)
 
 	intrinsicGas, err := k.GetEthIntrinsicGas(ctx, msg, cfg.ChainConfig, contractCreation)
 	if err != nil {
 		// should have already been checked on Ante Handler
 		return nil, sdkerrors.Wrap(err, "intrinsic gas failed")
 	}
+
 	// Should check again even if it is checked on Ante Handler, because eth_call don't go through Ante Handler.
-	if msg.Gas() < intrinsicGas {
+	if leftoverGas < intrinsicGas {
 		// eth_estimateGas will check for this exact error
 		return nil, sdkerrors.Wrap(core.ErrIntrinsicGas, "apply message")
 	}
-	leftoverGas := msg.Gas() - intrinsicGas
+	leftoverGas -= intrinsicGas
 
 	// access list preparation is moved from ante handler to here, because it's needed when `ApplyMessage` is called
 	// under contexts where ante handlers are not run, for example `eth_call` and `eth_estimateGas`.
-	if rules := cfg.ChainConfig.Rules(big.NewInt(ctx.BlockHeight()), cfg.ChainConfig.MergeForkBlock != nil); rules.IsBerlin {
-		stateDB.PrepareAccessList(msg.From(), msg.To(), vm.ActivePrecompiles(rules), msg.AccessList())
+	if rules := cfg.ChainConfig.Rules(big.NewInt(ctx.BlockHeight()), cfg.ChainConfig.MergeNetsplitBlock != nil); rules.IsBerlin {
+		stateDB.PrepareAccessList(msg.From(), msg.To(), evm.ActivePrecompiles(rules), msg.AccessList())
 	}
 
 	if contractCreation {
@@ -397,12 +422,8 @@ func (k *Keeper) ApplyMessageWithConfig(ctx sdk.Context, msg core.Message, trace
 	if msg.Gas() < leftoverGas {
 		return nil, sdkerrors.Wrap(types.ErrGasOverflow, "apply message")
 	}
-	gasUsed := msg.Gas() - leftoverGas
-	refund := GasToRefund(stateDB.GetRefund(), gasUsed, refundQuotient)
-	if refund > gasUsed {
-		return nil, sdkerrors.Wrap(types.ErrGasOverflow, "apply message")
-	}
-	gasUsed -= refund
+	// refund gas
+	leftoverGas += GasToRefund(stateDB.GetRefund(), msg.Gas()-leftoverGas, refundQuotient)
 
 	// EVM execution error needs to be available for the JSON-RPC client
 	var vmError string
@@ -416,6 +437,21 @@ func (k *Keeper) ApplyMessageWithConfig(ctx sdk.Context, msg core.Message, trace
 			return nil, sdkerrors.Wrap(err, "failed to commit stateDB")
 		}
 	}
+
+	// calculate a minimum amount of gas to be charged to sender if GasLimit
+	// is considerably higher than GasUsed to stay more aligned with Tendermint gas mechanics
+	// for more info https://github.com/cerc-io/laconicd/issues/1085
+	gasLimit := sdk.NewDec(int64(msg.Gas()))
+	minGasMultiplier := k.GetMinGasMultiplier(ctx)
+	minimumGasUsed := gasLimit.Mul(minGasMultiplier)
+
+	if msg.Gas() < leftoverGas {
+		return nil, sdkerrors.Wrapf(types.ErrGasOverflow, "message gas limit < leftover gas (%d < %d)", msg.Gas(), leftoverGas)
+	}
+	temporaryGasUsed := msg.Gas() - leftoverGas
+	gasUsed := sdk.MaxDec(minimumGasUsed, sdk.NewDec(int64(temporaryGasUsed))).TruncateInt().Uint64()
+	// reset leftoverGas, to be used by the tracer
+	leftoverGas = msg.Gas() - gasUsed
 
 	return &types.MsgEthereumTxResponse{
 		GasUsed: gasUsed,
@@ -459,7 +495,7 @@ func (k *Keeper) RefundGas(ctx sdk.Context, msg core.Message, leftoverGas uint64
 		return sdkerrors.Wrapf(types.ErrInvalidRefund, "refunded amount value cannot be negative %d", remaining.Int64())
 	case 1:
 		// positive amount refund
-		refundedCoins := sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(remaining))}
+		refundedCoins := sdk.Coins{sdk.NewCoin(denom, sdkmath.NewIntFromBigInt(remaining))}
 
 		// refund to sender from the fee collector module account, which is the escrow account in charge of collecting tx fees
 

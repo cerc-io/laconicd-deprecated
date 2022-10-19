@@ -56,10 +56,10 @@ type ImporterTestSuite struct {
 	ctx sdk.Context
 }
 
-/// DoSetupTest setup test environment, it uses`require.TestingT` to support both `testing.T` and `testing.B`.
+// / DoSetupTest setup test environment, it uses`require.TestingT` to support both `testing.T` and `testing.B`.
 func (suite *ImporterTestSuite) DoSetupTest(t require.TestingT) {
 	checkTx := false
-	suite.app = app.Setup(suite.T(), checkTx, nil)
+	suite.app = app.Setup(checkTx, nil)
 	// consensus key
 	priv, err := ethsecp256k1.GenerateKey()
 	require.NoError(t, err)

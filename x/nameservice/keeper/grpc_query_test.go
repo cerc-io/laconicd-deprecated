@@ -64,12 +64,12 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
 				sr.NoError(err)
 				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetId(),
+					BondId:  suite.bond.GetID(),
 					Signer:  suite.accounts[0].String(),
 					Payload: payload.ToPayload(),
 				})
 				sr.NoError(err)
-				sr.NotNil(record.Id)
+				sr.NotNil(record.ID)
 			}
 			resp, err := grpcClient.ListRecords(context.Background(), test.req)
 			if test.expErr {
@@ -78,9 +78,9 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetRecords()))
 				if test.createRecord {
-					recordId = resp.GetRecords()[0].GetId()
+					recordId = resp.GetRecords()[0].GetID()
 					sr.NotZero(resp.GetRecords())
-					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
+					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetID())
 				}
 			}
 		})
@@ -89,21 +89,21 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	// Get the records by record id
 	testCases1 := []struct {
 		msg          string
-		req          *nameservicetypes.QueryRecordByIdRequest
+		req          *nameservicetypes.QueryRecordByIDRequest
 		createRecord bool
 		expErr       bool
 		noOfRecords  int
 	}{
 		{
 			"Invalid Request without record id",
-			&nameservicetypes.QueryRecordByIdRequest{},
+			&nameservicetypes.QueryRecordByIDRequest{},
 			false,
 			true,
 			0,
 		},
 		{
 			"With Record ID",
-			&nameservicetypes.QueryRecordByIdRequest{
+			&nameservicetypes.QueryRecordByIDRequest{
 				Id: recordId,
 			},
 			true,
@@ -120,7 +120,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NoError(err)
 				sr.NotNil(resp.GetRecord())
 				if test.createRecord {
-					sr.Equal(resp.GetRecord().BondId, suite.bond.GetId())
+					sr.Equal(resp.GetRecord().BondId, suite.bond.GetID())
 					sr.Equal(resp.GetRecord().Id, recordId)
 				}
 			}
@@ -130,22 +130,22 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	// Get the records by record id
 	testCasesByBondID := []struct {
 		msg          string
-		req          *nameservicetypes.QueryRecordByBondIdRequest
+		req          *nameservicetypes.QueryRecordByBondIDRequest
 		createRecord bool
 		expErr       bool
 		noOfRecords  int
 	}{
 		{
 			"Invalid Request without bond id",
-			&nameservicetypes.QueryRecordByBondIdRequest{},
+			&nameservicetypes.QueryRecordByBondIDRequest{},
 			false,
 			true,
 			0,
 		},
 		{
 			"With Bond ID",
-			&nameservicetypes.QueryRecordByBondIdRequest{
-				Id: suite.bond.GetId(),
+			&nameservicetypes.QueryRecordByBondIDRequest{
+				Id: suite.bond.GetID(),
 			},
 			true,
 			false,
@@ -154,7 +154,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	}
 	for _, test := range testCasesByBondID {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
-			resp, err := grpcClient.GetRecordByBondId(context.Background(), test.req)
+			resp, err := grpcClient.GetRecordByBondID(context.Background(), test.req)
 			if test.expErr {
 				sr.Zero(resp.GetRecords())
 			} else {
@@ -162,7 +162,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NotNil(resp.GetRecords())
 				if test.createRecord {
 					sr.NotZero(resp.GetRecords())
-					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
+					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetID())
 				}
 			}
 		})
@@ -195,12 +195,12 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
 				sr.NoError(err)
 				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetId(),
+					BondId:  suite.bond.GetID(),
 					Signer:  suite.accounts[0].String(),
 					Payload: payload.ToPayload(),
 				})
 				sr.NoError(err)
-				sr.NotNil(record.Id)
+				sr.NotNil(record.ID)
 			}
 			resp, err := grpcClient.GetNameServiceModuleBalance(context.Background(), test.req)
 			if test.expErr {
@@ -220,7 +220,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 func (suite *KeeperTestSuite) TestGrpcQueryWhoIS() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
-	var authorityName = "TestGrpcQueryWhoIS"
+	authorityName := "TestGrpcQueryWhoIS"
 
 	testCases := []struct {
 		msg         string

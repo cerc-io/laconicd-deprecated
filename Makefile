@@ -12,9 +12,12 @@ LACONIC_DIR = laconic
 BUILDDIR ?= $(CURDIR)/build
 SIMAPP = ./app
 HTTPS_GIT := https://github.com/cerc-io/laconicd.git
-DOCKER := $(shell which docker)
-DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc8
+# RocksDB is a native dependency, so we don't assume the library is installed.
+# Instead, it must be explicitly enabled and we warn when it is not.
+ENABLE_ROCKSDB ?= false
 
 export GO111MODULE = on
 
@@ -49,9 +52,6 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
-ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
-  build_tags += gcc
-endif
 build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
@@ -69,27 +69,36 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=laconic \
 			-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
 			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TMVERSION)
 
-# DB backend selection
-ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
-  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+ifeq ($(ENABLE_ROCKSDB),true)
+  BUILD_TAGS += rocksdb_build
+  test_tags += rocksdb_build
+else
+  $(warning RocksDB support is disabled; to build and test with RocksDB support, set ENABLE_ROCKSDB=true)
 endif
 
+# DB backend selection
+ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
+  BUILD_TAGS += gcc
+endif
 ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
-  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
   BUILD_TAGS += badgerdb
 endif
 # handle rocksdb
 ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
+  ifneq ($(ENABLE_ROCKSDB),true)
+    $(error Cannot use RocksDB backend unless ENABLE_ROCKSDB=true)
+  endif
   CGO_ENABLED=1
   BUILD_TAGS += rocksdb
-  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
 endif
 # handle boltdb
 ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
   BUILD_TAGS += boltdb
-  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
 endif
 
+ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+  ldflags += -w -s
+endif
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
@@ -97,20 +106,11 @@ build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
-
-# Check for debug option
-ifeq (debug,$(findstring debug,$(COSMOS_BUILD_OPTIONS)))
-  BUILD_FLAGS += -gcflags 'all=-N -l'
-  COSMOS_BUILD_OPTIONS += nostrip
-endif
-
 # check for nostrip option
 ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
-  ldflags += -w -s
 endif
 
-all: tools build lint test
 # # The below include contains the tools and runsim targets.
 # include contrib/devtools/Makefile
 
@@ -122,15 +122,15 @@ BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
 build-linux:
-	GOOS=linux GOARCH=$(if $(findstring aarch64,$(shell uname -m)) || $(findstring arm64,$(shell uname -m)),arm64,amd64) LEDGER_ENABLED=false $(MAKE) build
+	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
-	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+	go $@ $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
 
-.PHONY: build build-linux cosmovisor
+.PHONY: build build-linux
 
 docker-build:
 	# TODO replace with kaniko
@@ -138,12 +138,12 @@ docker-build:
 	docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
 	# docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:${COMMIT_HASH}
 	# update old container
-	docker rm ethermint || true
+	docker rm laconicd || true
 	# create a new container from the latest image
-	docker create --name ethermint -t -i cerc-io/laconicd:latest ethermint
+	docker create --name laconic -t -i cerc-io/laconicd:latest laconicd
 	# move the binaries to the ./build directory
 	mkdir -p ./build/
-	docker cp ethermint:/usr/bin/ethermintd ./build/
+	docker cp laconic:/usr/bin/laconicd ./build/
 
 $(MOCKS_DIR):
 	mkdir -p $(MOCKS_DIR)
@@ -167,7 +167,7 @@ build-all: tools build lint test
 ###############################################################################
 
 PACKAGE_NAME:=github.com/cerc-io/laconicd
-GOLANG_CROSS_VERSION  = v1.17.1
+GOLANG_CROSS_VERSION = v1.18
 GOPATH ?= '$(HOME)/go'
 release-dry-run:
 	docker run \
@@ -178,8 +178,8 @@ release-dry-run:
 		-v `pwd`:/go/src/$(PACKAGE_NAME) \
 		-v ${GOPATH}/pkg:/go/pkg \
 		-w /go/src/$(PACKAGE_NAME) \
-		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
-		--rm-dist --skip-validate --skip-publish
+		ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
+		--rm-dist --skip-validate --skip-publish --snapshot
 
 release:
 	@if [ ! -f ".release-env" ]; then \
@@ -194,7 +194,7 @@ release:
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/$(PACKAGE_NAME) \
 		-w /go/src/$(PACKAGE_NAME) \
-		ghcr.io/troian/golang-cross:${GOLANG_CROSS_VERSION} \
+		ghcr.io/goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist --skip-validate
 
 .PHONY: release-dry-run release
@@ -215,7 +215,7 @@ RUNSIM         = $(TOOLS_DESTDIR)/runsim
 runsim: $(RUNSIM)
 $(RUNSIM):
 	@echo "Installing runsim..."
-	@(cd /tmp && ${GO_MOD} go get github.com/cosmos/tools/cmd/runsim@master)
+	@(cd /tmp && ${GO_MOD} go install github.com/cosmos/tools/cmd/runsim@master)
 
 statik: $(STATIK)
 $(STATIK):
@@ -249,14 +249,6 @@ ifeq (, $(shell which protoc-gen-go))
 	@go get github.com/fjl/gencodec github.com/golang/protobuf/protoc-gen-go
 else
 	@echo "protoc-gen-go already installed; skipping..."
-endif
-
-ifeq (, $(shell which protoc))
-	@echo "Please istalling protobuf according to your OS"
-	@echo "macOS: brew install protobuf"
-	@echo "linux: apt-get install -f -y protobuf-compiler"
-else
-	@echo "protoc already installed; skipping..."
 endif
 
 ifeq (, $(shell which solcjs))
@@ -341,6 +333,12 @@ test-rpc:
 test-integration:
 	./scripts/integration-test-all.sh -t "integration" -q 1 -z 1 -s 2 -m "integration" -r "true"
 
+run-integration-tests:
+	@nix-shell ./tests/integration_tests/shell.nix --run ./scripts/run-integration-tests.sh
+
+.PHONY: run-integration-tests
+
+
 test-rpc-pending:
 	./scripts/integration-test-all.sh -t "pending" -q 1 -z 1 -s 2 -m "pending" -r "true"
 
@@ -356,10 +354,9 @@ test-sim-nondeterminism:
 	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
-test-sim-custom-genesis-fast:
-	@echo "Running custom genesis simulation..."
-	@echo "By default, ${HOME}/.$(LACONIC_DIR)/config/genesis.json will be used."
-	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.$(LACONIC_DIR)/config/genesis.json \
+test-sim-random-genesis-fast:
+	@echo "Running random genesis simulation..."
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 test-sim-import-export: runsim
@@ -370,10 +367,9 @@ test-sim-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
 	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
 
-test-sim-custom-genesis-multi-seed: runsim
+test-sim-random-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.$(LACONIC_DIR)/config/genesis.json will be used."
-	@$(BINDIR)/runsim -Genesis=${HOME}/.$(LACONIC_DIR)/config/genesis.json -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
+	@$(BINDIR)/runsim -SimAppPkg=$(SIMAPP) -ExitOnFail 400 5 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
@@ -408,14 +404,19 @@ benchmark:
 ###############################################################################
 
 lint:
-	golangci-lint run --out-format=tab
+	@@test -n "$$golangci-lint version | awk '$4 >= 1.42')"
+	golangci-lint run --out-format=tab -n
+
+lint-py:
+	flake8 --show-source --count --statistics \
+          --format="::error file=%(path)s,line=%(row)d,col=%(col)d::%(path)s:%(row)d:%(col)d: %(code)s %(text)s" \
 
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' -not -name '*.pb.gw.go' | xargs gofumpt -d -e -extra
 
 lint-fix:
 	golangci-lint run --fix --out-format=tab --issues-exit-code=0
-.PHONY: lint lint-fix
+.PHONY: lint lint-fix lint-py
 
 format-fix:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -name '*.pb.go' -not -name '*.pb.gw.go' | xargs gofumpt -w -s
@@ -426,17 +427,18 @@ format-fix:
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=v0.2
-containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=$(PROJECT_NAME)-proto-gen-$(containerProtoVer)
-containerProtoGenSwagger=$(PROJECT_NAME)-proto-gen-swagger-$(containerProtoVer)
-containerProtoFmt=$(PROJECT_NAME)-proto-fmt-$(containerProtoVer)
+protoVer=v0.2
+protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
+containerProtoGen=$(PROJECT_NAME)-proto-gen-$(protoVer)
+containerProtoGenAny=$(PROJECT_NAME)-proto-gen-any-$(protoVer)
+containerProtoGenSwagger=$(PROJECT_NAME)-proto-gen-swagger-$(protoVer)
+containerProtoFmt=$(PROJECT_NAME)-proto-fmt-$(protoVer)
 
 proto-all: proto-format proto-lint proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
 		sh ./scripts/protocgen.sh; fi
 
 proto-swagger-gen:
@@ -508,19 +510,19 @@ ifeq ($(OS),Windows_NT)
 	mkdir localnet-setup &
 	@$(MAKE) localnet-build
 
-	IF not exist "build/node0/$(LACONIC_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\ethermint\Z laconicd/node sh -c "laconicd testnet init-files --v 4 --keyring-backend=test"
+	IF not exist "build/node0/$(LACONIC_BINARY)/config/genesis.json" docker run --rm -v $(CURDIR)/build\laconicd\Z laconicd/node "./laconicd testnet --v 4 -o /laconicd --keyring-backend=test --ip-addresses laconicdnode0,laconicdnode1,laconicdnode2,laconicdnode3"
 	docker-compose up -d
 else
 	mkdir -p localnet-setup
 	@$(MAKE) localnet-build
 
-	if ! [ -f localnet-setup/node0/$(LACONIC_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/localnet-setup:Z laconicd/node sh -c "laconicd testnet init-files --v 4 --keyring-backend=test"; fi
+	if ! [ -f localnet-setup/node0/$(LACONIC_BINARY)/config/genesis.json ]; then docker run --rm -v $(CURDIR)/localnet-setup:/localnet-setup:Z laconicd/node "./laconicd testnet --v 4 -o /laconicd --keyring-backend=test --ip-addresses laconicdnode0,laconicdnode1,laconicdnode2,laconicdnode3"; fi
 	docker-compose up -d
 endif
 
 # Stop testnet
 localnet-stop:
-	docker-compose down -v 
+	docker-compose down
 
 # Clean testnet
 localnet-clean:
@@ -531,8 +533,8 @@ localnet-clean:
 localnet-unsafe-reset:
 	docker-compose down
 ifeq ($(OS),Windows_NT)
-	@docker run --rm -v $(CURDIR)\localnet-setup\node0\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 	@docker run --rm -v $(CURDIR)\localnet-setup\node1\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
+	@docker run --rm -v $(CURDIR)\localnet-setup\node0\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 	@docker run --rm -v $(CURDIR)\localnet-setup\node2\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 	@docker run --rm -v $(CURDIR)\localnet-setup\node3\laconicd:laconic\Z laconicd/node "laconicd unsafe-reset-all --home=/laconic"
 else
@@ -546,4 +548,4 @@ endif
 localnet-show-logstream:
 	docker-compose logs --tail=1000 -f
 
-.PHONY: build-docker-local-ethermint localnet-start localnet-stop
+.PHONY: build-docker-local-laconic localnet-start localnet-stop

@@ -54,7 +54,7 @@ func getNetInfo(client client.Context) (string, []*PeerInfo, error) {
 	for index, peer := range netInfo.Peers {
 		peersInfo[index] = &PeerInfo{
 			Node: &NodeInfo{
-				ID: string(peer.ID),
+				ID: string(peer.NodeInfo.ID()),
 				// Moniker: peer.Node.Moniker,
 				// Network: peer.Node.Network,
 			},
@@ -91,7 +91,7 @@ func getValidatorSet(client client.Context) ([]*ValidatorInfo, error) {
 
 // GetDiskUsage returns disk usage for the given path.
 func GetDiskUsage(dirPath string) (string, error) {
-	out, err := exec.Command("du", "-sh", dirPath).Output()
+	out, err := exec.Command("du", "-sh", dirPath).Output() // #nosec G204
 	if err != nil {
 		return "", err
 	}

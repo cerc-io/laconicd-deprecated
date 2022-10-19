@@ -1,11 +1,9 @@
-FROM golang:alpine AS build-env
+FROM golang:stretch as build-env
 
-# Install minimum necessary dependencies,
-ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
-RUN apk add --no-cache $PACKAGES
-
-# Set up dependencies
-ENV PACKAGES git build-base
+# Install minimum necessary dependencies
+ENV PACKAGES curl make git libc-dev bash gcc
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y $PACKAGES
 
 # Set working directory for the build
 WORKDIR /go/src/github.com/cerc-io/laconicd
@@ -13,22 +11,21 @@ WORKDIR /go/src/github.com/cerc-io/laconicd
 # Add source files
 COPY . .
 
-# build binary
-# RUN make build-linux
-RUN COSMOS_BUILD_OPTIONS=badgerdb make build
-
+# build Ethermint
+RUN make build-linux
 
 # Final image
-FROM alpine:edge
+FROM golang:1.18 as final
 
-# Install ca-certificates
-RUN apk add --update ca-certificates jq
 WORKDIR /
 
+RUN apt-get update
+
 # Copy over binaries from the build-env
-COPY --from=build-env /go/src/github.com/cerc-io/laconicd/build/laconicd /usr/bin/laconicd
+COPY --from=build-env /go/src/github.com/cerc-io/laconicd/build/laconicd /
+COPY --from=build-env /go/src/github.com/cerc-io/laconicd/scripts/start-docker.sh /
 
-EXPOSE 26656 26657 1317 9090 8545 8546
+EXPOSE 26656 26657 1317 8545 8546
 
-# Run ethermintd by default
-CMD ["laconicd","start","--gql-playground","--gql-server","--home","/laconic","--mode","validator","--db-backend","badgerdb"]
+# Run laconicd by default, omit entrypoint to ease using container with laconicd
+ENTRYPOINT ["/bin/bash", "-c"]

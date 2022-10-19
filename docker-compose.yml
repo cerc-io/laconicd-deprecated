@@ -5,9 +5,7 @@ services:
     container_name: laconicdnode0
     image: "laconicd/node"
     ports:
-      - "26656-26657:26656-26657"
-      - "1317:1317"
-      - "9090:9090"
+      - "26657:26657"
       - "8545:8545"
       - "8546:8546"
       - "8125:8125"
@@ -15,18 +13,16 @@ services:
       - ID=0
       - LOG=${LOG:-laconicd.log}
     volumes:
-      - ./localnet-setup/node0/laconicd:/laconic:Z
+      - ./localnet-setup/node0/laconicd:/laconicd:Z
     networks:
-      localnet:
-        ipv4_address: 192.168.10.1
+      - localnet
+    entrypoint: "bash start-docker.sh"
 
   laconicdnode1:
     container_name: laconicdnode1
     image: "laconicd/node"
     ports:
-      - "26666-26667:26656-26657"
-      - "1318:1317"
-      - "9091:9090"
+      - "26658:26657"
       - "8555:8545"
       - "8556:8546"
       - "8126:8125"
@@ -34,10 +30,10 @@ services:
       - ID=1
       - LOG=${LOG:-laconicd.log}
     volumes:
-      - ./localnet-setup/node1/laconicd:/laconic:Z
+      - ./localnet-setup/node1/laconicd:/laconicd:Z
     networks:
-      localnet:
-        ipv4_address: 192.168.10.2
+      - localnet
+    entrypoint: "bash start-docker.sh"
 
   laconicdnode2:
     container_name: laconicdnode2
@@ -46,17 +42,15 @@ services:
       - ID=2
       - LOG=${LOG:-laconicd.log}
     ports:
-      - "26676-26677:26656-26657"
-      - "1319:1317"
-      - "9092:9090"
+      - "26659:26657"
       - "8565:8545"
       - "8566:8546"
       - "8127:8125"
     volumes:
-      - ./localnet-setup/node2/laconicd:/laconic:Z
+      - ./localnet-setup/node2/laconicd:/laconicd:Z
     networks:
-      localnet:
-        ipv4_address: 192.168.10.3
+      - localnet
+    entrypoint: "bash start-docker.sh"
 
   laconicdnode3:
     container_name: laconicdnode3
@@ -65,23 +59,15 @@ services:
       - ID=3
       - LOG=${LOG:-laconicd.log}
     ports:
-      - "26686-26687:26656-26657"
-      - "1320:1317"
-      - "9093:9090"
+      - "26660:26657"
       - "8575:8545"
       - "8576:8546"
       - "8128:8125"
     volumes:
-      - ./localnet-setup/node3/laconicd:/laconic:Z
+      - ./localnet-setup/node3/laconicd:/laconicd:Z
     networks:
-      localnet:
-        ipv4_address: 192.168.10.4
-    # entrypoint: "sh scripts/start-docker.sh"
-    
+      - localnet
+    entrypoint: "bash start-docker.sh"
+
 networks:
   localnet:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.10.0/16

@@ -99,7 +99,7 @@ func GetBidIndexKey(auctionID string, bidder string) []byte {
 }
 
 func GetAuctionBidsIndexPrefix(auctionID string) []byte {
-	return append(append(PrefixAuctionBidsIndex, []byte(auctionID)...))
+	return append(PrefixAuctionBidsIndex, []byte(auctionID)...)
 }
 
 // SaveAuction - saves a auction to the store.
@@ -226,7 +226,7 @@ func (k Keeper) ListAuctions(ctx sdk.Context) []types.Auction {
 func (k Keeper) QueryAuctionsByOwner(ctx sdk.Context, ownerAddress string) []types.Auction {
 	auctions := []types.Auction{}
 
-	ownerPrefix := append(prefixOwnerToAuctionsIndex, []byte(ownerAddress)...)
+	ownerPrefix := append(prefixOwnerToAuctionsIndex, []byte(ownerAddress)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
 	itr := sdk.KVStorePrefixIterator(store, ownerPrefix)
 	defer itr.Close()
@@ -247,9 +247,9 @@ func (k Keeper) QueryAuctionsByOwner(ctx sdk.Context, ownerAddress string) []typ
 func (k Keeper) QueryAuctionsByBidder(ctx sdk.Context, bidderAddress string) []types.Auction {
 	auctions := []types.Auction{}
 
-	bidderPrefix := append(PrefixBidderToAuctionsIndex, []byte(bidderAddress)...)
+	bidderPrefix := append(PrefixBidderToAuctionsIndex, []byte(bidderAddress)...) //nolint: all
 	store := ctx.KVStore(k.storeKey)
-	itr := sdk.KVStorePrefixIterator(store, []byte(bidderPrefix))
+	itr := sdk.KVStorePrefixIterator(store, bidderPrefix)
 	defer itr.Close()
 	for ; itr.Valid(); itr.Next() {
 		auctionID := itr.Key()[len(bidderPrefix):]
@@ -312,8 +312,8 @@ func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*typ
 
 	// Compute timestamps.
 	now := ctx.BlockTime()
-	commitsEndTime := now.Add(time.Duration(msg.CommitsDuration))
-	revealsEndTime := now.Add(time.Duration(msg.CommitsDuration + msg.RevealsDuration))
+	commitsEndTime := now.Add(msg.CommitsDuration)
+	revealsEndTime := now.Add(msg.CommitsDuration + msg.RevealsDuration)
 
 	auction := types.Auction{
 		Id:             auctionID,
@@ -382,7 +382,7 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Bid, 
 	return &bid, nil
 }
 
-// RevealBid reeals a bid comitted earlier.
+// RevealBid reeals a bid committed earlier.
 func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Auction, error) {
 	if !k.HasAuction(ctx, msg.AuctionId) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Auction not found.")
@@ -553,6 +553,7 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 			continue
 		}
 
+		//nolint: all
 		if highestBid.BidAmount.IsLT(bid.BidAmount) {
 			ctx.Logger().Info(fmt.Sprintf("New highest bid %s %s", bid.BidderAddress, bid.BidAmount.String()))
 
@@ -637,7 +638,7 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 		// Burn anything over the min. bid amount.
 		amountToBurn := auction.WinningPrice.Sub(auction.MinimumBid)
 		if amountToBurn.IsNegative() {
-			ctx.Logger().Error(fmt.Sprintf("Auction coins to burn cannot be negative."))
+			ctx.Logger().Error("Auction coins to burn cannot be negative.")
 			panic("Auction coins to burn cannot be negative.")
 		}
 

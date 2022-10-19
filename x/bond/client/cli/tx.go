@@ -50,7 +50,7 @@ func NewCreateBondCmd() *cobra.Command {
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -65,17 +65,18 @@ func RefillBondCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bondId := args[0]
+			bondID := args[0]
 			coin, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRefillBond(bondId, coin, clientCtx.GetFromAddress())
+			msg := types.NewMsgRefillBond(bondID, coin, clientCtx.GetFromAddress())
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlags(cmd)
+
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -90,21 +91,22 @@ func WithdrawBondCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bondId := args[0]
+			bondID := args[0]
 			coin, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawBond(bondId, coin, clientCtx.GetFromAddress())
+			msg := types.NewMsgWithdrawBond(bondID, coin, clientCtx.GetFromAddress())
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlags(cmd)
+
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
-// CancelBondCmd is the CLI command for cancelling a bond.
+// CancelBondCmd is the CLI command for canceling a bond.
 func CancelBondCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cancel [bond Id]",
@@ -115,11 +117,12 @@ func CancelBondCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bondId := args[0]
-			msg := types.NewMsgCancelBond(bondId, clientCtx.GetFromAddress())
+			bondID := args[0]
+			msg := types.NewMsgCancelBond(bondID, clientCtx.GetFromAddress())
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlags(cmd)
+
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
