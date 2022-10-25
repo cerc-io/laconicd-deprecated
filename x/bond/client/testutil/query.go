@@ -163,7 +163,7 @@ func (s *IntegrationTestSuite) TestGetQueryBondLists() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetQueryBondById() {
+func (s *IntegrationTestSuite) TestGetQueryBondByID() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	testCases := []struct {
@@ -205,7 +205,7 @@ func (s *IntegrationTestSuite) TestGetQueryBondById() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				return bond.GetId()
+				return bond.GetID()
 			},
 		},
 	}
@@ -214,20 +214,20 @@ func (s *IntegrationTestSuite) TestGetQueryBondById() {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			clientCtx := val.ClientCtx
 			if !tc.err {
-				bondId := tc.preRun()
-				tc.args = append([]string{bondId}, tc.args...)
+				bondID := tc.preRun()
+				tc.args = append([]string{bondID}, tc.args...)
 			}
-			cmd := cli.GetBondByIdCmd()
+			cmd := cli.GetBondByIDCmd()
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			sr.NoError(err)
-			var queryResponse types.QueryGetBondByIdResponse
+			var queryResponse types.QueryGetBondByIDResponse
 			err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
 			sr.NoError(err)
 			if tc.err {
-				sr.Zero(len(queryResponse.GetBond().GetId()))
+				sr.Zero(len(queryResponse.GetBond().GetID()))
 			} else {
-				sr.NotZero(len(queryResponse.GetBond().GetId()))
+				sr.NotZero(len(queryResponse.GetBond().GetID()))
 				sr.Equal(s.accountAddress, queryResponse.GetBond().GetOwner())
 			}
 		})
@@ -251,7 +251,6 @@ func (s *IntegrationTestSuite) TestGetQueryBondListsByOwner() {
 			},
 			true,
 			func() {
-
 			},
 		},
 		{

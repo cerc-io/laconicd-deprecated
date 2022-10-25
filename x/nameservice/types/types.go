@@ -91,8 +91,8 @@ func (payload Payload) ToReadablePayload() PayloadType {
 func (r *Record) ToRecordType() RecordType {
 	var resourceObj RecordType
 
-	resourceObj.Id = r.Id
-	resourceObj.BondId = r.BondId
+	resourceObj.ID = r.Id
+	resourceObj.BondID = r.BondId
 	resourceObj.CreateTime = r.CreateTime
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
@@ -105,9 +105,9 @@ func (r *Record) ToRecordType() RecordType {
 
 // RecordType represents a WNS record.
 type RecordType struct {
-	Id         string                 `json:"id,omitempty"`
+	ID         string                 `json:"id,omitempty"`
 	Names      []string               `json:"names,omitempty"`
-	BondId     string                 `json:"bondId,omitempty"`
+	BondID     string                 `json:"bondId,omitempty"`
 	CreateTime string                 `json:"createTime,omitempty"`
 	ExpiryTime string                 `json:"expiryTime,omitempty"`
 	Deleted    bool                   `json:"deleted,omitempty"`
@@ -125,8 +125,8 @@ func (r *RecordType) ToRecordObj() (Record, error) {
 
 	var resourceObj Record
 
-	resourceObj.Id = r.Id
-	resourceObj.BondId = r.BondId
+	resourceObj.Id = r.ID
+	resourceObj.BondId = r.BondID
 	resourceObj.CreateTime = r.CreateTime
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted

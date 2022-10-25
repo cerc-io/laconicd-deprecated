@@ -16,7 +16,7 @@ func GenerateMnemonic() (string, error) {
 		return "", err
 	}
 
-	mnemonic, err := bip39.NewMnemonic(entropySeed[:])
+	mnemonic, err := bip39.NewMnemonic(entropySeed)
 	if err != nil {
 		return "", err
 	}

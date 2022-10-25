@@ -80,7 +80,7 @@ $ %s tx %s set [payload file path] [bond-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -112,7 +112,7 @@ $ %s tx %s renew-record [record-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -144,7 +144,7 @@ $ %s tx %s associate-bond [record-id] [bond-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -176,7 +176,7 @@ $ %s tx %s dissociate-bond [record-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -208,7 +208,7 @@ $ %s tx %s dissociate-bond [record-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -240,7 +240,7 @@ $ %s tx %s reassociate-records [old-bond-id] [new-bond-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -273,7 +273,7 @@ $ %s tx %s set-name [crn] [cid]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -317,7 +317,7 @@ $ %s tx %s reserve-name [name] --owner [ownerAddress]
 
 	cmd.Flags().String("owner", "", "Owner address, if creating a sub-authority.")
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -345,7 +345,7 @@ $ %s tx %s authority-bond [name] [bond-id]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
@@ -372,15 +372,15 @@ $ %s tx %s delete-name [crn]
 		},
 	}
 
-	flags.AddTxFlags(cmd)
+	cmd, _ = flags.AddTxFlags(cmd)
 	return cmd
 }
 
-//GetPayloadFromFile  Load payload object from YAML file.
+// GetPayloadFromFile  Load payload object from YAML file.
 func GetPayloadFromFile(filePath string) (*types.PayloadType, error) {
 	var payload types.PayloadType
 
-	data, err := ioutil.ReadFile(filePath)
+	data, err := ioutil.ReadFile(filePath) // #nosec G304
 	if err != nil {
 		return nil, err
 	}

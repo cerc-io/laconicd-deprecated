@@ -134,7 +134,10 @@ func GetCmdCommitBid() *cobra.Command {
 			}
 
 			// Save reveal file.
-			ioutil.WriteFile(fmt.Sprintf("%s-%s.json", clientCtx.GetFromName(), commitHash), content, 0600)
+			err = ioutil.WriteFile(fmt.Sprintf("%s-%s.json", clientCtx.GetFromName(), commitHash), content, 0o600)
+			if err != nil {
+				return err
+			}
 
 			msg := types.NewMsgCommitBid(auctionID, commitHash, clientCtx.GetFromAddress())
 			err = msg.ValidateBasic()
@@ -166,7 +169,7 @@ func GetCmdRevealBid() *cobra.Command {
 			auctionID := args[0]
 			revealFilePath := args[1]
 
-			revealBytes, err := ioutil.ReadFile(revealFilePath)
+			revealBytes, err := ioutil.ReadFile(revealFilePath) // #nosec G304
 			if err != nil {
 				return err
 			}

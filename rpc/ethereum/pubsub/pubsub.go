@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	coretypes "github.com/tendermint/tendermint/rpc/coretypes"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
 type UnsubscribeFunc func()
@@ -124,6 +124,7 @@ func (m *memEventBus) closeAllSubscribers(name string) {
 	subsribers := m.subscribers[name]
 	delete(m.subscribers, name)
 
+	// #nosec G705
 	for _, sub := range subsribers {
 		close(sub)
 	}
@@ -134,6 +135,7 @@ func (m *memEventBus) publishAllSubscribers(name string, msg coretypes.ResultEve
 	subsribers := m.subscribers[name]
 	m.subscribersMux.RUnlock()
 
+	// #nosec G705
 	for _, sub := range subsribers {
 		select {
 		case sub <- msg:

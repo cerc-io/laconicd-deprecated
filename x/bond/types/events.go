@@ -10,6 +10,6 @@ const (
 
 	AttributeKeySigner     = "signer"
 	AttributeKeyAmount     = "amount"
-	AttributeKeyBondId     = "bond_id"
+	AttributeKeyBondID     = "bond_id"
 	AttributeValueCategory = ModuleName
 )

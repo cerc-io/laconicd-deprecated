@@ -44,20 +44,20 @@ func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsReque
 	return &types.QueryListRecordsResponse{Records: records}, nil
 }
 
-func (q Querier) GetRecord(c context.Context, req *types.QueryRecordByIdRequest) (*types.QueryRecordByIdResponse, error) {
+func (q Querier) GetRecord(c context.Context, req *types.QueryRecordByIDRequest) (*types.QueryRecordByIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	id := req.GetId()
 	if !q.Keeper.HasRecord(ctx, id) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "Record not found.")
 	}
 	record := q.Keeper.GetRecord(ctx, id)
-	return &types.QueryRecordByIdResponse{Record: record}, nil
+	return &types.QueryRecordByIDResponse{Record: record}, nil
 }
 
-func (q Querier) GetRecordByBondId(c context.Context, req *types.QueryRecordByBondIdRequest) (*types.QueryRecordByBondIdResponse, error) {
+func (q Querier) GetRecordByBondID(c context.Context, req *types.QueryRecordByBondIDRequest) (*types.QueryRecordByBondIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	records := q.recordKeeper.QueryRecordsByBond(ctx, req.GetId())
-	return &types.QueryRecordByBondIdResponse{Records: records}, nil
+	return &types.QueryRecordByBondIDResponse{Records: records}, nil
 }
 
 func (q Querier) GetNameServiceModuleBalance(c context.Context, _ *types.GetNameServiceModuleBalanceRequest) (*types.GetNameServiceModuleBalanceResponse, error) {

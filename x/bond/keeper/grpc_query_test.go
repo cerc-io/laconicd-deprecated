@@ -3,12 +3,15 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/cerc-io/laconicd/app"
 	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 )
+
+var seed = int64(233)
 
 func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
 	grpcClient, ctx, k := suite.queryClient, suite.ctx, suite.app.BondKeeper
@@ -39,11 +42,14 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondsList() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
+				suite.Require().NoError(err)
 				_, err = k.CreateBond(ctx, account, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))))
 				suite.Require().NoError(err)
 			}
@@ -78,21 +84,21 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 
 	testCases := []struct {
 		msg         string
-		req         *types.QueryGetBondByIdRequest
+		req         *types.QueryGetBondByIDRequest
 		createBonds bool
 		errResponse bool
 		bondId      string
 	}{
 		{
 			"empty request",
-			&types.QueryGetBondByIdRequest{},
+			&types.QueryGetBondByIDRequest{},
 			false,
 			true,
 			"",
 		},
 		{
 			"Get Bond By ID",
-			&types.QueryGetBondByIdRequest{},
+			&types.QueryGetBondByIDRequest{},
 			true,
 			false,
 			"",
@@ -102,20 +108,23 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				err := testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
 				}))
+				suite.Require().NoError(err)
 				bond, err := k.CreateBond(ctx, account, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))))
 				suiteRequire.NoError(err)
 				test.req.Id = bond.Id
 			}
-			resp, err := grpcClient.GetBondById(context.Background(), test.req)
+			resp, err := grpcClient.GetBondByID(context.Background(), test.req)
 			if !test.errResponse {
 				suiteRequire.Nil(err)
 				suiteRequire.NotNil(resp.GetBond())
-				suiteRequire.Equal(test.req.Id, resp.GetBond().GetId())
+				suiteRequire.Equal(test.req.Id, resp.GetBond().GetID())
 			} else {
 				suiteRequire.NotNil(err)
 				suiteRequire.Error(err)
@@ -156,7 +165,9 @@ func (suite *KeeperTestSuite) TestGrpcGetBondsByOwner() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				_ = testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),
@@ -200,7 +211,9 @@ func (suite *KeeperTestSuite) TestGrpcGetModuleBalance() {
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
 			if test.createBonds {
-				account := app.CreateRandomAccounts(1)[0]
+				r := rand.New(rand.NewSource(seed))
+				accs := app.RandomAccounts(r, 1)
+				account := accs[0].Address
 				_ = testutil.FundAccount(suite.app.BankKeeper, ctx, account, sdk.NewCoins(sdk.Coin{
 					Denom:  sdk.DefaultBondDenom,
 					Amount: sdk.NewInt(1000),

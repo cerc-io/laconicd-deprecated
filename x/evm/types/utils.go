@@ -6,44 +6,53 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-const maxBitLen = 256
+// DefaultPriorityReduction is the default amount of price values required for 1 unit of priority.
+// Because priority is `int64` while price is `big.Int`, it's necessary to scale down the range to keep it more pratical.
+// The default value is the same as the `sdk.DefaultPowerReduction`.
+var DefaultPriorityReduction = sdk.DefaultPowerReduction
 
 var EmptyCodeHash = crypto.Keccak256(nil)
 
 // DecodeTxResponse decodes an protobuf-encoded byte slice into TxResponse
-func DecodeTxResponse(in []byte, cdc codec.Codec) (*MsgEthereumTxResponse, error) {
+func DecodeTxResponse(in []byte) (*MsgEthereumTxResponse, error) {
 	var txMsgData sdk.TxMsgData
-	if err := txMsgData.Unmarshal(in); err != nil {
+	if err := proto.Unmarshal(in, &txMsgData); err != nil {
 		return nil, err
 	}
 
-	responses := txMsgData.GetMsgResponses()
-	if len(responses) == 0 {
-		return nil, nil
+	if len(txMsgData.MsgResponses) == 0 {
+		return &MsgEthereumTxResponse{}, nil
 	}
 
-	if err := cdc.UnpackAny(responses[0], new(TxResponse)); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal tx response message: %w", err)
+	var res MsgEthereumTxResponse
+	if err := proto.Unmarshal(txMsgData.MsgResponses[0].Value, &res); err != nil {
+		return nil, sdkerrors.Wrap(err, "failed to unmarshal tx response message data")
 	}
 
-	msgval := responses[0].GetCachedValue()
-	res, ok := msgval.(*MsgEthereumTxResponse)
-	if !ok {
-		return nil, fmt.Errorf("tx response message has invalid type: %T", msgval)
-	}
-	return res, nil
+	return &res, nil
 }
 
 // EncodeTransactionLogs encodes TransactionLogs slice into a protobuf-encoded byte slice.
 func EncodeTransactionLogs(res *TransactionLogs) ([]byte, error) {
 	return proto.Marshal(res)
+}
+
+// DecodeTransactionLogs decodes an protobuf-encoded byte slice into TransactionLogs
+func DecodeTransactionLogs(data []byte) (TransactionLogs, error) {
+	var logs TransactionLogs
+	err := proto.Unmarshal(data, &logs)
+	if err != nil {
+		return TransactionLogs{}, err
+	}
+	return logs, nil
 }
 
 // UnwrapEthereumMsg extract MsgEthereumTx from wrapping sdk.Tx
@@ -57,7 +66,9 @@ func UnwrapEthereumMsg(tx *sdk.Tx, ethHash common.Hash) (*MsgEthereumTx, error) 
 		if !ok {
 			return nil, fmt.Errorf("invalid tx type: %T", tx)
 		}
-		if ethMsg.AsTransaction().Hash() == ethHash {
+		txHash := ethMsg.AsTransaction().Hash()
+		ethMsg.Hash = txHash.Hex()
+		if txHash == ethHash {
 			return ethMsg, nil
 		}
 	}
@@ -85,15 +96,8 @@ func BinSearch(lo, hi uint64, executable func(uint64) (bool, *MsgEthereumTxRespo
 	return hi, nil
 }
 
-// SafeNewIntFromBigInt constructs Int from big.Int, return error if more than 256bits
-func SafeNewIntFromBigInt(i *big.Int) (sdk.Int, error) {
-	if !IsValidInt256(i) {
-		return sdk.NewInt(0), fmt.Errorf("big int out of bound: %s", i)
-	}
-	return sdk.NewIntFromBigInt(i), nil
-}
-
-// IsValidInt256 check the bound of 256 bit number
-func IsValidInt256(i *big.Int) bool {
-	return i == nil || i.BitLen() <= maxBitLen
+// EffectiveGasPrice compute the effective gas price based on eip-1159 rules
+// `effectiveGasPrice = min(baseFee + tipCap, feeCap)`
+func EffectiveGasPrice(baseFee *big.Int, feeCap *big.Int, tipCap *big.Int) *big.Int {
+	return math.BigMin(new(big.Int).Add(tipCap, baseFee), feeCap)
 }

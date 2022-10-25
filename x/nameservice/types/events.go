@@ -13,13 +13,13 @@ const (
 
 	AttributeKeySigner     = "signer"
 	AttributeKeyOwner      = "owner"
-	AttributeKeyBondId     = "bond-id"
+	AttributeKeyBondID     = "bond-id"
 	AttributeKeyPayload    = "payload"
-	AttributeKeyOldBondId  = "old-bond-id"
-	AttributeKeyNewBondId  = "new-bond-id"
+	AttributeKeyOldBondID  = "old-bond-id"
+	AttributeKeyNewBondID  = "new-bond-id"
 	AttributeKeyCID        = "cid"
 	AttributeKeyName       = "name"
 	AttributeKeyCRN        = "crn"
-	AttributeKeyRecordId   = "record-id"
+	AttributeKeyRecordID   = "record-id"
 	AttributeValueCategory = ModuleName
 )

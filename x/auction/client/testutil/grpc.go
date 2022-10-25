@@ -16,7 +16,7 @@ const (
 func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions", val.APIAddress)
 
 	testCases := []struct {
 		msg             string
@@ -26,13 +26,13 @@ func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 	}{
 		{
 			"invalid request to get all auctions",
-			reqUrl + randomAuctionID,
+			reqURL + randomAuctionID,
 			"",
 			true,
 		},
 		{
 			"valid request to get all auctions",
-			reqUrl,
+			reqURL,
 			"",
 			false,
 		},
@@ -46,6 +46,7 @@ func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 				sr.NoError(err)
 				var auctions auctiontypes.AuctionsResponse
 				err = val.ClientCtx.Codec.UnmarshalJSON(resp, &auctions)
+				sr.NoError(err)
 				sr.NotZero(len(auctions.Auctions.Auctions))
 			}
 		})
@@ -55,10 +56,10 @@ func (suite *IntegrationTestSuite) TestGetAllAuctionsGrpc() {
 func (suite *IntegrationTestSuite) TestQueryParamsGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/params", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/params", val.APIAddress)
 
 	suite.Run("valid request to get auction params", func() {
-		resp, err := rest.GetRequest(reqUrl)
+		resp, err := rest.GetRequest(reqURL)
 		suite.Require().NoError(err)
 
 		var params auctiontypes.QueryParamsResponse
@@ -72,7 +73,7 @@ func (suite *IntegrationTestSuite) TestQueryParamsGrpc() {
 func (suite *IntegrationTestSuite) TestGetAuctionGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions/", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/auctions/", val.APIAddress)
 
 	testCases := []struct {
 		msg             string
@@ -83,14 +84,14 @@ func (suite *IntegrationTestSuite) TestGetAuctionGrpc() {
 	}{
 		{
 			"invalid request to get an auction",
-			reqUrl + randomAuctionID,
+			reqURL + randomAuctionID,
 			"",
 			true,
 			func() string { return "" },
 		},
 		{
 			"valid request to get an auction",
-			reqUrl,
+			reqURL,
 			"",
 			false,
 			func() string { return suite.defaultAuctionID },
@@ -116,7 +117,7 @@ func (suite *IntegrationTestSuite) TestGetAuctionGrpc() {
 func (suite *IntegrationTestSuite) TestGetBidsGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
@@ -126,14 +127,14 @@ func (suite *IntegrationTestSuite) TestGetBidsGrpc() {
 	}{
 		{
 			"invalid request to get all bids",
-			reqUrl,
+			reqURL,
 			"",
 			true,
 			func() string { return "" },
 		},
 		{
 			"valid request to get all bids",
-			reqUrl,
+			reqURL,
 			"",
 			false,
 			func() string { return suite.createAuctionAndBid(false, true) },
@@ -161,7 +162,7 @@ func (suite *IntegrationTestSuite) TestGetBidsGrpc() {
 func (suite *IntegrationTestSuite) TestGetBidGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/bids/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
@@ -170,13 +171,13 @@ func (suite *IntegrationTestSuite) TestGetBidGrpc() {
 	}{
 		{
 			"invalid request to get bid",
-			fmt.Sprintf("%s/%s/", reqUrl, randomAuctionID),
+			fmt.Sprintf("%s/%s/", reqURL, randomAuctionID),
 			"",
 			true,
 		},
 		{
 			"valid request to get bid",
-			fmt.Sprintf("%s/%s/%s", reqUrl, randomAuctionID, randomBidderAddress),
+			fmt.Sprintf("%s/%s/%s", reqURL, randomAuctionID, randomBidderAddress),
 			"",
 			false,
 		},
@@ -199,7 +200,7 @@ func (suite *IntegrationTestSuite) TestGetBidGrpc() {
 func (suite *IntegrationTestSuite) TestGetAuctionsByOwnerGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/by-owner/", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/by-owner/", val.APIAddress)
 	testCases := []struct {
 		msg             string
 		url             string
@@ -208,13 +209,13 @@ func (suite *IntegrationTestSuite) TestGetAuctionsByOwnerGrpc() {
 	}{
 		{
 			"invalid request to get auctions by owner",
-			reqUrl,
+			reqURL,
 			"",
 			true,
 		},
 		{
 			"valid request to get auctions by owner",
-			fmt.Sprintf("%s/%s", reqUrl, randomOwnerAddress),
+			fmt.Sprintf("%s/%s", reqURL, randomOwnerAddress),
 			"",
 			false,
 		},
@@ -237,13 +238,13 @@ func (suite *IntegrationTestSuite) TestGetAuctionsByOwnerGrpc() {
 func (suite *IntegrationTestSuite) TestQueryBalanceGrpc() {
 	val := suite.network.Validators[0]
 	sr := suite.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/auction/v1beta1/balance", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/auction/v1beta1/balance", val.APIAddress)
 	msg := "valid request to get the auction module balance"
 
 	suite.createAuctionAndBid(false, true)
 
 	suite.Run(msg, func() {
-		resp, err := rest.GetRequest(reqUrl)
+		resp, err := rest.GetRequest(reqURL)
 		sr.NoError(err)
 
 		var response auctiontypes.BalanceResponse

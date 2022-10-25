@@ -6,13 +6,19 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/spf13/cast"
+	"github.com/spf13/cobra"
+
+	tmcfg "github.com/tendermint/tendermint/config"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	tmlog "github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	dbm "github.com/cosmos/cosmos-sdk/db"
-	"github.com/cosmos/cosmos-sdk/db/badgerdb"
 	sdkserver "github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
@@ -25,11 +31,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/spf13/cast"
-	"github.com/spf13/cobra"
-	tmcfg "github.com/tendermint/tendermint/config"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	tmlog "github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cerc-io/laconicd/app"
 	ethermintclient "github.com/cerc-io/laconicd/client"
@@ -42,7 +43,7 @@ import (
 	ethermint "github.com/cerc-io/laconicd/types"
 )
 
-const EnvPrefix = "LACONIC"
+const EnvPrefix = "ETHERMINT"
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
@@ -62,7 +63,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	rootCmd := &cobra.Command{
 		Use:   "laconicd",
-		Short: "Laconic Daemon",
+		Short: "Ethermint Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -84,14 +85,13 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 			// FIXME: replace AttoPhoton with bond denom
 			customAppTemplate, customAppConfig := servercfg.AppConfig(ethermint.AttoPhoton)
-			customTMConfig := initTendermintConfig()
 
-			return sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
+			return sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, tmcfg.DefaultConfig())
 		},
 	}
 
 	// TODO: double-check
-	// authclient.Codec = encodingConfig.Marshaler
+	// authclient.Codec = encodingConfig.Codec
 
 	cfg := sdk.GetConfig()
 	cfg.Seal()
@@ -138,18 +138,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
-}
-
-// initTendermintConfig helps to override default Tendermint Config values.
-// return tmcfg.DefaultConfig if no custom configuration is required for the application.
-func initTendermintConfig() *tmcfg.Config {
-	cfg := tmcfg.DefaultConfig()
-
-	// these values put a higher strain on node memory
-	// cfg.P2P.MaxNumInboundPeers = 100
-	// cfg.P2P.MaxNumOutboundPeers = 40
-
-	return cfg
 }
 
 func queryCommand() *cobra.Command {
@@ -207,7 +195,7 @@ type appCreator struct {
 }
 
 // newApp is an appCreator
-func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+func (a appCreator) newApp(logger tmlog.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
 	var cache sdk.MultiStorePersistentCache
 
 	if cast.ToBool(appOpts.Get(sdkserver.FlagInterBlockCache)) {
@@ -225,7 +213,11 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore 
 	}
 
 	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := badgerdb.NewDB(filepath.Join(snapshotDir, "metadata"))
+	if err = os.MkdirAll(snapshotDir, os.ModePerm); err != nil {
+		panic(err)
+	}
+
+	snapshotDB, err := dbm.NewDB("metadata", sdkserver.GetAppDBBackend(appOpts), snapshotDir)
 	if err != nil {
 		panic(err)
 	}
@@ -233,6 +225,7 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore 
 	if err != nil {
 		panic(err)
 	}
+
 	snapshotOptions := snapshottypes.NewSnapshotOptions(
 		cast.ToUint64(appOpts.Get(sdkserver.FlagStateSyncSnapshotInterval)),
 		cast.ToUint32(appOpts.Get(sdkserver.FlagStateSyncSnapshotKeepRecent)),
@@ -261,7 +254,7 @@ func (a appCreator) newApp(logger tmlog.Logger, db dbm.DBConnection, traceStore 
 // appExport creates a new simapp (optionally at a given height)
 // and exports state.
 func (a appCreator) appExport(
-	logger tmlog.Logger, db dbm.DBConnection, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
+	logger tmlog.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	var ethermintApp *app.EthermintApp

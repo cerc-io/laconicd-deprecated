@@ -2,7 +2,7 @@ package version
 
 import (
 	"fmt"
-	"runtime"
+	"runtime" // #nosec G702
 )
 
 var (

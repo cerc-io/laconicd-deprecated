@@ -5,33 +5,26 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
-
 	"github.com/cerc-io/laconicd/app"
 	"github.com/cerc-io/laconicd/encoding"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+	"github.com/cosmos/cosmos-sdk/client"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
+	proto "github.com/gogo/protobuf/proto"
+
+	"github.com/cerc-io/laconicd/tests"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/ethereum/go-ethereum/common"
 )
 
-var testCodec codec.Codec
-
-func init() {
-	registry := codectypes.NewInterfaceRegistry()
-	evmtypes.RegisterInterfaces(registry)
-	testCodec = codec.NewProtoCodec(registry)
-}
-
 func TestEvmDataEncoding(t *testing.T) {
 	ret := []byte{0x5, 0x8}
 
-	resp := &evmtypes.MsgEthereumTxResponse{
+	data := &evmtypes.MsgEthereumTxResponse{
 		Hash: common.BytesToHash([]byte("hash")).String(),
 		Logs: []*evmtypes.Log{{
 			Data:        []byte{1, 2, 3, 4},
@@ -40,20 +33,19 @@ func TestEvmDataEncoding(t *testing.T) {
 		Ret: ret,
 	}
 
-	any, err := codectypes.NewAnyWithValue(resp)
-	require.NoError(t, err)
+	any := codectypes.UnsafePackAny(data)
 	txData := &sdk.TxMsgData{
 		MsgResponses: []*codectypes.Any{any},
 	}
 
-	txDataBz, err := txData.Marshal()
+	txDataBz, err := proto.Marshal(txData)
 	require.NoError(t, err)
 
-	decoded, err := evmtypes.DecodeTxResponse(txDataBz, testCodec)
+	res, err := evmtypes.DecodeTxResponse(txDataBz)
 	require.NoError(t, err)
-	require.NotNil(t, decoded)
-	require.Equal(t, resp.Logs, decoded.Logs)
-	require.Equal(t, ret, decoded.Ret)
+	require.NotNil(t, res)
+	require.Equal(t, data.Logs, res.Logs)
+	require.Equal(t, ret, res.Ret)
 }
 
 func TestUnwrapEthererumMsg(t *testing.T) {
@@ -93,4 +85,32 @@ func TestBinSearch(t *testing.T) {
 	gas, err = evmtypes.BinSearch(20000, 21001, failed_executable)
 	require.Error(t, err)
 	require.Equal(t, gas, uint64(0))
+}
+
+func TestTransactionLogsEncodeDecode(t *testing.T) {
+	addr := tests.GenerateAddress().String()
+
+	txLogs := evmtypes.TransactionLogs{
+		Hash: common.BytesToHash([]byte("tx_hash")).String(),
+		Logs: []*evmtypes.Log{
+			{
+				Address:     addr,
+				Topics:      []string{common.BytesToHash([]byte("topic")).String()},
+				Data:        []byte("data"),
+				BlockNumber: 1,
+				TxHash:      common.BytesToHash([]byte("tx_hash")).String(),
+				TxIndex:     1,
+				BlockHash:   common.BytesToHash([]byte("block_hash")).String(),
+				Index:       1,
+				Removed:     false,
+			},
+		},
+	}
+
+	txLogsEncoded, encodeErr := evmtypes.EncodeTransactionLogs(&txLogs)
+	require.Nil(t, encodeErr)
+
+	txLogsEncodedDecoded, decodeErr := evmtypes.DecodeTransactionLogs(txLogsEncoded)
+	require.Nil(t, decodeErr)
+	require.Equal(t, txLogs, txLogsEncodedDecoded)
 }

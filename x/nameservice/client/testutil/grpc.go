@@ -18,7 +18,7 @@ import (
 func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/params"
+	reqURL := val.APIAddress + "/vulcanize/nameservice/v1beta1/params"
 
 	testCases := []struct {
 		name      string
@@ -28,13 +28,13 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqURL + "/asdasd",
 			true,
 			"",
 		},
 		{
 			"Success",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 		},
@@ -60,11 +60,12 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
 	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/whois/%s"
-	var authorityName = "QueryWhoIS"
+	authorityName := "QueryWhoIS"
 	testCases := []struct {
 		name      string
 		url       string
@@ -78,7 +79,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -131,8 +131,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?crn=%s"
-	var authorityName = "QueryLookUp"
+	reqURL := val.APIAddress + "/vulcanize/nameservice/v1beta1/lookup?crn=%s"
+	authorityName := "QueryLookUp"
 
 	testCases := []struct {
 		name      string
@@ -143,16 +143,15 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqURL + "/asdasd",
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
 			"Success",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 			func(authorityName string) {
@@ -166,7 +165,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 		s.Run(tc.name, func() {
 			if !tc.expectErr {
 				tc.preRun(authorityName)
-				tc.url = fmt.Sprintf(reqUrl, fmt.Sprintf("crn://%s/", authorityName))
+				tc.url = fmt.Sprintf(reqURL, fmt.Sprintf("crn://%s/", authorityName))
 			}
 			resp, _ := rest.GetRequest(tc.url)
 			if tc.expectErr {
@@ -181,6 +180,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -199,7 +199,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -235,7 +234,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			if !tc.expectErr {
-				tc.preRun(s.bondId)
+				tc.preRun(s.bondID)
 			}
 			// wait 12 seconds for records expires
 			time.Sleep(time.Second * 12)
@@ -253,6 +252,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -271,7 +271,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -325,6 +324,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	}
 }
 
+//nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -343,7 +343,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
@@ -379,7 +378,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			if !tc.expectErr {
-				tc.preRun(s.bondId)
+				tc.preRun(s.bondID)
 			}
 			resp, _ := rest.GetRequest(tc.url)
 			require := s.Require()
@@ -390,7 +389,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
 				sr.NoError(err)
 				sr.NotZero(len(response.GetRecords()))
-				sr.Equal(s.bondId, response.GetRecords()[0].GetBondId())
+				sr.Equal(s.bondID, response.GetRecords()[0].GetBondId())
 			}
 		})
 	}
@@ -399,7 +398,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/records/%s"
+	reqURL := val.APIAddress + "/vulcanize/nameservice/v1beta1/records/%s"
 
 	testCases := []struct {
 		name      string
@@ -410,7 +409,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqURL + "/asdasd",
 			true,
 			"",
 			func(bondId string) string {
@@ -419,7 +418,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 		},
 		{
 			"Success",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 			func(bondId string) string {
@@ -437,29 +436,29 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 				var records []nstypes.RecordType
 				err = json.Unmarshal(out.Bytes(), &records)
 				sr.NoError(err)
-				return records[0].Id
+				return records[0].ID
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			var recordId string
+			var recordID string
 			if !tc.expectErr {
-				recordId = tc.preRun(s.bondId)
-				tc.url = fmt.Sprintf(reqUrl, recordId)
+				recordID = tc.preRun(s.bondID)
+				tc.url = fmt.Sprintf(reqURL, recordID)
 			}
 			resp, _ := rest.GetRequest(tc.url)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
 			} else {
-				var response nstypes.QueryRecordByIdResponse
+				var response nstypes.QueryRecordByIDResponse
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
 				sr.NoError(err)
 				record := response.GetRecord()
-				sr.NotZero(len(record.GetId()))
-				sr.Equal(record.GetId(), recordId)
+				sr.NotZero(len(record.GetID()))
+				sr.Equal(record.GetID(), recordID)
 			}
 		})
 	}
@@ -468,7 +467,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/records-by-bond-id/%s"
+	reqURL := val.APIAddress + "/vulcanize/nameservice/v1beta1/records-by-bond-id/%s"
 
 	testCases := []struct {
 		name      string
@@ -479,16 +478,15 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqURL + "/asdasd",
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
 			"Success",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 			func(bondId string) {
@@ -501,20 +499,20 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			if !tc.expectErr {
-				tc.preRun(s.bondId)
-				tc.url = fmt.Sprintf(reqUrl, s.bondId)
+				tc.preRun(s.bondID)
+				tc.url = fmt.Sprintf(reqURL, s.bondID)
 			}
 			resp, _ := rest.GetRequest(tc.url)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
 			} else {
-				var response nstypes.QueryRecordByBondIdResponse
+				var response nstypes.QueryRecordByBondIDResponse
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
 				sr.NoError(err)
 				records := response.GetRecords()
 				sr.NotZero(len(records))
-				sr.Equal(records[0].GetBondId(), s.bondId)
+				sr.Equal(records[0].GetBondId(), s.bondID)
 			}
 		})
 	}
@@ -523,7 +521,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 func (s *IntegrationTestSuite) TestGRPCQueryGetNameServiceModuleBalance() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/balance"
+	reqURL := val.APIAddress + "/vulcanize/nameservice/v1beta1/balance"
 
 	testCases := []struct {
 		name      string
@@ -534,16 +532,15 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetNameServiceModuleBalance() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqURL + "/asdasd",
 			true,
 			"",
 			func(bondId string) {
-
 			},
 		},
 		{
 			"Success",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 			func(bondId string) {
@@ -556,7 +553,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetNameServiceModuleBalance() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			if !tc.expectErr {
-				tc.preRun(s.bondId)
+				tc.preRun(s.bondID)
 			}
 			resp, _ := rest.GetRequest(tc.url)
 			require := s.Require()
@@ -575,7 +572,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetNameServiceModuleBalance() {
 func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/nameservice/v1beta1/names"
+	reqURL := val.APIAddress + "/vulcanize/nameservice/v1beta1/names"
 
 	testCases := []struct {
 		name      string
@@ -586,16 +583,15 @@ func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqURL + "/asdasd",
 			true,
 			"",
 			func(authorityName string) {
-
 			},
 		},
 		{
 			"Success",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 			func(authorityName string) {
@@ -624,7 +620,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 	}
 }
 
-func createRecord(bondId string, s *IntegrationTestSuite) {
+func createRecord(bondID string, s *IntegrationTestSuite) {
 	val := s.network.Validators[0]
 	sr := s.Require()
 
@@ -638,7 +634,7 @@ func createRecord(bondId string, s *IntegrationTestSuite) {
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
 	}
-	args = append([]string{payloadPath, bondId}, args...)
+	args = append([]string{payloadPath, bondID}, args...)
 	clientCtx := val.ClientCtx
 	cmd := cli.GetCmdSetRecord()
 

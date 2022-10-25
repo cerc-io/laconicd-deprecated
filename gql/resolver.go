@@ -34,7 +34,7 @@ type queryResolver struct{ *Resolver }
 func (q queryResolver) LookupAuthorities(ctx context.Context, names []string) ([]*AuthorityRecord, error) {
 	nsQueryClient := nstypes.NewQueryClient(q.ctx)
 	auctionQueryClient := auctiontypes.NewQueryClient(q.ctx)
-	var gqlResponse []*AuthorityRecord
+	gqlResponse := []*AuthorityRecord{}
 
 	for _, name := range names {
 		res, err := nsQueryClient.Whois(context.Background(), &nstypes.QueryWhoisRequest{Name: name})
@@ -125,7 +125,6 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 			All:        (all != nil && *all),
 		},
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -142,7 +141,6 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 	}
 
 	return gqlResponse, nil
-
 }
 
 func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error) {
@@ -150,7 +148,7 @@ func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Re
 	gqlResponse := make([]*Record, len(ids))
 
 	for i, id := range ids {
-		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIdRequest{Id: id})
+		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIDRequest{Id: id})
 		if err != nil {
 			// Return nil for record not found.
 			gqlResponse[i] = nil
@@ -231,7 +229,9 @@ func (q queryResolver) GetAccount(ctx context.Context, address string) (*Account
 	// Get the account balance
 	bankQueryClient := banktypes.NewQueryClient(q.ctx)
 	balance, err := bankQueryClient.AllBalances(ctx, &banktypes.QueryAllBalancesRequest{Address: address})
-
+	if err != nil {
+		return nil, err
+	}
 	accNum := strconv.FormatUint(account.GetAccountNumber(), 10)
 	seq := strconv.FormatUint(account.GetSequence(), 10)
 
@@ -259,7 +259,7 @@ func (q queryResolver) GetBondsByIds(ctx context.Context, ids []string) ([]*Bond
 
 func (q *queryResolver) GetBond(ctx context.Context, id string) (*Bond, error) {
 	bondQueryClient := bondtypes.NewQueryClient(q.ctx)
-	bondResp, err := bondQueryClient.GetBondById(context.Background(), &bondtypes.QueryGetBondByIdRequest{Id: id})
+	bondResp, err := bondQueryClient.GetBondByID(context.Background(), &bondtypes.QueryGetBondByIDRequest{Id: id})
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +313,8 @@ func (q queryResolver) GetBondsByOwner(ctx context.Context, address string) (*Ow
 
 	ownerBonds := make([]*Bond, len(bondResp.GetBonds()))
 	for i, bond := range bondResp.GetBonds() {
-		bondObj, err := getGQLBond(&bond)
+		// #nosec G601
+		bondObj, err := getGQLBond(&bond) //nolint: all
 		if err != nil {
 			return nil, err
 		}

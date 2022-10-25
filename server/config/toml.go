@@ -62,6 +62,17 @@ http-timeout = "{{ .JSONRPC.HTTPTimeout }}"
 # HTTPIdleTimeout is the idle timeout of http json-rpc server.
 http-idle-timeout = "{{ .JSONRPC.HTTPIdleTimeout }}"
 
+# AllowUnprotectedTxs restricts unprotected (non EIP155 signed) transactions to be submitted via
+# the node's RPC when the global parameter is disabled.
+allow-unprotected-txs = {{ .JSONRPC.AllowUnprotectedTxs }}
+
+# MaxOpenConnections sets the maximum number of simultaneous connections
+# for the server listener.
+max-open-connections = {{ .JSONRPC.MaxOpenConnections }}
+
+# EnableIndexer enables the custom transaction indexer for the EVM (ethereum transactions).
+enable-indexer = {{ .JSONRPC.EnableIndexer }}
+
 ###############################################################################
 ###                             TLS Configuration                           ###
 ###############################################################################

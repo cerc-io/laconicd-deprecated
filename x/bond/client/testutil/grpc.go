@@ -13,7 +13,7 @@ import (
 func (s *IntegrationTestSuite) TestGRPCGetBonds() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/bond/v1beta1/bonds", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/bond/v1beta1/bonds", val.APIAddress)
 
 	testCases := []struct {
 		name     string
@@ -24,16 +24,15 @@ func (s *IntegrationTestSuite) TestGRPCGetBonds() {
 	}{
 		{
 			"invalid request with headers",
-			reqUrl + "asdasdas",
+			reqURL + "asdasdas",
 			true,
 			"",
 			func() {
-
 			},
 		},
 		{
 			"valid request",
-			reqUrl,
+			reqURL,
 			false,
 			"",
 			func() {
@@ -59,9 +58,9 @@ func (s *IntegrationTestSuite) TestGRPCGetBonds() {
 func (s *IntegrationTestSuite) TestGRPCGetParams() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/bond/v1beta1/params", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/bond/v1beta1/params", val.APIAddress)
 
-	resp, err := rest.GetRequest(reqUrl)
+	resp, err := rest.GetRequest(reqURL)
 	s.Require().NoError(err)
 
 	var params bondtypes.QueryParamsResponse
@@ -74,7 +73,7 @@ func (s *IntegrationTestSuite) TestGRPCGetParams() {
 func (s *IntegrationTestSuite) TestGRPCGetBondsByOwner() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/bond/v1beta1/by-owner/%s"
+	reqURL := val.APIAddress + "/vulcanize/bond/v1beta1/by-owner/%s"
 
 	testCases := []struct {
 		name   string
@@ -84,15 +83,14 @@ func (s *IntegrationTestSuite) TestGRPCGetBondsByOwner() {
 	}{
 		{
 			"empty list",
-			fmt.Sprintf(reqUrl, "asdasd"),
+			fmt.Sprintf(reqURL, "asdasd"),
 			true,
 			func() {
-
 			},
 		},
 		{
 			"valid request",
-			fmt.Sprintf(reqUrl, s.accountAddress),
+			fmt.Sprintf(reqURL, s.accountAddress),
 			false,
 			func() {
 				s.createBond()
@@ -123,10 +121,10 @@ func (s *IntegrationTestSuite) TestGRPCGetBondsByOwner() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGRPCGetBondById() {
+func (s *IntegrationTestSuite) TestGRPCGetBondByID() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := val.APIAddress + "/vulcanize/bond/v1beta1/bonds/%s"
+	reqURL := val.APIAddress + "/vulcanize/bond/v1beta1/bonds/%s"
 
 	testCases := []struct {
 		name   string
@@ -136,7 +134,7 @@ func (s *IntegrationTestSuite) TestGRPCGetBondById() {
 	}{
 		{
 			"invalid request",
-			fmt.Sprintf(reqUrl, "asdadad"),
+			fmt.Sprintf(reqURL, "asdadad"),
 			true,
 			func() string {
 				return ""
@@ -144,7 +142,7 @@ func (s *IntegrationTestSuite) TestGRPCGetBondById() {
 		},
 		{
 			"valid request",
-			reqUrl,
+			reqURL,
 			false,
 			func() string {
 				// creating the bond
@@ -164,30 +162,30 @@ func (s *IntegrationTestSuite) TestGRPCGetBondById() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				return bond.GetId()
+				return bond.GetID()
 			},
 		},
 	}
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			var bondId string
+			var bondID string
 			if !tc.expErr {
-				bondId = tc.preRun()
-				tc.url = fmt.Sprintf(reqUrl, bondId)
+				bondID = tc.preRun()
+				tc.url = fmt.Sprintf(reqURL, bondID)
 			}
 
 			resp, err := rest.GetRequest(tc.url)
 			s.Require().NoError(err)
 
-			var bonds bondtypes.QueryGetBondByIdResponse
+			var bonds bondtypes.QueryGetBondByIDResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &bonds)
 
 			if tc.expErr {
-				sr.Empty(bonds.GetBond().GetId())
+				sr.Empty(bonds.GetBond().GetID())
 			} else {
 				sr.NoError(err)
-				sr.NotZero(bonds.GetBond().GetId())
-				sr.Equal(bonds.GetBond().GetId(), bondId)
+				sr.NotZero(bonds.GetBond().GetID())
+				sr.Equal(bonds.GetBond().GetID(), bondID)
 			}
 		})
 	}
@@ -196,13 +194,13 @@ func (s *IntegrationTestSuite) TestGRPCGetBondById() {
 func (s *IntegrationTestSuite) TestGRPCGetBondModuleBalance() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqUrl := fmt.Sprintf("%s/vulcanize/bond/v1beta1/balance", val.APIAddress)
+	reqURL := fmt.Sprintf("%s/vulcanize/bond/v1beta1/balance", val.APIAddress)
 
 	// creating the bond
 	s.createBond()
 
 	s.Run("valid request", func() {
-		resp, err := rest.GetRequest(reqUrl)
+		resp, err := rest.GetRequest(reqURL)
 		sr.NoError(err)
 
 		var response bondtypes.QueryGetBondModuleBalanceResponse

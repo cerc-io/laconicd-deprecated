@@ -26,14 +26,14 @@ func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 	return &types.QueryParamsResponse{Params: &params}, nil
 }
 
-func (q Querier) GetBondById(c context.Context, req *types.QueryGetBondByIdRequest) (*types.QueryGetBondByIdResponse, error) {
+func (q Querier) GetBondByID(c context.Context, req *types.QueryGetBondByIDRequest) (*types.QueryGetBondByIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	bondId := req.GetId()
-	if len(bondId) == 0 {
+	bondID := req.GetID()
+	if len(bondID) == 0 {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bond id required")
 	}
-	bond := q.Keeper.GetBond(ctx, req.GetId())
-	return &types.QueryGetBondByIdResponse{Bond: &bond}, nil
+	bond := q.Keeper.GetBond(ctx, req.GetID())
+	return &types.QueryGetBondByIDResponse{Bond: &bond}, nil
 }
 
 func (q Querier) GetBondsByOwner(c context.Context, req *types.QueryGetBondsByOwnerRequest) (*types.QueryGetBondsByOwnerResponse, error) {

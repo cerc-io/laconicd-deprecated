@@ -14,6 +14,8 @@ REMOVE_DATA_DIR=false
 
 #PORT AND RPC_PORT 3 initial digits, to be concat with a suffix later when node is initialized
 RPC_PORT="854"
+# Ethereum JSONRPC Websocket
+WS_PORT="855"
 IP_ADDR="0.0.0.0"
 
 KEY="mykey"
@@ -53,15 +55,15 @@ done
 
 set -euxo pipefail
 
-
 DATA_DIR=$(mktemp -d -t laconic-datadir.XXXXX)
+
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"
     exit 1
 fi
 
-# Compile laconic
-echo "compiling laconic"
+# Compile laconicd
+echo "compiling laconicd"
 make build
 
 # PID array declaration
@@ -104,22 +106,18 @@ init_func() {
 }
 
 start_func() {
-    echo "starting laconic node $i in background ..."
-    "$PWD"/build/laconicd start \
-          --pruning=nothing --rpc.unsafe \
-          --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" \
-          --address tcp://$IP_ADDR:$NODE_PORT"$i" \
-          --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
-          --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" \
-          --json-rpc.api="eth,txpool,personal,net,debug,web3" \
-          --keyring-backend test --mode validator --home "$DATA_DIR$i" \
-          --log_level debug \
+    echo "starting laconicd node $i in background ..."
+    "$PWD"/build/laconicd start --pruning=nothing --rpc.unsafe \
+    --p2p.laddr tcp://$IP_ADDR:$NODE_P2P_PORT"$i" --address tcp://$IP_ADDR:$NODE_PORT"$i" --rpc.laddr tcp://$IP_ADDR:$NODE_RPC_PORT"$i" \
+    --json-rpc.address=$IP_ADDR:$RPC_PORT"$i" --json-rpc.ws-address=$IP_ADDR:$WS_PORT"$i" \
+    --json-rpc.api="eth,txpool,personal,net,debug,web3" \
+    --keyring-backend test --home "$DATA_DIR$i" \
     >"$DATA_DIR"/node"$i".log 2>&1 & disown
 
-    LACONIC_PID=$!
-    echo "started laconic node, pid=$LACONIC_PID"
+    LACONICD_PID=$!
+    echo "started laconicd node, pid=$LACONICD_PID"
     # add PID to array
-    arr+=("$LACONIC_PID")
+    arr+=("$LACONICD_PID")
 
     if [[ $MODE == "pending" ]]; then
       echo "waiting for the first block..."
@@ -149,7 +147,7 @@ if [[ -z $TEST || $TEST == "integration" ]] ; then
 
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test laconic node $HOST_RPC ..."
+        echo "going to test laconicd node $HOST_RPC ..."
         MODE=$MODE HOST=$HOST_RPC go test ./tests/e2e/... -timeout=$time_out -v -short
         TEST_FAIL=$?
     done
@@ -163,20 +161,21 @@ if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
 
     for i in $(seq 1 "$TEST_QTD"); do
         HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test laconic node $HOST_RPC ..."
-        MODE=$MODE HOST=$HOST_RPC go test ./tests/rpc/... -timeout=$time_out -v -short
+        HOST_WS=$IP_ADDR:$WS_PORT"$i"
+        echo "going to test laconicd node rpc=$HOST_RPC ws=$HOST_WS ..."
+        MODE=$MODE HOST=$HOST_RPC HOST_WS=$HOST_WS go test ./tests/rpc/... -timeout=$time_out -v -short
 
         TEST_FAIL=$?
     done
 fi
 
 stop_func() {
-    LACONIC_PID=$i
-    echo "shutting down node, pid=$LACONIC_PID ..."
+    LACONICD_PID=$i
+    echo "shutting down node, pid=$LACONICD_PID ..."
 
-    # Shutdown laconic node
-    kill -9 "$LACONIC_PID"
-    wait "$LACONIC_PID"
+    # Shutdown laconicd node
+    kill -9 "$LACONICD_PID"
+    wait "$LACONICD_PID"
 
     if [ $REMOVE_DATA_DIR == "true" ]
     then

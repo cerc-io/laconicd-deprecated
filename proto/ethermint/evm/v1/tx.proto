@@ -25,7 +25,7 @@ message MsgEthereumTx {
   google.protobuf.Any data = 1;
   // caches
 
-  // encoded storage size of the transaction
+  // DEPRECATED: encoded storage size of the transaction
   double size = 2 [(gogoproto.jsontag) = "-"];
   // transaction hash in hex format
   string hash = 3 [(gogoproto.moretags) = "rlp:\"-\""];
@@ -36,6 +36,8 @@ message MsgEthereumTx {
 }
 
 // LegacyTx is the transaction data of regular Ethereum transactions.
+// NOTE: All non-protected transactions (i.e non EIP155 signed) will fail if the
+// AllowUnprotectedTxs parameter is disabled.
 message LegacyTx {
   option (gogoproto.goproto_getters)         = false;
   option (cosmos_proto.implements_interface) = "TxData";

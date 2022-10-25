@@ -45,6 +45,8 @@ linters:
     - rowserrcheck
     # - whitespace
     # - wsl
+  disable:
+    - typecheck
 
 issues:
   exclude-rules:

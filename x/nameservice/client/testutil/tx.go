@@ -32,7 +32,7 @@ type IntegrationTestSuite struct {
 
 	cfg     network.Config
 	network *network.Network
-	bondId  string
+	bondID  string
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -42,7 +42,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	var genesisState = s.cfg.GenesisState
+	genesisState := s.cfg.GenesisState
 	var nsData nstypes.GenesisState
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[nstypes.ModuleName], &nsData))
 
@@ -63,7 +63,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// setting up random account
 	s.createAccountWithBalance(accountName)
 	CreateBond(s)
-	s.bondId = GetBondId(s)
+	s.bondID = GetBondID(s)
 }
 
 func (s *IntegrationTestSuite) createAccountWithBalance(accountName string) {
@@ -139,7 +139,7 @@ func CreateBond(s *IntegrationTestSuite) {
 	}
 }
 
-func GetBondId(s *IntegrationTestSuite) string {
+func GetBondID(s *IntegrationTestSuite) string {
 	cmd := bondcli.GetQueryBondLists()
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -153,7 +153,7 @@ func GetBondId(s *IntegrationTestSuite) string {
 
 	// extract bond id from bonds list
 	bond := queryResponse.GetBonds()[0]
-	return bond.GetId()
+	return bond.GetID()
 }
 
 func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
@@ -195,12 +195,12 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 				// create the bond
 				CreateBond(s)
 				// get the bond id from bond list
-				bondId := GetBondId(s)
+				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
 				payloadPath := dir + "/example1.yml"
 
-				tc.args = append([]string{payloadPath, bondId}, tc.args...)
+				tc.args = append([]string{payloadPath, bondID}, tc.args...)
 			}
 			clientCtx := val.ClientCtx
 			cmd := cli.GetCmdSetRecord()
@@ -222,7 +222,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 func (s *IntegrationTestSuite) TestGetCmdReserveName() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "testtest"
+	authorityName := "testtest"
 	testCases := []struct {
 		name string
 		args []string
@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) TestGetCmdReserveName() {
 func (s *IntegrationTestSuite) TestGetCmdSetName() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetCmdSetName"
+	authorityName := "TestGetCmdSetName"
 	testCases := []struct {
 		name   string
 		args   []string
@@ -307,7 +307,6 @@ func (s *IntegrationTestSuite) TestGetCmdSetName() {
 			},
 			true,
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -346,11 +345,11 @@ func (s *IntegrationTestSuite) TestGetCmdSetName() {
 				CreateBond(s)
 
 				// Get the bond-id
-				bondId := GetBondId(s)
+				bondID := GetBondID(s)
 
 				// adding bond-id to name authority
 				args = []string{
-					authorityName, bondId,
+					authorityName, bondID,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
@@ -394,7 +393,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetName() {
 func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetCmdSetAuthorityBond"
+	authorityName := "TestGetCmdSetAuthorityBond"
 
 	testCases := []struct {
 		name   string
@@ -413,7 +412,6 @@ func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 			},
 			true,
 			func(authorityName string) {
-
 			},
 		},
 		{
@@ -457,8 +455,8 @@ func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 				// creating the  bond
 				CreateBond(s)
 				// getting the bond-id
-				bondId := GetBondId(s)
-				tc.args = append([]string{authorityName, bondId}, tc.args...)
+				bondID := GetBondID(s)
+				tc.args = append([]string{authorityName, bondID}, tc.args...)
 			}
 			clientCtx := val.ClientCtx
 			cmd := cli.GetCmdSetAuthorityBond()
@@ -480,7 +478,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetAuthorityBond() {
 func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	var authorityName = "TestGetCmdDeleteName"
+	authorityName := "TestGetCmdDeleteName"
 	testCasesForDeletingName := []struct {
 		name   string
 		args   []string
@@ -498,7 +496,6 @@ func (s *IntegrationTestSuite) TestGetCmdDeleteName() {
 			},
 			true,
 			func(authorityName string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{
@@ -564,7 +561,6 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				return ""
 			},
 			func(recordId string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{
@@ -581,13 +577,13 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				// create the bond
 				CreateBond(s)
 				// get the bond id from bond list
-				bondId := GetBondId(s)
+				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
 				payloadPath := dir + "/example1.yml"
 
 				args := []string{
-					payloadPath, bondId,
+					payloadPath, bondID,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
@@ -613,7 +609,7 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				var records []nstypes.RecordType
 				err = json.Unmarshal(out.Bytes(), &records)
 				sr.NoError(err)
-				return records[0].Id
+				return records[0].ID
 			},
 			func(recordId string, s *IntegrationTestSuite) {
 				// checking the bond-id removed or not
@@ -622,7 +618,7 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				cmd := cli.GetCmdGetResource()
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 				sr.NoError(err)
-				var response nstypes.QueryRecordByIdResponse
+				var response nstypes.QueryRecordByIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
 				sr.NoError(err)
 				record := response.GetRecord()
@@ -634,10 +630,10 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 
 	for _, tc := range testCasesForDeletingName {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			var recordId string
+			var recordID string
 			if !tc.err {
-				recordId = tc.preRun(s)
-				tc.args = append([]string{recordId}, tc.args...)
+				recordID = tc.preRun(s)
+				tc.args = append([]string{recordID}, tc.args...)
 			}
 			clientCtx := val.ClientCtx
 			cmd := cli.GetCmdDissociateBond()
@@ -652,136 +648,136 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				sr.NoError(err)
 				sr.Zero(d.Code)
 				// post-run
-				tc.postRun(recordId, s)
+				tc.postRun(recordID, s)
 			}
 		})
 	}
 }
 
 //
-//func (s *IntegrationTestSuite) TestGetCmdDissociateRecords() {
-//	val := s.network.Validators[0]
-//	sr := s.Require()
-//	testCasesForDeletingName := []struct {
-//		name    string
-//		args    []string
-//		err     bool
-//		preRun  func(s *IntegrationTestSuite) (string, string)
-//		postRun func(recordId string, s *IntegrationTestSuite)
-//	}{
-//		{
-//			"invalid request without crn",
-//			[]string{
-//				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
-//				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-//				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-//				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-//				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
-//			},
-//			true,
-//			func(s *IntegrationTestSuite) (string, string) {
-//				return "", ""
-//			},
-//			func(recordId string, s *IntegrationTestSuite) {
-//
-//			},
-//		},
-//		{
-//			"successfully dissociate records from bond-id",
-//			[]string{
-//				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
-//				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-//				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-//				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-//				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
-//			},
-//			false,
-//			func(s *IntegrationTestSuite) (string, string) {
-//				// create the bond
-//				CreateBond(s)
-//				// get the bond id from bond list
-//				bondId := GetBondId(s)
-//				dir, err := os.Getwd()
-//				sr.NoError(err)
-//				payloadPath := dir + "/example1.yml"
-//
-//				args := []string{
-//					payloadPath, bondId,
-//					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
-//					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-//					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-//					fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-//					fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
-//				}
-//
-//				clientCtx := val.ClientCtx
-//				cmd := cli.GetCmdSetRecord()
-//
-//				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-//				sr.NoError(err)
-//				var d sdk.TxResponse
-//				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
-//				sr.NoError(err)
-//				sr.Zero(d.Code)
-//
-//				// retrieving the record-id
-//				args = []string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
-//				cmd = cli.GetCmdList()
-//				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-//				sr.NoError(err)
-//				var records []nstypes.RecordType
-//				err = json.Unmarshal(out.Bytes(), &records)
-//				sr.NoError(err)
-//				for _, record := range records {
-//					if len(record.BondId) != 0 {
-//						return record.Id, record.BondId
-//					}
-//				}
-//				return records[0].Id, records[0].BondId
-//			},
-//			func(recordId string, s *IntegrationTestSuite) {
-//				// checking the bond-id removed or not
-//				clientCtx := val.ClientCtx
-//				args := []string{recordId, fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
-//				cmd := cli.GetCmdGetResource()
-//				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-//				sr.NoError(err)
-//				var response nstypes.QueryRecordByIdResponse
-//				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
-//				sr.NoError(err)
-//				record := response.GetRecord()
-//				sr.NotNil(record)
-//				sr.Zero(len(record.GetBondId()))
-//			},
-//		},
-//	}
-//
-//	for _, tc := range testCasesForDeletingName {
-//		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-//			var bondId string
-//			var recordId string
-//			if !tc.err {
-//				recordId, bondId = tc.preRun(s)
-//				tc.args = append([]string{bondId}, tc.args...)
-//			}
-//			clientCtx := val.ClientCtx
-//			cmd := cli.GetCmdDissociateRecords()
-//
-//			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
-//			if tc.err {
-//				sr.Error(err)
-//			} else {
-//				sr.NoError(err)
-//				var d sdk.TxResponse
-//				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
-//				sr.NoError(err)
-//				sr.Zero(d.Code)
-//				// post-run
-//				tc.postRun(recordId, s)
-//			}
-//		})
-//	}
-//}
+// func (s *IntegrationTestSuite) TestGetCmdDissociateRecords() {
+// 	val := s.network.Validators[0]
+// 	sr := s.Require()
+// 	testCasesForDeletingName := []struct {
+// 		name    string
+// 		args    []string
+// 		err     bool
+// 		preRun  func(s *IntegrationTestSuite) (string, string)
+// 		postRun func(recordId string, s *IntegrationTestSuite)
+// 	}{
+// 		{
+// 			"invalid request without crn",
+// 			[]string{
+// 				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+// 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+// 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+// 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+// 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
+// 			},
+// 			true,
+// 			func(s *IntegrationTestSuite) (string, string) {
+// 				return "", ""
+// 			},
+// 			func(recordId string, s *IntegrationTestSuite) {
+
+// 			},
+// 		},
+// 		{
+// 			"successfully dissociate records from bond-id",
+// 			[]string{
+// 				fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+// 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+// 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+// 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+// 				fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
+// 			},
+// 			false,
+// 			func(s *IntegrationTestSuite) (string, string) {
+// 				// create the bond
+// 				CreateBond(s)
+// 				// get the bond id from bond list
+// 				bondId := GetBondId(s)
+// 				dir, err := os.Getwd()
+// 				sr.NoError(err)
+// 				payloadPath := dir + "/example1.yml"
+
+// 				args := []string{
+// 					payloadPath, bondId,
+// 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
+// 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+// 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+// 					fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+// 					fmt.Sprintf("--%s=%s", flags.FlagFees, fmt.Sprintf("3%s", s.cfg.BondDenom)),
+// 				}
+
+// 				clientCtx := val.ClientCtx
+// 				cmd := cli.GetCmdSetRecord()
+
+// 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+// 				sr.NoError(err)
+// 				var d sdk.TxResponse
+// 				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
+// 				sr.NoError(err)
+// 				sr.Zero(d.Code)
+
+// 				// retrieving the record-id
+// 				args = []string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
+// 				cmd = cli.GetCmdList()
+// 				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+// 				sr.NoError(err)
+// 				var records []nstypes.RecordType
+// 				err = json.Unmarshal(out.Bytes(), &records)
+// 				sr.NoError(err)
+// 				for _, record := range records {
+// 					if len(record.BondId) != 0 {
+// 						return record.Id, record.BondId
+// 					}
+// 				}
+// 				return records[0].Id, records[0].BondId
+// 			},
+// 			func(recordId string, s *IntegrationTestSuite) {
+// 				// checking the bond-id removed or not
+// 				clientCtx := val.ClientCtx
+// 				args := []string{recordId, fmt.Sprintf("--%s=json", tmcli.OutputFlag)}
+// 				cmd := cli.GetCmdGetResource()
+// 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
+// 				sr.NoError(err)
+// 				var response nstypes.QueryRecordByIdResponse
+// 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
+// 				sr.NoError(err)
+// 				record := response.GetRecord()
+// 				sr.NotNil(record)
+// 				sr.Zero(len(record.GetBondId()))
+// 			},
+// 		},
+// 	}
+
+// 	for _, tc := range testCasesForDeletingName {
+// 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+// 			var bondId string
+// 			var recordId string
+// 			if !tc.err {
+// 				recordId, bondId = tc.preRun(s)
+// 				tc.args = append([]string{bondId}, tc.args...)
+// 			}
+// 			clientCtx := val.ClientCtx
+// 			cmd := cli.GetCmdDissociateRecords()
+
+// 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+// 			if tc.err {
+// 				sr.Error(err)
+// 			} else {
+// 				sr.NoError(err)
+// 				var d sdk.TxResponse
+// 				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
+// 				sr.NoError(err)
+// 				sr.Zero(d.Code)
+// 				// post-run
+// 				tc.postRun(recordId, s)
+// 			}
+// 		})
+// 	}
+// }
 
 func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 	val := s.network.Validators[0]
@@ -807,7 +803,6 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 				return "", ""
 			},
 			func(recordId, bondId string, s *IntegrationTestSuite) {
-
 			},
 		},
 		{
@@ -824,13 +819,13 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 				// create the bond
 				CreateBond(s)
 				// get the bond id from bond list
-				bondId := GetBondId(s)
+				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
 				payloadPath := dir + "/example1.yml"
 
 				txArgs := []string{
-					payloadPath, bondId,
+					payloadPath, bondID,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 					fmt.Sprintf("--%s=json", tmcli.OutputFlag),
@@ -859,14 +854,14 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 
 				// GetCmdDissociateBond bond
 				cmd = cli.GetCmdDissociateBond()
-				txArgs = append([]string{records[0].Id}, txArgs[2:]...)
+				txArgs = append([]string{records[0].ID}, txArgs[2:]...)
 				out, err = clitestutil.ExecTestCLICmd(clientCtx, cmd, txArgs)
 				sr.NoError(err)
 				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
 				sr.NoError(err)
 				sr.Zero(d.Code)
 
-				return records[0].Id, records[0].BondId
+				return records[0].ID, records[0].BondID
 			},
 			func(recordId, bondId string, s *IntegrationTestSuite) {
 				// checking the bond-id removed or not
@@ -875,7 +870,7 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 				cmd := cli.GetCmdGetResource()
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 				sr.NoError(err)
-				var response nstypes.QueryRecordByIdResponse
+				var response nstypes.QueryRecordByIDResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &response)
 				sr.NoError(err)
 				record := response.GetRecord()
@@ -887,11 +882,11 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 
 	for _, tc := range testCasesForDeletingName {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			var recordId string
-			var bondId string
+			var recordID string
+			var bondID string
 			if !tc.err {
-				recordId, bondId = tc.preRun(s)
-				tc.args = append([]string{recordId, bondId}, tc.args...)
+				recordID, bondID = tc.preRun(s)
+				tc.args = append([]string{recordID, bondID}, tc.args...)
 			}
 			clientCtx := val.ClientCtx
 			cmd := cli.GetCmdAssociateBond()
@@ -906,7 +901,7 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 				sr.NoError(err)
 				sr.Zero(d.Code)
 				// post-run
-				tc.postRun(recordId, bondId, s)
+				tc.postRun(recordID, bondID, s)
 			}
 		})
 	}

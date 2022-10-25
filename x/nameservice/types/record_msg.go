@@ -58,9 +58,9 @@ func (msg MsgSetRecord) GetSignBytes() []byte {
 }
 
 // NewMsgRenewRecord is the constructor function for MsgRenewRecord.
-func NewMsgRenewRecord(recordId string, signer sdk.AccAddress) MsgRenewRecord {
+func NewMsgRenewRecord(recordID string, signer sdk.AccAddress) MsgRenewRecord {
 	return MsgRenewRecord{
-		RecordId: recordId,
+		RecordId: recordID,
 		Signer:   signer.String(),
 	}
 }
@@ -97,10 +97,10 @@ func (msg MsgRenewRecord) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgAssociateBond is the constructor function for MsgAssociateBond.
-func NewMsgAssociateBond(recordId, bondId string, signer sdk.AccAddress) MsgAssociateBond {
+func NewMsgAssociateBond(recordID, bondID string, signer sdk.AccAddress) MsgAssociateBond {
 	return MsgAssociateBond{
-		BondId:   bondId,
-		RecordId: recordId,
+		BondId:   bondID,
+		RecordId: recordID,
 		Signer:   signer.String(),
 	}
 }
@@ -139,9 +139,9 @@ func (msg MsgAssociateBond) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgDissociateBond is the constructor function for MsgDissociateBond.
-func NewMsgDissociateBond(recordId string, signer sdk.AccAddress) MsgDissociateBond {
+func NewMsgDissociateBond(recordID string, signer sdk.AccAddress) MsgDissociateBond {
 	return MsgDissociateBond{
-		RecordId: recordId,
+		RecordId: recordID,
 		Signer:   signer.String(),
 	}
 }
@@ -177,9 +177,9 @@ func (msg MsgDissociateBond) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgDissociateRecords is the constructor function for MsgDissociateRecords.
-func NewMsgDissociateRecords(bondId string, signer sdk.AccAddress) MsgDissociateRecords {
+func NewMsgDissociateRecords(bondID string, signer sdk.AccAddress) MsgDissociateRecords {
 	return MsgDissociateRecords{
-		BondId: bondId,
+		BondId: bondID,
 		Signer: signer.String(),
 	}
 }
@@ -215,10 +215,10 @@ func (msg MsgDissociateRecords) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgReAssociateRecords is the constructor function for MsgReAssociateRecords.
-func NewMsgReAssociateRecords(oldBondId, newBondId string, signer sdk.AccAddress) MsgReAssociateRecords {
+func NewMsgReAssociateRecords(oldBondID, newBondID string, signer sdk.AccAddress) MsgReAssociateRecords {
 	return MsgReAssociateRecords{
-		OldBondId: oldBondId,
-		NewBondId: newBondId,
+		OldBondId: oldBondID,
+		NewBondId: newBondID,
 		Signer:    signer.String(),
 	}
 }

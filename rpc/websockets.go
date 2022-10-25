@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/big"
 	"net"
 	"net/http"
@@ -26,9 +26,9 @@ import (
 	rpcclient "github.com/tendermint/tendermint/rpc/jsonrpc/client"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	rpcfilters "github.com/cerc-io/laconicd/rpc/ethereum/namespaces/eth/filters"
 	"github.com/cerc-io/laconicd/rpc/ethereum/pubsub"
-	"github.com/cerc-io/laconicd/rpc/ethereum/types"
+	rpcfilters "github.com/cerc-io/laconicd/rpc/namespaces/ethereum/eth/filters"
+	"github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cerc-io/laconicd/server/config"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 )
@@ -74,7 +74,7 @@ type websocketsServer struct {
 	logger   log.Logger
 }
 
-func NewWebsocketsServer(clientCtx client.Context, logger log.Logger, tmWSClient *rpcclient.WSClient, cfg config.Config) WebsocketsServer {
+func NewWebsocketsServer(clientCtx client.Context, logger log.Logger, tmWSClient *rpcclient.WSClient, cfg *config.Config) WebsocketsServer {
 	logger = logger.With("api", "websocket-server")
 	_, port, _ := net.SplitHostPort(cfg.JSONRPC.Address)
 
@@ -94,6 +94,7 @@ func (s *websocketsServer) Start() {
 
 	go func() {
 		var err error
+		/* #nosec G114 -- http functions have no support for timeouts */
 		if s.certFile == "" || s.keyFile == "" {
 			err = http.ListenAndServe(s.wsAddr, ws)
 		} else {
@@ -172,6 +173,7 @@ func (s *websocketsServer) readLoop(wsConn *wsConn) {
 	subscriptions := make(map[rpc.ID]pubsub.UnsubscribeFunc)
 	defer func() {
 		// cancel all subscriptions when connection closed
+		// #nosec G705
 		for _, unsubFn := range subscriptions {
 			unsubFn()
 		}
@@ -181,13 +183,20 @@ func (s *websocketsServer) readLoop(wsConn *wsConn) {
 		_, mb, err := wsConn.ReadMessage()
 		if err != nil {
 			_ = wsConn.Close()
+			s.logger.Error("read message error, breaking read loop", "error", err.Error())
 			return
 		}
 
+		if isBatch(mb) {
+			if err := s.tcpGetAndSendResponse(wsConn, mb); err != nil {
+				s.sendErrResponse(wsConn, err.Error())
+			}
+			continue
+		}
+
 		var msg map[string]interface{}
-		err = json.Unmarshal(mb, &msg)
-		if err != nil {
-			s.sendErrResponse(wsConn, "invalid request")
+		if err = json.Unmarshal(mb, &msg); err != nil {
+			s.sendErrResponse(wsConn, err.Error())
 			continue
 		}
 
@@ -195,20 +204,26 @@ func (s *websocketsServer) readLoop(wsConn *wsConn) {
 		method, ok := msg["method"].(string)
 		if !ok {
 			// otherwise, call the usual rpc server to respond
-			err = s.tcpGetAndSendResponse(wsConn, mb)
-			if err != nil {
+			if err := s.tcpGetAndSendResponse(wsConn, mb); err != nil {
 				s.sendErrResponse(wsConn, err.Error())
 			}
 
 			continue
 		}
 
-		connID := msg["id"].(float64)
+		connID, ok := msg["id"].(float64)
+		if !ok {
+			s.sendErrResponse(
+				wsConn,
+				fmt.Errorf("invalid type for connection ID: %T", msg["id"]).Error(),
+			)
+			continue
+		}
+
 		switch method {
 		case "eth_subscribe":
-			params := msg["params"].([]interface{})
-			if len(params) == 0 {
-				s.sendErrResponse(wsConn, "invalid parameters")
+			params, ok := s.getParamsAndCheckValid(msg, wsConn)
+			if !ok {
 				continue
 			}
 
@@ -230,11 +245,11 @@ func (s *websocketsServer) readLoop(wsConn *wsConn) {
 				break
 			}
 		case "eth_unsubscribe":
-			params, ok := msg["params"].([]interface{})
+			params, ok := s.getParamsAndCheckValid(msg, wsConn)
 			if !ok {
-				s.sendErrResponse(wsConn, "invalid parameters")
 				continue
 			}
+
 			id, ok := params[0].(string)
 			if !ok {
 				s.sendErrResponse(wsConn, "invalid parameters")
@@ -247,6 +262,7 @@ func (s *websocketsServer) readLoop(wsConn *wsConn) {
 				delete(subscriptions, subID)
 				unsubFn()
 			}
+
 			res := &SubscriptionResponseJSON{
 				Jsonrpc: "2.0",
 				ID:      connID,
@@ -258,12 +274,27 @@ func (s *websocketsServer) readLoop(wsConn *wsConn) {
 			}
 		default:
 			// otherwise, call the usual rpc server to respond
-			err = s.tcpGetAndSendResponse(wsConn, mb)
-			if err != nil {
+			if err := s.tcpGetAndSendResponse(wsConn, mb); err != nil {
 				s.sendErrResponse(wsConn, err.Error())
 			}
 		}
 	}
+}
+
+// tcpGetAndSendResponse sends error response to client if params is invalid
+func (s *websocketsServer) getParamsAndCheckValid(msg map[string]interface{}, wsConn *wsConn) ([]interface{}, bool) {
+	params, ok := msg["params"].([]interface{})
+	if !ok {
+		s.sendErrResponse(wsConn, "invalid parameters")
+		return nil, false
+	}
+
+	if len(params) == 0 {
+		s.sendErrResponse(wsConn, "empty parameters")
+		return nil, false
+	}
+
+	return params, true
 }
 
 // tcpGetAndSendResponse connects to the rest-server over tcp, posts a JSON-RPC request, and sends the response
@@ -283,7 +314,7 @@ func (s *websocketsServer) tcpGetAndSendResponse(wsConn *wsConn, mb []byte) erro
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return errors.Wrap(err, "could not read body from response")
 	}
@@ -426,9 +457,9 @@ func (api *pubSubAPI) subscribeLogs(wsConn *wsConn, subID rpc.ID, extra interfac
 		}
 
 		if params["address"] != nil {
-			address, ok := params["address"].(string)
-			addresses, sok := params["address"].([]interface{})
-			if !ok && !sok {
+			address, isString := params["address"].(string)
+			addresses, isSlice := params["address"].([]interface{})
+			if !isString && !isSlice {
 				err := errors.New("invalid addresses; must be address or array of addresses")
 				api.logger.Debug("invalid addresses", "type", fmt.Sprintf("%T", params["address"]))
 				return nil, err
@@ -438,7 +469,7 @@ func (api *pubSubAPI) subscribeLogs(wsConn *wsConn, subID rpc.ID, extra interfac
 				crit.Addresses = []common.Address{common.HexToAddress(address)}
 			}
 
-			if sok {
+			if isSlice {
 				crit.Addresses = []common.Address{}
 				for _, addr := range addresses {
 					address, ok := addr.(string)
@@ -536,7 +567,7 @@ func (api *pubSubAPI) subscribeLogs(wsConn *wsConn, subID rpc.ID, extra interfac
 					continue
 				}
 
-				txResponse, err := evmtypes.DecodeTxResponse(dataTx.TxResult.Result.Data, api.clientCtx.Codec)
+				txResponse, err := evmtypes.DecodeTxResponse(dataTx.TxResult.Result.Data)
 				if err != nil {
 					api.logger.Error("failed to decode tx response", "error", err.Error())
 					return
@@ -590,7 +621,12 @@ func (api *pubSubAPI) subscribePendingTransactions(wsConn *wsConn, subID rpc.ID)
 		for {
 			select {
 			case ev := <-txsCh:
-				data, _ := ev.Data.(tmtypes.EventDataTx)
+				data, ok := ev.Data.(tmtypes.EventDataTx)
+				if !ok {
+					api.logger.Debug("event data type mismatch", "type", fmt.Sprintf("%T", ev.Data))
+					continue
+				}
+
 				ethTxs, err := types.RawTxToEthTx(api.clientCtx, data.Tx)
 				if err != nil {
 					// not ethereum tx
@@ -633,4 +669,17 @@ func (api *pubSubAPI) subscribePendingTransactions(wsConn *wsConn, subID rpc.ID)
 
 func (api *pubSubAPI) subscribeSyncing(wsConn *wsConn, subID rpc.ID) (pubsub.UnsubscribeFunc, error) {
 	return nil, errors.New("syncing subscription is not implemented")
+}
+
+// copy from github.com/ethereum/go-ethereum/rpc/json.go
+// isBatch returns true when the first non-whitespace characters is '['
+func isBatch(raw []byte) bool {
+	for _, c := range raw {
+		// skip insignificant whitespace (http://www.ietf.org/rfc/rfc4627.txt)
+		if c == 0x20 || c == 0x09 || c == 0x0a || c == 0x0d {
+			continue
+		}
+		return c == '['
+	}
+	return false
 }
