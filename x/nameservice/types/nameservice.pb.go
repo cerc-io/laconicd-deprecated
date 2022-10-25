@@ -201,7 +201,7 @@ func (m *Record) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Record proto.InternalMessageInfo
 
-func (m *Record) GetID() string {
+func (m *Record) GetId() string {
 	if m != nil {
 		return m.Id
 	}

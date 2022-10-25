@@ -153,7 +153,7 @@ func GetBondID(s *IntegrationTestSuite) string {
 
 	// extract bond id from bonds list
 	bond := queryResponse.GetBonds()[0]
-	return bond.GetID()
+	return bond.GetId()
 }
 
 func (s *IntegrationTestSuite) TestGetCmdSetRecord() {

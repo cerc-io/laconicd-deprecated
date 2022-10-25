@@ -205,7 +205,7 @@ func (s *IntegrationTestSuite) TestGetQueryBondByID() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				return bond.GetID()
+				return bond.GetId()
 			},
 		},
 	}
@@ -225,9 +225,9 @@ func (s *IntegrationTestSuite) TestGetQueryBondByID() {
 			err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
 			sr.NoError(err)
 			if tc.err {
-				sr.Zero(len(queryResponse.GetBond().GetID()))
+				sr.Zero(len(queryResponse.GetBond().GetId()))
 			} else {
-				sr.NotZero(len(queryResponse.GetBond().GetID()))
+				sr.NotZero(len(queryResponse.GetBond().GetId()))
 				sr.Equal(s.accountAddress, queryResponse.GetBond().GetOwner())
 			}
 		})

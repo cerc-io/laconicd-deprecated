@@ -162,7 +162,7 @@ func (s *IntegrationTestSuite) TestGRPCGetBondByID() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				return bond.GetID()
+				return bond.GetId()
 			},
 		},
 	}
@@ -181,11 +181,11 @@ func (s *IntegrationTestSuite) TestGRPCGetBondByID() {
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &bonds)
 
 			if tc.expErr {
-				sr.Empty(bonds.GetBond().GetID())
+				sr.Empty(bonds.GetBond().GetId())
 			} else {
 				sr.NoError(err)
-				sr.NotZero(bonds.GetBond().GetID())
-				sr.Equal(bonds.GetBond().GetID(), bondID)
+				sr.NotZero(bonds.GetBond().GetId())
+				sr.Equal(bonds.GetBond().GetId(), bondID)
 			}
 		})
 	}

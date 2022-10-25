@@ -2,12 +2,12 @@ package types
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 
 	"github.com/cerc-io/laconicd/x/nameservice/helpers"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	canonicalJson "github.com/gibson042/canonicaljson-go"
-	"github.com/golang/protobuf/proto"
 )
 
 const (
@@ -25,13 +25,11 @@ type PayloadType struct {
 // ToPayload converts PayloadType to Payload object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
 func (payloadObj *PayloadType) ToPayload() (Payload, error) {
-
 	attributes, err := payLoadAttributes(payloadObj.Record)
 	if err != nil {
 		return Payload{}, err
 	}
-
-	var payload = Payload{
+	payload := Payload{
 		Record: &Record{
 			Deleted:    false,
 			Owners:     nil,
@@ -43,7 +41,6 @@ func (payloadObj *PayloadType) ToPayload() (Payload, error) {
 }
 
 func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, error) {
-
 	recordType, ok := recordPayLoad["Type"]
 	if !ok {
 		return &codectypes.Any{}, fmt.Errorf("cannot get type from payload")
@@ -54,7 +51,7 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 	case "ServiceProviderRegistration":
 		{
 			var attributes ServiceProviderRegistration
-			err := proto.Unmarshal(bz, &attributes)
+			err := json.Unmarshal(bz, &attributes)
 			if err != nil {
 				return &codectypes.Any{}, err
 			}
@@ -63,7 +60,7 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 	case "WebsiteRegistrationRecord":
 		{
 			var attributes WebsiteRegistrationRecord
-			err := proto.Unmarshal(bz, &attributes)
+			err := json.Unmarshal(bz, &attributes)
 			if err != nil {
 				return &codectypes.Any{}, err
 			}
@@ -72,7 +69,6 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 	default:
 		return &codectypes.Any{}, fmt.Errorf("unsupported record type %s", recordType.(string))
 	}
-
 }
 
 // ToReadablePayload converts Payload to PayloadType

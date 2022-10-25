@@ -187,6 +187,7 @@ func contains(arr []string, str string) bool {
 	}
 	return false
 }
+
 func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord {
 	var records []*types.ExpiryQueueRecord
 
@@ -292,7 +293,6 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 }
 
 func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
-
 	switch record.Attributes["type"] {
 	case "ServiceProviderRegistration":
 		{
@@ -326,7 +326,9 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 	}
 
 	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
-	k.SetAttributeMapping(ctx, expiryTimeKey, record.ID)
+	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -336,7 +338,7 @@ func GetAttributesIndexKey(key string, value interface{}) []byte {
 	return append(PrefixAttributesIndex, []byte(keyString)...)
 }
 
-func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordId string) error {
+func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string) error {
 	store := ctx.KVStore(k.storeKey)
 	var recordIds []string
 	if store.Has(key) {
@@ -347,7 +349,7 @@ func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordId string
 	} else {
 		recordIds = []string{}
 	}
-	recordIds = append(recordIds, recordId)
+	recordIds = append(recordIds, recordID)
 	bz, err := json.Marshal(recordIds)
 	if err != nil {
 		return fmt.Errorf("cannot marshal string array, error, %w", err)
@@ -369,7 +371,6 @@ func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, erro
 	}
 
 	return recordIds, nil
-
 }
 
 // AddBondToRecordIndexEntry adds the Bond ID -> [Record] index entry.

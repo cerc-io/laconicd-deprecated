@@ -252,7 +252,7 @@ func (m *QueryGetBondByIDRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryGetBondByIDRequest proto.InternalMessageInfo
 
-func (m *QueryGetBondByIDRequest) GetID() string {
+func (m *QueryGetBondByIDRequest) GetId() string {
 	if m != nil {
 		return m.Id
 	}

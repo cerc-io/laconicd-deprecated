@@ -66,7 +66,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				payload, err := payloadType.ToPayload()
 				sr.NoError(err)
 				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetID(),
+					BondId:  suite.bond.GetId(),
 					Signer:  suite.accounts[0].String(),
 					Payload: payload,
 				})
@@ -80,9 +80,9 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetRecords()))
 				if test.createRecord {
-					recordId = resp.GetRecords()[0].GetID()
+					recordId = resp.GetRecords()[0].GetId()
 					sr.NotZero(resp.GetRecords())
-					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetID())
+					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
 				}
 			}
 		})
@@ -122,7 +122,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NoError(err)
 				sr.NotNil(resp.GetRecord())
 				if test.createRecord {
-					sr.Equal(resp.GetRecord().BondId, suite.bond.GetID())
+					sr.Equal(resp.GetRecord().BondId, suite.bond.GetId())
 					sr.Equal(resp.GetRecord().Id, recordId)
 				}
 			}
@@ -147,7 +147,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 		{
 			"With Bond ID",
 			&nameservicetypes.QueryRecordByBondIDRequest{
-				Id: suite.bond.GetID(),
+				Id: suite.bond.GetId(),
 			},
 			true,
 			false,
@@ -164,7 +164,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NotNil(resp.GetRecords())
 				if test.createRecord {
 					sr.NotZero(resp.GetRecords())
-					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetID())
+					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
 				}
 			}
 		})
@@ -199,7 +199,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 				payload, err := payloadType.ToPayload()
 				sr.NoError(err)
 				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetID(),
+					BondId:  suite.bond.GetId(),
 					Signer:  suite.accounts[0].String(),
 					Payload: payload,
 				})
