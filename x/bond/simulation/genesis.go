@@ -7,11 +7,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/cerc-io/laconicd/x/bond/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // RandomizedGenState generates a random GenesisState
 func RandomizedGenState(simState *module.SimulationState) {
-	bondGenesis := types.DefaultGenesisState()
+	bondParams := types.NewParams(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simState.Rand.Intn(10000000000)))))
+	bondGenesis := types.NewGenesisState(bondParams, []*types.Bond{})
 
 	bz, err := json.MarshalIndent(bondGenesis, "", " ")
 	if err != nil {

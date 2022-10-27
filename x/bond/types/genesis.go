@@ -8,3 +8,10 @@ func DefaultGenesisState() *GenesisState {
 		Bonds:  []*Bond{},
 	}
 }
+
+func NewGenesisState(params Params, bonds []*Bond) *GenesisState {
+	return &GenesisState{
+		Params: params,
+		Bonds:  bonds,
+	}
+}
