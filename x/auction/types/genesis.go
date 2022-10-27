@@ -8,3 +8,10 @@ func DefaultGenesisState() *GenesisState {
 		Auctions: []*Auction{},
 	}
 }
+
+func NewGenesisState(params Params, auctions []*Auction) *GenesisState {
+	return &GenesisState{
+		Params:   params,
+		Auctions: auctions,
+	}
+}

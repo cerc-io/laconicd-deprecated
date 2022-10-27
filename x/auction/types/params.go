@@ -32,8 +32,14 @@ var (
 
 var _ types.ParamSet = &Params{}
 
-func NewParams() Params {
-	return DefaultParams()
+func NewParams(commitsDuration time.Duration, revealsDuration time.Duration, commitFee sdk.Coin, revealFee sdk.Coin, minimumBid sdk.Coin) Params {
+	return Params{
+		CommitsDuration: commitsDuration,
+		RevealsDuration: revealsDuration,
+		CommitFee:       commitFee,
+		RevealFee:       revealFee,
+		MinimumBid:      minimumBid,
+	}
 }
 
 // ParamKeyTable - ParamTable for bond module.
