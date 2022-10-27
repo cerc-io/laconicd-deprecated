@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
+	"math/rand" // #nosec G702
 
 	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
 	"github.com/cerc-io/laconicd/x/nameservice/keeper"
@@ -94,7 +94,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
-
 }
 
 // WeightedOperations returns the all the fee market module operations with their respective weights.

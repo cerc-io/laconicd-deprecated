@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
+	"math/rand" // #nosec G702
 
 	"github.com/cerc-io/laconicd/x/bond/client/cli"
 	"github.com/cerc-io/laconicd/x/bond/keeper"
