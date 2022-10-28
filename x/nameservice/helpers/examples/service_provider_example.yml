@@ -1,0 +1,12 @@
+record:
+  id: madeUpRecordID1
+  bond_id: madeUpBondID1
+  create_time: 1666962375
+  expiry_time: 1698516398
+  deleted: false
+  owners: [0xf573d99385c05c23b24ed33de616ad16a43a0919, 0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5]
+  names: [mockServiceProvider1]
+  attributes:
+    - laconic_id: madeUpLaconicID
+    - x500:
+        - common_name: cerc-io

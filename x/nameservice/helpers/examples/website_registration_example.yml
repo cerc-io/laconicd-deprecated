@@ -1,0 +1,16 @@
+record:
+  id: madeUpRecordID2
+  bond_id: madeUpBondID2
+  create_time: 1666962376
+  expiry_time: 1698516399
+  deleted: false
+  owners: [0xf573d99385c05c23b24ed33de616ad16a43a0919, 0xdafea492d9c6733ae3d56b7ed1adb60692c98bc5]
+  names: [mockServiceProvider1]
+  attributes:
+    - url: https://cerc.io
+    - repo_registration_record_cid:
+        /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
+    - build_artifact_cid:
+        /: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
+    - tls_cerc_cid:
+        /: QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR
