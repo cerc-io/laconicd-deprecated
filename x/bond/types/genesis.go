@@ -5,5 +5,13 @@ package types
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
 		Params: DefaultParams(),
+		Bonds:  []*Bond{},
+	}
+}
+
+func NewGenesisState(params Params, bonds []*Bond) *GenesisState {
+	return &GenesisState{
+		Params: params,
+		Bonds:  bonds,
 	}
 }
