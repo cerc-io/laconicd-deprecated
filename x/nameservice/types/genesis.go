@@ -13,7 +13,10 @@ func NewGenesisState(params Params, records []Record, authorities []AuthorityEnt
 // chain config values.
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
+		Params:      DefaultParams(),
+		Records:     []Record{},
+		Authorities: []AuthorityEntry{},
+		Names:       []NameEntry{},
 	}
 }
 
