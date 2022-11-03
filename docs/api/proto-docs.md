@@ -2351,7 +2351,7 @@ Msg defines the bond Msg service.
 | `url` | [string](#string) |  |  |
 | `repo_registration_record_cid` | [string](#string) |  |  |
 | `build_atrifact_cid` | [string](#string) |  |  |
-| `TLS_cert_cid` | [string](#string) |  |  |
+| `tls_cert_cid` | [string](#string) |  |  |
 | `type` | [string](#string) |  |  |
 
 
