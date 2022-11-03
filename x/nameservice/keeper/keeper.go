@@ -296,16 +296,17 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 	switch record.Attributes["type"] {
 	case "ServiceProviderRegistration":
 		{
-			for key, val := range record.Attributes {
+			for key := range record.Attributes {
 				if key == "x500" {
-					for x500Key, x500Val := range val.(map[string]string) {
+					// #nosec G705
+					for x500Key, x500Val := range record.Attributes[key].(map[string]string) {
 						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
 						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
 							return err
 						}
 					}
 				} else {
-					indexKey := GetAttributesIndexKey(key, val)
+					indexKey := GetAttributesIndexKey(key, record.Attributes[key])
 					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
 						return err
 					}
@@ -314,8 +315,8 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 		}
 	case "WebsiteRegistrationRecord":
 		{
-			for key, val := range record.Attributes {
-				indexKey := GetAttributesIndexKey(key, val)
+			for key := range record.Attributes {
+				indexKey := GetAttributesIndexKey(key, record.Attributes[key])
 				if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
 					return err
 				}
