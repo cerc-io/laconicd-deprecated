@@ -296,6 +296,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 	switch record.Attributes["type"] {
 	case "ServiceProviderRegistration":
 		{
+			// #nosec G705
 			for key := range record.Attributes {
 				if key == "x500" {
 					// #nosec G705
@@ -315,6 +316,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 		}
 	case "WebsiteRegistrationRecord":
 		{
+			// #nosec G705
 			for key := range record.Attributes {
 				indexKey := GetAttributesIndexKey(key, record.Attributes[key])
 				if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
