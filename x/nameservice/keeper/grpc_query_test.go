@@ -66,6 +66,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 					{
 						Key: "type",
 						Value: &nameservicetypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
 							String_: "WebsiteRegistrationRecord",
 						},
 					},

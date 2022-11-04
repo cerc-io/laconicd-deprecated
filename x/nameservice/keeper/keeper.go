@@ -135,7 +135,8 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
-		attributeIndex := GetAttributesIndexKey(attr.Key, attr.Value)
+		val := getAttributeValue(attr.Value)
+		attributeIndex := GetAttributesIndexKey(attr.Key, val)
 		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
 		if err != nil {
 			return nil, err
@@ -159,6 +160,25 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 		records = append(records, record)
 	}
 	return records, nil
+}
+
+func getAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
+	if input.Type == "int" {
+		return input.GetInt()
+	}
+	if input.Type == "float" {
+		return input.GetFloat()
+	}
+	if input.Type == "string" {
+		return input.GetString_()
+	}
+	if input.Type == "boolean" {
+		return input.GetBoolean()
+	}
+	if input.Type == "reference" {
+		return input.GetReference().GetId()
+	}
+	return nil
 }
 
 func getIntersection(a []string, b []string) []string {
