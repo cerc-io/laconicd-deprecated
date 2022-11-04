@@ -34,12 +34,16 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
 	var recordId string
+	examples := []string{
+		"/../helpers/examples/service_provider_example.yml",
+		"/../helpers/examples/website_registration_example.yml",
+	}
 	testCases := []struct {
-		msg          string
-		req          *nameservicetypes.QueryListRecordsRequest
-		createRecord bool
-		expErr       bool
-		noOfRecords  int
+		msg           string
+		req           *nameservicetypes.QueryListRecordsRequest
+		createRecords bool
+		expErr        bool
+		noOfRecords   int
 	}{
 		{
 			"Empty Records",
@@ -53,25 +57,43 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&nameservicetypes.QueryListRecordsRequest{},
 			true,
 			false,
+			2,
+		},
+		{
+			"Filter with type",
+			&nameservicetypes.QueryListRecordsRequest{
+				Attributes: []*nameservicetypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "type",
+						Value: &nameservicetypes.QueryListRecordsRequest_ValueInput{
+							String_: "WebsiteRegistrationRecord",
+						},
+					},
+				},
+			},
+			true,
+			false,
 			1,
 		},
 	}
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
-			if test.createRecord {
-				dir, err := os.Getwd()
-				sr.NoError(err)
-				payloadType, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/service_provider_example.yml")
-				sr.NoError(err)
-				payload, err := payloadType.ToPayload()
-				sr.NoError(err)
-				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetId(),
-					Signer:  suite.accounts[0].String(),
-					Payload: payload,
-				})
-				sr.NoError(err)
-				sr.NotNil(record.ID)
+			if test.createRecords {
+				for _, example := range examples {
+					dir, err := os.Getwd()
+					sr.NoError(err)
+					payloadType, err := cli.GetPayloadFromFile(fmt.Sprint(dir, example))
+					sr.NoError(err)
+					payload, err := payloadType.ToPayload()
+					sr.NoError(err)
+					record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
+						BondId:  suite.bond.GetId(),
+						Signer:  suite.accounts[0].String(),
+						Payload: payload,
+					})
+					sr.NoError(err)
+					sr.NotNil(record.ID)
+				}
 			}
 			resp, err := grpcClient.ListRecords(context.Background(), test.req)
 			if test.expErr {
@@ -79,7 +101,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			} else {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetRecords()))
-				if test.createRecord {
+				if test.createRecords {
 					recordId = resp.GetRecords()[0].GetId()
 					sr.NotZero(resp.GetRecords())
 					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
