@@ -197,12 +197,16 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
+	examples := []string{
+		"/../helpers/examples/service_provider_example.yml",
+		"/../helpers/examples/website_registration_example.yml",
+	}
 	testCases := []struct {
-		msg          string
-		req          *nameservicetypes.GetNameServiceModuleBalanceRequest
-		createRecord bool
-		expErr       bool
-		noOfRecords  int
+		msg           string
+		req           *nameservicetypes.GetNameServiceModuleBalanceRequest
+		createRecords bool
+		expErr        bool
+		noOfRecords   int
 	}{
 		{
 			"Get Module Balance",
@@ -214,20 +218,22 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 	}
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
-			if test.createRecord {
+			if test.createRecords {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadType, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
-				sr.NoError(err)
-				payload, err := payloadType.ToPayload()
-				sr.NoError(err)
-				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetId(),
-					Signer:  suite.accounts[0].String(),
-					Payload: payload,
-				})
-				sr.NoError(err)
-				sr.NotNil(record.ID)
+				for _, example := range examples {
+					payloadType, err := cli.GetPayloadFromFile(fmt.Sprint(dir, example))
+					sr.NoError(err)
+					payload, err := payloadType.ToPayload()
+					sr.NoError(err)
+					record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
+						BondId:  suite.bond.GetId(),
+						Signer:  suite.accounts[0].String(),
+						Payload: payload,
+					})
+					sr.NoError(err)
+					sr.NotNil(record.ID)
+				}
 			}
 			resp, err := grpcClient.GetNameServiceModuleBalance(context.Background(), test.req)
 			if test.expErr {
@@ -235,7 +241,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 			} else {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetBalances()))
-				if test.createRecord {
+				if test.createRecords {
 					balance := resp.GetBalances()[0]
 					sr.Equal(balance.AccountName, nameservicetypes.RecordRentModuleAccountName)
 				}
