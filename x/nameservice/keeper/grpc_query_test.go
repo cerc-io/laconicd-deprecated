@@ -61,7 +61,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			if test.createRecord {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadType, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
+				payloadType, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/service_provider_example.yml")
 				sr.NoError(err)
 				payload, err := payloadType.ToPayload()
 				sr.NoError(err)

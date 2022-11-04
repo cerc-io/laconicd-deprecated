@@ -4,10 +4,12 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/cerc-io/laconicd/x/nameservice/helpers"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	canonicalJson "github.com/gibson042/canonicaljson-go"
+	"github.com/gogo/protobuf/proto"
 )
 
 const (
@@ -41,7 +43,7 @@ func (payloadObj *PayloadType) ToPayload() (Payload, error) {
 }
 
 func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, error) {
-	recordType, ok := recordPayLoad["Type"]
+	recordType, ok := recordPayLoad["type"]
 	if !ok {
 		return &codectypes.Any{}, fmt.Errorf("cannot get type from payload")
 	}
@@ -75,8 +77,38 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 // It will unmarshal with record attributes
 func (payload Payload) ToReadablePayload() PayloadType {
 	var payloadType PayloadType
-	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(payload.Record.Attributes.Value)
+	var bz []byte
+	s := strings.Split(payload.Record.Attributes.TypeUrl, ".")
+	switch s[len(s)-1] {
+	case "ServiceProviderRegistration":
+		{
+			var attributes ServiceProviderRegistration
+			err := proto.Unmarshal(payload.Record.Attributes.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
 
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "WebsiteRegistrationRecord":
+		{
+			var attributes WebsiteRegistrationRecord
+			err := proto.Unmarshal(payload.Record.Attributes.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	}
+
+	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(bz)
 	payloadType.Signatures = payload.Signatures
 
 	return payloadType

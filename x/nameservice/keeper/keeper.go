@@ -300,7 +300,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 			for key := range record.Attributes {
 				if key == "x500" {
 					// #nosec G705
-					for x500Key, x500Val := range record.Attributes[key].(map[string]string) {
+					for x500Key, x500Val := range record.Attributes[key].(map[string]interface{}) {
 						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
 						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
 							return err
