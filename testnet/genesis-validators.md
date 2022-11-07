@@ -1,19 +1,19 @@
-# Validator Guide for laconic_81337-4 Testnet
+# Validator Guide for laconic_81337-5 Testnet
 
 ## Hardware Prerequisites
 
 ### Supported
 
 - **Operating System (OS):** Ubuntu 20.04
-- **CPU:** 1 core
-- **RAM:** 2GB
+- **CPU:** 2 core
+- **RAM:** 8GB
 - **Storage:** 25GB SSD
 
 ### Recommended
 
 - **Operating System (OS):** Ubuntu 20.04
 - **CPU:** 2 core
-- **RAM:** 4GB
+- **RAM:** 8GB
 - **Storage:** 50GB SSD
 
 ## Network Prerequisites
@@ -21,9 +21,15 @@
 - **TCP 26656** for Peer-to-Peer Network Communication
 - **TCP 26660** for Prometheus Metrics (doesn't have to be exposed publicly)
 
-# Validator Setup
+# Blockchain client Setup
 
-## Install required software packages
+There are two options of running a laconicd
+1. As a systemd service
+2. In a docker container
+
+## Systemd service
+Skip this section if you use docker
+### Install required software packages
 
 ```sh
 # Update Ubuntu
@@ -36,7 +42,7 @@ sudo apt install git curl build-essential make jq -y
 
 ---
 
-## Install Go
+### Install Go
 
 ```sh
 # Remove any existing installation of `go`
@@ -66,7 +72,7 @@ go version
 
 ---
 
-## Install `laconic`
+### Install `laconic`
 
 ```sh
 git clone https://github.com/cerc-io/laconicd.git
@@ -74,7 +80,7 @@ cd laconicd
 
 # Checkout main branch
 git fetch --all
-git checkout main
+git checkout v0.6.0
 
 # Build and install laconic
 make install
@@ -96,45 +102,35 @@ server_name: laconicd
 
 ---
 
-## Initialize Validator Node
+## Docker container
+
+There are different commands to initialize a validator and to run a validator node.
+See "Docker" section in corresponding chapters.
+It is important to mount a host directory (`~/.laconicd` in this documentation) to `/root/.laconicd` directory inside the container, so all blockchain data, configuration and keys persist between container restarts.
+For running a validator node it is also required to publish container's port 26656 and (optionally) 26660 to the host.
+---
+
+# Initialize Validator Node
 
 **Not required if you have already initialized before**
 
+Make sure the directory `~/.laconicd` does not exist or is empty
+
+---
+>**Docker**<br/>
+>In order to run the below commands in a docker container:
+>```sh
+>docker run -ti -v ~/.laconicd:/root/.laconicd \
+>git.vdb.to/cerc-io/laconicd/laconicd:v0.6.0 /bin/sh
+>```
+---
+
 ```sh
 # Initialize the validator node
-laconicd init <your-node-moniker> --chain-id laconic_81337-4
+laconicd init <your-node-moniker> --chain-id laconic_81337-5
 ```
 
 Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.laconicd/config`).
-
-**NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
-
----
-
-## Overwrite Validator Initialization from previous testnet
-
-**Required for `laconic_81337-4`**
-
-First we have to reset the previous genesis state (only because the `laconic_81337-3` testnet failed) whereafter we can initialize the validator node for `laconic_81337-4`
-
-```sh
-# Stop your node (in case it was still running)
-systemctl stop laconicd
-
-# Keep a backup of your old validator directory
-cp -a ~/.laconicd ~/backup-laconic_81337-2
-
-# Reset the state of your validator
-laconicd tendermint unsafe-reset-all --home $HOME/.laconicd
-
-# Remove your previous genesis transactions
-rm $HOME/.laconicd/config/gentx/gentx*.json
-
-# Overwrite your genesis state with the new chain-id
-laconicd init --overwrite <your-node-moniker> --chain-id laconic_81337-4
-```
-
-Running the above commands will re-initialize the validator node with default configuration. The config files will be saved in the default location (`~/.laconicd/config`).
 
 **NOTE:** Backup your node and validator keys. You will need to use these keys at a later point in time.
 
@@ -171,11 +167,12 @@ Create Your `gentx` transaction file
 ```sh
 laconicd gentx <key-name> 12900000000000000000000achk \
   --pubkey=$(laconicd tendermint show-validator) \
-  --chain-id="laconic_81337-4" \
+  --chain-id="laconic_81337-5" \
   --moniker="<your-moniker-name>" \
   --website="<your-validator-website>" \
   --details="<your-validator-description>" \
   --identity="<your-keybase-public-key>" \
+  --ip="<your-node-public-ip-address>" \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -200,10 +197,10 @@ Submit your `gentx` file to the [https://github.com/cerc-io/laconic-testnet]() r
 To submit the gentx file, follow the below process:
 
 - Fork the [https://github.com/cerc-io/laconic-testnet]() repository
-- Upload your gentx file in the `laconic_81337-4/config/gentxs` folder
+- Upload your gentx file in the `laconic_81337-5/config/gentxs` folder
 - Submit Pull Request to [https://github.com/cerc-io/laconic-testnet]() with name `ADD <your-moniker> gentx`
 
-The genesis file will be published in the `laconic_81337-4/config/` folder within the [https://github.com/cerc-io/laconic-testnet]() repository.
+The genesis file will be published in the `laconic_81337-5/config/` folder within the [https://github.com/cerc-io/laconic-testnet]() repository.
 
 # CONTINUE WITH BELOW STEPS ONLY AFTER GENESIS FILE HAS BEEN PUBLISHED
 
@@ -213,11 +210,16 @@ The genesis file will be published in the `laconic_81337-4/config/` folder withi
 # Set seed & peers variable
 seeds="<seeds node list here>"
 peers="<peers node list here>"
+external_address="<node public IP address>"
+moniker="<your moniker>"
 
 # Update seeds, persistent_peers and prometheus parameters in config.toml
-sed -i.bak -e "s/^seeds *=.*/seeds = \"$seeds\"/; s/^persistent_peers *=.*/persistent_peers = \"$peers\"/; s/^prometheus *=.*/prometheus = true/" $HOME/.laconicd/config/config.toml
+sed -i.bak -e "s/^seeds *=.*/seeds = \"$seeds\"/; s/^persistent_peers *=.*/persistent_peers = \"$peers\"/; s/^prometheus *=.*/prometheus = true/; s/^moniker *=.*/moniker = \"$moniker\"/; s/^external_address *=.*/external_address = \"tcp:\/\/$external_address:26656\"/" $HOME/.laconicd/config/config.toml
+```
+---
 
-# Create systemd validator service
+## Create systemd validator service (skip for Docker)
+```sh
 sudo tee /etc/systemd/system/laconicd.service > /dev/null <<EOF
 [Unit]
 Description=laconicd Daemon
@@ -246,9 +248,7 @@ Check status of service
 sudo systemctl status laconicd
 ```
 
----
-
-## Helpful Commands
+### Helpful Commands for systemd service
 
 ```sh
 # Check logs
@@ -263,12 +263,47 @@ journalctl --since "1 day ago" -u laconicd
 # Check logs with follow flag
 journalctl -f -u laconicd
 
+```
+---
+## Run validator node in Docker container
+### Create docker container
+In this example the Tendermint RPC and Prometheus metrics ports are exposed only to localhost. You may want to change 127.0.0.1 to private or public network interface of your host if you need to access these ports remotely.
+
+```sh
+docker create --name laconic-testnet-5 -v ~/.laconicd:/root/.laconicd -p 26656:26656 -p 127.0.0.1:26657:26657 -p 127.0.0.1:26660:26660 git.vdb.to/cerc-io/laconicd/laconicd:v0.6.0 laconicd start --gql-playground --gql-server --log_level=warn
+```
+
+### Run validator node
+
+```sh
+docker start laconic-testnet-5
+```
+
+### Check validator node logs
+
+```sh
+docker logs laconic-testnet-5
+```
+
+### Run shell inside docker container
+
+```sh
+docker exec -ti laconic-testnet-5 /bin/sh
+```
+---
+## Helpful commands
+
+```sh
 # Check discovered peers
 curl http://localhost:26657/net_info
 
 # Check network consensus state
 curl http://localhost:26657/consensus_state
 
-# Check the sync status of your validator node
+# Check the sync status of your validator node (for docker need to run shell inside the container fist)
 laconicd status | jq .SyncInfo
 ```
+---
+
+
+
