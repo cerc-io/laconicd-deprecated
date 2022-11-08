@@ -58,7 +58,7 @@ $ ./build/laconicd q nameservice params -o json | jq .
 > First you have to Create bond
 
 ```bash
-$ ./build/laconicd tx nameservice set ~/Desktop/examples/records/example1.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id ethermint_9000-1 --yes -o json
+$ ./build/laconicd tx nameservice set ~/Desktop/examples/records/service_provider_example.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id ethermint_9000-1 --yes -o json
 {
   "height": "0",
   "txhash": "BA44ABE1194724694E7CB290F9F3121DB4E63E1A030D95CB84813EEA132CF95F",

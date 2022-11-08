@@ -71,6 +71,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 						},
 					},
 				},
+				All: true,
 			},
 			true,
 			false,
