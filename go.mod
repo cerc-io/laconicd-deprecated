@@ -8,9 +8,9 @@ require (
 	github.com/armon/go-metrics v0.4.1
 	github.com/btcsuite/btcd v0.22.1
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
-	github.com/cosmos/cosmos-sdk v0.46.2-0.20220920160224-9454b97ccb77
+	github.com/cosmos/cosmos-sdk v0.46.3
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/ibc-go/v5 v5.0.0
+	github.com/cosmos/ibc-go/v5 v5.0.1
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.8.0
 	github.com/ethereum/go-ethereum v1.10.19
@@ -38,7 +38,7 @@ require (
 	github.com/spf13/viper v1.13.0
 	github.com/status-im/keycard-go v0.0.0-20200402102358-957c09536969
 	github.com/stretchr/testify v1.8.0
-	github.com/tendermint/tendermint v0.34.21
+	github.com/tendermint/tendermint v0.34.22
 	github.com/tendermint/tm-db v0.6.7
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/vektah/gqlparser/v2 v2.5.1
@@ -80,7 +80,7 @@ require (
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
-	github.com/cosmos/iavl v0.19.2-0.20220916140702-9b6be3095313 // indirect
+	github.com/cosmos/iavl v0.19.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
@@ -130,7 +130,7 @@ require (
 	github.com/hdevalence/ed25519consensus v0.0.0-20220222234857-c00d1f31bab3 // indirect
 	github.com/holiman/bloomfilter/v2 v2.0.3 // indirect
 	github.com/huin/goupnp v1.0.3 // indirect
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/ipfs/go-block-format v0.0.2 // indirect
 	github.com/ipfs/go-ipfs-util v0.0.1 // indirect
 	github.com/ipfs/go-ipld-format v0.0.1 // indirect
@@ -148,7 +148,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
-	github.com/mimoo/StrobeGo v0.0.0-20181016162300-f8f6d4d2b643 // indirect
+	github.com/mimoo/StrobeGo v0.0.0-20210601165009-122bf33a46e0 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -171,10 +171,10 @@ require (
 	github.com/prometheus/common v0.34.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/prometheus/tsdb v0.7.1 // indirect
-	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
+	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rjeczalik/notify v0.9.1 // indirect
 	github.com/rs/zerolog v1.27.0 // indirect
-	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
+	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.9.2 // indirect

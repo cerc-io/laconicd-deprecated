@@ -77,35 +77,9 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 // It will unmarshal with record attributes
 func (payload Payload) ToReadablePayload() PayloadType {
 	var payloadType PayloadType
-	var bz []byte
-	s := strings.Split(payload.Record.Attributes.TypeUrl, ".")
-	switch s[len(s)-1] {
-	case "ServiceProviderRegistration":
-		{
-			var attributes ServiceProviderRegistration
-			err := proto.Unmarshal(payload.Record.Attributes.Value, &attributes)
-			if err != nil {
-				panic("Proto unmarshal error")
-			}
-
-			bz, err = json.Marshal(attributes)
-			if err != nil {
-				panic("JSON marshal error")
-			}
-		}
-	case "WebsiteRegistrationRecord":
-		{
-			var attributes WebsiteRegistrationRecord
-			err := proto.Unmarshal(payload.Record.Attributes.Value, &attributes)
-			if err != nil {
-				panic("Proto unmarshal error")
-			}
-
-			bz, err = json.Marshal(attributes)
-			if err != nil {
-				panic("JSON marshal error")
-			}
-		}
+	bz, err := getJSONBytesFromAny(*payload.Record.Attributes)
+	if err != nil {
+		panic(err)
 	}
 
 	payloadType.Record = helpers.UnMarshalMapFromJSONBytes(bz)
@@ -126,9 +100,51 @@ func (r *Record) ToRecordType() RecordType {
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
 	resourceObj.Names = r.Names
-	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(r.Attributes.Value)
+
+	bz, err := getJSONBytesFromAny(*r.Attributes)
+	if err != nil {
+		panic(err)
+	}
+	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(bz)
 
 	return resourceObj
+}
+
+func getJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
+	var bz []byte
+	s := strings.Split(any.TypeUrl, ".")
+	switch s[len(s)-1] {
+	case "ServiceProviderRegistration":
+		{
+			var attributes ServiceProviderRegistration
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "WebsiteRegistrationRecord":
+		{
+			var attributes WebsiteRegistrationRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	default:
+		return nil, fmt.Errorf("unsupported type %s", s[len(s)-1])
+	}
+
+	return bz, nil
 }
 
 // RecordType represents a WNS record.

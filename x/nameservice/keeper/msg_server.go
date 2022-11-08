@@ -39,7 +39,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 			types.EventTypeSetRecord,
 			sdk.NewAttribute(types.AttributeKeySigner, msg.GetSigner()),
 			sdk.NewAttribute(types.AttributeKeyBondID, msg.GetBondId()),
-			sdk.NewAttribute(types.AttributeKeyPayload, msg.Payload.String()),
+			sdk.NewAttribute(types.AttributeKeyPayload, msg.Payload.Record.Id),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
