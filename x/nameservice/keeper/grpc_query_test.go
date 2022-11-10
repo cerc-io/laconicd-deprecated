@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
+	"github.com/cerc-io/laconicd/x/nameservice/helpers"
+	"github.com/cerc-io/laconicd/x/nameservice/keeper"
 	nameservicetypes "github.com/cerc-io/laconicd/x/nameservice/types"
 )
 
@@ -77,6 +79,24 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			false,
 			1,
 		},
+		{
+			"Filter with attributes ServiceProviderRegistration",
+			&nameservicetypes.QueryListRecordsRequest{
+				Attributes: []*nameservicetypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "x500state_name",
+						Value: &nameservicetypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "california",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			1,
+		},
 	}
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
@@ -107,6 +127,19 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 					recordId = resp.GetRecords()[0].GetId()
 					sr.NotZero(resp.GetRecords())
 					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
+
+					for _, record := range resp.GetRecords() {
+						bz, err := nameservicetypes.GetJSONBytesFromAny(*record.Attributes)
+						sr.NoError(err)
+						recAttr := helpers.UnMarshalMapFromJSONBytes(bz)
+						for _, attr := range test.req.GetAttributes() {
+							if attr.Key[:4] == "x500" {
+								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
+							} else {
+								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr[attr.Key])
+							}
+						}
+					}
 				}
 			}
 		})

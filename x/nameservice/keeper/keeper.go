@@ -135,7 +135,7 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
-		val := getAttributeValue(attr.Value)
+		val := GetAttributeValue(attr.Value)
 		attributeIndex := GetAttributesIndexKey(attr.Key, val)
 		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
 		if err != nil {
@@ -162,7 +162,7 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 	return records, nil
 }
 
-func getAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
+func GetAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
 	if input.Type == "int" {
 		return input.GetInt()
 	}

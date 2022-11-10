@@ -77,7 +77,7 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 // It will unmarshal with record attributes
 func (payload Payload) ToReadablePayload() PayloadType {
 	var payloadType PayloadType
-	bz, err := getJSONBytesFromAny(*payload.Record.Attributes)
+	bz, err := GetJSONBytesFromAny(*payload.Record.Attributes)
 	if err != nil {
 		panic(err)
 	}
@@ -101,7 +101,7 @@ func (r *Record) ToRecordType() RecordType {
 	resourceObj.Owners = r.Owners
 	resourceObj.Names = r.Names
 
-	bz, err := getJSONBytesFromAny(*r.Attributes)
+	bz, err := GetJSONBytesFromAny(*r.Attributes)
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +110,7 @@ func (r *Record) ToRecordType() RecordType {
 	return resourceObj
 }
 
-func getJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
+func GetJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
 	var bz []byte
 	s := strings.Split(any.TypeUrl, ".")
 	switch s[len(s)-1] {

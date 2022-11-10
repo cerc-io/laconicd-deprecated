@@ -25,7 +25,7 @@ message WebsiteRegistrationRecord {
   string url                          = 1 [(gogoproto.moretags) = "json:\"url\" yaml:\"url\""];
   string repo_registration_record_cid = 2
       [(gogoproto.moretags) = "json:\"repoRegistrationRecordCID\" yaml:\"repoRegistrationRecordCID\""];
-  string build_atrifact_cid = 3 [(gogoproto.moretags) = "json:\"buildArtifactCID\" yaml:\"buildArtifactCID\""];
+  string build_artifact_cid = 3 [(gogoproto.moretags) = "json:\"buildArtifactCID\" yaml:\"buildArtifactCID\""];
   string tls_cert_cid       = 4 [(gogoproto.moretags) = "json:\"TLSCertCID\" yaml:\"TLSCertCID\""];
   string type               = 5 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
 }
