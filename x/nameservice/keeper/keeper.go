@@ -46,6 +46,7 @@ var (
 	// PrefixBondIDToAuthoritiesIndex is the prefix for the Bond ID -> [Authority] index.
 	PrefixBondIDToAuthoritiesIndex = []byte{0x06}
 
+	//  PrefixAttributesIndex is the prefix for the nameservice Record.Attribute -> []Record.ID index
 	PrefixAttributesIndex = []byte{0x07}
 
 	// PrefixExpiryTimeToRecordsIndex is the prefix for the Expiry Time -> [Record] index.
