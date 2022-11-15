@@ -209,7 +209,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			func(bondId string) {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/example1.yml"
+				payloadPath := dir + "/service_provider_example.yml"
 				args := []string{
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -353,7 +353,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 			func(bondId string) {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/example1.yml"
+				payloadPath := dir + "/service_provider_example.yml"
 				args := []string{
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -457,8 +457,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &response)
 				sr.NoError(err)
 				record := response.GetRecord()
-				sr.NotZero(len(record.GetID()))
-				sr.Equal(record.GetID(), recordID)
+				sr.NotZero(len(record.GetId()))
+				sr.Equal(record.GetId(), recordID)
 			}
 		})
 	}
@@ -626,7 +626,7 @@ func createRecord(bondID string, s *IntegrationTestSuite) {
 
 	dir, err := os.Getwd()
 	sr.NoError(err)
-	payloadPath := dir + "/example1.yml"
+	payloadPath := dir + "/service_provider_example.yml"
 	args := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

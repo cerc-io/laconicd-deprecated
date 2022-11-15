@@ -153,7 +153,7 @@ func GetBondID(s *IntegrationTestSuite) string {
 
 	// extract bond id from bonds list
 	bond := queryResponse.GetBonds()[0]
-	return bond.GetID()
+	return bond.GetId()
 }
 
 func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/example1.yml"
+				payloadPath := dir + "/service_provider_example.yml"
 
 				tc.args = append([]string{payloadPath, bondID}, tc.args...)
 			}
@@ -580,7 +580,7 @@ func (s *IntegrationTestSuite) TestGetCmdDissociateBond() {
 				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/example1.yml"
+				payloadPath := dir + "/service_provider_example.yml"
 
 				args := []string{
 					payloadPath, bondID,
@@ -822,7 +822,7 @@ func (s *IntegrationTestSuite) TestGetCmdAssociateBond() {
 				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/example1.yml"
+				payloadPath := dir + "/service_provider_example.yml"
 
 				txArgs := []string{
 					payloadPath, bondID,

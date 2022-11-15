@@ -124,7 +124,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryBondBondId() {
 			if !test.errResponse {
 				suiteRequire.Nil(err)
 				suiteRequire.NotNil(resp.GetBond())
-				suiteRequire.Equal(test.req.Id, resp.GetBond().GetID())
+				suiteRequire.Equal(test.req.Id, resp.GetBond().GetId())
 			} else {
 				suiteRequire.NotNil(err)
 				suiteRequire.Error(err)

@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestTxRefillBond() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				tc.args = append([]string{bond.GetID()}, tc.args...)
+				tc.args = append([]string{bond.GetId()}, tc.args...)
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.err {
@@ -204,7 +204,7 @@ func (s *IntegrationTestSuite) TestTxWithdrawAmountFromBond() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				tc.args = append([]string{bond.GetID()}, tc.args...)
+				tc.args = append([]string{bond.GetId()}, tc.args...)
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.err {
@@ -288,7 +288,7 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 
 				// extract bond id from bonds list
 				bond := queryResponse.GetBonds()[0]
-				tc.args = append([]string{bond.GetID()}, tc.args...)
+				tc.args = append([]string{bond.GetId()}, tc.args...)
 			}
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.err {
@@ -312,7 +312,7 @@ func (s *IntegrationTestSuite) TestTxCancelBond() {
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &queryResponse)
 				sr.NoError(err)
 
-				sr.Zero(queryResponse.GetBond().GetID())
+				sr.Zero(queryResponse.GetBond().GetId())
 			}
 		})
 	}

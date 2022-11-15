@@ -14,14 +14,14 @@ import (
 
 // GetQueryCmd returns the cli query commands for this module
 func GetQueryCmd() *cobra.Command {
-	bondQueryCmd := &cobra.Command{
+	nameserviceQueryCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "Querying commands for the nameservice module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
-	bondQueryCmd.AddCommand(
+	nameserviceQueryCmd.AddCommand(
 		GetCmdWhoIs(),
 		GetCmdResolve(),
 		GetCmdLookupCRN(),
@@ -34,7 +34,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdBalance(),
 		GetCmdNames(),
 	)
-	return bondQueryCmd
+	return nameserviceQueryCmd
 }
 
 // GetCmdWhoIs queries a whois info for a name.

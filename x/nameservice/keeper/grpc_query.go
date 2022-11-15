@@ -32,9 +32,11 @@ func (q Querier) ListRecords(c context.Context, req *types.QueryListRecordsReque
 	all := req.GetAll()
 	var records []types.Record
 	if len(attributes) > 0 {
-		records = q.Keeper.MatchRecords(ctx, func(record *types.RecordType) bool {
-			return MatchOnAttributes(record, attributes, all)
-		})
+		var err error
+		records, err = q.Keeper.RecordsFromAttributes(ctx, attributes, all)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		records = q.Keeper.ListRecords(ctx)
 	}
@@ -111,116 +113,4 @@ func (q Querier) GetAuthorityExpiryQueue(c context.Context, _ *types.QueryGetAut
 	ctx := sdk.UnwrapSDKContext(c)
 	authorities := q.Keeper.GetAuthorityExpiryQueue(ctx)
 	return &types.QueryGetAuthorityExpiryQueueResponse{Authorities: authorities}, nil
-}
-
-func matchOnRecordField(record *types.RecordType, attr *types.QueryListRecordsRequest_KeyValueInput) (fieldFound bool, matched bool) {
-	fieldFound = false
-	matched = true
-
-	switch attr.Key {
-	case BondIDAttributeName:
-		{
-			fieldFound = true
-			if record.BondID != attr.Value.GetString_() {
-				matched = false
-				return
-			}
-		}
-	case ExpiryTimeAttributeName:
-		{
-			fieldFound = true
-			if record.ExpiryTime != attr.Value.GetString_() {
-				matched = false
-				return
-			}
-		}
-	}
-
-	return
-}
-
-func MatchOnAttributes(record *types.RecordType, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) bool {
-	// Filter deleted records.
-	if record.Deleted {
-		return false
-	}
-
-	// If ONLY named records are requested, check for that condition first.
-	if !all && len(record.Names) == 0 {
-		return false
-	}
-
-	recAttrs := record.Attributes
-
-	for _, attr := range attributes {
-		// First try matching on record struct fields.
-		fieldFound, matched := matchOnRecordField(record, attr)
-
-		if fieldFound {
-			if !matched {
-				return false
-			}
-
-			continue
-		}
-
-		recAttrVal, recAttrFound := recAttrs[attr.Key]
-		if !recAttrFound {
-			return false
-		}
-
-		if attr.Value.Type == "int" {
-			recAttrValInt, ok := recAttrVal.(int)
-			if !ok || int(attr.Value.GetInt()) != recAttrValInt {
-				return false
-			}
-		}
-
-		if attr.Value.Type == "float" {
-			recAttrValFloat, ok := recAttrVal.(float64)
-			if !ok || attr.Value.GetFloat() != recAttrValFloat {
-				return false
-			}
-		}
-
-		if attr.Value.Type == "string" {
-			recAttrValString, ok := recAttrVal.(string)
-			if !ok {
-				return false
-			}
-
-			if attr.Value.GetString_() != recAttrValString {
-				return false
-			}
-		}
-
-		if attr.Value.Type == "boolean" {
-			recAttrValBool, ok := recAttrVal.(bool)
-			if !ok || attr.Value.GetBoolean() != recAttrValBool {
-				return false
-			}
-		}
-
-		if attr.Value.Type == "reference" {
-			obj, ok := recAttrVal.(map[string]interface{})
-			if !ok {
-				// Attr value is not an object.
-				return false
-			}
-
-			if _, ok := obj["/"].(string); !ok {
-				// Attr value is not a reference.
-				return false
-			}
-
-			recAttrValRefID := obj["/"].(string)
-			if recAttrValRefID != attr.Value.GetReference().GetId() {
-				return false
-			}
-		}
-
-		// TODO: Handle arrays.
-	}
-
-	return true
 }

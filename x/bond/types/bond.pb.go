@@ -114,7 +114,7 @@ func (m *Bond) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Bond proto.InternalMessageInfo
 
-func (m *Bond) GetID() string {
+func (m *Bond) GetId() string {
 	if m != nil {
 		return m.Id
 	}

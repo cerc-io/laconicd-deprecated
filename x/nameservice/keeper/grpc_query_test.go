@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/cerc-io/laconicd/x/nameservice/client/cli"
+	"github.com/cerc-io/laconicd/x/nameservice/helpers"
+	"github.com/cerc-io/laconicd/x/nameservice/keeper"
 	nameservicetypes "github.com/cerc-io/laconicd/x/nameservice/types"
 )
 
@@ -34,12 +36,16 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
 	var recordId string
+	examples := []string{
+		"/../helpers/examples/service_provider_example.yml",
+		"/../helpers/examples/website_registration_example.yml",
+	}
 	testCases := []struct {
-		msg          string
-		req          *nameservicetypes.QueryListRecordsRequest
-		createRecord bool
-		expErr       bool
-		noOfRecords  int
+		msg           string
+		req           *nameservicetypes.QueryListRecordsRequest
+		createRecords bool
+		expErr        bool
+		noOfRecords   int
 	}{
 		{
 			"Empty Records",
@@ -53,23 +59,63 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&nameservicetypes.QueryListRecordsRequest{},
 			true,
 			false,
+			2,
+		},
+		{
+			"Filter with type",
+			&nameservicetypes.QueryListRecordsRequest{
+				Attributes: []*nameservicetypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "type",
+						Value: &nameservicetypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "WebsiteRegistrationRecord",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			1,
+		},
+		{
+			"Filter with attributes ServiceProviderRegistration",
+			&nameservicetypes.QueryListRecordsRequest{
+				Attributes: []*nameservicetypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "x500state_name",
+						Value: &nameservicetypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "california",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
 			1,
 		},
 	}
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
-			if test.createRecord {
-				dir, err := os.Getwd()
-				sr.NoError(err)
-				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
-				sr.NoError(err)
-				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetID(),
-					Signer:  suite.accounts[0].String(),
-					Payload: payload.ToPayload(),
-				})
-				sr.NoError(err)
-				sr.NotNil(record.ID)
+			if test.createRecords {
+				for _, example := range examples {
+					dir, err := os.Getwd()
+					sr.NoError(err)
+					payloadType, err := cli.GetPayloadFromFile(fmt.Sprint(dir, example))
+					sr.NoError(err)
+					payload, err := payloadType.ToPayload()
+					sr.NoError(err)
+					record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
+						BondId:  suite.bond.GetId(),
+						Signer:  suite.accounts[0].String(),
+						Payload: payload,
+					})
+					sr.NoError(err)
+					sr.NotNil(record.ID)
+				}
 			}
 			resp, err := grpcClient.ListRecords(context.Background(), test.req)
 			if test.expErr {
@@ -77,10 +123,23 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			} else {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetRecords()))
-				if test.createRecord {
-					recordId = resp.GetRecords()[0].GetID()
+				if test.createRecords {
+					recordId = resp.GetRecords()[0].GetId()
 					sr.NotZero(resp.GetRecords())
-					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetID())
+					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
+
+					for _, record := range resp.GetRecords() {
+						bz, err := nameservicetypes.GetJSONBytesFromAny(*record.Attributes)
+						sr.NoError(err)
+						recAttr := helpers.UnMarshalMapFromJSONBytes(bz)
+						for _, attr := range test.req.GetAttributes() {
+							if attr.Key[:4] == "x500" {
+								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
+							} else {
+								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr[attr.Key])
+							}
+						}
+					}
 				}
 			}
 		})
@@ -120,7 +179,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NoError(err)
 				sr.NotNil(resp.GetRecord())
 				if test.createRecord {
-					sr.Equal(resp.GetRecord().BondId, suite.bond.GetID())
+					sr.Equal(resp.GetRecord().BondId, suite.bond.GetId())
 					sr.Equal(resp.GetRecord().Id, recordId)
 				}
 			}
@@ -145,7 +204,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 		{
 			"With Bond ID",
 			&nameservicetypes.QueryRecordByBondIDRequest{
-				Id: suite.bond.GetID(),
+				Id: suite.bond.GetId(),
 			},
 			true,
 			false,
@@ -162,7 +221,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 				sr.NotNil(resp.GetRecords())
 				if test.createRecord {
 					sr.NotZero(resp.GetRecords())
-					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetID())
+					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
 				}
 			}
 		})
@@ -172,12 +231,16 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 	grpcClient, ctx := suite.queryClient, suite.ctx
 	sr := suite.Require()
+	examples := []string{
+		"/../helpers/examples/service_provider_example.yml",
+		"/../helpers/examples/website_registration_example.yml",
+	}
 	testCases := []struct {
-		msg          string
-		req          *nameservicetypes.GetNameServiceModuleBalanceRequest
-		createRecord bool
-		expErr       bool
-		noOfRecords  int
+		msg           string
+		req           *nameservicetypes.GetNameServiceModuleBalanceRequest
+		createRecords bool
+		expErr        bool
+		noOfRecords   int
 	}{
 		{
 			"Get Module Balance",
@@ -189,18 +252,22 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 	}
 	for _, test := range testCases {
 		suite.Run(fmt.Sprintf("Case %s ", test.msg), func() {
-			if test.createRecord {
+			if test.createRecords {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payload, err := cli.GetPayloadFromFile(dir + "/../helpers/examples/example1.yml")
-				sr.NoError(err)
-				record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
-					BondId:  suite.bond.GetID(),
-					Signer:  suite.accounts[0].String(),
-					Payload: payload.ToPayload(),
-				})
-				sr.NoError(err)
-				sr.NotNil(record.ID)
+				for _, example := range examples {
+					payloadType, err := cli.GetPayloadFromFile(fmt.Sprint(dir, example))
+					sr.NoError(err)
+					payload, err := payloadType.ToPayload()
+					sr.NoError(err)
+					record, err := suite.app.NameServiceKeeper.ProcessSetRecord(ctx, nameservicetypes.MsgSetRecord{
+						BondId:  suite.bond.GetId(),
+						Signer:  suite.accounts[0].String(),
+						Payload: payload,
+					})
+					sr.NoError(err)
+					sr.NotNil(record.ID)
+				}
 			}
 			resp, err := grpcClient.GetNameServiceModuleBalance(context.Background(), test.req)
 			if test.expErr {
@@ -208,7 +275,7 @@ func (suite *KeeperTestSuite) TestGrpcQueryNameserviceModuleBalance() {
 			} else {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetBalances()))
-				if test.createRecord {
+				if test.createRecords {
 					balance := resp.GetBalances()[0]
 					sr.Equal(balance.AccountName, nameservicetypes.RecordRentModuleAccountName)
 				}

@@ -28,11 +28,11 @@ func (q Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.
 
 func (q Querier) GetBondByID(c context.Context, req *types.QueryGetBondByIDRequest) (*types.QueryGetBondByIDResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-	bondID := req.GetID()
+	bondID := req.GetId()
 	if len(bondID) == 0 {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bond id required")
 	}
-	bond := q.Keeper.GetBond(ctx, req.GetID())
+	bond := q.Keeper.GetBond(ctx, req.GetId())
 	return &types.QueryGetBondByIDResponse{Bond: &bond}, nil
 }
 

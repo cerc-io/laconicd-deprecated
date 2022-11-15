@@ -17,7 +17,7 @@ import (
 
 // NewTxCmd returns a root CLI command handler for all x/bond transaction commands.
 func NewTxCmd() *cobra.Command {
-	bondTxCmd := &cobra.Command{
+	nameserviceTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
 		Short:                      "nameservice transaction subcommands",
 		DisableFlagParsing:         true,
@@ -25,7 +25,7 @@ func NewTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	bondTxCmd.AddCommand(
+	nameserviceTxCmd.AddCommand(
 		GetCmdSetRecord(),
 		GetCmdRenewRecord(),
 		GetCmdAssociateBond(),
@@ -38,7 +38,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdDeleteName(),
 	)
 
-	return bondTxCmd
+	return nameserviceTxCmd
 }
 
 // GetCmdSetRecord is the CLI command for creating/updating a record.
@@ -61,12 +61,17 @@ $ %s tx %s set [payload file path] [bond-id]
 				return err
 			}
 
-			payload, err := GetPayloadFromFile(args[0])
+			payloadType, err := GetPayloadFromFile(args[0])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSetRecord(payload.ToPayload(), args[1], clientCtx.GetFromAddress())
+			payload, err := payloadType.ToPayload()
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSetRecord(payload, args[1], clientCtx.GetFromAddress())
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

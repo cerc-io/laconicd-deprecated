@@ -62,7 +62,7 @@ func UnMarshalMapFromJSONBytes(bytes []byte) map[string]interface{} {
 	var val map[string]interface{}
 	err := json.Unmarshal(bytes, &val)
 	if err != nil {
-		panic("Marshal error.")
+		panic("Unmarshal error.")
 	}
 
 	return val

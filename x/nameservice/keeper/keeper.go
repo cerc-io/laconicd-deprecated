@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"time"
@@ -44,6 +45,9 @@ var (
 
 	// PrefixBondIDToAuthoritiesIndex is the prefix for the Bond ID -> [Authority] index.
 	PrefixBondIDToAuthoritiesIndex = []byte{0x06}
+
+	//  PrefixAttributesIndex is the prefix for the nameservice Record.Attribute -> []Record.ID index
+	PrefixAttributesIndex = []byte{0x07}
 
 	// PrefixExpiryTimeToRecordsIndex is the prefix for the Expiry Time -> [Record] index.
 	PrefixExpiryTimeToRecordsIndex = []byte{0x10}
@@ -129,27 +133,80 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 	return records
 }
 
-// MatchRecords - get all matching records.
-func (k Keeper) MatchRecords(ctx sdk.Context, matchFn func(*types.RecordType) bool) []types.Record {
-	var records []types.Record
-
-	store := ctx.KVStore(k.storeKey)
-	itr := sdk.KVStorePrefixIterator(store, PrefixCIDToRecordIndex)
-	defer itr.Close()
-	for ; itr.Valid(); itr.Next() {
-		bz := store.Get(itr.Key())
-		if bz != nil {
-			var obj types.Record
-			k.cdc.MustUnmarshal(bz, &obj)
-			obj = recordObjToRecord(store, obj)
-			record := obj.ToRecordType()
-			if matchFn(&record) {
-				records = append(records, obj)
-			}
+func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
+	resultRecordIds := []string{}
+	for i, attr := range attributes {
+		val := GetAttributeValue(attr.Value)
+		attributeIndex := GetAttributesIndexKey(attr.Key, val)
+		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
+		if err != nil {
+			return nil, err
+		}
+		if i == 0 {
+			resultRecordIds = recordIds
+		} else {
+			resultRecordIds = getIntersection(recordIds, resultRecordIds)
 		}
 	}
 
-	return records
+	records := []types.Record{}
+	for _, id := range resultRecordIds {
+		record := k.GetRecord(ctx, id)
+		if record.Deleted {
+			continue
+		}
+		if !all && len(record.Names) == 0 {
+			continue
+		}
+		records = append(records, record)
+	}
+	return records, nil
+}
+
+func GetAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
+	if input.Type == "int" {
+		return input.GetInt()
+	}
+	if input.Type == "float" {
+		return input.GetFloat()
+	}
+	if input.Type == "string" {
+		return input.GetString_()
+	}
+	if input.Type == "boolean" {
+		return input.GetBoolean()
+	}
+	if input.Type == "reference" {
+		return input.GetReference().GetId()
+	}
+	return nil
+}
+
+func getIntersection(a []string, b []string) []string {
+	result := []string{}
+	if len(a) < len(b) {
+		for _, str := range a {
+			if contains(b, str) {
+				result = append(result, str)
+			}
+		}
+	} else {
+		for _, str := range b {
+			if contains(a, str) {
+				result = append(result, str)
+			}
+		}
+	}
+	return result
+}
+
+func contains(arr []string, str string) bool {
+	for _, s := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }
 
 func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord {
@@ -229,8 +286,17 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	record.ExpiryTime = ctx.BlockHeader().Time.Add(params.RecordRentDuration).Format(time.RFC3339)
 	record.Deleted = false
 
-	k.PutRecord(ctx, record.ToRecordObj())
-	k.InsertRecordExpiryQueue(ctx, record.ToRecordObj())
+	recordObj, err := record.ToRecordObj()
+	if err != nil {
+		return err
+	}
+	k.PutRecord(ctx, recordObj)
+
+	if err := k.ProcessAttributes(ctx, *record); err != nil {
+		return err
+	}
+
+	k.InsertRecordExpiryQueue(ctx, recordObj)
 
 	// Renewal doesn't change the name and bond indexes.
 	if !isRenewal {
@@ -245,6 +311,90 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(GetRecordIndexKey(record.Id), k.cdc.MustMarshal(&record))
 	k.updateBlockChangeSetForRecord(ctx, record.Id)
+}
+
+func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
+	switch record.Attributes["type"] {
+	case "ServiceProviderRegistration":
+		{
+			// #nosec G705
+			for key := range record.Attributes {
+				if key == "x500" {
+					// #nosec G705
+					for x500Key, x500Val := range record.Attributes[key].(map[string]interface{}) {
+						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
+						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
+							return err
+						}
+					}
+				} else {
+					indexKey := GetAttributesIndexKey(key, record.Attributes[key])
+					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
+						return err
+					}
+				}
+			}
+		}
+	case "WebsiteRegistrationRecord":
+		{
+			// #nosec G705
+			for key := range record.Attributes {
+				indexKey := GetAttributesIndexKey(key, record.Attributes[key])
+				if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
+					return err
+				}
+			}
+		}
+	default:
+		return fmt.Errorf("unsupported record type %s", record.Attributes["type"])
+	}
+
+	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
+	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetAttributesIndexKey(key string, value interface{}) []byte {
+	keyString := fmt.Sprintf("%s%s", key, value)
+	return append(PrefixAttributesIndex, []byte(keyString)...)
+}
+
+func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string) error {
+	store := ctx.KVStore(k.storeKey)
+	var recordIds []string
+	if store.Has(key) {
+		err := json.Unmarshal(store.Get(key), &recordIds)
+		if err != nil {
+			return fmt.Errorf("cannot unmarshal byte array, error, %w", err)
+		}
+	} else {
+		recordIds = []string{}
+	}
+	recordIds = append(recordIds, recordID)
+	bz, err := json.Marshal(recordIds)
+	if err != nil {
+		return fmt.Errorf("cannot marshal string array, error, %w", err)
+	}
+	store.Set(key, bz)
+	return nil
+}
+
+func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, error) {
+	store := ctx.KVStore(k.storeKey)
+
+	if !store.Has(key) {
+		return nil, fmt.Errorf("store doesn't have key")
+	}
+
+	var recordIds []string
+	if err := json.Unmarshal(store.Get(key), &recordIds); err != nil {
+		return nil, fmt.Errorf("cannont unmarshal byte array, error, %w", err)
+	}
+
+	return recordIds, nil
 }
 
 // AddBondToRecordIndexEntry adds the Bond ID -> [Record] index entry.
