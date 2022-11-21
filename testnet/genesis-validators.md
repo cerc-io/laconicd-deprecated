@@ -190,7 +190,7 @@ laconicd gentx <key-name> 12900000000000000000000achk \
 
 ## Submit Your gentx
 
-Submit your `gentx` file to the [https://github.com/cerc-io/laconic-testnet]() repository in the following format:
+Submit your `gentx` file to the [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) repository in the following format:
 `<validator-moniker>-gentx.json`
 
 **NOTE:** (Do NOT use spaces in the file name)
