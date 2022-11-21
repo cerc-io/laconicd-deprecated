@@ -1,4 +1,4 @@
 package gql
 
-// NameServiceVersion is the registry API version.
-const NameServiceVersion = "0.3.0"
+// RegistryVersion is the registry API version.
+const RegistryVersion = "0.3.0"

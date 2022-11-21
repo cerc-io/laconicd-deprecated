@@ -1,0 +1,21 @@
+syntax = "proto3";
+package vulcanize.registry.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "vulcanize/registry/v1beta1/registry.proto";
+
+option go_package = "github.com/cerc-io/laconicd/x/registry/types";
+
+// GenesisState defines the registry module's genesis state.
+message GenesisState {
+  // params defines all the params of registry module.
+  Params params = 1 [(gogoproto.nullable) = false];
+  // records
+  repeated Record records = 2
+      [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"records\" yaml:\"records\""];
+  // authorities
+  repeated AuthorityEntry authorities = 3
+      [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"authorities\" yaml:\"authorities\""];
+  // names
+  repeated NameEntry names = 4 [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"names\" yaml:\"names\""];
+}

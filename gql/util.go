@@ -9,7 +9,7 @@ import (
 
 	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
 	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
-	nstypes "github.com/cerc-io/laconicd/x/nameservice/types"
+	registrytypes "github.com/cerc-io/laconicd/x/registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -40,7 +40,7 @@ func getGQLCoins(coins sdk.Coins) []*Coin {
 	return gqlCoins
 }
 
-func GetGQLNameAuthorityRecord(record *nstypes.NameAuthority) (*AuthorityRecord, error) {
+func GetGQLNameAuthorityRecord(record *registrytypes.NameAuthority) (*AuthorityRecord, error) {
 	if record == nil {
 		return nil, nil
 	}
@@ -55,7 +55,7 @@ func GetGQLNameAuthorityRecord(record *nstypes.NameAuthority) (*AuthorityRecord,
 	}, nil
 }
 
-func getGQLRecord(ctx context.Context, resolver QueryResolver, record nstypes.Record) (*Record, error) {
+func getGQLRecord(ctx context.Context, resolver QueryResolver, record registrytypes.Record) (*Record, error) {
 	// Nil record.
 	if record.Deleted {
 		return nil, nil
@@ -84,7 +84,7 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record nstypes.Re
 	}, nil
 }
 
-func getGQLNameRecord(record *nstypes.NameRecord) (*NameRecord, error) {
+func getGQLNameRecord(record *registrytypes.NameRecord) (*NameRecord, error) {
 	if record == nil {
 		return nil, fmt.Errorf("got nil record")
 	}
@@ -100,7 +100,7 @@ func getGQLNameRecord(record *nstypes.NameRecord) (*NameRecord, error) {
 	}, nil
 }
 
-func getNameRecordEntry(record *nstypes.NameRecordEntry) *NameRecordEntry {
+func getNameRecordEntry(record *registrytypes.NameRecordEntry) *NameRecordEntry {
 	return &NameRecordEntry{
 		ID:     record.Id,
 		Height: strconv.FormatUint(record.Height, 10),
@@ -163,7 +163,7 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 	return &gqlAuction, nil
 }
 
-func getReferences(ctx context.Context, resolver QueryResolver, r *nstypes.RecordType) ([]*Record, error) {
+func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes.RecordType) ([]*Record, error) {
 	var ids []string
 
 	// #nosec G705
@@ -184,7 +184,7 @@ func getReferences(ctx context.Context, resolver QueryResolver, r *nstypes.Recor
 	return resolver.GetRecordsByIds(ctx, ids)
 }
 
-func getAttributes(r *nstypes.RecordType) ([]*KeyValue, error) {
+func getAttributes(r *registrytypes.RecordType) ([]*KeyValue, error) {
 	return mapToKeyValuePairs(r.Attributes)
 }
 
@@ -253,13 +253,13 @@ func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
 	return kvPairs, nil
 }
 
-func parseRequestAttributes(attrs []*KeyValueInput) []*nstypes.QueryListRecordsRequest_KeyValueInput {
-	kvPairs := []*nstypes.QueryListRecordsRequest_KeyValueInput{}
+func parseRequestAttributes(attrs []*KeyValueInput) []*registrytypes.QueryListRecordsRequest_KeyValueInput {
+	kvPairs := []*registrytypes.QueryListRecordsRequest_KeyValueInput{}
 
 	for _, value := range attrs {
-		kvPair := &nstypes.QueryListRecordsRequest_KeyValueInput{
+		kvPair := &registrytypes.QueryListRecordsRequest_KeyValueInput{
 			Key:   value.Key,
-			Value: &nstypes.QueryListRecordsRequest_ValueInput{},
+			Value: &registrytypes.QueryListRecordsRequest_ValueInput{},
 		}
 
 		if value.Value.String != nil {
@@ -283,7 +283,7 @@ func parseRequestAttributes(attrs []*KeyValueInput) []*nstypes.QueryListRecordsR
 		}
 
 		if value.Value.Reference != nil {
-			reference := &nstypes.QueryListRecordsRequest_ReferenceInput{
+			reference := &registrytypes.QueryListRecordsRequest_ReferenceInput{
 				Id: value.Value.Reference.ID,
 			}
 

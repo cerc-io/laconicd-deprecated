@@ -121,9 +121,9 @@ import (
 	"github.com/cerc-io/laconicd/x/bond"
 	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
 	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
-	"github.com/cerc-io/laconicd/x/nameservice"
-	nameservicekeeper "github.com/cerc-io/laconicd/x/nameservice/keeper"
-	nameservicetypes "github.com/cerc-io/laconicd/x/nameservice/types"
+	registry "github.com/cerc-io/laconicd/x/registry"
+	registrykeeper "github.com/cerc-io/laconicd/x/registry/keeper"
+	registrytypes "github.com/cerc-io/laconicd/x/registry/types"
 )
 
 func init() {
@@ -172,25 +172,25 @@ var (
 		// Laconic modules
 		auction.AppModuleBasic{},
 		bond.AppModuleBasic{},
-		nameservice.AppModuleBasic{},
+		registry.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName:                      nil,
-		distrtypes.ModuleName:                           nil,
-		minttypes.ModuleName:                            {authtypes.Minter},
-		stakingtypes.BondedPoolName:                     {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName:                  {authtypes.Burner, authtypes.Staking},
-		govtypes.ModuleName:                             {authtypes.Burner},
-		ibctransfertypes.ModuleName:                     {authtypes.Minter, authtypes.Burner},
-		evmtypes.ModuleName:                             {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
-		auctiontypes.ModuleName:                         nil,
-		auctiontypes.AuctionBurnModuleAccountName:       nil,
-		nameservicetypes.ModuleName:                     nil,
-		nameservicetypes.RecordRentModuleAccountName:    nil,
-		nameservicetypes.AuthorityRentModuleAccountName: nil,
-		bondtypes.ModuleName:                            nil,
+		authtypes.FeeCollectorName:                   nil,
+		distrtypes.ModuleName:                        nil,
+		minttypes.ModuleName:                         {authtypes.Minter},
+		stakingtypes.BondedPoolName:                  {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:               {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:                          {authtypes.Burner},
+		ibctransfertypes.ModuleName:                  {authtypes.Minter, authtypes.Burner},
+		evmtypes.ModuleName:                          {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
+		auctiontypes.ModuleName:                      nil,
+		auctiontypes.AuctionBurnModuleAccountName:    nil,
+		registrytypes.ModuleName:                     nil,
+		registrytypes.RecordRentModuleAccountName:    nil,
+		registrytypes.AuthorityRentModuleAccountName: nil,
+		bondtypes.ModuleName:                         nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -248,10 +248,10 @@ type EthermintApp struct {
 	FeeMarketKeeper feemarketkeeper.Keeper
 
 	// laconic keepers
-	AuctionKeeper           auctionkeeper.Keeper
-	BondKeeper              bondkeeper.Keeper
-	NameServiceKeeper       nameservicekeeper.Keeper
-	NameServiceRecordKeeper nameservicekeeper.RecordKeeper
+	AuctionKeeper        auctionkeeper.Keeper
+	BondKeeper           bondkeeper.Keeper
+	RegistryKeeper       registrykeeper.Keeper
+	RegistryRecordKeeper registrykeeper.RecordKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -306,7 +306,7 @@ func NewEthermintApp(
 		// laconic keys
 		auctiontypes.StoreKey,
 		bondtypes.StoreKey,
-		nameservicetypes.StoreKey,
+		registrytypes.StoreKey,
 	)
 
 	// Add the EVM transient store key
@@ -436,19 +436,19 @@ func NewEthermintApp(
 		appCodec, app.GetSubspace(auctiontypes.ModuleName),
 	)
 
-	app.NameServiceRecordKeeper = nameservicekeeper.NewRecordKeeper(app.AuctionKeeper, keys[nameservicetypes.StoreKey], appCodec)
+	app.RegistryRecordKeeper = registrykeeper.NewRecordKeeper(app.AuctionKeeper, keys[registrytypes.StoreKey], appCodec)
 
-	app.AuctionKeeper.SetUsageKeepers([]auctiontypes.AuctionUsageKeeper{app.NameServiceRecordKeeper})
+	app.AuctionKeeper.SetUsageKeepers([]auctiontypes.AuctionUsageKeeper{app.RegistryRecordKeeper})
 
 	app.BondKeeper = bondkeeper.NewKeeper(
 		appCodec, app.AccountKeeper, app.BankKeeper,
-		[]bondtypes.BondUsageKeeper{app.NameServiceRecordKeeper}, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName),
+		[]bondtypes.BondUsageKeeper{app.RegistryRecordKeeper}, keys[bondtypes.StoreKey], app.GetSubspace(bondtypes.ModuleName),
 	)
 
-	app.NameServiceKeeper = nameservicekeeper.NewKeeper(
+	app.RegistryKeeper = registrykeeper.NewKeeper(
 		appCodec, app.AccountKeeper, app.BankKeeper,
-		app.NameServiceRecordKeeper, app.BondKeeper, app.AuctionKeeper,
-		keys[nameservicetypes.StoreKey], app.GetSubspace(nameservicetypes.ModuleName),
+		app.RegistryRecordKeeper, app.BondKeeper, app.AuctionKeeper,
+		keys[registrytypes.StoreKey], app.GetSubspace(registrytypes.ModuleName),
 	)
 
 	// Create IBC Keeper
@@ -539,7 +539,7 @@ func NewEthermintApp(
 		// laconic modules
 		auction.NewAppModule(appCodec, app.AuctionKeeper),
 		bond.NewAppModule(appCodec, app.BondKeeper),
-		nameservice.NewAppModule(app.NameServiceKeeper),
+		registry.NewAppModule(app.RegistryKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -573,7 +573,7 @@ func NewEthermintApp(
 		// laconic modules
 		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
-		nameservicetypes.ModuleName,
+		registrytypes.ModuleName,
 	)
 
 	// NOTE: fee market module must go last in order to retrieve the block gas used.
@@ -602,7 +602,7 @@ func NewEthermintApp(
 		// laconic modules
 		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
-		nameservicetypes.ModuleName,
+		registrytypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -638,7 +638,7 @@ func NewEthermintApp(
 		// laconic modules
 		auctiontypes.ModuleName,
 		bondtypes.ModuleName,
-		nameservicetypes.ModuleName,
+		registrytypes.ModuleName,
 		// NOTE: crisis module must go at the end to check for invariants on each module
 		crisistypes.ModuleName,
 	)
@@ -917,6 +917,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	// laconic subspaces
 	paramsKeeper.Subspace(auctiontypes.ModuleName)
 	paramsKeeper.Subspace(bondtypes.ModuleName)
-	paramsKeeper.Subspace(nameservicetypes.ModuleName)
+	paramsKeeper.Subspace(registrytypes.ModuleName)
 	return paramsKeeper
 }

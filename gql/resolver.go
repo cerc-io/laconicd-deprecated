@@ -7,7 +7,7 @@ import (
 
 	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
 	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
-	nstypes "github.com/cerc-io/laconicd/x/nameservice/types"
+	registrytypes "github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -32,12 +32,12 @@ func (r *Resolver) Query() QueryResolver {
 type queryResolver struct{ *Resolver }
 
 func (q queryResolver) LookupAuthorities(ctx context.Context, names []string) ([]*AuthorityRecord, error) {
-	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	nsQueryClient := registrytypes.NewQueryClient(q.ctx)
 	auctionQueryClient := auctiontypes.NewQueryClient(q.ctx)
 	gqlResponse := []*AuthorityRecord{}
 
 	for _, name := range names {
-		res, err := nsQueryClient.Whois(context.Background(), &nstypes.QueryWhoisRequest{Name: name})
+		res, err := nsQueryClient.Whois(context.Background(), &registrytypes.QueryWhoisRequest{Name: name})
 		if err != nil {
 			return nil, err
 		}
@@ -73,10 +73,10 @@ func (q queryResolver) LookupAuthorities(ctx context.Context, names []string) ([
 }
 
 func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Record, error) {
-	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	nsQueryClient := registrytypes.NewQueryClient(q.ctx)
 	var gqlResponse []*Record
 	for _, name := range names {
-		res, err := nsQueryClient.ResolveCrn(context.Background(), &nstypes.QueryResolveCrn{Crn: name})
+		res, err := nsQueryClient.ResolveCrn(context.Background(), &registrytypes.QueryResolveCrn{Crn: name})
 		if err != nil {
 			// Return nil for record not found.
 			gqlResponse = append(gqlResponse, nil)
@@ -94,11 +94,11 @@ func (q queryResolver) ResolveNames(ctx context.Context, names []string) ([]*Rec
 }
 
 func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*NameRecord, error) {
-	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	nsQueryClient := registrytypes.NewQueryClient(q.ctx)
 	var gqlResponse []*NameRecord
 
 	for _, name := range names {
-		res, err := nsQueryClient.LookupCrn(context.Background(), &nstypes.QueryLookupCrn{Crn: name})
+		res, err := nsQueryClient.LookupCrn(context.Background(), &registrytypes.QueryLookupCrn{Crn: name})
 		if err != nil {
 			// Return nil for name not found.
 			gqlResponse = append(gqlResponse, nil)
@@ -116,11 +116,11 @@ func (q queryResolver) LookupNames(ctx context.Context, names []string) ([]*Name
 }
 
 func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueInput, all *bool) ([]*Record, error) {
-	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	nsQueryClient := registrytypes.NewQueryClient(q.ctx)
 
 	res, err := nsQueryClient.ListRecords(
 		context.Background(),
-		&nstypes.QueryListRecordsRequest{
+		&registrytypes.QueryListRecordsRequest{
 			Attributes: parseRequestAttributes(attributes),
 			All:        (all != nil && *all),
 		},
@@ -144,11 +144,11 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 }
 
 func (q queryResolver) GetRecordsByIds(ctx context.Context, ids []string) ([]*Record, error) {
-	nsQueryClient := nstypes.NewQueryClient(q.ctx)
+	nsQueryClient := registrytypes.NewQueryClient(q.ctx)
 	gqlResponse := make([]*Record, len(ids))
 
 	for i, id := range ids {
-		res, err := nsQueryClient.GetRecord(context.Background(), &nstypes.QueryRecordByIDRequest{Id: id})
+		res, err := nsQueryClient.GetRecord(context.Background(), &registrytypes.QueryRecordByIDRequest{Id: id})
 		if err != nil {
 			// Return nil for record not found.
 			gqlResponse[i] = nil
@@ -186,7 +186,7 @@ func (q queryResolver) GetStatus(ctx context.Context) (*Status, error) {
 	}
 
 	return &Status{
-		Version:    NameServiceVersion,
+		Version:    RegistryVersion,
 		Node:       nodeInfo,
 		Sync:       syncInfo,
 		Validator:  validatorInfo,
