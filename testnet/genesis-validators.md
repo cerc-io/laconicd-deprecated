@@ -48,8 +48,8 @@ sudo apt install git curl build-essential make jq -y
 # Remove any existing installation of `go`
 sudo rm -rf /usr/local/go
 
-# Install Go version 1.17.2
-curl https://dl.google.com/go/go1.17.2.linux-amd64.tar.gz | sudo tar -C/usr/local -zxvf -
+# Install Go version 1.18.8
+curl https://dl.google.com/go/go1.18.8.linux-amd64.tar.gz | sudo tar -C/usr/local -zxvf -
 
 # Update env variables to include go
 cat <<'EOF' >>$HOME/.profile
@@ -108,6 +108,7 @@ There are different commands to initialize a validator and to run a validator no
 See "Docker" section in corresponding chapters.
 It is important to mount a host directory (`~/.laconicd` in this documentation) to `/root/.laconicd` directory inside the container, so all blockchain data, configuration and keys persist between container restarts.
 For running a validator node it is also required to publish container's port 26656 and (optionally) 26660 to the host.
+
 ---
 
 # Initialize Validator Node
@@ -227,7 +228,7 @@ After=network-online.target
 
 [Service]
 User=$USER
-ExecStart=$(which laconicd) start --mode validator --gql-playground --gql-server --log_level=warn
+ExecStart=$(which laconicd) start --gql-playground --gql-server --log_level=warn
 Restart=always
 RestartSec=3
 LimitNOFILE=65535
