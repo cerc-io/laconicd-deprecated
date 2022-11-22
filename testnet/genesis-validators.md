@@ -197,11 +197,11 @@ Submit your `gentx` file to the [https://github.com/cerc-io/laconic-testnet](htt
 
 To submit the gentx file, follow the below process:
 
-- Fork the [https://github.com/cerc-io/laconic-testnet]() repository
+- Fork the [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) repository
 - Upload your gentx file in the `laconic_81337-5/config/gentxs` folder
-- Submit Pull Request to [https://github.com/cerc-io/laconic-testnet]() with name `ADD <your-moniker> gentx`
+- Submit Pull Request to [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) with name `ADD <your-moniker> gentx`
 
-The genesis file will be published in the `laconic_81337-5/config/` folder within the [https://github.com/cerc-io/laconic-testnet]() repository.
+The genesis file will be published in the `laconic_81337-5/config/` folder within the [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) repository.
 
 # CONTINUE WITH BELOW STEPS ONLY AFTER GENESIS FILE HAS BEEN PUBLISHED
 
