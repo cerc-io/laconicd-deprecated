@@ -25,7 +25,7 @@ func errorJSON(msg string) []byte {
 	return buf.Bytes()
 }
 
-func PlaygroundHandler(apiUrl string) http.HandlerFunc {
+func PlaygroundHandler(apiURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			respond(w, errorJSON("only GET requests are supported"), http.StatusMethodNotAllowed)
@@ -33,7 +33,7 @@ func PlaygroundHandler(apiUrl string) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "text/html")
 		err := page.Execute(w, map[string]interface{}{
-			"apiUrl": apiUrl,
+			"apiUrl": apiURL,
 		})
 		if err != nil {
 			panic(err)
@@ -159,7 +159,7 @@ var page = template.Must(template.New("graphiql").Parse(`
         React.createElement(GraphiQL, {
           fetcher: GraphiQL.createFetcher({
             // subscriptionUrl: 'ws://localhost:8081/subscriptions',
-            url: {{.apiUrl}}
+            url: {{.apiURL}}
           }),
           query: parameters.query,
           variables: parameters.variables,
