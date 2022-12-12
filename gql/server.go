@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/go-chi/chi/v5"
@@ -37,13 +36,13 @@ func Server(ctx client.Context) {
 		logFile: logFile,
 	}}))
 
-	router.Handle("/", playground.Handler("GraphQL playground", "/api"))
+	router.Handle("/", PlaygroundHandler("/api"))
 
 	if viper.GetBool("gql-playground") {
 		apiBase := viper.GetString("gql-playground-api-base")
 
-		router.Handle("/webui", playground.Handler("GraphQL playground", apiBase+"/api"))
-		router.Handle("/console", playground.Handler("GraphQL playground", apiBase+"/graphql"))
+		router.Handle("/webui", PlaygroundHandler(apiBase+"/api"))
+		router.Handle("/console", PlaygroundHandler(apiBase+"/graphql"))
 	}
 
 	router.Handle("/api", srv)
