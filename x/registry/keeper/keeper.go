@@ -111,7 +111,7 @@ func (k Keeper) GetRecord(ctx sdk.Context, id string) (record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	result := store.Get(GetRecordIndexKey(id))
 	k.cdc.MustUnmarshal(result, &record)
-	return record
+	return recordObjToRecord(store, record)
 }
 
 // ListRecords - get all records.

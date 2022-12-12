@@ -33,7 +33,7 @@ func PlaygroundHandler(apiURL string) http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "text/html")
 		err := page.Execute(w, map[string]interface{}{
-			"apiUrl": apiURL,
+			"apiURL": apiURL,
 		})
 		if err != nil {
 			panic(err)
