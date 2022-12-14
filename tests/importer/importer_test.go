@@ -52,7 +52,7 @@ func init() {
 type ImporterTestSuite struct {
 	suite.Suite
 
-	app *app.EthermintApp
+	app *app.LaconicApp
 	ctx sdk.Context
 }
 

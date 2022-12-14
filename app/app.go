@@ -199,14 +199,14 @@ var (
 	}
 )
 
-var _ simapp.App = (*EthermintApp)(nil)
+var _ simapp.App = (*LaconicApp)(nil)
 
-// var _ server.Application (*EthermintApp)(nil)
+// var _ server.Application (*LaconicApp)(nil)
 
-// EthermintApp implements an extended ABCI application. It is an application
+// LaconicApp implements an extended ABCI application. It is an application
 // that may process transactions through Ethereum's EVM running atop of
 // Tendermint consensus.
-type EthermintApp struct {
+type LaconicApp struct {
 	*baseapp.BaseApp
 
 	// encoding
@@ -263,8 +263,8 @@ type EthermintApp struct {
 	configurator module.Configurator
 }
 
-// NewEthermintApp returns a reference to a new initialized Ethermint application.
-func NewEthermintApp(
+// NewLaconicApp returns a reference to a new initialized Ethermint application.
+func NewLaconicApp(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
@@ -275,7 +275,7 @@ func NewEthermintApp(
 	encodingConfig simappparams.EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) *EthermintApp {
+) *LaconicApp {
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -313,7 +313,7 @@ func NewEthermintApp(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, evmtypes.TransientKey, feemarkettypes.TransientKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	app := &EthermintApp{
+	app := &LaconicApp{
 		BaseApp:           bApp,
 		cdc:               cdc,
 		appCodec:          appCodec,
@@ -707,7 +707,7 @@ func NewEthermintApp(
 }
 
 // use Ethermint's custom AnteHandler
-func (app *EthermintApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
+func (app *LaconicApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted uint64) {
 	anteHandler, err := ante.NewAnteHandler(ante.HandlerOptions{
 		AccountKeeper:   app.AccountKeeper,
 		BankKeeper:      app.BankKeeper,
@@ -726,7 +726,7 @@ func (app *EthermintApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted u
 	app.SetAnteHandler(anteHandler)
 }
 
-func (app *EthermintApp) setPostHandler() {
+func (app *LaconicApp) setPostHandler() {
 	postHandler, err := posthandler.NewPostHandler(
 		posthandler.HandlerOptions{},
 	)
@@ -738,20 +738,20 @@ func (app *EthermintApp) setPostHandler() {
 }
 
 // Name returns the name of the App
-func (app *EthermintApp) Name() string { return app.BaseApp.Name() }
+func (app *LaconicApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker updates every begin block
-func (app *EthermintApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *LaconicApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
 }
 
 // EndBlocker updates every end block
-func (app *EthermintApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *LaconicApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
 // InitChainer updates at chain initialization
-func (app *EthermintApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *LaconicApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState simapp.GenesisState
 	if err := json.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
@@ -761,12 +761,12 @@ func (app *EthermintApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain)
 }
 
 // LoadHeight loads state at a particular height
-func (app *EthermintApp) LoadHeight(height int64) error {
+func (app *LaconicApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *EthermintApp) ModuleAccountAddrs() map[string]bool {
+func (app *LaconicApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	// #nosec G705
 	for acc := range maccPerms {
@@ -778,7 +778,7 @@ func (app *EthermintApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *EthermintApp) BlockedAddrs() map[string]bool {
+func (app *LaconicApp) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	// #nosec G705
 	for acc := range maccPerms {
@@ -788,64 +788,64 @@ func (app *EthermintApp) BlockedAddrs() map[string]bool {
 	return blockedAddrs
 }
 
-// LegacyAmino returns EthermintApp's amino codec.
+// LegacyAmino returns LaconicApp's amino codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *EthermintApp) LegacyAmino() *codec.LegacyAmino {
+func (app *LaconicApp) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
 
-// AppCodec returns EthermintApp's app codec.
+// AppCodec returns LaconicApp's app codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *EthermintApp) AppCodec() codec.Codec {
+func (app *LaconicApp) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns EthermintApp's InterfaceRegistry
-func (app *EthermintApp) InterfaceRegistry() types.InterfaceRegistry {
+// InterfaceRegistry returns LaconicApp's InterfaceRegistry
+func (app *LaconicApp) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *EthermintApp) GetKey(storeKey string) *storetypes.KVStoreKey {
+func (app *LaconicApp) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *EthermintApp) GetTKey(storeKey string) *storetypes.TransientStoreKey {
+func (app *LaconicApp) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *EthermintApp) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
+func (app *LaconicApp) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
 // GetSubspace returns a param subspace for a given module name.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *EthermintApp) GetSubspace(moduleName string) paramstypes.Subspace {
+func (app *LaconicApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *EthermintApp) SimulationManager() *module.SimulationManager {
+func (app *LaconicApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *EthermintApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (app *LaconicApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
@@ -862,12 +862,12 @@ func (app *EthermintApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
-func (app *EthermintApp) RegisterTxService(clientCtx client.Context) {
+func (app *LaconicApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
-func (app *EthermintApp) RegisterTendermintService(clientCtx client.Context) {
+func (app *LaconicApp) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(
 		clientCtx,
 		app.BaseApp.GRPCQueryRouter(),

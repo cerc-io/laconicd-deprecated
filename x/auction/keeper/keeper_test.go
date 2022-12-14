@@ -16,13 +16,13 @@ import (
 
 type KeeperTestSuite struct {
 	suite.Suite
-	app         *app.EthermintApp
+	app         *app.LaconicApp
 	ctx         sdk.Context
 	queryClient types.QueryClient
 }
 
 func (suite *KeeperTestSuite) SetupTest() {
-	testApp := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	testApp := app.Setup(false, func(ea *app.LaconicApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})
@@ -37,7 +37,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 }
 
 func TestParams(t *testing.T) {
-	testApp := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	testApp := app.Setup(false, func(ea *app.LaconicApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := testApp.BaseApp.NewContext(false, tmproto.Header{})

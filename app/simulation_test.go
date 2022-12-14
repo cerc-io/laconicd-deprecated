@@ -64,9 +64,9 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 }
 
 // NewSimApp disable feemarket on native tx, otherwise the cosmos-sdk simulation tests will fail.
-func NewSimApp(logger log.Logger, db dbm.DB) (*EthermintApp, error) {
+func NewSimApp(logger log.Logger, db dbm.DB) (*LaconicApp, error) {
 	encodingConfig := MakeEncodingConfig()
-	app := NewEthermintApp(logger, db, nil, false, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, encodingConfig, simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
+	app := NewLaconicApp(logger, db, nil, false, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, encodingConfig, simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	// disable feemarket on native tx
 	anteHandler, err := ante.NewAnteHandler(ante.HandlerOptions{
 		AccountKeeper:   app.AccountKeeper,

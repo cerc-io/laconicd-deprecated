@@ -11,7 +11,7 @@ import (
 )
 
 func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {
-	app := app.Setup(false, func(ea *app.EthermintApp, genesis simapp.GenesisState) simapp.GenesisState {
+	app := app.Setup(false, func(ea *app.LaconicApp, genesis simapp.GenesisState) simapp.GenesisState {
 		return genesis
 	})
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})

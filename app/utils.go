@@ -34,7 +34,7 @@ import (
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
-// EthermintApp testing.
+// LaconicApp testing.
 var DefaultConsensusParams = &abci.ConsensusParams{
 	Block: &abci.BlockParams{
 		MaxBytes: 200000,
@@ -52,14 +52,14 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
-// Setup initializes a new EthermintApp. A Nop logger is set in EthermintApp.
-func Setup(isCheckTx bool, patchGenesis func(*EthermintApp, simapp.GenesisState) simapp.GenesisState) *EthermintApp {
+// Setup initializes a new LaconicApp. A Nop logger is set in LaconicApp.
+func Setup(isCheckTx bool, patchGenesis func(*LaconicApp, simapp.GenesisState) simapp.GenesisState) *LaconicApp {
 	return SetupWithDB(isCheckTx, patchGenesis, dbm.NewMemDB())
 }
 
-// SetupWithDB initializes a new EthermintApp. A Nop logger is set in EthermintApp.
-func SetupWithDB(isCheckTx bool, patchGenesis func(*EthermintApp, simapp.GenesisState) simapp.GenesisState, db dbm.DB) *EthermintApp {
-	app := NewEthermintApp(log.NewNopLogger(),
+// SetupWithDB initializes a new LaconicApp. A Nop logger is set in LaconicApp.
+func SetupWithDB(isCheckTx bool, patchGenesis func(*LaconicApp, simapp.GenesisState) simapp.GenesisState, db dbm.DB) *LaconicApp {
+	app := NewLaconicApp(log.NewNopLogger(),
 		db,
 		nil,
 		true,
