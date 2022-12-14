@@ -24,7 +24,7 @@ import (
 
 // Testing Constants
 var (
-	chainId = "ethermint_9000-1"
+	chainId = "laconic_9000-1"
 	ctx     = client.Context{}.WithTxConfig(
 		encoding.MakeConfig(app.ModuleBasics).TxConfig,
 	)

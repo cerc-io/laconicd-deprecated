@@ -9,9 +9,9 @@ $ make build
 
 ```bash
 ./build/laconicd keys add root
-./build/laconicd init test-moniker --chain-id ethermint_9000-1
+./build/laconicd init test-moniker --chain-id laconic_9000-1
 ./build/laconicd add-genesis-account $(./build/laconicd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
-./build/laconicd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
+./build/laconicd gentx root 1000000000000000000stake --chain-id laconic_9000-1
 ./build/laconicd collect-gentxs
 ./build/laconicd start
 ```

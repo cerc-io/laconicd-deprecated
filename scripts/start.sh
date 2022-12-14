@@ -15,7 +15,7 @@ IP_ADDR="0.0.0.0"
 MODE="rpc"
 
 KEY="mykey"
-CHAINID="ethermint_9000-1"
+CHAINID="laconic_9000-1"
 MONIKER="mymoniker"
 
 ## default port prefixes for laconicd
@@ -47,14 +47,14 @@ done
 
 set -euxo pipefail
 
-DATA_DIR=$(mktemp -d -t ethermint_9000-datadir.XXXXX)
+DATA_DIR=$(mktemp -d -t laconic_9000-datadir.XXXXX)
 
 if [[ ! "$DATA_DIR" ]]; then
     echo "Could not create $DATA_DIR"
     exit 1
 fi
 
-DATA_CLI_DIR=$(mktemp -d -t ethermint_9000-cli-datadir.XXXXX)
+DATA_CLI_DIR=$(mktemp -d -t laconic_9000-cli-datadir.XXXXX)
 
 if [[ ! "$DATA_CLI_DIR" ]]; then
     echo "Could not create $DATA_CLI_DIR"
