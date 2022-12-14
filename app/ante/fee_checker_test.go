@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cerc-io/laconicd/encoding"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -172,7 +172,7 @@ func TestSDKTxFeeChecker(t *testing.T) {
 				txBuilder.SetGasLimit(1)
 				txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("aphoton", sdk.NewInt(10).Mul(types.DefaultPriorityReduction))))
 
-				option, err := codectypes.NewAnyWithValue(&ethermint.ExtensionOptionDynamicFeeTx{})
+				option, err := codectypes.NewAnyWithValue(&laconicd.ExtensionOptionDynamicFeeTx{})
 				require.NoError(t, err)
 				txBuilder.SetExtensionOptions(option)
 				return txBuilder.GetTx()
@@ -192,7 +192,7 @@ func TestSDKTxFeeChecker(t *testing.T) {
 				txBuilder.SetGasLimit(1)
 				txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("aphoton", sdk.NewInt(10).Mul(types.DefaultPriorityReduction).Add(sdk.NewInt(10)))))
 
-				option, err := codectypes.NewAnyWithValue(&ethermint.ExtensionOptionDynamicFeeTx{
+				option, err := codectypes.NewAnyWithValue(&laconicd.ExtensionOptionDynamicFeeTx{
 					MaxPriorityPrice: sdk.NewInt(5).Mul(types.DefaultPriorityReduction),
 				})
 				require.NoError(t, err)

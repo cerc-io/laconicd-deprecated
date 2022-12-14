@@ -15,7 +15,7 @@ import (
 
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
 	"github.com/cerc-io/laconicd/ethereum/eip712"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	ethcrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/secp256k1"
@@ -25,7 +25,7 @@ var ethermintCodec codec.ProtoCodecMarshaler
 
 func init() {
 	registry := codectypes.NewInterfaceRegistry()
-	ethermint.RegisterInterfaces(registry)
+	laconicd.RegisterInterfaces(registry)
 	ethermintCodec = codec.NewProtoCodec(registry)
 }
 
@@ -178,7 +178,7 @@ func VerifySignature(
 			msgs, tx.GetMemo(), tx.GetTip(),
 		)
 
-		signerChainID, err := ethermint.ParseChainID(signerData.ChainID)
+		signerChainID, err := laconicd.ParseChainID(signerData.ChainID)
 		if err != nil {
 			return sdkerrors.Wrapf(err, "failed to parse chainID: %s", signerData.ChainID)
 		}
@@ -192,7 +192,7 @@ func VerifySignature(
 			return sdkerrors.Wrap(sdkerrors.ErrUnknownExtensionOptions, "tx doesnt contain expected amount of extension options")
 		}
 
-		extOpt, ok := opts[0].GetCachedValue().(*ethermint.ExtensionOptionsWeb3Tx)
+		extOpt, ok := opts[0].GetCachedValue().(*laconicd.ExtensionOptionsWeb3Tx)
 		if !ok {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidChainID, "unknown extension option")
 		}

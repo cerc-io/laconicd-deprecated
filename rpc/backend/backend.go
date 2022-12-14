@@ -8,7 +8,7 @@ import (
 	"github.com/cerc-io/laconicd/crypto/hd"
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cerc-io/laconicd/server/config"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -103,8 +103,8 @@ type EVMBackend interface {
 
 	// Tx Info
 	GetTransactionByHash(txHash common.Hash) (*rpctypes.RPCTransaction, error)
-	GetTxByEthHash(txHash common.Hash) (*ethermint.TxResult, error)
-	GetTxByTxIndex(height int64, txIndex uint) (*ethermint.TxResult, error)
+	GetTxByEthHash(txHash common.Hash) (*laconicd.TxResult, error)
+	GetTxByTxIndex(height int64, txIndex uint) (*laconicd.TxResult, error)
 	GetTransactionByBlockAndIndex(block *tmrpctypes.ResultBlock, idx hexutil.Uint) (*rpctypes.RPCTransaction, error)
 	GetTransactionReceipt(hash common.Hash) (map[string]interface{}, error)
 	GetTransactionByBlockHashAndIndex(hash common.Hash, idx hexutil.Uint) (*rpctypes.RPCTransaction, error)
@@ -141,7 +141,7 @@ type Backend struct {
 	chainID             *big.Int
 	cfg                 config.Config
 	allowUnprotectedTxs bool
-	indexer             ethermint.EVMTxIndexer
+	indexer             laconicd.EVMTxIndexer
 }
 
 // NewBackend creates a new Backend instance for cosmos and ethereum namespaces
@@ -150,9 +150,9 @@ func NewBackend(
 	logger log.Logger,
 	clientCtx client.Context,
 	allowUnprotectedTxs bool,
-	indexer ethermint.EVMTxIndexer,
+	indexer laconicd.EVMTxIndexer,
 ) *Backend {
-	chainID, err := ethermint.ParseChainID(clientCtx.ChainID)
+	chainID, err := laconicd.ParseChainID(clientCtx.ChainID)
 	if err != nil {
 		panic(err)
 	}

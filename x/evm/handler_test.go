@@ -33,7 +33,7 @@ import (
 	"github.com/cerc-io/laconicd/app"
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
 	"github.com/cerc-io/laconicd/tests"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	"github.com/cerc-io/laconicd/x/evm/types"
@@ -147,7 +147,7 @@ func (suite *EvmTestSuite) DoSetupTest(t require.TestingT) {
 	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, suite.app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
 
-	acc := &ethermint.EthAccount{
+	acc := &laconicd.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(address.Bytes()), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}

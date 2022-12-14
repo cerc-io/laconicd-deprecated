@@ -17,7 +17,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cerc-io/laconicd/encoding"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
@@ -102,7 +102,7 @@ func RandomGenesisAccounts(simState *module.SimulationState) authtypes.GenesisAc
 	for i, acc := range simState.Accounts {
 		bacc := authtypes.NewBaseAccountWithAddress(acc.Address)
 
-		ethacc := &ethermint.EthAccount{
+		ethacc := &laconicd.EthAccount{
 			BaseAccount: bacc,
 			CodeHash:    common.BytesToHash(emptyCodeHash).String(),
 		}

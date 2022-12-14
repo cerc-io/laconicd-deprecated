@@ -14,7 +14,7 @@ import (
 
 	cryptocodec "github.com/cerc-io/laconicd/crypto/codec"
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
-	ethermintcodec "github.com/cerc-io/laconicd/encoding/codec"
+	laconicdcodec "github.com/cerc-io/laconicd/encoding/codec"
 	"github.com/cerc-io/laconicd/types"
 )
 
@@ -42,7 +42,7 @@ func (suite *AccountTestSuite) SetupTest() {
 	}
 
 	interfaceRegistry := codectypes.NewInterfaceRegistry()
-	ethermintcodec.RegisterInterfaces(interfaceRegistry)
+	laconicdcodec.RegisterInterfaces(interfaceRegistry)
 	suite.cdc = codec.NewProtoCodec(interfaceRegistry)
 }
 

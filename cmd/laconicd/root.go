@@ -33,14 +33,14 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
 	"github.com/cerc-io/laconicd/app"
-	ethermintclient "github.com/cerc-io/laconicd/client"
+	laconicdclient "github.com/cerc-io/laconicd/client"
 	"github.com/cerc-io/laconicd/client/debug"
 	"github.com/cerc-io/laconicd/crypto/hd"
 	"github.com/cerc-io/laconicd/encoding"
 	"github.com/cerc-io/laconicd/server"
 	servercfg "github.com/cerc-io/laconicd/server/config"
 	srvflags "github.com/cerc-io/laconicd/server/flags"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 )
 
 const EnvPrefix = "ETHERMINT"
@@ -63,7 +63,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	rootCmd := &cobra.Command{
 		Use:   "laconicd",
-		Short: "Ethermint Daemon",
+		Short: "Laconic Daemon",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -84,7 +84,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			}
 
 			// FIXME: replace AttoPhoton with bond denom
-			customAppTemplate, customAppConfig := servercfg.AppConfig(ethermint.AttoPhoton)
+			customAppTemplate, customAppConfig := servercfg.AppConfig(laconicd.AttoPhoton)
 
 			return sdkserver.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, tmcfg.DefaultConfig())
 		},
@@ -97,7 +97,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	cfg.Seal()
 
 	rootCmd.AddCommand(
-		ethermintclient.ValidateChainID(
+		laconicdclient.ValidateChainID(
 			genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
 		),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
@@ -106,7 +106,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		ethermintclient.NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
+		laconicdclient.NewTestnetCmd(app.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
 		config.Cmd(),
 	)
@@ -119,7 +119,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		ethermintclient.KeyCommands(app.DefaultNodeHome),
+		laconicdclient.KeyCommands(app.DefaultNodeHome),
 	)
 
 	rootCmd, err := srvflags.AddTxFlags(rootCmd)

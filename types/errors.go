@@ -6,7 +6,7 @@ import (
 
 const (
 	// RootCodespace is the codespace for all errors defined in this package
-	RootCodespace = "ethermint"
+	RootCodespace = "laconicd"
 )
 
 // NOTE: We can't use 1 since that error code is reserved for internal errors.

@@ -17,7 +17,7 @@ import (
 
 	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 )
 
 // BlockNumber represents decoding hex string to block values
@@ -182,7 +182,7 @@ func (bnh *BlockNumberOrHash) decodeFromString(input string) error {
 			return err
 		}
 
-		bnInt, err := ethermint.SafeInt64(blockNumber)
+		bnInt, err := laconicd.SafeInt64(blockNumber)
 		if err != nil {
 			return err
 		}

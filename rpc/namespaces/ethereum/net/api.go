@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
@@ -18,7 +18,7 @@ type PublicAPI struct {
 // NewPublicAPI creates an instance of the public Net Web3 API.
 func NewPublicAPI(clientCtx client.Context) *PublicAPI {
 	// parse the chainID from a integer string
-	chainIDEpoch, err := ethermint.ParseChainID(clientCtx.ChainID)
+	chainIDEpoch, err := laconicd.ParseChainID(clientCtx.ChainID)
 	if err != nil {
 		panic(err)
 	}

@@ -17,7 +17,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,7 +40,7 @@ func TestRandomGenesisAccounts(t *testing.T) {
 	subSpace, find := paramsKeeper.GetSubspace(authtypes.ModuleName)
 	require.True(t, find)
 	accountKeeper := authkeeper.NewAccountKeeper(
-		appCodec, sdk.NewKVStoreKey(authtypes.StoreKey), subSpace, ethermint.ProtoAccount, maccPerms, sdk.GetConfig().GetBech32AccountAddrPrefix(),
+		appCodec, sdk.NewKVStoreKey(authtypes.StoreKey), subSpace, laconicd.ProtoAccount, maccPerms, sdk.GetConfig().GetBech32AccountAddrPrefix(),
 	)
 	authModule := auth.NewAppModule(appCodec, accountKeeper, RandomGenesisAccounts)
 
@@ -56,7 +56,7 @@ func TestRandomGenesisAccounts(t *testing.T) {
 	accounts, err := authtypes.UnpackAccounts(authState.Accounts)
 	require.NoError(t, err)
 	for _, acc := range accounts {
-		_, ok := acc.(ethermint.EthAccountI)
+		_, ok := acc.(laconicd.EthAccountI)
 		require.True(t, ok)
 	}
 }

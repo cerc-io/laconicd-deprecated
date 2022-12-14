@@ -3,12 +3,12 @@ package types
 import (
 	"fmt"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 )
 
 // Validate performs a basic validation of a GenesisAccount fields.
 func (ga GenesisAccount) Validate() error {
-	if err := ethermint.ValidateAddress(ga.Address); err != nil {
+	if err := laconicd.ValidateAddress(ga.Address); err != nil {
 		return err
 	}
 	return ga.Storage.Validate()

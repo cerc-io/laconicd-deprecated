@@ -16,7 +16,7 @@ import (
 	"github.com/cerc-io/laconicd/rpc/backend"
 
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 )
 
@@ -293,7 +293,7 @@ func (e *PublicAPI) Call(args evmtypes.TransactionArgs,
 // ProtocolVersion returns the supported Ethereum protocol version.
 func (e *PublicAPI) ProtocolVersion() hexutil.Uint {
 	e.logger.Debug("eth_protocolVersion")
-	return hexutil.Uint(ethermint.ProtocolVersion)
+	return hexutil.Uint(laconicd.ProtocolVersion)
 }
 
 // GasPrice returns the current gas price based on Ethermint's gas price oracle.

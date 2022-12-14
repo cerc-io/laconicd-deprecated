@@ -48,7 +48,7 @@ import (
 	ethdebug "github.com/cerc-io/laconicd/rpc/namespaces/ethereum/debug"
 	"github.com/cerc-io/laconicd/server/config"
 	srvflags "github.com/cerc-io/laconicd/server/flags"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 )
 
 // StartCmd runs the service passed in, either stand-alone or in-process with
@@ -341,7 +341,7 @@ func startInProcess(ctx *server.Context, clientCtx client.Context, appCreator ty
 		app.RegisterTendermintService(clientCtx)
 	}
 
-	var idxer ethermint.EVMTxIndexer
+	var idxer laconicd.EVMTxIndexer
 	if config.JSONRPC.EnableIndexer {
 		idxDB, err := OpenIndexerDB(home, server.GetAppDBBackend(ctx.Viper))
 		if err != nil {

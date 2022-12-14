@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/tendermint/tendermint/libs/log"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	"github.com/cerc-io/laconicd/x/evm/types"
 	evm "github.com/cerc-io/laconicd/x/evm/vm"
@@ -109,7 +109,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // WithChainID sets the chain id to the local variable in the keeper
 func (k *Keeper) WithChainID(ctx sdk.Context) {
-	chainID, err := ethermint.ParseChainID(ctx.ChainID())
+	chainID, err := laconicd.ParseChainID(ctx.ChainID())
 	if err != nil {
 		panic(err)
 	}
@@ -258,7 +258,7 @@ func (k *Keeper) GetAccountWithoutBalance(ctx sdk.Context, addr common.Address) 
 	}
 
 	codeHash := types.EmptyCodeHash
-	ethAcct, ok := acct.(ethermint.EthAccountI)
+	ethAcct, ok := acct.(laconicd.EthAccountI)
 	if ok {
 		codeHash = ethAcct.GetCodeHash().Bytes()
 	}

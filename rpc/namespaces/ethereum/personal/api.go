@@ -9,7 +9,7 @@ import (
 	"github.com/cerc-io/laconicd/rpc/backend"
 
 	"github.com/cerc-io/laconicd/crypto/hd"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -28,7 +28,7 @@ import (
 type PrivateAccountAPI struct {
 	backend    backend.EVMBackend
 	logger     log.Logger
-	hdPathIter ethermint.HDPathIterator
+	hdPathIter laconicd.HDPathIterator
 }
 
 // NewAPI creates an instance of the public Personal Eth API.
@@ -39,7 +39,7 @@ func NewAPI(
 	cfg := sdk.GetConfig()
 	basePath := cfg.GetFullBIP44Path()
 
-	iterator, err := ethermint.NewHDPathIterator(basePath, true)
+	iterator, err := laconicd.NewHDPathIterator(basePath, true)
 	if err != nil {
 		panic(err)
 	}

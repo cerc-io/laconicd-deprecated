@@ -102,7 +102,7 @@ import (
 
 	"github.com/cerc-io/laconicd/app/ante"
 	srvflags "github.com/cerc-io/laconicd/server/flags"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm"
 	evmkeeper "github.com/cerc-io/laconicd/x/evm/keeper"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
@@ -343,7 +343,7 @@ func NewEthermintApp(
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec, keys[authtypes.StoreKey],
 		app.GetSubspace(authtypes.ModuleName),
-		ethermint.ProtoAccount,
+		laconicd.ProtoAccount,
 		maccPerms,
 		sdk.GetConfig().GetBech32AccountAddrPrefix(),
 	)

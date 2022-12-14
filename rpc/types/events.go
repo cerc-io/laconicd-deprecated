@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -137,7 +137,7 @@ func ParseTxResult(result *abci.ResponseDeliverTx, tx sdk.Tx) (*ParsedTxs, error
 }
 
 // ParseTxIndexerResult parse tm tx result to a format compatible with the custom tx indexer.
-func ParseTxIndexerResult(txResult *tmrpctypes.ResultTx, tx sdk.Tx, getter func(*ParsedTxs) *ParsedTx) (*ethermint.TxResult, error) {
+func ParseTxIndexerResult(txResult *tmrpctypes.ResultTx, tx sdk.Tx, getter func(*ParsedTxs) *ParsedTx) (*laconicd.TxResult, error) {
 	txs, err := ParseTxResult(&txResult.TxResult, tx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse tx events: block %d, index %d, %v", txResult.Height, txResult.Index, err)
@@ -148,7 +148,7 @@ func ParseTxIndexerResult(txResult *tmrpctypes.ResultTx, tx sdk.Tx, getter func(
 		return nil, fmt.Errorf("ethereum tx not found in msgs: block %d, index %d", txResult.Height, txResult.Index)
 	}
 
-	return &ethermint.TxResult{
+	return &laconicd.TxResult{
 		Height:            txResult.Height,
 		TxIndex:           txResult.Index,
 		MsgIndex:          uint32(parsedTx.MsgIndex),

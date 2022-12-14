@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -134,7 +134,7 @@ func callWithError(method string, params interface{}) (*Response, error) {
 }
 
 func TestEth_protocolVersion(t *testing.T) {
-	expectedRes := hexutil.Uint(ethermint.ProtocolVersion)
+	expectedRes := hexutil.Uint(laconicd.ProtocolVersion)
 
 	rpcRes := call(t, "eth_protocolVersion", []string{})
 

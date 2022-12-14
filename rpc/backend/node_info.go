@@ -9,7 +9,7 @@ import (
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cerc-io/laconicd/server/config"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -326,13 +326,13 @@ func (b *Backend) RPCBlockRangeCap() int32 {
 func (b *Backend) RPCMinGasPrice() int64 {
 	evmParams, err := b.queryClient.Params(b.ctx, &evmtypes.QueryParamsRequest{})
 	if err != nil {
-		return ethermint.DefaultGasPrice
+		return laconicd.DefaultGasPrice
 	}
 
 	minGasPrice := b.cfg.GetMinGasPrices()
 	amt := minGasPrice.AmountOf(evmParams.Params.EvmDenom).TruncateInt64()
 	if amt == 0 {
-		return ethermint.DefaultGasPrice
+		return laconicd.DefaultGasPrice
 	}
 
 	return amt

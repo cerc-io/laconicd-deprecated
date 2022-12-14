@@ -19,7 +19,7 @@ import (
 
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
 	"github.com/cerc-io/laconicd/server/config"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/types"
 )
 
@@ -54,7 +54,7 @@ func (suite *KeeperTestSuite) TestQueryAccount() {
 		{
 			"success",
 			func() {
-				amt := sdk.Coins{ethermint.NewPhotonCoinInt64(100)}
+				amt := sdk.Coins{laconicd.NewPhotonCoinInt64(100)}
 				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
 				suite.Require().NoError(err)
 				err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)
@@ -195,7 +195,7 @@ func (suite *KeeperTestSuite) TestQueryBalance() {
 		{
 			"success",
 			func() {
-				amt := sdk.Coins{ethermint.NewPhotonCoinInt64(100)}
+				amt := sdk.Coins{laconicd.NewPhotonCoinInt64(100)}
 				err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
 				suite.Require().NoError(err)
 				err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)

@@ -8,7 +8,7 @@ import (
 	"math/big"
 
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -35,7 +35,7 @@ func (b *Backend) Resend(args evmtypes.TransactionArgs, gasPrice *hexutil.Big, g
 
 	// The signer used should always be the 'latest' known one because we expect
 	// signers to be backwards-compatible with old transactions.
-	eip155ChainID, err := ethermint.ParseChainID(b.clientCtx.ChainID)
+	eip155ChainID, err := laconicd.ParseChainID(b.clientCtx.ChainID)
 	if err != nil {
 		return common.Hash{}, err
 	}

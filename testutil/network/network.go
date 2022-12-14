@@ -52,7 +52,7 @@ import (
 	"github.com/cerc-io/laconicd/crypto/hd"
 	"github.com/cerc-io/laconicd/encoding"
 	"github.com/cerc-io/laconicd/server/config"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	"github.com/cerc-io/laconicd/app"
@@ -122,13 +122,13 @@ func DefaultConfig() Config {
 		AppConstructor:    NewAppConstructor(encCfg),
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Codec),
 		TimeoutCommit:     2 * time.Second,
-		ChainID:           fmt.Sprintf("ethermint_%d-1", tmrand.Int63n(9999999999999)+1),
+		ChainID:           fmt.Sprintf("laconic_%d-1", tmrand.Int63n(9999999999999)+1),
 		NumValidators:     4,
-		BondDenom:         ethermint.AttoPhoton,
-		MinGasPrices:      fmt.Sprintf("0.000006%s", ethermint.AttoPhoton),
-		AccountTokens:     sdk.TokensFromConsensusPower(1000, ethermint.PowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(500, ethermint.PowerReduction),
-		BondedTokens:      sdk.TokensFromConsensusPower(100, ethermint.PowerReduction),
+		BondDenom:         laconicd.AttoPhoton,
+		MinGasPrices:      fmt.Sprintf("0.000006%s", laconicd.AttoPhoton),
+		AccountTokens:     sdk.TokensFromConsensusPower(1000, laconicd.PowerReduction),
+		StakingTokens:     sdk.TokensFromConsensusPower(500, laconicd.PowerReduction),
+		BondedTokens:      sdk.TokensFromConsensusPower(100, laconicd.PowerReduction),
 		PruningStrategy:   pruningtypes.PruningOptionNothing,
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.EthSecp256k1Type),
@@ -218,7 +218,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 	l.Log("acquiring test network lock")
 	lock.Lock()
 
-	if !ethermint.IsValidChainID(cfg.ChainID) {
+	if !laconicd.IsValidChainID(cfg.ChainID) {
 		return nil, fmt.Errorf("invalid chain-id: %s", cfg.ChainID)
 	}
 
@@ -412,7 +412,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 
 		genFiles = append(genFiles, tmCfg.GenesisFile())
 		genBalances = append(genBalances, banktypes.Balance{Address: addr.String(), Coins: balances.Sort()})
-		genAccounts = append(genAccounts, &ethermint.EthAccount{
+		genAccounts = append(genAccounts, &laconicd.EthAccount{
 			BaseAccount: authtypes.NewBaseAccount(addr, nil, 0, 0),
 			CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 		})
@@ -470,7 +470,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			return nil, err
 		}
 
-		customAppTemplate, _ := config.AppConfig(ethermint.AttoPhoton)
+		customAppTemplate, _ := config.AppConfig(laconicd.AttoPhoton)
 		srvconfig.SetConfigTemplate(customAppTemplate)
 		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config/app.toml"), appCfg)
 

@@ -31,7 +31,7 @@ import (
 
 	"github.com/cerc-io/laconicd/server/config"
 	"github.com/cerc-io/laconicd/testutil/network"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 )
 
 // var _ = Describe("E2e", func() {
@@ -84,7 +84,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.rpcClient = rpcClient
 	s.gethClient = gethclient.New(rpcClient)
 	s.Require().NotNil(s.gethClient)
-	chainId, err := ethermint.ParseChainID(s.cfg.ChainID)
+	chainId, err := laconicd.ParseChainID(s.cfg.ChainID)
 	s.Require().NoError(err)
 	s.ethSigner = ethtypes.LatestSignerForChainID(chainId)
 }
@@ -99,9 +99,9 @@ func (s *IntegrationTestSuite) TestChainID() {
 
 	s.T().Log(chainID.Int64())
 
-	eip155ChainID, err := ethermint.ParseChainID(s.network.Config.ChainID)
+	eip155ChainID, err := laconicd.ParseChainID(s.network.Config.ChainID)
 	s.Require().NoError(err)
-	eip155ChainIDGen, err := ethermint.ParseChainID(genesisRes.Genesis.ChainID)
+	eip155ChainIDGen, err := laconicd.ParseChainID(genesisRes.Genesis.ChainID)
 	s.Require().NoError(err)
 
 	s.Require().Equal(chainID, eip155ChainID)

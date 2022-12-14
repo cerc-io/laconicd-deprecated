@@ -11,7 +11,7 @@ import (
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/ethereum/go-ethereum/common"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
@@ -20,7 +20,7 @@ func SetupContract(b *testing.B) (*KeeperTestSuite, common.Address) {
 	suite := KeeperTestSuite{}
 	suite.SetupTest()
 
-	amt := sdk.Coins{ethermint.NewPhotonCoinInt64(1000000000000000000)}
+	amt := sdk.Coins{laconicd.NewPhotonCoinInt64(1000000000000000000)}
 	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
 	require.NoError(b, err)
 	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)
@@ -36,7 +36,7 @@ func SetupTestMessageCall(b *testing.B) (*KeeperTestSuite, common.Address) {
 	suite := KeeperTestSuite{}
 	suite.SetupTest()
 
-	amt := sdk.Coins{ethermint.NewPhotonCoinInt64(1000000000000000000)}
+	amt := sdk.Coins{laconicd.NewPhotonCoinInt64(1000000000000000000)}
 	err := suite.app.BankKeeper.MintCoins(suite.ctx, types.ModuleName, amt)
 	require.NoError(b, err)
 	err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, types.ModuleName, suite.address.Bytes(), amt)

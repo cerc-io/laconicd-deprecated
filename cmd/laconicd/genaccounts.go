@@ -19,7 +19,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
 	"github.com/cerc-io/laconicd/crypto/hd"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 )
 
@@ -114,7 +114,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 					return errors.New("invalid vesting parameters; must supply start and end time or end time")
 				}
 			} else {
-				genAccount = &ethermint.EthAccount{
+				genAccount = &laconicd.EthAccount{
 					BaseAccount: baseAccount,
 					CodeHash:    common.BytesToHash(evmtypes.EmptyCodeHash).Hex(),
 				}

@@ -32,7 +32,7 @@ import (
 	"github.com/cerc-io/laconicd/encoding"
 	"github.com/cerc-io/laconicd/server/config"
 	"github.com/cerc-io/laconicd/tests"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	"github.com/cerc-io/laconicd/x/evm/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
@@ -191,7 +191,7 @@ func (suite *KeeperTestSuite) SetupApp(checkTx bool) {
 	types.RegisterQueryServer(queryHelper, suite.app.EvmKeeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
 
-	acc := &ethermint.EthAccount{
+	acc := &laconicd.EthAccount{
 		BaseAccount: authtypes.NewBaseAccount(sdk.AccAddress(suite.address.Bytes()), nil, 0, 0),
 		CodeHash:    common.BytesToHash(crypto.Keccak256(nil)).String(),
 	}

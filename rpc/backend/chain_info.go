@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 	feemarkettypes "github.com/cerc-io/laconicd/x/feemarket/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,7 +19,7 @@ import (
 
 // ChainID is the EIP-155 replay-protection chain id for the current ethereum chain config.
 func (b *Backend) ChainID() (*hexutil.Big, error) {
-	eip155ChainID, err := ethermint.ParseChainID(b.clientCtx.ChainID)
+	eip155ChainID, err := laconicd.ParseChainID(b.clientCtx.ChainID)
 	if err != nil {
 		panic(err)
 	}

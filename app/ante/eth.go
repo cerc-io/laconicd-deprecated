@@ -12,7 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 
-	ethermint "github.com/cerc-io/laconicd/types"
+	laconicd "github.com/cerc-io/laconicd/types"
 	evmkeeper "github.com/cerc-io/laconicd/x/evm/keeper"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
@@ -236,7 +236,7 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 	ctx.EventManager().EmitEvents(events)
 
 	// TODO: deprecate after https://github.com/cosmos/cosmos-sdk/issues/9514  is fixed on SDK
-	blockGasLimit := ethermint.BlockGasLimit(ctx)
+	blockGasLimit := laconicd.BlockGasLimit(ctx)
 
 	// NOTE: safety check
 	if blockGasLimit > 0 {
@@ -248,7 +248,7 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 
 	// Set ctx.GasMeter with a limit of GasWanted (gasLimit)
 	gasConsumed := ctx.GasMeter().GasConsumed()
-	ctx = ctx.WithGasMeter(ethermint.NewInfiniteGasMeterWithLimit(gasWanted))
+	ctx = ctx.WithGasMeter(laconicd.NewInfiniteGasMeterWithLimit(gasWanted))
 	ctx.GasMeter().ConsumeGas(gasConsumed, "copy gas consumed")
 
 	newCtx := ctx.WithPriority(minPriority)
