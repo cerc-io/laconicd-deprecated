@@ -1,11 +1,9 @@
 package types
 
 import (
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 )
 
 var (
@@ -15,9 +13,6 @@ var (
 	_ sdk.Msg = &MsgDissociateBond{}
 	_ sdk.Msg = &MsgDissociateRecords{}
 	_ sdk.Msg = &MsgReAssociateRecords{}
-
-	// // For amino support.
-	_ legacytx.LegacyMsg = &MsgSetRecord{}
 
 	_ cdctypes.UnpackInterfacesMessage = &MsgSetRecord{}
 )
@@ -67,27 +62,8 @@ func (msg MsgSetRecord) GetSignBytes() []byte {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (msg MsgSetRecord) UnpackInterfaces(unpacker cdctypes.AnyUnpacker) error {
-	x := msg.Payload.Record.Attributes
-	switch x.TypeUrl {
-	case "/vulcanize.registry.v1beta1.WebsiteRegistrationRecord":
-		{
-			var attr WebsiteRegistrationRecord
-			err := unpacker.UnpackAny(x, &attr)
-			if err != nil {
-				return err
-			}
-		}
-	case "/vulcanize.registry.v1beta1.ServiceProviderRegistration":
-		{
-			var attr ServiceProviderRegistration
-			err := unpacker.UnpackAny(x, &attr)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
+	var attr Attributes
+	return unpacker.UnpackAny(msg.Payload.Record.Attributes, &attr)
 }
 
 // NewMsgRenewRecord is the constructor function for MsgRenewRecord.

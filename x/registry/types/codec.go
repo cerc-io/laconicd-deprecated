@@ -11,7 +11,6 @@ import (
 // RegisterLegacyAminoCodec registers the necessary x/bond interfaces and concrete types
 // on the provided LegacyAmino codec. These types are used for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	// legacy.RegisterAminoMsg(cdc, &MsgSetRecord{}, "registry/SetRecord")
 
 	cdc.RegisterConcrete(&MsgSetName{}, "registry/SetName", nil)
 	cdc.RegisterConcrete(&MsgReserveAuthority{}, "registry/ReserveAuthority", nil)
@@ -24,10 +23,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgDissociateBond{}, "registry/DissociateBond", nil)
 	cdc.RegisterConcrete(&MsgDissociateRecords{}, "registry/DissociateRecords", nil)
 	cdc.RegisterConcrete(&MsgReAssociateRecords{}, "registry/ReassociateRecords", nil)
-
-	cdc.RegisterInterface((*Attributes)(nil), nil)
-	cdc.RegisterConcrete(&WebsiteRegistrationRecord{}, "registry/WebsiteRegistrationRecord", nil)
-	cdc.RegisterConcrete(&ServiceProviderRegistration{}, "registry/ServiceProviderRegistration", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
