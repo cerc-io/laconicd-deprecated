@@ -70,6 +70,28 @@ func WrapTxToTypedData(
 		return apitypes.TypedData{}, err
 	}
 
+	// if msgTypes["TypePayloadRecord"] != nil {
+	// 	// return apitypes.TypedData{}, fmt.Errorf("Message in msgTypes:%v\n", msg)
+	// 	msgTypes["TypePayloadRecord"] = []apitypes.Type{
+	// 		{Name: "id", Type: "string"},
+	// 		{Name: "bond_id", Type: "string"},
+	// 		{Name: "create_time", Type: "string"},
+	// 		{Name: "expiry_time", Type: "string"},
+	// 		{Name: "deleted", Type: "bool"},
+	// 		{Name: "attributes", Type: "TypePayloadRecordAttributes"},
+	// 	}
+	// }
+	// if msgTypes["TypePayloadRecordAttributes"] != nil {
+	// 	msgTypes["TypePayloadRecordAttributes"] = []apitypes.Type{
+	// 		{Name: "url", Type: "string"},
+	// 		{Name: "repo_registration_record_cid", Type: "string"},
+	// 		{Name: "build_artifact_cid", Type: "string"},
+	// 		{Name: "tls_cert_cid", Type: "string"},
+	// 		{Name: "type", Type: "string"},
+	// 	}
+	// 	delete(msgTypes, "TypePayloadRecordAttributesValue")
+	// }
+
 	if feeDelegation != nil {
 		feeInfo, ok := txData["fee"].(map[string]interface{})
 		if !ok {
