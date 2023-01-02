@@ -2,6 +2,7 @@ syntax = "proto3";
 package vulcanize.registry.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
 import "vulcanize/registry/v1beta1/registry.proto";
 
 option go_package = "github.com/cerc-io/laconicd/x/registry/types";
@@ -9,25 +10,45 @@ option go_package = "github.com/cerc-io/laconicd/x/registry/types";
 // Msg
 service Msg {
   // SetRecord will records a new record with given payload and bond id
-  rpc SetRecord(MsgSetRecord) returns (MsgSetRecordResponse) {}
+  rpc SetRecord(MsgSetRecord) returns (MsgSetRecordResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/set_record";
+  }
   // Renew Record will renew the expire record
-  rpc RenewRecord(MsgRenewRecord) returns (MsgRenewRecordResponse) {}
+  rpc RenewRecord(MsgRenewRecord) returns (MsgRenewRecordResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/renew_record";
+  }
   // AssociateBond
-  rpc AssociateBond(MsgAssociateBond) returns (MsgAssociateBondResponse) {}
+  rpc AssociateBond(MsgAssociateBond) returns (MsgAssociateBondResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/associate_bond";
+  }
   // DissociateBond
-  rpc DissociateBond(MsgDissociateBond) returns (MsgDissociateBondResponse) {}
+  rpc DissociateBond(MsgDissociateBond) returns (MsgDissociateBondResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/dissociate_bond";
+  }
   // DissociateRecords
-  rpc DissociateRecords(MsgDissociateRecords) returns (MsgDissociateRecordsResponse) {}
+  rpc DissociateRecords(MsgDissociateRecords) returns (MsgDissociateRecordsResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/dissociate_records";
+  }
   // ReAssociateRecords
-  rpc ReAssociateRecords(MsgReAssociateRecords) returns (MsgReAssociateRecordsResponse) {}
+  rpc ReAssociateRecords(MsgReAssociateRecords) returns (MsgReAssociateRecordsResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/reassociate_records";
+  }
   // SetName will store the name with given crn and name
-  rpc SetName(MsgSetName) returns (MsgSetNameResponse) {}
+  rpc SetName(MsgSetName) returns (MsgSetNameResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/set_name";
+  }
   // Reserve name
-  rpc ReserveName(MsgReserveAuthority) returns (MsgReserveAuthorityResponse) {}
+  rpc ReserveName(MsgReserveAuthority) returns (MsgReserveAuthorityResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/reserve_name";
+  }
   // Delete Name method will remove authority name
-  rpc DeleteName(MsgDeleteNameAuthority) returns (MsgDeleteNameAuthorityResponse) {}
+  rpc DeleteName(MsgDeleteNameAuthority) returns (MsgDeleteNameAuthorityResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/delete_name";
+  }
   // SetAuthorityBond
-  rpc SetAuthorityBond(MsgSetAuthorityBond) returns (MsgSetAuthorityBondResponse) {}
+  rpc SetAuthorityBond(MsgSetAuthorityBond) returns (MsgSetAuthorityBondResponse) {
+    option (google.api.http).post = "/vulcanize/registry/v1beta1/set_authority_bond";
+  }
 }
 
 // MsgSetRecord
