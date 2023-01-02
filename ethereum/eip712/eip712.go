@@ -18,6 +18,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	registry "github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -58,9 +59,15 @@ func WrapTxToTypedData(
 	}
 
 	if txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"] != nil {
+		setRecordMsg := msg.(*registry.MsgSetRecord)
+		var attr []interface{}
+		for _, b := range setRecordMsg.Payload.Record.Attributes.Value {
+			attr = append(attr, fmt.Sprintf("%v", b))
+		}
+
 		txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"].(map[string]interface{})["record"].(map[string]interface{})["attributes"] = map[string]interface{}{
-			"type_url": "/vulcanize.registry.v1beta1.WebsiteRegistrationRecord",
-			"value":    []interface{}{"10", "15", "104", "116", "116", "112", "115", "58", "47", "47", "99", "101", "114", "99", "46", "105", "111", "18", "46", "81", "109", "83", "110", "117", "87", "109", "120", "112", "116", "74", "90", "100", "76", "74", "112", "75", "82", "97", "114", "120", "66", "77", "83", "50", "74", "117", "50", "111", "65", "78", "86", "114", "103", "98", "114", "50", "120", "87", "98", "105", "101", "57", "98", "50", "68", "26", "46", "81", "109", "80", "56", "106", "84", "71", "49", "109", "57", "71", "83", "68", "74", "76", "67", "98", "101", "87", "104", "86", "83", "86", "103", "69", "122", "67", "80", "80", "119", "88", "82", "100", "67", "82", "117", "74", "116", "81", "53", "84", "122", "57", "75", "99", "57", "34", "46", "81", "109", "98", "87", "113", "120", "66", "69", "75", "67", "51", "80", "56", "116", "113", "115", "75", "99", "57", "56", "120", "109", "87", "78", "122", "114", "122", "68", "116", "82", "76", "77", "105", "77", "80", "76", "56", "119", "66", "117", "84", "71", "115", "77", "110", "82", "42", "25", "87", "101", "98", "115", "105", "116", "101", "82", "101", "103", "105", "115", "116", "114", "97", "116", "105", "111", "110", "82", "101", "99", "111", "114", "100"},
+			"type_url": setRecordMsg.Payload.Record.Attributes.TypeUrl,
+			"value":    attr,
 		}
 	}
 
@@ -78,7 +85,6 @@ func WrapTxToTypedData(
 	}
 
 	if msgTypes["TypePayloadRecord"] != nil {
-		// return apitypes.TypedData{}, fmt.Errorf("Message in msgTypes:%v\n", msg)
 		msgTypes["TypePayloadRecord"] = []apitypes.Type{
 			{Name: "id", Type: "string"},
 			{Name: "bond_id", Type: "string"},
@@ -90,11 +96,6 @@ func WrapTxToTypedData(
 	}
 	if msgTypes["TypePayloadRecordAttributes"] != nil {
 		msgTypes["TypePayloadRecordAttributes"] = []apitypes.Type{
-			// {Name: "url", Type: "string"},
-			// {Name: "repo_registration_record_cid", Type: "string"},
-			// {Name: "build_artifact_cid", Type: "string"},
-			// {Name: "tls_cert_cid", Type: "string"},
-			// {Name: "type", Type: "string"},
 			{Name: "type_url", Type: "string"},
 			{Name: "value", Type: "uint8[]"},
 		}
