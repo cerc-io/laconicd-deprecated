@@ -20,7 +20,7 @@ The following steps need to be followed only before running the chain for the fi
    Keep a note of the keyring passphrase if you set it.
 2. Init the chain:
    ```
-   ./build/laconicd init test-moniker --chain-id ethermint_9000-1
+   ./build/laconicd init test-moniker --chain-id laconic_9000-1
    ```
 3. Add genesis account:
    ```
@@ -28,7 +28,7 @@ The following steps need to be followed only before running the chain for the fi
    ```
 4. Make a genesis tx:
    ```
-   ./build/laconicd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
+   ./build/laconicd gentx root 1000000000000000000stake --chain-id laconic_9000-1
    ```
 5. Collect gentxs:
    ```
