@@ -22,8 +22,13 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/rpc/ethereum/pubsub"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+=======
+	"github.com/cerc-io/laconicd/rpc/ethereum/pubsub"
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+>>>>>>> v0.20.0
 )
 
 var (

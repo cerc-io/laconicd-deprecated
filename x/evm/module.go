@@ -21,7 +21,6 @@ import (
 
 	"github.com/cerc-io/laconicd/x/evm/client/cli"
 	"github.com/cerc-io/laconicd/x/evm/keeper"
-	"github.com/cerc-io/laconicd/x/evm/simulation"
 	"github.com/cerc-io/laconicd/x/evm/types"
 )
 
@@ -65,7 +64,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingCo
 
 // RegisterRESTRoutes performs a no-op as the EVM module doesn't expose REST
 // endpoints
-func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
+func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
 func (b AppModuleBasic) RegisterGRPCGatewayRoutes(c client.Context, serveMux *runtime.ServeMux) {
@@ -114,7 +113,7 @@ func (AppModule) Name() string {
 
 // RegisterInvariants interface for registering invariants. Performs a no-op
 // as the evm module doesn't expose invariants.
-func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
+func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 }
 
 // RegisterServices registers a GRPC query service to respond to the
@@ -122,6 +121,7 @@ func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+<<<<<<< HEAD
 
 	m := keeper.NewMigrator(*am.keeper)
 	err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
@@ -132,6 +132,8 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	if err != nil {
 		panic(err)
 	}
+=======
+>>>>>>> v0.20.0
 }
 
 // Route returns the message routing key for the evm module.
@@ -144,7 +146,7 @@ func (AppModule) QuerierRoute() string { return types.RouterKey }
 
 // LegacyQuerierHandler returns nil as the evm module doesn't expose a legacy
 // Querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
+func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
@@ -177,6 +179,7 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // RandomizedParams creates randomized evm param changes for the simulator.
+<<<<<<< HEAD
 func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 	return simulation.ParamChanges(r)
 }
@@ -184,21 +187,33 @@ func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
 // RegisterStoreDecoder registers a decoder for evm module's types
 func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 	sdr[types.StoreKey] = simulation.NewDecodeStore()
+=======
+func (AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
+	return nil
+}
+
+// RegisterStoreDecoder registers a decoder for evm module's types
+func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
+>>>>>>> v0.20.0
 }
 
 // ProposalContents doesn't return any content functions for governance proposals.
-func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
+func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
 	return nil
 }
 
 // GenerateGenesisState creates a randomized GenState of the evm module.
-func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
+func (AppModule) GenerateGenesisState(_ *module.SimulationState) {
 }
 
 // WeightedOperations returns the all the evm module operations with their respective weights.
+<<<<<<< HEAD
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc, am.ak, am.keeper,
 	)
+=======
+func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
+	return nil
+>>>>>>> v0.20.0
 }

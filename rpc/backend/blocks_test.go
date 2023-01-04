@@ -30,9 +30,9 @@ func (suite *BackendTestSuite) TestBlockNumber() {
 		{
 			"fail - invalid block header height",
 			func() {
-				height := int64(1)
 				var header metadata.MD
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				height := int64(1)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterParamsInvalidHeight(queryClient, &header, int64(height))
 			},
 			0x0,
@@ -41,9 +41,9 @@ func (suite *BackendTestSuite) TestBlockNumber() {
 		{
 			"fail - invalid block header",
 			func() {
-				height := int64(1)
 				var header metadata.MD
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				height := int64(1)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterParamsInvalidHeader(queryClient, &header, int64(height))
 			},
 			0x0,
@@ -52,9 +52,9 @@ func (suite *BackendTestSuite) TestBlockNumber() {
 		{
 			"pass - app state header height 1",
 			func() {
-				height := int64(1)
 				var header metadata.MD
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				height := int64(1)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterParams(queryClient, &header, int64(height))
 			},
 			0x1,
@@ -161,7 +161,7 @@ func (suite *BackendTestSuite) TestGetBlockByNumber() {
 				blockRes, _ = RegisterBlockResults(client, blockNum.Int64())
 				RegisterConsensusParams(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 			},
@@ -183,7 +183,7 @@ func (suite *BackendTestSuite) TestGetBlockByNumber() {
 				blockRes, _ = RegisterBlockResults(client, blockNum.Int64())
 				RegisterConsensusParams(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 			},
@@ -306,7 +306,7 @@ func (suite *BackendTestSuite) TestGetBlockByHash() {
 				blockRes, _ = RegisterBlockResults(client, height)
 				RegisterConsensusParams(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 			},
@@ -329,7 +329,7 @@ func (suite *BackendTestSuite) TestGetBlockByHash() {
 				blockRes, _ = RegisterBlockResults(client, height)
 				RegisterConsensusParams(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 			},
@@ -552,9 +552,9 @@ func (suite *BackendTestSuite) TestTendermintBlockByNumber() {
 			"fail - blockNum < 0 with app state height error",
 			ethrpc.BlockNumber(-1),
 			func(_ ethrpc.BlockNumber) {
-				appHeight := int64(1)
 				var header metadata.MD
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				appHeight := int64(1)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterParamsError(queryClient, &header, appHeight)
 			},
 			false,
@@ -564,9 +564,9 @@ func (suite *BackendTestSuite) TestTendermintBlockByNumber() {
 			"pass - blockNum < 0 with app state height >= 1",
 			ethrpc.BlockNumber(-1),
 			func(blockNum ethrpc.BlockNumber) {
-				appHeight := int64(1)
 				var header metadata.MD
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				appHeight := int64(1)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterParams(queryClient, &header, appHeight)
 
 				tmHeight := appHeight
@@ -833,10 +833,7 @@ func (suite *BackendTestSuite) TestBlockBloom() {
 			&tmrpctypes.ResultBlockResults{
 				EndBlockEvents: []types.Event{
 					{
-						Type: evmtypes.EventTypeBlockBloom,
-						Attributes: []types.EventAttribute{
-							{Key: []byte(evmtypes.AttributeKeyEthereumTxHash)},
-						},
+						Type: evmtethsecp256k1
 					},
 				},
 			},
@@ -857,9 +854,7 @@ func (suite *BackendTestSuite) TestBlockBloom() {
 			},
 			ethtypes.Bloom{},
 			true,
-		},
-	}
-	for _, tc := range testCases {
+		},ethsecp256k1
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			blockBloom, err := suite.backend.BlockBloom(tc.blockRes)
 
@@ -901,7 +896,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			false,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 
@@ -925,7 +920,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			true,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFeeError(queryClient)
 				RegisterValidatorAccount(queryClient, validator)
 
@@ -949,7 +944,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			true,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccountError(queryClient)
 
@@ -973,7 +968,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			true,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 
@@ -1003,7 +998,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			true,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 
@@ -1027,7 +1022,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			false,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 
@@ -1051,7 +1046,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 			},
 			true,
 			func(baseFee sdk.Int, validator sdk.AccAddress, height int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 				RegisterValidatorAccount(queryClient, validator)
 
@@ -1088,6 +1083,7 @@ func (suite *BackendTestSuite) TestGetEthBlockFromTendermint() {
 						uint64(header.Height),
 						uint64(0),
 						tc.baseFee,
+						suite.backend.chainID,
 					)
 					suite.Require().NoError(err)
 					ethRPCTxs = []interface{}{rpcTx}
@@ -1237,7 +1233,7 @@ func (suite *BackendTestSuite) TestHeaderByNumber() {
 				expResultBlock, _ = RegisterBlock(client, height, nil)
 				RegisterBlockResults(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFeeError(queryClient)
 			},
 			true,
@@ -1252,7 +1248,7 @@ func (suite *BackendTestSuite) TestHeaderByNumber() {
 				expResultBlock, _ = RegisterBlock(client, height, nil)
 				RegisterBlockResults(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 			},
 			true,
@@ -1267,7 +1263,7 @@ func (suite *BackendTestSuite) TestHeaderByNumber() {
 				expResultBlock, _ = RegisterBlock(client, height, bz)
 				RegisterBlockResults(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 			},
 			true,
@@ -1347,7 +1343,7 @@ func (suite *BackendTestSuite) TestHeaderByHash() {
 				expResultBlock, _ = RegisterBlockByHash(client, hash, bz)
 				RegisterBlockResults(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFeeError(queryClient)
 			},
 			true,
@@ -1362,7 +1358,7 @@ func (suite *BackendTestSuite) TestHeaderByHash() {
 				expResultBlock, _ = RegisterBlockByHash(client, hash, nil)
 				RegisterBlockResults(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 			},
 			true,
@@ -1377,7 +1373,7 @@ func (suite *BackendTestSuite) TestHeaderByHash() {
 				expResultBlock, _ = RegisterBlockByHash(client, hash, bz)
 				RegisterBlockResults(client, height)
 
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 			},
 			true,
@@ -1444,7 +1440,7 @@ func (suite *BackendTestSuite) TestEthBlockByNumber() {
 				RegisterBlock(client, height, nil)
 
 				RegisterBlockResults(client, blockNum.Int64())
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				baseFee := sdk.NewInt(1)
 				RegisterBaseFee(queryClient, baseFee)
 			},
@@ -1470,7 +1466,7 @@ func (suite *BackendTestSuite) TestEthBlockByNumber() {
 				RegisterBlock(client, height, bz)
 
 				RegisterBlockResults(client, blockNum.Int64())
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				baseFee := sdk.NewInt(1)
 				RegisterBaseFee(queryClient, baseFee)
 			},
@@ -1535,7 +1531,7 @@ func (suite *BackendTestSuite) TestEthBlockFromTendermintBlock() {
 				TxsResults: []*types.ResponseDeliverTx{{Code: 0, GasUsed: 0}},
 			},
 			func(baseFee sdk.Int, blockNum int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 			},
 			ethtypes.NewBlock(
@@ -1570,7 +1566,7 @@ func (suite *BackendTestSuite) TestEthBlockFromTendermintBlock() {
 				},
 			},
 			func(baseFee sdk.Int, blockNum int64) {
-				queryClient := suite.backend.queryClient.QueryClient.(*mocks.QueryClient)
+				queryClient := suite.backend.queryClient.QueryClient.(*mocks.EVMQueryClient)
 				RegisterBaseFee(queryClient, baseFee)
 			},
 			ethtypes.NewBlock(

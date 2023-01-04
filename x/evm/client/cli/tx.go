@@ -12,8 +12,13 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
+<<<<<<< HEAD
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cerc-io/laconicd/x/evm/types"
+=======
+	rpctypes "github.com/cerc-io/laconicd/rpc/types"
+	"github.com/cerc-io/laconicd/x/evm/types"
+>>>>>>> v0.20.0
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -32,7 +37,7 @@ func GetTxCmd() *cobra.Command {
 // NewRawTxCmd command build cosmos transaction from raw ethereum transaction
 func NewRawTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "raw [tx-hex]",
+		Use:   "raw TX_HEX",
 		Short: "Build cosmos transaction from raw ethereum transaction",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

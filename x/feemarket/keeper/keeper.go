@@ -9,9 +9,11 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
-	v010 "github.com/cerc-io/laconicd/x/feemarket/migrations/v010"
 	"github.com/cerc-io/laconicd/x/feemarket/types"
 )
+
+// KeyPrefixBaseFeeV1 TODO: Temporary will be removed with params refactor PR
+var KeyPrefixBaseFeeV1 = []byte{2}
 
 // Keeper grants access to the Fee Market module state.
 type Keeper struct {
@@ -98,7 +100,11 @@ func (k Keeper) AddTransientGasWanted(ctx sdk.Context, gasWanted uint64) (uint64
 // return nil if base fee is not enabled
 func (k Keeper) GetBaseFeeV1(ctx sdk.Context) *big.Int {
 	store := ctx.KVStore(k.storeKey)
+<<<<<<< HEAD
 	bz := store.Get(v010.KeyPrefixBaseFeeV1)
+=======
+	bz := store.Get(KeyPrefixBaseFeeV1)
+>>>>>>> v0.20.0
 	if len(bz) == 0 {
 		return nil
 	}

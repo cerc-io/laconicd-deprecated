@@ -154,10 +154,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -369,10 +372,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -583,10 +589,20 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
+<<<<<<< HEAD
                          any, err := ptypes.MarshalAny(foo)
                          ...
                          foo := &pb.Foo{}
                          if err := ptypes.UnmarshalAny(any, foo); err != nil {
+=======
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
+                         ...
+                         foo := &pb.Foo{}
+                         if err := any.UnmarshalTo(foo); err != nil {
+>>>>>>> v0.20.0
                            ...
                          }
 
@@ -791,10 +807,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -1014,10 +1033,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -1226,10 +1248,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -1301,6 +1326,18 @@ paths:
           required: false
           type: string
           format: uint64
+        - name: proposer_address
+          description: the proposer of the requested block.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: chain_id
+          description: the eip155 chain id parsed from the requested block header.
+          in: query
+          required: false
+          type: string
+          format: int64
       tags:
         - Query
   /ethermint/evm/v1/eth_call:
@@ -1524,10 +1561,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -1599,6 +1639,18 @@ paths:
           required: false
           type: string
           format: uint64
+        - name: proposer_address
+          description: the proposer of the requested block.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: chain_id
+          description: the eip155 chain id parsed from the requested block header.
+          in: query
+          required: false
+          type: string
+          format: int64
       tags:
         - Query
   /ethermint/evm/v1/params:
@@ -1713,11 +1765,24 @@ paths:
                         title: >-
                           Eip-4345 (bomb delay) switch block (nil = no fork, 0 =
                           already activated)
+<<<<<<< HEAD
                       merge_fork_block:
                         type: string
                         title: >-
                           EIP-3675 (TheMerge) switch block (nil = no fork, 0 =
                           already in merge proceedings)
+=======
+                      gray_glacier_block:
+                        type: string
+                        title: >-
+                          EIP-5133 (bomb delay) switch block (nil = no fork, 0 =
+                          already activated)
+                      merge_netsplit_block:
+                        type: string
+                        title: >-
+                          Virtual fork after The Merge to use as a network
+                          splitter
+>>>>>>> v0.20.0
                     description: >-
                       ChainConfig defines the Ethereum ChainConfig parameters
                       using *sdk.Int values
@@ -1727,7 +1792,11 @@ paths:
                     type: boolean
                     description: >-
                       Allow unprotected transactions defines if replay-protected
+<<<<<<< HEAD
                       (i.e non EIP155 
+=======
+                      (i.e non EIP155
+>>>>>>> v0.20.0
 
                       signed) transactions can be executed on the state machine.
                 title: Params defines the EVM module parameters
@@ -1861,10 +1930,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -2072,10 +2144,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -2292,10 +2367,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -2481,10 +2559,22 @@ paths:
           in: query
           required: false
           type: string
+<<<<<<< HEAD
         - name: trace_config.overrides.merge_fork_block
           description: >-
             EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in
             merge proceedings).
+=======
+        - name: trace_config.overrides.gray_glacier_block
+          description: >-
+            EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
+            activated).
+          in: query
+          required: false
+          type: string
+        - name: trace_config.overrides.merge_netsplit_block
+          description: Virtual fork after The Merge to use as a network splitter.
+>>>>>>> v0.20.0
           in: query
           required: false
           type: string
@@ -2498,6 +2588,11 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: trace_config.tracer_json_config
+          description: tracer config.
+          in: query
+          required: false
+          type: string
         - name: block_number
           description: block number.
           in: query
@@ -2515,6 +2610,18 @@ paths:
           required: false
           type: string
           format: date-time
+        - name: proposer_address
+          description: the proposer of the requested block.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: chain_id
+          description: the eip155 chain id parsed from the requested block header.
+          in: query
+          required: false
+          type: string
+          format: int64
       tags:
         - Query
   /ethermint/evm/v1/trace_tx:
@@ -2659,10 +2766,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -2783,7 +2893,7 @@ paths:
           type: string
           format: byte
         - name: msg.size
-          description: encoded storage size of the transaction.
+          description: 'DEPRECATED: encoded storage size of the transaction.'
           in: query
           required: false
           type: number
@@ -2927,10 +3037,22 @@ paths:
           in: query
           required: false
           type: string
+<<<<<<< HEAD
         - name: trace_config.overrides.merge_fork_block
           description: >-
             EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in
             merge proceedings).
+=======
+        - name: trace_config.overrides.gray_glacier_block
+          description: >-
+            EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
+            activated).
+          in: query
+          required: false
+          type: string
+        - name: trace_config.overrides.merge_netsplit_block
+          description: Virtual fork after The Merge to use as a network splitter.
+>>>>>>> v0.20.0
           in: query
           required: false
           type: string
@@ -2944,6 +3066,11 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: trace_config.tracer_json_config
+          description: tracer config.
+          in: query
+          required: false
+          type: string
         - name: block_number
           description: block number of requested transaction.
           in: query
@@ -2961,6 +3088,18 @@ paths:
           required: false
           type: string
           format: date-time
+        - name: proposer_address
+          description: the proposer of the requested block.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: chain_id
+          description: the eip155 chain id parsed from the requested block header.
+          in: query
+          required: false
+          type: string
+          format: int64
       tags:
         - Query
   /ethermint/evm/v1/validator_account/{cons_address}:
@@ -3120,10 +3259,13 @@ paths:
                      Example 4: Pack and unpack a message in Go
 
                          foo := &pb.Foo{...}
-                         any, err := ptypes.MarshalAny(foo)
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
                          ...
                          foo := &pb.Foo{}
-                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                         if err := any.UnmarshalTo(foo); err != nil {
                            ...
                          }
 
@@ -3190,6 +3332,7 @@ paths:
           type: string
       tags:
         - Query
+<<<<<<< HEAD
   /cosmos/auth/v1beta1/accounts:
     get:
       summary: Accounts returns all the existing accounts
@@ -14052,6 +14195,8 @@ paths:
           type: boolean
       tags:
         - Query
+=======
+>>>>>>> v0.20.0
 definitions:
   ethermint.evm.v1.ChainConfig:
     type: object
@@ -14111,11 +14256,22 @@ definitions:
         title: >-
           Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
           activated)
+<<<<<<< HEAD
       merge_fork_block:
         type: string
         title: >-
           EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in merge
           proceedings)
+=======
+      gray_glacier_block:
+        type: string
+        title: >-
+          EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
+          activated)
+      merge_netsplit_block:
+        type: string
+        title: Virtual fork after The Merge to use as a network splitter
+>>>>>>> v0.20.0
     description: >-
       ChainConfig defines the Ethereum ChainConfig parameters using *sdk.Int
       values
@@ -14287,10 +14443,13 @@ definitions:
            Example 4: Pack and unpack a message in Go
 
                foo := &pb.Foo{...}
-               any, err := ptypes.MarshalAny(foo)
+               any, err := anypb.New(foo)
+               if err != nil {
+                 ...
+               }
                ...
                foo := &pb.Foo{}
-               if err := ptypes.UnmarshalAny(any, foo); err != nil {
+               if err := any.UnmarshalTo(foo); err != nil {
                  ...
                }
 
@@ -14344,7 +14503,7 @@ definitions:
       size:
         type: number
         format: double
-        title: encoded storage size of the transaction
+        title: 'DEPRECATED: encoded storage size of the transaction'
       hash:
         type: string
         title: transaction hash in hex format
@@ -14515,11 +14674,22 @@ definitions:
             title: >-
               Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
               activated)
+<<<<<<< HEAD
           merge_fork_block:
             type: string
             title: >-
               EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in
               merge proceedings)
+=======
+          gray_glacier_block:
+            type: string
+            title: >-
+              EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
+              activated)
+          merge_netsplit_block:
+            type: string
+            title: Virtual fork after The Merge to use as a network splitter
+>>>>>>> v0.20.0
         description: >-
           ChainConfig defines the Ethereum ChainConfig parameters using *sdk.Int
           values
@@ -14529,7 +14699,11 @@ definitions:
         type: boolean
         description: >-
           Allow unprotected transactions defines if replay-protected (i.e non
+<<<<<<< HEAD
           EIP155 
+=======
+          EIP155
+>>>>>>> v0.20.0
 
           signed) transactions can be executed on the state machine.
     title: Params defines the EVM module parameters
@@ -14684,11 +14858,22 @@ definitions:
                 title: >-
                   Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
                   activated)
+<<<<<<< HEAD
               merge_fork_block:
                 type: string
                 title: >-
                   EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already
                   in merge proceedings)
+=======
+              gray_glacier_block:
+                type: string
+                title: >-
+                  EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
+                  activated)
+              merge_netsplit_block:
+                type: string
+                title: Virtual fork after The Merge to use as a network splitter
+>>>>>>> v0.20.0
             description: >-
               ChainConfig defines the Ethereum ChainConfig parameters using
               *sdk.Int values
@@ -14698,7 +14883,11 @@ definitions:
             type: boolean
             description: >-
               Allow unprotected transactions defines if replay-protected (i.e
+<<<<<<< HEAD
               non EIP155 
+=======
+              non EIP155
+>>>>>>> v0.20.0
 
               signed) transactions can be executed on the state machine.
         title: Params defines the EVM module parameters
@@ -14839,11 +15028,22 @@ definitions:
             title: >-
               Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
               activated)
+<<<<<<< HEAD
           merge_fork_block:
             type: string
             title: >-
               EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in
               merge proceedings)
+=======
+          gray_glacier_block:
+            type: string
+            title: >-
+              EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
+              activated)
+          merge_netsplit_block:
+            type: string
+            title: Virtual fork after The Merge to use as a network splitter
+>>>>>>> v0.20.0
         description: >-
           ChainConfig defines the Ethereum ChainConfig parameters using *sdk.Int
           values
@@ -14855,6 +15055,9 @@ definitions:
       enable_return_data:
         type: boolean
         title: enable return data capture
+      tracer_json_config:
+        type: string
+        title: tracer config
     description: TraceConfig holds extra parameters to trace functions.
   google.protobuf.Any:
     type: object
@@ -14958,10 +15161,13 @@ definitions:
        Example 4: Pack and unpack a message in Go
 
            foo := &pb.Foo{...}
-           any, err := ptypes.MarshalAny(foo)
+           any, err := anypb.New(foo)
+           if err != nil {
+             ...
+           }
            ...
            foo := &pb.Foo{}
-           if err := ptypes.UnmarshalAny(any, foo); err != nil {
+           if err := any.UnmarshalTo(foo); err != nil {
              ...
            }
 
@@ -15132,10 +15338,13 @@ definitions:
              Example 4: Pack and unpack a message in Go
 
                  foo := &pb.Foo{...}
-                 any, err := ptypes.MarshalAny(foo)
+                 any, err := anypb.New(foo)
+                 if err != nil {
+                   ...
+                 }
                  ...
                  foo := &pb.Foo{}
-                 if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                 if err := any.UnmarshalTo(foo); err != nil {
                    ...
                  }
 
@@ -15185,6 +15394,7 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+<<<<<<< HEAD
   cosmos.auth.v1beta1.Params:
     type: object
     properties:
@@ -21145,3 +21355,5 @@ definitions:
       application's
 
       state transition machine.
+=======
+>>>>>>> v0.20.0

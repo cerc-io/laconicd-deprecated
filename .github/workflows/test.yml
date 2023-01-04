@@ -20,10 +20,10 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
           check-latest: true
       - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.go
@@ -45,10 +45,10 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
           check-latest: true
       - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
+      - uses: technote-space/get-diff-action@v6.1.2
         id: git_diff
         with:
           PATTERNS: |
@@ -59,17 +59,17 @@ jobs:
         run: |
           make test-import
         if: env.GIT_DIFF
-      
+        
   test-rpc:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version: 1.19
           check-latest: true
       - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.sol
@@ -81,150 +81,49 @@ jobs:
           make test-rpc
         if: env.GIT_DIFF
 
-  test-e2e:
+  integration_tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v18
+      - uses: cachix/cachix-action@v12
         with:
-          go-version: 1.18
-          check-latest: true
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
+          name: ethermint
+          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.sol
             **/**.go
             go.mod
             go.sum
-      - name: Test e2e
-        run: |
-          make test-integration
+            tests/integration_tests/**
+      - name: Run integration tests
+        run: make run-integration-tests
         if: env.GIT_DIFF
+      - name: 'Tar debug files'
+        if: failure()
+        run: tar cfz debug_files.tar.gz -C /tmp/pytest-of-runner .
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: debug-files
+          path: debug_files.tar.gz
+          if-no-files-found: ignore
 
-  # integration_tests:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: cachix/install-nix-action@v18
-  #     - uses: cachix/cachix-action@v11
-  #       with:
-  #         name: ethermint
-  #         signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
-  #     - uses: technote-space/get-diff-action@v6.1.1
-  #       with:
-  #         PATTERNS: |
-  #           **/**.sol
-  #           **/**.go
-  #           go.mod
-  #           go.sum
-  #           tests/integration_tests/**
-  #     - name: Run integration tests
-  #       run: make run-integration-tests
-  #       if: env.GIT_DIFF
-  #     - name: 'Tar debug files'
-  #       if: failure()
-  #       run: tar cfz debug_files.tar.gz -C /tmp/pytest-of-runner .
-  #     - uses: actions/upload-artifact@v3
-  #       if: failure()
-  #       with:
-  #         name: debug-files
-  #         path: debug_files.tar.gz
-  #         if-no-files-found: ignore
-
-  # upload-cache:
-  #   if: github.event_name == 'push'
-  #   needs: ["integration_tests"]
-  #   strategy:
-  #     matrix:
-  #       os: [macos-latest]
-  #   runs-on: ${{ matrix.os }}
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: cachix/install-nix-action@v18
-  #     - uses: cachix/cachix-action@v11
-  #       with:
-  #         name: ethermint
-  #         signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
-  #     - name: 'instantiate integration test env'
-  #       run: nix-store -r $(nix-instantiate tests/integration_tests/shell.nix)
-
-  test-sim-nondeterminism:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+  upload-cache:
+    if: github.event_name == 'push'
+    needs: ["integration_tests"]
+    strategy:
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/setup-go@v3
+      - uses: actions/checkout@v2
+      - uses: cachix/install-nix-action@v18
+      - uses: cachix/cachix-action@v12
         with:
-          go-version: 1.18
-          check-latest: true
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Test simulation nondeterminism
-        run: |
-          make test-sim-nondeterminism
-        if: env.GIT_DIFF
-
-  test-sim-random-genesis-fast:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-          check-latest: true
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Test simulation with random genesis 
-        run: |
-          make test-sim-random-genesis-fast
-        if: env.GIT_DIFF
-
-  test-sim-import-export:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-          check-latest: true
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Simulation of import and export genesis
-        run: |
-          make test-sim-import-export
-        if: env.GIT_DIFF
-
-  test-sim-after-import:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-          check-latest: true
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Test simulation after import
-        run: |
-          make test-sim-after-import
-        if: env.GIT_DIFF
+          name: ethermint
+          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
+      - name: 'instantiate integration test env'
+        run: nix-store -r "$(nix-instantiate tests/integration_tests/shell.nix)"

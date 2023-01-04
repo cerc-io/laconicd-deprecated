@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
@@ -17,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdkconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -165,7 +165,7 @@ func (b *Backend) SetEtherbase(etherbase common.Address) bool {
 	syncCtx := b.clientCtx.WithBroadcastMode(flags.BroadcastSync)
 	rsp, err := syncCtx.BroadcastTx(txBytes)
 	if rsp != nil && rsp.Code != 0 {
-		err = sdkerrors.ABCIError(rsp.Codespace, rsp.Code, rsp.RawLog)
+		err = errorsmod.ABCIError(rsp.Codespace, rsp.Code, rsp.RawLog)
 	}
 	if err != nil {
 		b.logger.Debug("failed to broadcast tx", "error", err.Error())
@@ -239,7 +239,7 @@ func (b *Backend) NewMnemonic(uid string,
 	bip39Passphrase string,
 	algo keyring.SignatureAlgo,
 ) (*keyring.Record, error) {
-	info, _, err := b.clientCtx.Keyring.NewMnemonic(uid, keyring.English, bip39Passphrase, bip39Passphrase, algo)
+	info, _, err := b.clientCtx.Keyring.NewMnemonic(uid, keyring.English, hdPath, bip39Passphrase, algo)
 	if err != nil {
 		return nil, err
 	}

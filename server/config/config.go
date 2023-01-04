@@ -10,9 +10,9 @@ import (
 
 	"github.com/tendermint/tendermint/libs/strings"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/server/config"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
@@ -24,6 +24,9 @@ const (
 
 	// DefaultJSONRPCWsAddress is the default address the JSON-RPC WebSocket server binds to.
 	DefaultJSONRPCWsAddress = "0.0.0.0:8546"
+
+	// DefaultJsonRPCMetricsAddress is the default address the JSON-RPC Metrics server binds to.
+	DefaultJSONRPCMetricsAddress = "0.0.0.0:6065"
 
 	// DefaultEVMTracer is the default vm.Tracer type
 	DefaultEVMTracer = ""
@@ -110,6 +113,8 @@ type JSONRPCConfig struct {
 	MaxOpenConnections int `mapstructure:"max-open-connections"`
 	// EnableIndexer defines if enable the custom indexer service.
 	EnableIndexer bool `mapstructure:"enable-indexer"`
+	// MetricsAddress defines the metrics server to listen on
+	MetricsAddress string `mapstructure:"metrics-address"`
 }
 
 // TLSConfig defines the certificate and matching private key for the server.
@@ -211,6 +216,7 @@ func DefaultJSONRPCConfig() *JSONRPCConfig {
 		AllowUnprotectedTxs: DefaultAllowUnprotectedTxs,
 		MaxOpenConnections:  DefaultMaxOpenConnections,
 		EnableIndexer:       false,
+		MetricsAddress:      DefaultJSONRPCMetricsAddress,
 	}
 }
 
@@ -319,6 +325,7 @@ func GetConfig(v *viper.Viper) (Config, error) {
 			HTTPIdleTimeout:    v.GetDuration("json-rpc.http-idle-timeout"),
 			MaxOpenConnections: v.GetInt("json-rpc.max-open-connections"),
 			EnableIndexer:      v.GetBool("json-rpc.enable-indexer"),
+			MetricsAddress:     v.GetString("json-rpc.metrics-address"),
 		},
 		TLS: TLSConfig{
 			CertificatePath: v.GetString("tls.certificate-path"),
@@ -339,15 +346,15 @@ func ParseConfig(v *viper.Viper) (*Config, error) {
 // ValidateBasic returns an error any of the application configuration fields are invalid
 func (c Config) ValidateBasic() error {
 	if err := c.EVM.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrAppConfig, "invalid evm config value: %s", err.Error())
+		return errorsmod.Wrapf(errortypes.ErrAppConfig, "invalid evm config value: %s", err.Error())
 	}
 
 	if err := c.JSONRPC.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrAppConfig, "invalid json-rpc config value: %s", err.Error())
+		return errorsmod.Wrapf(errortypes.ErrAppConfig, "invalid json-rpc config value: %s", err.Error())
 	}
 
 	if err := c.TLS.Validate(); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrAppConfig, "invalid tls config value: %s", err.Error())
+		return errorsmod.Wrapf(errortypes.ErrAppConfig, "invalid tls config value: %s", err.Error())
 	}
 
 	return c.Config.ValidateBasic()

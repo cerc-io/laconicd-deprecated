@@ -8,6 +8,10 @@ import (
 
 	"github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cosmos/cosmos-sdk/client"
+<<<<<<< HEAD
+=======
+	"github.com/cerc-io/laconicd/rpc/types"
+>>>>>>> v0.20.0
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -20,7 +24,11 @@ import (
 	"github.com/ethereum/go-ethereum/eth/filters"
 	"github.com/ethereum/go-ethereum/rpc"
 
+<<<<<<< HEAD
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+=======
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+>>>>>>> v0.20.0
 )
 
 // FilterAPI gathers
@@ -293,12 +301,9 @@ func (api *PublicFilterAPI) NewBlockFilter() rpc.ID {
 					continue
 				}
 
-				baseFee := types.BaseFeeFromEvents(data.ResultBeginBlock.Events)
-
-				header := types.EthHeaderFromTendermint(data.Header, ethtypes.Bloom{}, baseFee)
 				api.filtersMu.Lock()
 				if f, found := api.filters[headerSub.ID()]; found {
-					f.hashes = append(f.hashes, header.Hash())
+					f.hashes = append(f.hashes, common.BytesToHash(data.Header.Hash()))
 				}
 				api.filtersMu.Unlock()
 			case <-errCh:

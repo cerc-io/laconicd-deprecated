@@ -6,10 +6,17 @@ import (
 	"os"
 	"time"
 
+<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/rpc/backend"
 
 	"github.com/cerc-io/laconicd/crypto/hd"
 	ethermint "github.com/cerc-io/laconicd/types"
+=======
+	"github.com/cerc-io/laconicd/rpc/backend"
+
+	"github.com/cerc-io/laconicd/crypto/hd"
+	ethermint "github.com/cerc-io/laconicd/types"
+>>>>>>> v0.20.0
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -21,7 +28,11 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 
+<<<<<<< HEAD
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+=======
+	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
+>>>>>>> v0.20.0
 )
 
 // PrivateAccountAPI is the personal_ prefixed set of APIs in the Web3 JSON-RPC spec.

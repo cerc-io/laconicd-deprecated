@@ -1,8 +1,8 @@
 syntax = "proto3";
 package ethermint.feemarket.v1;
 
-import "gogoproto/gogo.proto";
 import "ethermint/feemarket/v1/feemarket.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/cerc-io/laconicd/x/feemarket/types";
 
@@ -14,7 +14,7 @@ message GenesisState {
   // Zero by default.
   reserved 2;
   reserved "base_fee";
-  // block gas is the amount of gas wanted on the last block before the upgrade.
+  // block_gas is the amount of gas wanted on the last block before the upgrade.
   // Zero by default.
   uint64 block_gas = 3;
 }

@@ -6,8 +6,13 @@ import (
 	"fmt"
 	"math/big"
 
+<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/rpc/backend"
 	"github.com/cerc-io/laconicd/rpc/types"
+=======
+	"github.com/cerc-io/laconicd/rpc/backend"
+	"github.com/cerc-io/laconicd/rpc/types"
+>>>>>>> v0.20.0
 
 	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/libs/log"
