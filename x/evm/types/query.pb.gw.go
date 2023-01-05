@@ -821,11 +821,8 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 	mux.Handle("GET", pattern_Query_BaseFee_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
-<<<<<<< HEAD
-=======
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
->>>>>>> v0.20.0
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req)
 		if err != nil {
@@ -833,10 +830,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 		resp, md, err := local_request_Query_BaseFee_0(rctx, inboundMarshaler, server, req, pathParams)
-<<<<<<< HEAD
-=======
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
->>>>>>> v0.20.0
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
@@ -1152,15 +1146,9 @@ var (
 
 	pattern_Query_TraceTx_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "evm", "v1", "trace_tx"}, "", runtime.AssumeColonVerbOpt(false)))
 
-<<<<<<< HEAD
-	pattern_Query_TraceBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "evm", "v1", "trace_block"}, "", runtime.AssumeColonVerbOpt(true)))
-
-	pattern_Query_BaseFee_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "evm", "v1", "base_fee"}, "", runtime.AssumeColonVerbOpt(true)))
-=======
 	pattern_Query_TraceBlock_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "evm", "v1", "trace_block"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_BaseFee_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"ethermint", "evm", "v1", "base_fee"}, "", runtime.AssumeColonVerbOpt(false)))
->>>>>>> v0.20.0
 )
 
 var (

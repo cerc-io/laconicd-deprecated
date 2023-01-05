@@ -13,19 +13,11 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
-<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/rpc/backend"
 
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	ethermint "github.com/cerc-io/laconicd/types"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
-=======
-	"github.com/cerc-io/laconicd/rpc/backend"
-
-	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-	ethermint "github.com/cerc-io/laconicd/types"
-	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
->>>>>>> v0.20.0
 )
 
 // The Ethereum API allows applications to connect to an Evmos node that is
@@ -507,10 +499,7 @@ func (e *PublicAPI) GetPendingTransactions() ([]*rpctypes.RPCTransaction, error)
 				uint64(0),
 				uint64(0),
 				nil,
-<<<<<<< HEAD
-=======
 				e.backend.ChainConfig().ChainID,
->>>>>>> v0.20.0
 			)
 			if err != nil {
 				return nil, err

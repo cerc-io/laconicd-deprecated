@@ -1,21 +1,13 @@
 package cli
 
 import (
-<<<<<<< HEAD
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-=======
-	rpctypes "github.com/cerc-io/laconicd/rpc/types"
->>>>>>> v0.20.0
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/x/evm/types"
-=======
-	"github.com/cerc-io/laconicd/x/evm/types"
->>>>>>> v0.20.0
 )
 
 // GetQueryCmd returns the parent command for all x/bank CLi query commands.

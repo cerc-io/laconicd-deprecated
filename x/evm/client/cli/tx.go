@@ -12,13 +12,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-<<<<<<< HEAD
 	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	"github.com/cerc-io/laconicd/x/evm/types"
-=======
-	rpctypes "github.com/cerc-io/laconicd/rpc/types"
-	"github.com/cerc-io/laconicd/x/evm/types"
->>>>>>> v0.20.0
 )
 
 // GetTxCmd returns the transaction commands for this module

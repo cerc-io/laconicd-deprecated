@@ -1,10 +1,23 @@
+// Copyright 2021 Evmos Foundation
+// This file is part of Evmos' Ethermint library.
+//
+// The Ethermint library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Ethermint library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
 package ante
 
 import (
 	"math"
 	"math/big"
-
-	sdkmath "cosmossdk.io/math"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -70,7 +83,7 @@ func (avd EthAccountVerificationDecorator) AnteHandle(
 
 		// check whether the sender address is EOA
 		fromAddr := common.BytesToAddress(from)
-		acct := avd.evmKeeper.GetAccount(ctx, fromAddr) //nolint: all
+		acct := avd.evmKeeper.GetAccount(ctx, fromAddr)
 
 		if acct == nil {
 			acc := avd.ak.NewAccountWithAddress(ctx, from)
@@ -224,8 +237,6 @@ func (egcd EthGasConsumeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simula
 		WithGasMeter(ethermint.NewInfiniteGasMeterWithLimit(gasWanted)).
 		WithPriority(minPriority)
 
-	newCtx := ctx.WithPriority(minPriority)
-
 	// we know that we have enough gas on the pool to cover the intrinsic gas
 	return next(newCtx, tx, simulate)
 }
@@ -289,6 +300,7 @@ func (ctd CanTransferDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate 
 			CoinBase:    common.Address{},
 			BaseFee:     baseFee,
 		}
+
 		stateDB := statedb.New(ctx, ctd.evmKeeper, statedb.NewEmptyTxConfig(common.BytesToHash(ctx.HeaderHash().Bytes())))
 		evm := ctd.evmKeeper.NewEVM(ctx, coreMsg, cfg, evmtypes.NewNoOpTracer(), stateDB)
 

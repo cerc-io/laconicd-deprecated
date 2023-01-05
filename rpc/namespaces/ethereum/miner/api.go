@@ -8,11 +8,7 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/rpc/backend"
-=======
-	"github.com/cerc-io/laconicd/rpc/backend"
->>>>>>> v0.20.0
 )
 
 // API is the private miner prefixed set of APIs in the Miner JSON-RPC spec.

@@ -345,12 +345,6 @@ run-integration-tests:
 .PHONY: run-integration-tests
 
 
-run-integration-tests:
-	@nix-shell ./tests/integration_tests/shell.nix --run ./scripts/run-integration-tests.sh
-
-.PHONY: run-integration-tests
-
-
 test-rpc-pending:
 	./scripts/integration-test-all.sh -t "pending" -q 1 -z 1 -s 2 -m "pending" -r "true"
 

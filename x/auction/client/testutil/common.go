@@ -57,6 +57,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func (s *IntegrationTestSuite) createAccountWithBalance(accountName string, accountAddress *string) {
 	val := s.network.Validators[0]
+	fmt.Println("Validator===========", val.Address)
 	sr := s.Require()
 
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.EthSecp256k1)
@@ -76,4 +77,5 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string, acco
 	)
 	sr.NoError(err)
 	*accountAddress = newAddr.String()
+	fmt.Println("Account address=====", newAddr.String())
 }

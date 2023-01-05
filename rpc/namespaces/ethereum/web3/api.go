@@ -1,11 +1,7 @@
 package web3
 
 import (
-<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/version"
-=======
-	"github.com/cerc-io/laconicd/version"
->>>>>>> v0.20.0
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"

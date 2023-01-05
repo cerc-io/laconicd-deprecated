@@ -833,7 +833,10 @@ func (suite *BackendTestSuite) TestBlockBloom() {
 			&tmrpctypes.ResultBlockResults{
 				EndBlockEvents: []types.Event{
 					{
-						Type: evmtethsecp256k1
+						Type: evmtypes.EventTypeBlockBloom,
+						Attributes: []types.EventAttribute{
+							{Key: []byte(evmtypes.AttributeKeyEthereumTxHash)},
+						},
 					},
 				},
 			},
@@ -854,7 +857,9 @@ func (suite *BackendTestSuite) TestBlockBloom() {
 			},
 			ethtypes.Bloom{},
 			true,
-		},ethsecp256k1
+		},
+	}
+	for _, tc := range testCases {
 		suite.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			blockBloom, err := suite.backend.BlockBloom(tc.blockRes)
 

@@ -5,19 +5,11 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 
-<<<<<<< HEAD
 	"github.com/cerc-io/laconicd/rpc/types"
 )
 
 // PublicAPI offers and API for the transaction pool. It only operates on data that is non-confidential.
 // NOTE: For more info about the current status of this endpoints see https://github.com/cerc-io/laconicd/issues/124
-=======
-	"github.com/cerc-io/laconicd/rpc/types"
-)
-
-// PublicAPI offers and API for the transaction pool. It only operates on data that is non-confidential.
-// NOTE: For more info about the current status of this endpoints see https://github.com/cerc-io/laconicd/issues/124
->>>>>>> v0.20.0
 type PublicAPI struct {
 	logger log.Logger
 }

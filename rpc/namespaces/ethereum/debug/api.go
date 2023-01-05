@@ -14,11 +14,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 
-<<<<<<< HEAD
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
-=======
-	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
->>>>>>> v0.20.0
 
 	stderrors "github.com/pkg/errors"
 
@@ -30,8 +26,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/consensus/ethash"
 	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/cerc-io/laconicd/rpc/backend"
-	rpctypes "github.com/cerc-io/laconicd/rpc/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 

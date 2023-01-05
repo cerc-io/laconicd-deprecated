@@ -121,19 +121,6 @@ func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
-<<<<<<< HEAD
-
-	m := keeper.NewMigrator(*am.keeper)
-	err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
-	if err != nil {
-		panic(err)
-	}
-	err = cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3)
-	if err != nil {
-		panic(err)
-	}
-=======
->>>>>>> v0.20.0
 }
 
 // Route returns the message routing key for the evm module.
@@ -179,22 +166,12 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 }
 
 // RandomizedParams creates randomized evm param changes for the simulator.
-<<<<<<< HEAD
-func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return simulation.ParamChanges(r)
-}
-
-// RegisterStoreDecoder registers a decoder for evm module's types
-func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewDecodeStore()
-=======
 func (AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
 	return nil
 }
 
 // RegisterStoreDecoder registers a decoder for evm module's types
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {
->>>>>>> v0.20.0
 }
 
 // ProposalContents doesn't return any content functions for governance proposals.
@@ -207,13 +184,6 @@ func (AppModule) GenerateGenesisState(_ *module.SimulationState) {
 }
 
 // WeightedOperations returns the all the evm module operations with their respective weights.
-<<<<<<< HEAD
-func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc, am.ak, am.keeper,
-	)
-=======
 func (am AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	return nil
->>>>>>> v0.20.0
 }
