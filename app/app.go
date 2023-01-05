@@ -188,7 +188,7 @@ var (
 		stakingtypes.NotBondedPoolName:               {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:                          {authtypes.Burner},
 		ibctransfertypes.ModuleName:                  {authtypes.Minter, authtypes.Burner},
-		evmtypes.ModuleName:                          {authtypes.Minter, authtypes.Burner}, // used for secure addition and subtraction of balance using module account
+		evmtypes.ModuleName:                          {authtypes.Minter, authtypes.Burner}, //nolint:lll // used for secure addition and subtraction of balance using module account
 		auctiontypes.ModuleName:                      nil,
 		auctiontypes.AuctionBurnModuleAccountName:    nil,
 		registrytypes.ModuleName:                     nil,
@@ -715,7 +715,7 @@ func (app *EthermintApp) setAnteHandler(txConfig client.TxConfig, maxGasWanted u
 		FeeMarketKeeper:        app.FeeMarketKeeper,
 		MaxTxGasWanted:         maxGasWanted,
 		ExtensionOptionChecker: ethermint.HasDynamicFeeExtensionOption,
-		TxFeeChecker:           ante.NewDynamicFeeChecker(app.EvmKeeper),
+		// TxFeeChecker:           ante.NewDynamicFeeChecker(app.EvmKeeper),
 	})
 	if err != nil {
 		panic(err)
