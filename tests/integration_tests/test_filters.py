@@ -670,8 +670,7 @@ def assert_change_greet_log_data(log, new_greeting):
     types = ["address", "string"]
     names = ["from", "value"]
     values = abi.decode_abi(types, log["data"])
-    log_data = dict(zip(names, values)// Start the GQL Server
-	go gql.Server(clientCtx))
+    log_data = dict(zip(names, values))
 
     # the address stored in the data field may defer on lower/upper case characters
     # then, set all as lowercase for assertion
