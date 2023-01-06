@@ -213,12 +213,10 @@ func NewCLILogger(cmd *cobra.Command) CLILogger {
 }
 
 // New creates a new Network for integration tests or in-process testnets run via the CLI
-// nosemgrep: missing-unlock-before-return
 func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 	// only one caller/test can create and use a network at a time
 	l.Log("acquiring test network lock")
 	lock.Lock()
-	// defer lock.Unlock()
 
 	if !ethermint.IsValidChainID(cfg.ChainID) {
 		return nil, fmt.Errorf("invalid chain-id: %s", cfg.ChainID)
