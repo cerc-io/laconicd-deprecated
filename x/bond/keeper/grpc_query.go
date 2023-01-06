@@ -46,7 +46,9 @@ func (q Querier) GetBondsByOwner(c context.Context, req *types.QueryGetBondsByOw
 	return &types.QueryGetBondsByOwnerResponse{Bonds: bonds}, nil
 }
 
-func (q Querier) GetBondsModuleBalance(c context.Context, _ *types.QueryGetBondModuleBalanceRequest) (*types.QueryGetBondModuleBalanceResponse, error) {
+func (q Querier) GetBondsModuleBalance(c context.Context,
+	_ *types.QueryGetBondModuleBalanceRequest,
+) (*types.QueryGetBondModuleBalanceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	balance := q.Keeper.GetBondModuleBalances(ctx)
 	return &types.QueryGetBondModuleBalanceResponse{Balance: balance}, nil
