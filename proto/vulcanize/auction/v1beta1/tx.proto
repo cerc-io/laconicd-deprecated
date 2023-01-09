@@ -2,6 +2,7 @@ syntax = "proto3";
 package vulcanize.auction.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
 import "google/protobuf/duration.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "vulcanize/auction/v1beta1/types.proto";
@@ -85,11 +86,17 @@ message MsgRevealBidResponse {
 // Tx defines the gRPC tx interface
 service Msg {
   // CreateAuction is the command for creating an auction
-  rpc CreateAuction(MsgCreateAuction) returns (MsgCreateAuctionResponse);
+  rpc CreateAuction(MsgCreateAuction) returns (MsgCreateAuctionResponse) {
+    option (google.api.http).post = "/vulcanize/auction/v1beta1/create_auction";
+  };
 
   // CommitBid is the command for committing a bid
-  rpc CommitBid(MsgCommitBid) returns (MsgCommitBidResponse);
+  rpc CommitBid(MsgCommitBid) returns (MsgCommitBidResponse) {
+    option (google.api.http).post = "/vulcanize/auction/v1beta1/commit_bid";
+  };
 
   // RevealBid is the command for revealing a bid
-  rpc RevealBid(MsgRevealBid) returns (MsgRevealBidResponse);
+  rpc RevealBid(MsgRevealBid) returns (MsgRevealBidResponse) {
+    option (google.api.http).post = "/vulcanize/auction/v1beta1/reveal_bid";
+  };
 }
