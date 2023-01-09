@@ -47,7 +47,7 @@ func WrapTxToTypedData(
 			attr = append(attr, fmt.Sprintf("%v", b))
 		}
 
-		txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"].(map[string]interface{})["record"].(map[string]interface{})["attributes"] = map[string]interface{}{
+		txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"].(map[string]interface{})["record"].(map[string]interface{})["attributes"] = map[string]interface{}{ //nolint:lll
 			"type_url": setRecordMsg.Payload.Record.Attributes.TypeUrl,
 			"value":    attr,
 		}
