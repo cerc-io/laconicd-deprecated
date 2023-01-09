@@ -19,6 +19,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 
+	registry "github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
@@ -39,6 +40,19 @@ func WrapTxToTypedData(
 		return apitypes.TypedData{}, errorsmod.Wrap(errortypes.ErrJSONUnmarshal, "failed to JSON unmarshal data")
 	}
 
+	if txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"] != nil {
+		setRecordMsg := msg.(*registry.MsgSetRecord)
+		var attr []interface{}
+		for _, b := range setRecordMsg.Payload.Record.Attributes.Value {
+			attr = append(attr, fmt.Sprintf("%v", b))
+		}
+
+		txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"].(map[string]interface{})["record"].(map[string]interface{})["attributes"] = map[string]interface{}{
+			"type_url": setRecordMsg.Payload.Record.Attributes.TypeUrl,
+			"value":    attr,
+		}
+	}
+
 	domain := apitypes.TypedDataDomain{
 		Name:              "Cosmos Web3",
 		Version:           "1.0.0",
@@ -50,6 +64,24 @@ func WrapTxToTypedData(
 	msgTypes, err := extractMsgTypes(cdc, "MsgValue", msg)
 	if err != nil {
 		return apitypes.TypedData{}, err
+	}
+
+	if msgTypes["TypePayloadRecord"] != nil {
+		msgTypes["TypePayloadRecord"] = []apitypes.Type{
+			{Name: "id", Type: "string"},
+			{Name: "bond_id", Type: "string"},
+			{Name: "create_time", Type: "string"},
+			{Name: "expiry_time", Type: "string"},
+			{Name: "deleted", Type: "bool"},
+			{Name: "attributes", Type: "TypePayloadRecordAttributes"},
+		}
+	}
+	if msgTypes["TypePayloadRecordAttributes"] != nil {
+		msgTypes["TypePayloadRecordAttributes"] = []apitypes.Type{
+			{Name: "type_url", Type: "string"},
+			{Name: "value", Type: "uint8[]"},
+		}
+		delete(msgTypes, "TypePayloadRecordAttributesValue")
 	}
 
 	if feeDelegation != nil {

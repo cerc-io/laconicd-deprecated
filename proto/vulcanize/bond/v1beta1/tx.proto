@@ -4,21 +4,30 @@ package vulcanize.bond.v1beta1;
 option go_package = "github.com/cerc-io/laconicd/x/bond/types";
 
 import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 // Msg defines the bond Msg service.
 service Msg {
   // CreateBond defines a method for creating a new bond.
-  rpc CreateBond(MsgCreateBond) returns (MsgCreateBondResponse);
+  rpc CreateBond(MsgCreateBond) returns (MsgCreateBondResponse) {
+    option (google.api.http).post = "/vulcanize/bond/v1beta1/create_bond";
+  };
 
   // RefillBond defines a method for refilling amount for bond.
-  rpc RefillBond(MsgRefillBond) returns (MsgRefillBondResponse);
+  rpc RefillBond(MsgRefillBond) returns (MsgRefillBondResponse) {
+    option (google.api.http).post = "/vulcanize/bond/v1beta1/refill_bond";
+  };
 
   // WithdrawBond defines a method for withdrawing amount from bond.
-  rpc WithdrawBond(MsgWithdrawBond) returns (MsgWithdrawBondResponse);
+  rpc WithdrawBond(MsgWithdrawBond) returns (MsgWithdrawBondResponse) {
+    option (google.api.http).post = "/vulcanize/bond/v1beta1/withdraw_bond";
+  };
 
   // CancelBond defines a method for cancelling a bond.
-  rpc CancelBond(MsgCancelBond) returns (MsgCancelBondResponse);
+  rpc CancelBond(MsgCancelBond) returns (MsgCancelBondResponse) {
+    option (google.api.http).post = "/vulcanize/bond/v1beta1/cancel_bond";
+  };
 }
 
 // MsgCreateBond defines a SDK message for creating a new bond.

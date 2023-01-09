@@ -155,10 +155,12 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 		if record.Deleted {
 			continue
 		}
-		if !all && len(record.Names) == 0 {
+		store := ctx.KVStore(k.storeKey)
+		recordWithNames := recordObjToRecord(store, record)
+		if !all && len(recordWithNames.Names) == 0 {
 			continue
 		}
-		records = append(records, record)
+		records = append(records, recordWithNames)
 	}
 	return records, nil
 }

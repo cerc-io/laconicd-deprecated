@@ -1921,9 +1921,9 @@ Tx defines the gRPC tx interface
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `CreateAuction` | [MsgCreateAuction](#vulcanize.auction.v1beta1.MsgCreateAuction) | [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse) | CreateAuction is the command for creating an auction | |
-| `CommitBid` | [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid) | [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse) | CommitBid is the command for committing a bid | |
-| `RevealBid` | [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid) | [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse) | RevealBid is the command for revealing a bid | |
+| `CreateAuction` | [MsgCreateAuction](#vulcanize.auction.v1beta1.MsgCreateAuction) | [MsgCreateAuctionResponse](#vulcanize.auction.v1beta1.MsgCreateAuctionResponse) | CreateAuction is the command for creating an auction | POST|/vulcanize/auction/v1beta1/create_auction|
+| `CommitBid` | [MsgCommitBid](#vulcanize.auction.v1beta1.MsgCommitBid) | [MsgCommitBidResponse](#vulcanize.auction.v1beta1.MsgCommitBidResponse) | CommitBid is the command for committing a bid | POST|/vulcanize/auction/v1beta1/commit_bid|
+| `RevealBid` | [MsgRevealBid](#vulcanize.auction.v1beta1.MsgRevealBid) | [MsgRevealBidResponse](#vulcanize.auction.v1beta1.MsgRevealBidResponse) | RevealBid is the command for revealing a bid | POST|/vulcanize/auction/v1beta1/reveal_bid|
 
  <!-- end services -->
 
@@ -2313,10 +2313,10 @@ Msg defines the bond Msg service.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `CreateBond` | [MsgCreateBond](#vulcanize.bond.v1beta1.MsgCreateBond) | [MsgCreateBondResponse](#vulcanize.bond.v1beta1.MsgCreateBondResponse) | CreateBond defines a method for creating a new bond. | |
-| `RefillBond` | [MsgRefillBond](#vulcanize.bond.v1beta1.MsgRefillBond) | [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse) | RefillBond defines a method for refilling amount for bond. | |
-| `WithdrawBond` | [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdrawing amount from bond. | |
-| `CancelBond` | [MsgCancelBond](#vulcanize.bond.v1beta1.MsgCancelBond) | [MsgCancelBondResponse](#vulcanize.bond.v1beta1.MsgCancelBondResponse) | CancelBond defines a method for cancelling a bond. | |
+| `CreateBond` | [MsgCreateBond](#vulcanize.bond.v1beta1.MsgCreateBond) | [MsgCreateBondResponse](#vulcanize.bond.v1beta1.MsgCreateBondResponse) | CreateBond defines a method for creating a new bond. | POST|/vulcanize/bond/v1beta1/create_bond|
+| `RefillBond` | [MsgRefillBond](#vulcanize.bond.v1beta1.MsgRefillBond) | [MsgRefillBondResponse](#vulcanize.bond.v1beta1.MsgRefillBondResponse) | RefillBond defines a method for refilling amount for bond. | POST|/vulcanize/bond/v1beta1/refill_bond|
+| `WithdrawBond` | [MsgWithdrawBond](#vulcanize.bond.v1beta1.MsgWithdrawBond) | [MsgWithdrawBondResponse](#vulcanize.bond.v1beta1.MsgWithdrawBondResponse) | WithdrawBond defines a method for withdrawing amount from bond. | POST|/vulcanize/bond/v1beta1/withdraw_bond|
+| `CancelBond` | [MsgCancelBond](#vulcanize.bond.v1beta1.MsgCancelBond) | [MsgCancelBondResponse](#vulcanize.bond.v1beta1.MsgCancelBondResponse) | CancelBond defines a method for cancelling a bond. | POST|/vulcanize/bond/v1beta1/cancel_bond|
 
  <!-- end services -->
 
@@ -2341,6 +2341,7 @@ Msg defines the bond Msg service.
 | `laconic_id` | [string](#string) |  |  |
 | `x500` | [X500](#vulcanize.registry.v1beta1.X500) |  |  |
 | `type` | [string](#string) |  |  |
+| `version` | [string](#string) |  |  |
 
 
 
@@ -2360,6 +2361,7 @@ Msg defines the bond Msg service.
 | `build_artifact_cid` | [string](#string) |  |  |
 | `tls_cert_cid` | [string](#string) |  |  |
 | `type` | [string](#string) |  |  |
+| `version` | [string](#string) |  |  |
 
 
 
@@ -3385,16 +3387,16 @@ Msg
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `SetRecord` | [MsgSetRecord](#vulcanize.registry.v1beta1.MsgSetRecord) | [MsgSetRecordResponse](#vulcanize.registry.v1beta1.MsgSetRecordResponse) | SetRecord will records a new record with given payload and bond id | |
-| `RenewRecord` | [MsgRenewRecord](#vulcanize.registry.v1beta1.MsgRenewRecord) | [MsgRenewRecordResponse](#vulcanize.registry.v1beta1.MsgRenewRecordResponse) | Renew Record will renew the expire record | |
-| `AssociateBond` | [MsgAssociateBond](#vulcanize.registry.v1beta1.MsgAssociateBond) | [MsgAssociateBondResponse](#vulcanize.registry.v1beta1.MsgAssociateBondResponse) | AssociateBond | |
-| `DissociateBond` | [MsgDissociateBond](#vulcanize.registry.v1beta1.MsgDissociateBond) | [MsgDissociateBondResponse](#vulcanize.registry.v1beta1.MsgDissociateBondResponse) | DissociateBond | |
-| `DissociateRecords` | [MsgDissociateRecords](#vulcanize.registry.v1beta1.MsgDissociateRecords) | [MsgDissociateRecordsResponse](#vulcanize.registry.v1beta1.MsgDissociateRecordsResponse) | DissociateRecords | |
-| `ReAssociateRecords` | [MsgReAssociateRecords](#vulcanize.registry.v1beta1.MsgReAssociateRecords) | [MsgReAssociateRecordsResponse](#vulcanize.registry.v1beta1.MsgReAssociateRecordsResponse) | ReAssociateRecords | |
-| `SetName` | [MsgSetName](#vulcanize.registry.v1beta1.MsgSetName) | [MsgSetNameResponse](#vulcanize.registry.v1beta1.MsgSetNameResponse) | SetName will store the name with given crn and name | |
-| `ReserveName` | [MsgReserveAuthority](#vulcanize.registry.v1beta1.MsgReserveAuthority) | [MsgReserveAuthorityResponse](#vulcanize.registry.v1beta1.MsgReserveAuthorityResponse) | Reserve name | |
-| `DeleteName` | [MsgDeleteNameAuthority](#vulcanize.registry.v1beta1.MsgDeleteNameAuthority) | [MsgDeleteNameAuthorityResponse](#vulcanize.registry.v1beta1.MsgDeleteNameAuthorityResponse) | Delete Name method will remove authority name | |
-| `SetAuthorityBond` | [MsgSetAuthorityBond](#vulcanize.registry.v1beta1.MsgSetAuthorityBond) | [MsgSetAuthorityBondResponse](#vulcanize.registry.v1beta1.MsgSetAuthorityBondResponse) | SetAuthorityBond | |
+| `SetRecord` | [MsgSetRecord](#vulcanize.registry.v1beta1.MsgSetRecord) | [MsgSetRecordResponse](#vulcanize.registry.v1beta1.MsgSetRecordResponse) | SetRecord will records a new record with given payload and bond id | POST|/vulcanize/registry/v1beta1/set_record|
+| `RenewRecord` | [MsgRenewRecord](#vulcanize.registry.v1beta1.MsgRenewRecord) | [MsgRenewRecordResponse](#vulcanize.registry.v1beta1.MsgRenewRecordResponse) | Renew Record will renew the expire record | POST|/vulcanize/registry/v1beta1/renew_record|
+| `AssociateBond` | [MsgAssociateBond](#vulcanize.registry.v1beta1.MsgAssociateBond) | [MsgAssociateBondResponse](#vulcanize.registry.v1beta1.MsgAssociateBondResponse) | AssociateBond | POST|/vulcanize/registry/v1beta1/associate_bond|
+| `DissociateBond` | [MsgDissociateBond](#vulcanize.registry.v1beta1.MsgDissociateBond) | [MsgDissociateBondResponse](#vulcanize.registry.v1beta1.MsgDissociateBondResponse) | DissociateBond | POST|/vulcanize/registry/v1beta1/dissociate_bond|
+| `DissociateRecords` | [MsgDissociateRecords](#vulcanize.registry.v1beta1.MsgDissociateRecords) | [MsgDissociateRecordsResponse](#vulcanize.registry.v1beta1.MsgDissociateRecordsResponse) | DissociateRecords | POST|/vulcanize/registry/v1beta1/dissociate_records|
+| `ReAssociateRecords` | [MsgReAssociateRecords](#vulcanize.registry.v1beta1.MsgReAssociateRecords) | [MsgReAssociateRecordsResponse](#vulcanize.registry.v1beta1.MsgReAssociateRecordsResponse) | ReAssociateRecords | POST|/vulcanize/registry/v1beta1/reassociate_records|
+| `SetName` | [MsgSetName](#vulcanize.registry.v1beta1.MsgSetName) | [MsgSetNameResponse](#vulcanize.registry.v1beta1.MsgSetNameResponse) | SetName will store the name with given crn and name | POST|/vulcanize/registry/v1beta1/set_name|
+| `ReserveName` | [MsgReserveAuthority](#vulcanize.registry.v1beta1.MsgReserveAuthority) | [MsgReserveAuthorityResponse](#vulcanize.registry.v1beta1.MsgReserveAuthorityResponse) | Reserve name | POST|/vulcanize/registry/v1beta1/reserve_name|
+| `DeleteName` | [MsgDeleteNameAuthority](#vulcanize.registry.v1beta1.MsgDeleteNameAuthority) | [MsgDeleteNameAuthorityResponse](#vulcanize.registry.v1beta1.MsgDeleteNameAuthorityResponse) | Delete Name method will remove authority name | POST|/vulcanize/registry/v1beta1/delete_name|
+| `SetAuthorityBond` | [MsgSetAuthorityBond](#vulcanize.registry.v1beta1.MsgSetAuthorityBond) | [MsgSetAuthorityBondResponse](#vulcanize.registry.v1beta1.MsgSetAuthorityBondResponse) | SetAuthorityBond | POST|/vulcanize/registry/v1beta1/set_authority_bond|
 
  <!-- end services -->
 
