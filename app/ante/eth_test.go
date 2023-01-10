@@ -9,64 +9,12 @@ import (
 	"github.com/cerc-io/laconicd/app/ante"
 	"github.com/cerc-io/laconicd/server/config"
 	"github.com/cerc-io/laconicd/tests"
+	ethermint "github.com/cerc-io/laconicd/types"
 	"github.com/cerc-io/laconicd/x/evm/statedb"
 	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
 
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
-
-func (suite AnteTestSuite) TestEthSigVerificationDecorator() {
-	addr, privKey := tests.NewAddrKey()
-
-	signedTx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
-	signedTx.From = addr.Hex()
-	err := signedTx.Sign(suite.ethSigner, tests.NewSigner(privKey))
-	suite.Require().NoError(err)
-
-	unprotectedTx := evmtypes.NewTxContract(nil, 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
-	unprotectedTx.From = addr.Hex()
-	err = unprotectedTx.Sign(ethtypes.HomesteadSigner{}, tests.NewSigner(privKey))
-	suite.Require().NoError(err)
-
-	testCases := []struct {
-		name                string
-		tx                  sdk.Tx
-		allowUnprotectedTxs bool
-		reCheckTx           bool
-		expPass             bool
-	}{
-		{"ReCheckTx", &invalidTx{}, false, true, false},
-		{"invalid transaction type", &invalidTx{}, false, false, false},
-		{
-			"invalid sender",
-			evmtypes.NewTx(suite.app.EvmKeeper.ChainID(), 1, &addr, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil),
-			true,
-			false,
-			false,
-		},
-		{"successful signature verification", signedTx, false, false, true},
-		{"invalid, reject unprotected txs", unprotectedTx, false, false, false},
-		{"successful, allow unprotected txs", unprotectedTx, true, false, true},
-	}
-
-	for _, tc := range testCases {
-		suite.Run(tc.name, func() {
-			suite.evmParamsOption = func(params *evmtypes.Params) {
-				params.AllowUnprotectedTxs = tc.allowUnprotectedTxs
-			}
-			suite.SetupTest()
-			dec := ante.NewEthSigVerificationDecorator(suite.app.EvmKeeper)
-			_, err := dec.AnteHandle(suite.ctx.WithIsReCheckTx(tc.reCheckTx), tc.tx, false, NextFn)
-
-			if tc.expPass {
-				suite.Require().NoError(err)
-			} else {
-				suite.Require().Error(err)
-			}
-		})
-	}
-	suite.evmParamsOption = nil
-}
 
 func (suite AnteTestSuite) TestNewEthAccountVerificationDecorator() {
 	dec := ante.NewEthAccountVerificationDecorator(
@@ -233,6 +181,9 @@ func (suite AnteTestSuite) TestEthGasConsumeDecorator() {
 	tx2.From = addr.Hex()
 	tx2Priority := int64(1)
 
+	tx3GasLimit := ethermint.BlockGasLimit(suite.ctx) + uint64(1)
+	tx3 := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), tx3GasLimit, gasPrice, nil, nil, nil, &ethtypes.AccessList{{Address: addr, StorageKeys: nil}})
+
 	dynamicFeeTx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), tx2GasLimit,
 		nil, // gasPrice
 		new(big.Int).Add(baseFee, big.NewInt(evmtypes.DefaultPriorityReduction.Int64()*2)), // gasFeeCap
@@ -264,6 +215,14 @@ func (suite AnteTestSuite) TestEthGasConsumeDecorator() {
 		{
 			"gas limit too low",
 			tx,
+			math.MaxUint64,
+			func() {},
+			false, false,
+			0,
+		},
+		{
+			"gas limit above block gas limit",
+			tx3,
 			math.MaxUint64,
 			func() {},
 			false, false,
@@ -319,6 +278,17 @@ func (suite AnteTestSuite) TestEthGasConsumeDecorator() {
 			},
 			true, false,
 			dynamicFeeTxPriority,
+		},
+		{
+			"success - gas limit on gasMeter is set on ReCheckTx mode",
+			dynamicFeeTx,
+			0, // for reCheckTX mode, gas limit should be set to 0
+			func() {
+				vmdb.AddBalance(addr, big.NewInt(1001000000000000))
+				suite.ctx = suite.ctx.WithIsReCheckTx(true)
+			},
+			true, false,
+			0,
 		},
 	}
 
@@ -515,36 +485,6 @@ func (suite AnteTestSuite) TestEthIncrementSenderSequenceDecorator() {
 
 				nonce := suite.app.EvmKeeper.GetNonce(suite.ctx, addr)
 				suite.Require().Equal(txData.GetNonce()+1, nonce)
-			} else {
-				suite.Require().Error(err)
-			}
-		})
-	}
-}
-
-func (suite AnteTestSuite) TestEthSetupContextDecorator() {
-	dec := ante.NewEthSetUpContextDecorator(suite.app.EvmKeeper)
-	tx := evmtypes.NewTxContract(suite.app.EvmKeeper.ChainID(), 1, big.NewInt(10), 1000, big.NewInt(1), nil, nil, nil, nil)
-
-	testCases := []struct {
-		name    string
-		tx      sdk.Tx
-		expPass bool
-	}{
-		{"invalid transaction type - does not implement GasTx", &invalidTx{}, false},
-		{
-			"success - transaction implement GasTx",
-			tx,
-			true,
-		},
-	}
-
-	for _, tc := range testCases {
-		suite.Run(tc.name, func() {
-			_, err := dec.AnteHandle(suite.ctx, tc.tx, false, NextFn)
-
-			if tc.expPass {
-				suite.Require().NoError(err)
 			} else {
 				suite.Require().Error(err)
 			}

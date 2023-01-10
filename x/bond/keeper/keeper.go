@@ -39,7 +39,13 @@ type Keeper struct {
 }
 
 // NewKeeper creates new instances of the bond Keeper
-func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, usageKeepers []types.BondUsageKeeper, storeKey storetypes.StoreKey, ps paramtypes.Subspace) Keeper {
+func NewKeeper(cdc codec.BinaryCodec,
+	accountKeeper auth.AccountKeeper,
+	bankKeeper bank.Keeper,
+	usageKeepers []types.BondUsageKeeper,
+	storeKey storetypes.StoreKey,
+	ps paramtypes.Subspace,
+) Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())

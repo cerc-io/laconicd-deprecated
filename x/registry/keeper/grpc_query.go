@@ -60,7 +60,9 @@ func (q Querier) GetRecordByBondID(c context.Context, req *types.QueryRecordByBo
 	return &types.QueryRecordByBondIDResponse{Records: records}, nil
 }
 
-func (q Querier) GetRegistryModuleBalance(c context.Context, _ *types.GetRegistryModuleBalanceRequest) (*types.GetRegistryModuleBalanceResponse, error) {
+func (q Querier) GetRegistryModuleBalance(c context.Context,
+	_ *types.GetRegistryModuleBalanceRequest,
+) (*types.GetRegistryModuleBalanceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	balances := q.Keeper.GetModuleBalances(ctx)
 	return &types.GetRegistryModuleBalanceResponse{
@@ -109,7 +111,9 @@ func (q Querier) GetRecordExpiryQueue(c context.Context, _ *types.QueryGetRecord
 	return &types.QueryGetRecordExpiryQueueResponse{Records: records}, nil
 }
 
-func (q Querier) GetAuthorityExpiryQueue(c context.Context, _ *types.QueryGetAuthorityExpiryQueue) (*types.QueryGetAuthorityExpiryQueueResponse, error) {
+func (q Querier) GetAuthorityExpiryQueue(c context.Context,
+	_ *types.QueryGetAuthorityExpiryQueue,
+) (*types.QueryGetAuthorityExpiryQueueResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	authorities := q.Keeper.GetAuthorityExpiryQueue(ctx)
 	return &types.QueryGetAuthorityExpiryQueueResponse{Authorities: authorities}, nil

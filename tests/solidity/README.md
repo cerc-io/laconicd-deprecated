@@ -32,9 +32,9 @@ You will now have three ethereum accounts unlocked in the test node:
 - `0xddd64b4712f7c8f1ace3c145c950339eddaf221d` (User 1)
 - `0x0f54f47bf9b8e317b214ccd6a7c3e38b893cd7f0` (user 2)
 
-Keep the terminal window open, go into any of the tests and run `yarn test-ethermint`. You should see `laconicd` accepting transactions and producing blocks. You should be able to query for any transaction via:
+Keep the terminal window open, go into any of the tests and run `yarn test-ethermint`. You should see `ethermintd` accepting transactions and producing blocks. You should be able to query for any transaction via:
 
-- `laconicd query tx <cosmos-sdk tx>`
+- `ethermintd query tx <cosmos-sdk tx>`
 - `curl localhost:8545 -H "Content-Type:application/json" -X POST --data '{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["<ethereum tx>"],"id":1}'`
 
 From here, in your other available terminal,

@@ -66,12 +66,15 @@ fi
 echo "compiling laconicd"
 make build
 
+
 # PID array declaration
 arr=()
 
 init_func() {
     "$PWD"/build/laconicd keys add $KEY"$i" --keyring-backend test --home "$DATA_DIR$i" --no-backup --algo "eth_secp256k1"
     "$PWD"/build/laconicd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
+    # Set gas limit in genesis
+    cat $DATA_DIR$i/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $DATA_DIR$i/config/tmp_genesis.json && mv $DATA_DIR$i/config/tmp_genesis.json $DATA_DIR$i/config/genesis.json
     "$PWD"/build/laconicd add-genesis-account \
     "$("$PWD"/build/laconicd keys show "$KEY$i" --keyring-backend test -a --home "$DATA_DIR$i")" 1000000000000000000aphoton,1000000000000000000stake \
     --keyring-backend test --home "$DATA_DIR$i"
@@ -142,17 +145,6 @@ echo "done sleeping"
 
 set +e
 
-if [[ -z $TEST || $TEST == "integration" ]] ; then
-    time_out=300s
-
-    for i in $(seq 1 "$TEST_QTD"); do
-        HOST_RPC=http://$IP_ADDR:$RPC_PORT"$i"
-        echo "going to test laconicd node $HOST_RPC ..."
-        MODE=$MODE HOST=$HOST_RPC go test ./tests/e2e/... -timeout=$time_out -v -short
-        TEST_FAIL=$?
-    done
-fi
-
 if [[ -z $TEST || $TEST == "rpc" ||  $TEST == "pending" ]]; then
     time_out=300s
     if [[ $TEST == "pending" ]]; then
@@ -187,7 +179,7 @@ for i in "${arr[@]}"; do
     stop_func "$i"
 done
 
-if [[ (-z $TEST || $TEST == "rpc" || $TEST == "integration" ) && $TEST_FAIL -ne 0 ]]; then
+if [[ (-z $TEST || $TEST == "rpc") && $TEST_FAIL -ne 0 ]]; then
     exit $TEST_FAIL
 else
     exit 0

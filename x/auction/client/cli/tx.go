@@ -3,7 +3,7 @@ package cli
 import (
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -134,7 +134,7 @@ func GetCmdCommitBid() *cobra.Command {
 			}
 
 			// Save reveal file.
-			err = ioutil.WriteFile(fmt.Sprintf("%s-%s.json", clientCtx.GetFromName(), commitHash), content, 0o600)
+			err = os.WriteFile(fmt.Sprintf("%s-%s.json", clientCtx.GetFromName(), commitHash), content, 0o600)
 			if err != nil {
 				return err
 			}
@@ -169,7 +169,7 @@ func GetCmdRevealBid() *cobra.Command {
 			auctionID := args[0]
 			revealFilePath := args[1]
 
-			revealBytes, err := ioutil.ReadFile(revealFilePath) // #nosec G304
+			revealBytes, err := os.ReadFile(revealFilePath) // #nosec G304
 			if err != nil {
 				return err
 			}
