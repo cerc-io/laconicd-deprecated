@@ -53,19 +53,6 @@ func WrapTxToTypedData(
 		}
 	}
 
-	if txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"] != nil {
-		setRecordMsg := msg.(*registry.MsgSetRecord)
-		var attr []interface{}
-		for _, b := range setRecordMsg.Payload.Record.Attributes.Value {
-			attr = append(attr, fmt.Sprintf("%v", b))
-		}
-
-		txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"].(map[string]interface{})["record"].(map[string]interface{})["attributes"] = map[string]interface{}{
-			"type_url": setRecordMsg.Payload.Record.Attributes.TypeUrl,
-			"value":    attr,
-		}
-	}
-
 	domain := apitypes.TypedDataDomain{
 		Name:              "Cosmos Web3",
 		Version:           "1.0.0",
