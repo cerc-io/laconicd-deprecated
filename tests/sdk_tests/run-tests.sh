@@ -3,7 +3,7 @@ if [ -n "$CERC_SCRIPT_DEBUG" ]; then
     set -x
 fi
 # Get the key from laconicd
-laconicd_key=$( docker compose exec laconicd echo y | laconicd keys export mykey --unarmored-hex --unsafe )
+laconicd_key=$( docker compose exec laconicd echo y | docker compose exec laconicd laconicd keys export mykey --unarmored-hex --unsafe )
 # Set parameters for the test suite
 cosmos_chain_id=laconic_9000-1
 laconicd_rest_endpoint=http://laconicd:1317
