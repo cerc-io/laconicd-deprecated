@@ -5,22 +5,24 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/cerc-io/laconicd/x/registry/types";
 
-message ServiceProviderRegistration {
+message ServiceProviderRecord {
   string bond_id    = 1 [(gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""];
   string laconic_id = 2 [(gogoproto.moretags) = "json:\"laconicId\" yaml:\"laconicId\""];
   X500   x500       = 3 [(gogoproto.moretags) = "json:\"x500\" yaml:\"x500\""];
   string type       = 4 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
   string version    = 6 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+
+  message X500 {
+    string common_name       = 1 [(gogoproto.moretags) = "json:\"commonName\" yaml:\"commonName\""];
+    string organization_unit = 2 [(gogoproto.moretags) = "json:\"organizationUnit\" yaml:\"organizationUnit\""];
+    string organization_name = 3 [(gogoproto.moretags) = "json:\"organizationName\" yaml:\"organizationName\""];
+    string locality_name     = 4 [(gogoproto.moretags) = "json:\"localityName\" yaml:\"localityName\""];
+    string state_name        = 5 [(gogoproto.moretags) = "json:\"stateName\" yaml:\"stateName\""];
+    string country           = 6 [(gogoproto.moretags) = "json:\"country\" yaml:\"country\""];
+  }
 }
 
-message X500 {
-  string common_name       = 1 [(gogoproto.moretags) = "json:\"commonName\" yaml:\"commonName\""];
-  string organization_unit = 2 [(gogoproto.moretags) = "json:\"organizationUnit\" yaml:\"organizationUnit\""];
-  string organization_name = 3 [(gogoproto.moretags) = "json:\"organizationName\" yaml:\"organizationName\""];
-  string locality_name     = 4 [(gogoproto.moretags) = "json:\"localityName\" yaml:\"localityName\""];
-  string state_name        = 5 [(gogoproto.moretags) = "json:\"stateName\" yaml:\"stateName\""];
-  string country           = 6 [(gogoproto.moretags) = "json:\"country\" yaml:\"country\""];
-}
+
 
 message WebsiteRegistrationRecord {
   string url                          = 1 [(gogoproto.moretags) = "json:\"url\" yaml:\"url\""];
@@ -30,4 +32,172 @@ message WebsiteRegistrationRecord {
   string tls_cert_cid       = 4 [(gogoproto.moretags) = "json:\"TLSCertCID\" yaml:\"TLSCertCID\""];
   string type               = 5 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
   string version            = 6 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+}
+
+message GitRepository{
+  string name =1  [(gogoproto.moretags) = "json:\"name\" yaml:\"name\""];
+  string repo_reference=2 [(gogoproto.moretags) = "json:\"repo_reference\" yaml:\"repo_reference\""];
+  string description=3  [(gogoproto.moretags) = "json:\"description\" yaml:\"description\""];
+  string version            = 4 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+}
+
+message Binary{
+  string raw_multicodec=1;
+  string raw_binary=2;
+  string targeted_arch=3;
+  string runtime_version=4;
+  string repo_reference=5;
+  string version=6;
+  string type=7;
+}
+
+message DockerImage{
+  string image_id=1;
+  string image_binary=2;
+  string reference_repo=3;
+  string version=4;
+  string type=5;
+}
+
+message WatcherRegistrationRecord{
+  WatcherMetadata metadata =1;
+  string repo_reference=2;
+  WASMBinary wasm=3;
+  string version=4;
+  string type=5;
+
+  message WatcherMetadata{
+    string version=1;
+    string chain_reference=2;
+  }
+
+  message WASMBinary{
+    string reference=1;
+    WASMBinaryMetadata metadata=2;
+  }
+  
+  message WASMBinaryMetadata{
+    string compiler_version=1;
+    string execution_engine_version=2;
+  }
+}
+
+message ResponderContract{
+  string service_provider_ref=1;
+  string auction_ref=2;
+  string watcher_ref=3;
+  string version=4;
+  string type=5;
+}
+
+message NPMPackage{
+  string repo_reference=1;
+  string npm_package_ref=2;
+  string version=3;
+  string type=4;
+}
+
+message ChainRegistrationRecord{
+  string name=1;
+  repeated string ipld_types=2;
+  string type=3;
+  string version=4;
+}
+
+message AppRecord{
+  string id=1;
+  string name=2;
+  string package=3;
+  string type=4;
+  string version=5;
+  string build=6;
+  string display_name=7;
+}
+
+message BotRecord{
+  string type=1;
+  string version=2;
+  string display_name=3;
+  string name =4;
+  Packages packages=5;
+
+  message Packages{
+
+    // method 1
+    map<string,Build> os =1;
+    
+    message Build{
+      map<string,string> build=1;  
+    }
+
+    // method 2
+    map<string,string> ref =3; // contains os and build together as key ex: macosx64:.... instead of macos:{x64:....,}
+  }
+}
+
+message Resource{
+  string version=1;
+  Docker docker=2;
+  string name=3;
+  string type=4;
+
+  message Docker{
+    string hash=1;
+    string url=2;
+  }
+}
+
+message WNS{
+  string name=1;
+  string type=2;
+  string version=3;
+  Endpoint wns_endpoints=4;
+
+  message Endpoint{
+    string rpc=1;
+  }
+}
+
+message Service{
+  string type=1;
+  string name=2;
+  string version=3;
+  string service=4;
+  string description=5;
+  
+  // method 1
+  Tag tag=10;
+  
+  message Tag{
+    map<string,string> tags=1;
+    repeated string addresses=2; // will be empty if its not IPFS 
+  }
+
+  // method 2
+  oneof tags{
+    IPFS ipfs=6;
+    Signal signal=7;
+    STUN stun=8;
+    TURN turn=9;
+  }
+
+  message IPFS{
+    string protocol=1;
+    repeated string addresses=2;
+  }
+
+  message Signal{
+    string url=1;
+    string bootstrap=2;
+  }
+
+  message STUN{
+    string url=1;
+  }
+
+  message TURN{
+    string url=1;
+    string username=2;
+    string password=3;
+  }
 }
