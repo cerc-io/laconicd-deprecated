@@ -1,8 +1,6 @@
 package gql
 
 import (
-	"bytes"
-	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -12,23 +10,10 @@ import (
 //
 // For more information, see https://github.com/graphql/graphiql.
 
-func respond(w http.ResponseWriter, body []byte, code int) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.WriteHeader(code)
-	_, _ = w.Write(body)
-}
-
-func errorJSON(msg string) []byte {
-	buf := bytes.Buffer{}
-	fmt.Fprintf(&buf, `{"error": "%s"}`, msg)
-	return buf.Bytes()
-}
-
 func PlaygroundHandler(apiURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
-			respond(w, errorJSON("only GET requests are supported"), http.StatusMethodNotAllowed)
+			http.Error(w, "only GET requests are supported", http.StatusMethodNotAllowed)
 			return
 		}
 		w.Header().Set("Content-Type", "text/html")
@@ -158,7 +143,6 @@ var page = template.Must(template.New("graphiql").Parse(`
       ReactDOM.render(
         React.createElement(GraphiQL, {
           fetcher: GraphiQL.createFetcher({
-            // subscriptionUrl: 'ws://localhost:8081/subscriptions',
             url: {{.apiURL}}
           }),
           query: parameters.query,
