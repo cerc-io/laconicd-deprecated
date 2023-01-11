@@ -28,12 +28,15 @@ type EVMKeeper interface {
 	DynamicFeeEVMKeeper
 
 	NewEVM(ctx sdk.Context, msg core.Message, cfg *evmtypes.EVMConfig, tracer vm.EVMLogger, stateDB vm.StateDB) evm.EVM
-	DeductTxCostsFromUserBalance(
-		ctx sdk.Context, msgEthTx evmtypes.MsgEthereumTx, txData evmtypes.TxData, denom string, homestead, istanbul, london bool,
-	) (fees sdk.Coins, priority int64, err error)
+	DeductTxCostsFromUserBalance(ctx sdk.Context, fees sdk.Coins, from common.Address) error
 	GetBalance(ctx sdk.Context, addr common.Address) *big.Int
 	ResetTransientGasUsed(ctx sdk.Context)
 	GetTxIndexTransient(ctx sdk.Context) uint64
+	GetChainConfig(ctx sdk.Context) evmtypes.ChainConfig
+	GetEVMDenom(ctx sdk.Context) string
+	GetEnableCreate(ctx sdk.Context) bool
+	GetEnableCall(ctx sdk.Context) bool
+	GetAllowUnprotectedTxs(ctx sdk.Context) bool
 }
 
 type protoTxProvider interface {
@@ -44,4 +47,5 @@ type protoTxProvider interface {
 type FeeMarketKeeper interface {
 	GetParams(ctx sdk.Context) (params feemarkettypes.Params)
 	AddTransientGasWanted(ctx sdk.Context, gasWanted uint64) (uint64, error)
+	GetBaseFeeEnabled(ctx sdk.Context) bool
 }
