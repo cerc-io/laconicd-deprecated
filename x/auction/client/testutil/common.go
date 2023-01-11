@@ -59,7 +59,7 @@ func (s *IntegrationTestSuite) createAccountWithBalance(accountName string, acco
 	val := s.network.Validators[0]
 	sr := s.Require()
 
-	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.EthSecp256k1)
+	info, _, err := val.ClientCtx.Keyring.NewMnemonic(accountName, keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.EthSecp256k1) //nolint:lll
 	sr.NoError(err)
 
 	newAddr, _ := info.GetAddress()

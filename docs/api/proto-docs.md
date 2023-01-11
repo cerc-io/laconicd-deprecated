@@ -423,6 +423,7 @@ TraceConfig holds extra parameters to trace functions.
 | `overrides` | [ChainConfig](#ethermint.evm.v1.ChainConfig) |  | Chain overrides, can be used to execute a trace using future fork rules |
 | `enable_memory` | [bool](#bool) |  | enable memory capture |
 | `enable_return_data` | [bool](#bool) |  | enable return data capture |
+| `tracer_json_config` | [string](#string) |  | tracer config |
 
 
 
@@ -710,6 +711,8 @@ EthCallRequest defines EthCall request
 | ----- | ---- | ----- | ----------- |
 | `args` | [bytes](#bytes) |  | same json format as the json rpc api. |
 | `gas_cap` | [uint64](#uint64) |  | the default gas cap to be used |
+| `proposer_address` | [bytes](#bytes) |  | the proposer of the requested block |
+| `chain_id` | [int64](#int64) |  | the eip155 chain id parsed from the requested block header |
 
 
 
@@ -939,6 +942,8 @@ QueryTraceBlockRequest defines TraceTx request
 | `block_number` | [int64](#int64) |  | block number |
 | `block_hash` | [string](#string) |  | block hex hash |
 | `block_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | block time |
+| `proposer_address` | [bytes](#bytes) |  | the proposer of the requested block |
+| `chain_id` | [int64](#int64) |  | the eip155 chain id parsed from the requested block header |
 
 
 
@@ -974,6 +979,8 @@ QueryTraceTxRequest defines TraceTx request
 | `block_number` | [int64](#int64) |  | block number of requested transaction |
 | `block_hash` | [string](#string) |  | block hex hash of requested transaction |
 | `block_time` | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | block time of requested transaction |
+| `proposer_address` | [bytes](#bytes) |  | the proposer of the requested block |
+| `chain_id` | [int64](#int64) |  | the eip155 chain id parsed from the requested block header |
 
 
 

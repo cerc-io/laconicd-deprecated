@@ -21,6 +21,7 @@ const (
 
 // GRPC-related flags.
 const (
+	GRPCOnly       = "grpc-only"
 	GRPCEnable     = "grpc.enable"
 	GRPCAddress    = "grpc.address"
 	GRPCWebEnable  = "grpc-web.enable"
@@ -50,6 +51,10 @@ const (
 	JSONRPCAllowUnprotectedTxs = "json-rpc.allow-unprotected-txs"
 	JSONRPCMaxOpenConnections  = "json-rpc.max-open-connections"
 	JSONRPCEnableIndexer       = "json-rpc.enable-indexer"
+	// JSONRPCEnableMetrics enables EVM RPC metrics server.
+	// Set to `metrics` which is hardcoded flag from go-ethereum.
+	// https://github.com/ethereum/go-ethereum/blob/master/metrics/metrics.go#L35-L55
+	JSONRPCEnableMetrics = "metrics"
 )
 
 // EVM flags
@@ -70,9 +75,9 @@ func AddTxFlags(cmd *cobra.Command) (*cobra.Command, error) {
 	cmd.PersistentFlags().String(flags.FlagFrom, "", "Name or address of private key with which to sign")
 	cmd.PersistentFlags().String(flags.FlagFees, "", "Fees to pay along with transaction; eg: 10aphoton")
 	cmd.PersistentFlags().String(flags.FlagGasPrices, "", "Gas prices to determine the transaction fee (e.g. 10aphoton)")
-	cmd.PersistentFlags().String(flags.FlagGas, "300000", "gas limit to set per-transaction; set to auto to calculate sufficient gas automatically. Note: auto option doesn't always report accurate results. Set a valid coin value to adjust the result. Can be used instead of fees. (default 300000)")
-	cmd.PersistentFlags().String(flags.FlagNode, "tcp://localhost:26657", "<host>:<port> to tendermint rpc interface for this chain")                                                                                                   //nolint:lll
-	cmd.PersistentFlags().Float64(flags.FlagGasAdjustment, flags.DefaultGasAdjustment, "adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored ") //nolint:lll
+	cmd.PersistentFlags().String(flags.FlagGas, "300000", "gas limit to set per-transaction; set to auto to calculate sufficient gas automatically. Note: auto option doesn't always report accurate results. Set a valid coin value to adjust the result. Can be used instead of fees. (default 300000)") //nolint:lll
+	cmd.PersistentFlags().String(flags.FlagNode, "tcp://localhost:26657", "<host>:<port> to tendermint rpc interface for this chain")                                                                                                                                                                      //nolint:lll
+	cmd.PersistentFlags().Float64(flags.FlagGasAdjustment, flags.DefaultGasAdjustment, "adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored ")                                                                    //nolint:lll
 	cmd.PersistentFlags().StringP(flags.FlagBroadcastMode, "b", flags.BroadcastSync, "Transaction broadcasting mode (sync|async|block)")
 	cmd.PersistentFlags().String(flags.FlagKeyringBackend, keyring.BackendOS, "Select keyring's backend")
 	cmd.PersistentFlags().BoolP(flags.FlagSkipConfirmation, "y", false, "Skip tx broadcasting prompt confirmation")

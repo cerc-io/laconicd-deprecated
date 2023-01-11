@@ -58,7 +58,12 @@ type AuctionClientKeeper interface {
 }
 
 // NewKeeper creates new instances of the auction Keeper
-func NewKeeper(accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, storeKey storetypes.StoreKey, cdc codec.BinaryCodec, ps params.Subspace) Keeper {
+func NewKeeper(accountKeeper auth.AccountKeeper,
+	bankKeeper bank.Keeper,
+	storeKey storetypes.StoreKey,
+	cdc codec.BinaryCodec,
+	ps params.Subspace,
+) Keeper {
 	if !ps.HasKeyTable() {
 		ps = ps.WithKeyTable(types.ParamKeyTable())
 	}
@@ -585,11 +590,9 @@ func (k Keeper) pickAuctionWinner(ctx sdk.Context, auction *types.Auction) {
 		if secondHighestBid != nil {
 			auction.WinningPrice = secondHighestBid.BidAmount
 		}
-
 		ctx.Logger().Info(fmt.Sprintf("Auction %s winner %s.", auction.Id, auction.WinnerAddress))
 		ctx.Logger().Info(fmt.Sprintf("Auction %s winner bid %s.", auction.Id, auction.WinningBid.String()))
 		ctx.Logger().Info(fmt.Sprintf("Auction %s winner price %s.", auction.Id, auction.WinningPrice.String()))
-
 	} else {
 		ctx.Logger().Info(fmt.Sprintf("Auction %s has no valid revealed bids (no winner).", auction.Id))
 	}
