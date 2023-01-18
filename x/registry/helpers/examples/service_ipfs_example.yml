@@ -1,0 +1,10 @@
+record:
+  type: wrn:service
+  name: example.com/services/ipfs
+  version: 0.0.1
+  service: ipfs
+  description: Helpful description of this IPFS service.
+  ipfs:
+    protocol: ipfs/0.1.0
+    addresses:
+    - "/ip4/192.168.123.56/tcp/4001/p2p/QmR5EQkRx4sLXV3vzgewe3UyXxZJXr4hwL2uwcTScrRtFE"

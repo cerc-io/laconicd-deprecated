@@ -1,0 +1,7 @@
+record:
+  version: 0.1.29
+  docker:
+    hash: df9cb3caa90fa8240dbeb4c3497f74d19d545897ae256bcafc4d3976c5c7940e
+    url: https://hub.docker.com/layers/dxos/xbox/devnet-unstable-0.1.29/images/sha256-df9cb3caa90fa8240dbeb4c3497f74d19d545897ae256bcafc4d3976c5c7940e
+  name: dxos/xbox:devnet-unstable
+  type: wrn:resource

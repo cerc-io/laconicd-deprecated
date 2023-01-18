@@ -1,0 +1,8 @@
+record:
+  type: wrn:service
+  name: example.com/services/stun
+  version: 0.0.1
+  service: stun
+  description: Helpful description of this STUN service.
+  stun:
+    url: stun:my.host.name:3478

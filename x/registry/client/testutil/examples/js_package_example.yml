@@ -1,0 +1,8 @@
+record:
+  repo_hash_reference:
+    /: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
+  js_package_hash_ref:
+    /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
+  version: 1.0.0
+  type: JSPackage
+  name: test-JSPackage

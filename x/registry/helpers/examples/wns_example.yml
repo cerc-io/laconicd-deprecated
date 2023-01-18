@@ -1,0 +1,6 @@
+record:
+  name: ashwinp/wns-good
+  type: wrn:xbox
+  version: 0.0.1
+  wns:
+    rpc: tcp://node1.dxos.network:26657

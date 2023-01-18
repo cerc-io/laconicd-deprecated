@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -180,7 +180,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -209,7 +209,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			func(bondId string) {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/service_provider_example.yml"
+				payloadPath := dir + "/examples/service_provider_example.yml"
 				args := []string{
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -252,7 +252,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -324,7 +324,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -353,7 +353,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 			func(bondId string) {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/service_provider_example.yml"
+				payloadPath := dir + "/examples/service_provider_example.yml"
 				args := []string{
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -626,7 +626,7 @@ func createRecord(bondID string, s *IntegrationTestSuite) {
 
 	dir, err := os.Getwd()
 	sr.NoError(err)
-	payloadPath := dir + "/service_provider_example.yml"
+	payloadPath := dir + "/examples/service_provider_example.yml"
 	args := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

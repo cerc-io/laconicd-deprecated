@@ -107,7 +107,7 @@ message ChainRegistrationRecord{
   string type=3;
   string version=4;
   string chain_id=5;
-  string netwrok_id=6;
+  string network_id=6;
   string genesis_hash=7;
 }
 

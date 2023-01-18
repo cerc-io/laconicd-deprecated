@@ -1,0 +1,15 @@
+record:
+  metadata:
+    version: 0.32.0
+    chain_hash_reference: 
+      /: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
+  repo_hash_reference:
+    /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
+  wasm:
+    hash_reference:
+      /: QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR
+    metadata:
+      compiler_version: 1.15.0  
+      execution_engine_version: 0.16.1
+  version: 1.0.0
+  type: WatcherRegistrationRecord

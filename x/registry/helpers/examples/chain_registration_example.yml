@@ -1,0 +1,12 @@
+record:
+  name: Laconic
+  ipld_types: 
+    - type3
+    - type11
+    - schema2
+    - codec5
+  type: ChainRegistrationRecord
+  version: 0.11.2
+  chain_id: laconic_9000-1
+  network_id: 1392
+  genesis_hash: f6fbe71210275adc7c7ef585a72c065cdb85f0c8d13dea0f229fd7c22d445a26

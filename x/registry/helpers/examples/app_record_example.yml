@@ -1,0 +1,9 @@
+record: 
+  id: wrn:app:d.boreh.am/dbeditor
+  name: d.boreh.am/dbeditor
+  package: 
+    /: QmNg7dcEKAfv8DB355ekYUJDbRVKp27TF7oJ9zSxXoAMy7
+  type: wrn:app
+  version: 0.0.16
+  build: yarn dist
+  displayName: DBDB Editor App
