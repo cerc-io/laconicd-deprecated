@@ -9,7 +9,7 @@ Skip this section if you use docker
 
 This is very similar to building v0.6.0. We keep v 0.6.0 running until v0.7.0 is built and only after the successful build we should replace 0.6.0 binary with v0.7.0. This is to avoid jailing your validator for long downtime.
 The general upgrade plan is the following:
-  1. Install Go v1.19 (we used 1.18 for v0.6.0)
+  1. Install Go v1.19.5 (we used 1.18 for v0.6.0)
   2. Remove old copy of the github repository and build directory
   3. Download the latest laconicd repository and checkout v0.7.0
   4. Build laconicd binary (but not install in this moment)
@@ -17,7 +17,8 @@ The general upgrade plan is the following:
   6. Install recently built new version of laconicd
   7. Start laconicd service
 
-You have ~10 minutes after step 5 to complete steps 6 and 7 before your validator is jailed for downtime. Getting jailed for downtime is not a disaster, however would require manual unjailing.
+>***You have ~10 minutes after step 5 to complete steps 6 and 7 before your validator is jailed for downtime. Getting jailed for downtime is not a disaster, however would require manual unjailing.***
+
 
 
 ### Install Go 1.19
@@ -50,6 +51,8 @@ go version
 
 ### Remove old copy of `laconicd` build
 
+>Attention should be paid that the directory mentioned below is `~/laconicd` and NOT `~/.laconicd`. The latter is the data directory containing all your node data and configuration and it must be kept during the upgrade.
+
 ```sh
 # Remove the previous build directory
 cd ~
@@ -63,7 +66,7 @@ rm -rf laconicd
 git clone https://github.com/cerc-io/laconicd.git
 cd laconicd
 
-# Checkout main branch
+# Checkout 0.7.0 branch
 git fetch --all
 git checkout v0.7.0
 ```
@@ -83,6 +86,12 @@ make VERSION=v0.7.0 build
 
 ```sh
 sudo systemctl stop laconicd
+```
+
+>***Make sure the service is stopped***
+
+```sh
+sudo systemctl status laconicd
 ```
 
 ---
@@ -125,6 +134,7 @@ Upgrade plan:
   3. Create v0.7.0 container
   4. Start v0.7.0 container
 
+>***You have ~10 minutes to complete the upgrade procedure before your validator is jailed for downtime. Getting jailed for downtime is not a disaster, however would require manual unjailing.***
 
 ### Stop running v0.6.0 container
 ```sh
