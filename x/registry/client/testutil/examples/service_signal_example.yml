@@ -1,9 +1,0 @@
-record:
-  type: wrn:service
-  name: example.com/services/signal
-  version: 0.0.1
-  service: signal
-  description: Helpful description of this signal service.
-  signal:
-    url: wss://my.host.name/dxos/signal
-    bootstrap: my.host.name:4000
