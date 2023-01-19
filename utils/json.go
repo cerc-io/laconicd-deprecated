@@ -70,10 +70,13 @@ func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 
 	//This is combination of samples for unmarshalling and linking
 	//see: https://pkg.go.dev/github.com/ipld/go-ipld-prime
-	np := basicnode.Prototype.Any                // Pick a stle for the in-memory data.
-	nb := np.NewBuilder()                        // Create a builder.
-	dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!
-	n := nb.Build()                              // Call 'Build' to get the resulting Node.  (It's immutable!)
+	np := basicnode.Prototype.Any                       // Pick a stle for the in-memory data.
+	nb := np.NewBuilder()                               // Create a builder.
+	err := dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!
+	if err != nil {
+		return "", err
+	}
+	n := nb.Build() // Call 'Build' to get the resulting Node.  (It's immutable!)
 
 	lsys := cidlink.DefaultLinkSystem()
 
