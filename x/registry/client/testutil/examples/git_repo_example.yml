@@ -3,3 +3,4 @@ record:
   repo_reference: https://github.com/cosmos/cosmos-sdk
   description: This is a description string
   version: 0.46.7
+  type: GitRepository

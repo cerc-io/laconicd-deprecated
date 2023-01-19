@@ -37,14 +37,14 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	sr := suite.Require()
 	var recordId string
 	examples := []string{
-		"/..helpers/examples/binary_example.yml",
-		"/..helpers/examples/chain_registration_example.yml",
-		"/..helpers/examples/docker_image_example.yml",
-		"/..helpers/examples/git_repo_example.yml",
-		"/..helpers/examples/js_package_example.yml",
-		"/..helpers/examples/responder_contract_example.yml",
+		"/../helpers/examples/binary_example.yml",
+		"/../helpers/examples/chain_registration_example.yml",
+		"/../helpers/examples/docker_image_example.yml",
+		"/../helpers/examples/git_repo_example.yml",
+		"/../helpers/examples/js_package_example.yml",
+		"/../helpers/examples/responder_contract_example.yml",
 		"/../helpers/examples/service_provider_example.yml",
-		"/..helpers/examples/watcher_registraion_example.yml",
+		"/../helpers/examples/watcher_registraion_example.yml",
 		"/../helpers/examples/website_registration_example.yml",
 	}
 	testCases := []struct {
