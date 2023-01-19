@@ -6,4 +6,4 @@ record:
   repo_hash_reference:
     /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
   version: 1.0.0
-  type: binary
+  type: Binary

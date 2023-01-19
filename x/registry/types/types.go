@@ -68,6 +68,69 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 			}
 			return codectypes.NewAnyWithValue(&attributes)
 		}
+	case "GitRepository":
+		{
+			var attributes GitRepository
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "Binary":
+		{
+			var attributes Binary
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "DockerImage":
+		{
+			var attributes DockerImage
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "WatcherRegistrationRecord":
+		{
+			var attributes WatcherRegistrationRecord
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "ResponderContract":
+		{
+			var attributes ResponderContract
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "JSPackage":
+		{
+			var attributes JSPackage
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "ChainRegistrationRecord":
+		{
+			var attributes ChainRegistrationRecord
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
 	default:
 		return &codectypes.Any{}, fmt.Errorf("unsupported record type %s", recordType.(string))
 	}
