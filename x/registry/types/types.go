@@ -50,9 +50,9 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 	bz := helpers.MarshalMapToJSONBytes(recordPayLoad)
 
 	switch recordType.(string) {
-	case "ServiceProviderRegistration":
+	case "ServiceProviderRecord":
 		{
-			var attributes ServiceProviderRegistration
+			var attributes ServiceProviderRecord
 			err := json.Unmarshal(bz, &attributes)
 			if err != nil {
 				return &codectypes.Any{}, err
@@ -114,9 +114,9 @@ func GetJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
 	var bz []byte
 	s := strings.Split(any.TypeUrl, ".")
 	switch s[len(s)-1] {
-	case "ServiceProviderRegistration":
+	case "ServiceProviderRecord":
 		{
-			var attributes ServiceProviderRegistration
+			var attributes ServiceProviderRecord
 			err := proto.Unmarshal(any.Value, &attributes)
 			if err != nil {
 				panic("Proto unmarshal error")

@@ -1,6 +1,6 @@
 
 record:
-    type: ServiceProviderRegistration
+    type: ServiceProviderRecord
     bond_id: madeUpBondID
     laconic_id: madeUpLaconicID
     version: 1.0.0

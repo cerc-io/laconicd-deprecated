@@ -87,7 +87,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			1,
 		},
 		{
-			"Filter with attributes ServiceProviderRegistration",
+			"Filter with attributes ServiceProviderRecord",
 			&registrytypes.QueryListRecordsRequest{
 				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
 					{

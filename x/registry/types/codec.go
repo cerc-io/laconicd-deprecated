@@ -40,15 +40,57 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	)
 
 	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ServiceProvideRegistration",
+		"vulcanize.registry.v1beta1.ServiceProviderRecord",
 		(*Attributes)(nil),
-		&ServiceProviderRegistration{},
+		&ServiceProviderRecord{},
 	)
 
 	registry.RegisterInterface(
 		"vulcanize.registry.v1beta1.WebsiteRegistrationRecord",
 		(*Attributes)(nil),
 		&WebsiteRegistrationRecord{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.GitRepository",
+		(*Attributes)(nil),
+		&GitRepository{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.Binary",
+		(*Attributes)(nil),
+		&Binary{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.DockerImage",
+		(*Attributes)(nil),
+		&DockerImage{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.WatcherRegistrationRecord",
+		(*Attributes)(nil),
+		&WatcherRegistrationRecord{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.ResponderContract",
+		(*Attributes)(nil),
+		&ResponderContract{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.JSPackage",
+		(*Attributes)(nil),
+		&JSPackage{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.ChainRegistrationRecord",
+		(*Attributes)(nil),
+		&ChainRegistrationRecord{},
 	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

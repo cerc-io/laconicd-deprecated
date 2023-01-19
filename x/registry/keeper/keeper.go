@@ -317,7 +317,7 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 
 func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
 	switch record.Attributes["type"] {
-	case "ServiceProviderRegistration":
+	case "ServiceProviderRecord":
 		{
 			// #nosec G705
 			for key := range record.Attributes {
