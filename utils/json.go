@@ -7,6 +7,7 @@ package utils
 import (
 	"bytes"
 	"errors"
+
 	canonicalJson "github.com/gibson042/canonicaljson-go"
 	"github.com/ipfs/go-cid"
 	cbor "github.com/ipfs/go-ipld-cbor"
@@ -66,10 +67,9 @@ func GetAttributeAsString(obj map[string]interface{}, attr string) (string, erro
 }
 
 // CIDFromJSONBytesUsingIpldPrime returns CID (dagcbor) for json (as bytes).
+// This is combination of samples for unmarshalling and linking
+// see: https://pkg.go.dev/github.com/ipld/go-ipld-prime
 func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
-
-	//This is combination of samples for unmarshalling and linking
-	//see: https://pkg.go.dev/github.com/ipld/go-ipld-prime
 	np := basicnode.Prototype.Any                       // Pick a stle for the in-memory data.
 	nb := np.NewBuilder()                               // Create a builder.
 	err := dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!
@@ -105,6 +105,6 @@ func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	//return cborcid.String(), nil
+	// return cborcid.String(), nil
 	return lnk.String(), nil
 }
