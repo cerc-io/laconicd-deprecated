@@ -1,8 +1,0 @@
-record:
-  image_id: 77af4d6b9913
-  binary_hash_reference:
-    /: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
-  repo_hash_reference:
-    /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
-  version: 1.0.0
-  type: DockerImage
