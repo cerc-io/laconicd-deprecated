@@ -32,8 +32,8 @@ message WebsiteRegistrationRecord {
   string url                          = 1 [(gogoproto.moretags) = "json:\"url\" yaml:\"url\""];
   HashReference repo_hash_reference = 2
       [(gogoproto.moretags) = "json:\"repoHashReference\" yaml:\"repoHashReference\""];
-  HashReference build_artifact_hash_ref = 3 [(gogoproto.moretags) = "json:\"buildArtifactHashRef\" yaml:\"buildArtifactHashRef\""];
-  HashReference tls_cert_hash_ref       = 4 [(gogoproto.moretags) = "json:\"tlsCertHashRef\" yaml:\"tlsCertHashRef\""];
+  HashReference build_artifact_ref = 3 [(gogoproto.moretags) = "json:\"buildArtifactHashRef\" yaml:\"buildArtifactHashRef\""];
+  HashReference tls_cert_ref       = 4 [(gogoproto.moretags) = "json:\"tlsCertHashRef\" yaml:\"tlsCertHashRef\""];
   string type               = 5 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
   string version            = 6 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
 }
@@ -50,29 +50,29 @@ message Binary{
   HashReference hash_reference=1;
   string targeted_arch=2;
   string runtime_version=3;
-  HashReference repo_hash_reference=4;
+  HashReference repo_reference=4;
   string version=5;
   string type=6;
 }
 
 message DockerImage{
   string image_id=1;
-  HashReference binary_hash_reference=2;
-  HashReference repo_hash_reference=3;
+  HashReference binary_reference=2;
+  HashReference repo_reference=3;
   string version=4;
   string type=5;
 }
 
 message WatcherRegistrationRecord{
   WatcherMetadata metadata =1;
-  HashReference repo_hash_reference=2;
+  HashReference repo_reference=2;
   WASMBinary wasm=3;
   string version=4;
   string type=5;
 
   message WatcherMetadata{
     string version=1;
-    HashReference chain_hash_reference=2;
+    HashReference chain_reference=2;
   }
 
   message WASMBinary{
@@ -87,16 +87,16 @@ message WatcherRegistrationRecord{
 }
 
 message ResponderContract{
-  HashReference service_provider_hash_ref=1;
-  HashReference auction_hash_ref=2;
-  HashReference watcher_hash_ref=3;
+  HashReference service_provider_ref=1;
+  HashReference auction_ref=2;
+  HashReference watcher_ref=3;
   string version=4;
   string type=5;
 }
 
 message JSPackage{
-  HashReference repo_hash_reference=1;
-  HashReference js_package_hash_ref=2;
+  HashReference repo_reference=1;
+  HashReference js_package_ref=2;
   string version=3;
   string type=4;
   string name =5;
@@ -109,5 +109,5 @@ message ChainRegistrationRecord{
   string version=4;
   string chain_id=5;
   string network_id=6;
-  string genesis_hash=7;
+  HashReference genesis_hash=7;
 }
