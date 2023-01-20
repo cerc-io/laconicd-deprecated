@@ -333,7 +333,7 @@ func (k Keeper) insertAttributes(ctx sdk.Context, recordID string, attr interfac
 	if reflect.TypeOf(attr).Kind() == reflect.Map {
 		val := attr.(map[string]interface{})
 		for key := range val {
-			newKeyPrefix := fmt.Sprint(keyPrefix + key)
+			newKeyPrefix := fmt.Sprint(keyPrefix + key + "---")
 			if err := k.insertAttributes(ctx, recordID, val[key], newKeyPrefix); err != nil {
 				return err
 			}

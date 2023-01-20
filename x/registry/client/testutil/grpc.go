@@ -209,7 +209,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 			func(bondId string) {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/../helpers/examples/service_provider_example.yml"
+				payloadPath := dir + "/../../helpers/examples/service_provider_example.yml"
 				args := []string{
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -353,7 +353,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 			func(bondId string) {
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/../helpers/examples/service_provider_example.yml"
+				payloadPath := dir + "/../../helpers/examples/service_provider_example.yml"
 				args := []string{
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 					fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -626,7 +626,7 @@ func createRecord(bondID string, s *IntegrationTestSuite) {
 
 	dir, err := os.Getwd()
 	sr.NoError(err)
-	payloadPath := dir + "/../helpers/examples/service_provider_example.yml"
+	payloadPath := dir + "/../../helpers/examples/service_provider_example.yml"
 	args := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

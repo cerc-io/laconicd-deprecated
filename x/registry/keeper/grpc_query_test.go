@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/cerc-io/laconicd/x/registry/client/cli"
 	"github.com/cerc-io/laconicd/x/registry/helpers"
@@ -66,14 +67,14 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&registrytypes.QueryListRecordsRequest{},
 			true,
 			false,
-			2,
+			len(examples),
 		},
 		{
 			"Filter with type",
 			&registrytypes.QueryListRecordsRequest{
 				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
 					{
-						Key: "type",
+						Key: "type---",
 						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
 							Type:    "string",
 							String_: "WebsiteRegistrationRecord",
@@ -91,7 +92,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&registrytypes.QueryListRecordsRequest{
 				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
 					{
-						Key: "x500state_name",
+						Key: "x500---state_name---",
 						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
 							Type:    "string",
 							String_: "california",
@@ -103,6 +104,42 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			true,
 			false,
 			1,
+		},
+		{
+			"Filter with attributes WatcherRegistrationRecord",
+			&registrytypes.QueryListRecordsRequest{
+				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "metadata---chain_reference---/---",
+						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			1,
+		},
+		{
+			"Filter with attributes version",
+			&registrytypes.QueryListRecordsRequest{
+				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "version---",
+						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "1.0.0",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			7,
 		},
 	}
 	for _, test := range testCases {
@@ -140,11 +177,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 						sr.NoError(err)
 						recAttr := helpers.UnMarshalMapFromJSONBytes(bz)
 						for _, attr := range test.req.GetAttributes() {
-							if attr.Key[:4] == "x500" {
-								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
-							} else {
-								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr[attr.Key])
-							}
+							sr.Equal(keeper.GetAttributeValue(attr.Value), getAttributesFromRecord(recAttr, attr.Key))
 						}
 					}
 				}
@@ -233,6 +266,17 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			}
 		})
 	}
+}
+
+func getAttributesFromRecord(recordAttr map[string]interface{}, key string) interface{} {
+	keys := strings.Split(key, "---")
+	for i, str := range keys {
+		if i == len(keys)-2 {
+			return recordAttr[str].(string)
+		}
+		recordAttr = recordAttr[str].(map[string]interface{})
+	}
+	return nil
 }
 
 func (suite *KeeperTestSuite) TestGrpcQueryRegistryModuleBalance() {

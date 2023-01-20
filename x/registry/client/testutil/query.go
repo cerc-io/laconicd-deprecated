@@ -79,7 +79,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/../helpers/examples/service_provider_example.yml"
+				payloadPath := dir + "/../../helpers/examples/service_provider_example.yml"
 				args := []string{
 					payloadPath, bondID,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, accountName),
