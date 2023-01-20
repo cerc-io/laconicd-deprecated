@@ -1,9 +1,9 @@
 record:
   metadata:
     version: 0.32.0
-    chain_hash_reference: 
+    chain_reference: 
       /: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
-  repo_hash_reference:
+  repo_reference:
     /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
   wasm:
     hash_reference:

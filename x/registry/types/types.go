@@ -203,6 +203,97 @@ func GetJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
 				panic("JSON marshal error")
 			}
 		}
+	case "GitRepository":
+		{
+			var attributes GitRepository
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "Binary":
+		{
+			var attributes Binary
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "DockerImage":
+		{
+			var attributes DockerImage
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "WatcherRegistrationRecord":
+		{
+			var attributes WatcherRegistrationRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "ResponderContract":
+		{
+			var attributes ResponderContract
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "JSPackage":
+		{
+			var attributes JSPackage
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "ChainRegistrationRecord":
+		{
+			var attributes ChainRegistrationRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
 	default:
 		return nil, fmt.Errorf("unsupported type %s", s[len(s)-1])
 	}

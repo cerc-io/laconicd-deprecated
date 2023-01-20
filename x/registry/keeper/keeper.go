@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"time"
 
@@ -316,44 +317,32 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 }
 
 func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
-	switch record.Attributes["type"] {
-	case "ServiceProviderRecord":
-		{
-			// #nosec G705
-			for key := range record.Attributes {
-				if key == "x500" {
-					// #nosec G705
-					for x500Key, x500Val := range record.Attributes[key].(map[string]interface{}) {
-						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
-						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-							return err
-						}
-					}
-				} else {
-					indexKey := GetAttributesIndexKey(key, record.Attributes[key])
-					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-						return err
-					}
-				}
-			}
-		}
-	case "WebsiteRegistrationRecord":
-		{
-			// #nosec G705
-			for key := range record.Attributes {
-				indexKey := GetAttributesIndexKey(key, record.Attributes[key])
-				if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-					return err
-				}
-			}
-		}
-	default:
-		return fmt.Errorf("unsupported record type %s", record.Attributes["type"])
+	if err := k.insertAttributes(ctx, record.ID, record.Attributes, ""); err != nil {
+		return err
 	}
 
 	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
-	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
+	if err := k.setAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (k Keeper) insertAttributes(ctx sdk.Context, recordID string, attr interface{}, keyPrefix string) error {
+	if reflect.TypeOf(attr).Kind() == reflect.Map {
+		val := attr.(map[string]interface{})
+		for key := range val {
+			newKeyPrefix := fmt.Sprint(keyPrefix + key)
+			if err := k.insertAttributes(ctx, recordID, val[key], newKeyPrefix); err != nil {
+				return err
+			}
+		}
+	} else {
+		indexKey := GetAttributesIndexKey(keyPrefix, attr)
+		if err := k.setAttributeMapping(ctx, indexKey, recordID); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -364,7 +353,7 @@ func GetAttributesIndexKey(key string, value interface{}) []byte {
 	return append(PrefixAttributesIndex, []byte(keyString)...)
 }
 
-func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string) error {
+func (k Keeper) setAttributeMapping(ctx sdk.Context, key []byte, recordID string) error {
 	store := ctx.KVStore(k.storeKey)
 	var recordIds []string
 	if store.Has(key) {
