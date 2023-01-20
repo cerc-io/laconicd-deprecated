@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"reflect"
+	"reflect" // #nosec G702 This is also used in eip712 antehandler code. No new risk introduced.
 	"sort"
 	"time"
 
@@ -332,6 +332,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 func (k Keeper) insertAttributes(ctx sdk.Context, recordID string, attr interface{}, keyPrefix string) error {
 	if reflect.TypeOf(attr).Kind() == reflect.Map {
 		val := attr.(map[string]interface{})
+		// #nosec G705
 		for key := range val {
 			newKeyPrefix := fmt.Sprint(keyPrefix + key + "---")
 			if err := k.insertAttributes(ctx, recordID, val[key], newKeyPrefix); err != nil {
