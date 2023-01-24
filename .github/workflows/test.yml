@@ -96,6 +96,9 @@ jobs:
       - name: build containers scripts
         working-directory: tests/sdk_tests
         run: ./build-laconicd-container.sh && ./build-sdk-test-container.sh
+      - name: start containers
+        working-directory: tests/sdk_tests
+        run: docker compose up -d
       - name: run-tests.sh
         working-directory: tests/sdk_tests
         run: ./run-tests.sh
