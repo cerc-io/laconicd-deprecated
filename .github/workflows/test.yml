@@ -84,6 +84,7 @@ jobs:
   sdk_tests:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Checkout laconic-sdk
         uses: actions/checkout@v3
         with:
