@@ -90,8 +90,8 @@ jobs:
           path: "./laconic-sdk/"
           repository: cerc-io/laconic-sdk
           fetch-depth: 0
-      - Environment:
-        run: ls -tlh && env
+      - name: Environment
+        run: cwd && ls -tlh && env
       - name: build containers scripts
         working-directory: tests/sdk_tests
         run: ./build-laconicd-container.sh && build-sdk-test-container.sh
