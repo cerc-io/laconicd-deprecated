@@ -105,6 +105,5 @@ func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// return cborcid.String(), nil
 	return lnk.String(), nil
 }
