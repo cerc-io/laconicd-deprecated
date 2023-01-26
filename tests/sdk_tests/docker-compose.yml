@@ -5,6 +5,7 @@ services:
     command: ["sh", "/docker-entrypoint-scripts.d/create-fixturenet.sh"]
     volumes:
             - ../../init.sh:/docker-entrypoint-scripts.d/create-fixturenet.sh
+    network_mode: "host"
     healthcheck:
       test: ["CMD", "curl", "-v", "http://127.0.0.1:6060"]
       interval: 1s
@@ -26,4 +27,5 @@ services:
     depends_on:
       laconicd:
         condition: service_healthy
+    network_mode: "host"
     command: tail -F /dev/null
