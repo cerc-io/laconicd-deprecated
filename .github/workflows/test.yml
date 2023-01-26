@@ -91,6 +91,7 @@ jobs:
           path: "./laconic-sdk/"
           repository: cerc-io/laconic-sdk
           fetch-depth: 0
+          ref: jest_timeout
       - name: Environment
         run: ls -tlh && env
       - name: build containers scripts
