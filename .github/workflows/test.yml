@@ -36,7 +36,7 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           file: ./coverage.txt
-          fail_ci_if_error: false
+          fail_ci_if_error: true
         if: env.GIT_DIFF
 
   test-importer:
