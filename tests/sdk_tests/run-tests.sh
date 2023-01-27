@@ -10,4 +10,7 @@ laconicd_rest_endpoint=http://laconicd:1317
 laconicd_gql_endpoint=http://laconicd:9473/api
 # Run tests
 docker network inspect sdk_tests_default
+docker compose exec laconicd sh -c "curl http://127.0.0.1:9473/api"
+docker compose exec laconicd sh -c "curl http://localhost:9473/api"
+
 docker compose exec sdk-test-runner sh -c "COSMOS_CHAIN_ID=${cosmos_chain_id} LACONICD_REST_ENDPOINT=${laconicd_rest_endpoint} LACONICD_GQL_ENDPOINT=${laconicd_gql_endpoint} PRIVATE_KEY=${laconicd_key} yarn test"
