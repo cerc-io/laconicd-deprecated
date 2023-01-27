@@ -24,7 +24,8 @@ func TestAndValidateCIDGeneration(t *testing.T) {
 
 	for _, tc := range testCases {
 		deprecatedAndCorrect, _ := CIDFromJSONBytes([]byte(tc.content))
-		newImpl, _ := CIDFromJSONBytesUsingIpldPrime([]byte(tc.content))
+		newImpl, err := CIDFromJSONBytesUsingIpldPrime([]byte(tc.content))
+		require.NoError(t, err)
 		require.Equal(t, deprecatedAndCorrect, newImpl, tc.name)
 	}
 }
