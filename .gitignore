@@ -50,6 +50,7 @@ coverage.txt
 sim_log_file
 tests/**/tmp/*
 yarn.lock
+x/auction/client/testutil/bidder-bafyre*
 
 # Vagrant
 .vagrant/
