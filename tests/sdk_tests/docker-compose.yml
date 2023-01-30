@@ -6,7 +6,7 @@ services:
     volumes:
             - ../../init.sh:/docker-entrypoint-scripts.d/create-fixturenet.sh
     healthcheck:
-      test: ["CMD", "wget", "-nv", "-t1", "--spider", "http://localhost:6060"]
+      test: ["CMD", "curl", "-v", "http://127.0.0.1:6060"]
       interval: 1s
       timeout: 5s
       retries: 30

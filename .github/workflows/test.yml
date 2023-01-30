@@ -36,7 +36,7 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           file: ./coverage.txt
-          fail_ci_if_error: true
+          fail_ci_if_error: false
         if: env.GIT_DIFF
 
   test-importer:
@@ -80,6 +80,30 @@ jobs:
         run: |
           make test-rpc
         if: env.GIT_DIFF
+
+  sdk_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Checkout laconic-sdk
+        uses: actions/checkout@v3
+        with:
+          path: "./laconic-sdk/"
+          repository: cerc-io/laconic-sdk
+          fetch-depth: 0
+          ref: jest_timeout
+      - name: Environment
+        run: ls -tlh && env
+      - name: build containers scripts
+        working-directory: tests/sdk_tests
+        run: ./build-laconicd-container.sh && ./build-sdk-test-container.sh
+      - name: start containers
+        working-directory: tests/sdk_tests
+        run: docker compose up -d
+      - name: run-tests.sh
+        working-directory: tests/sdk_tests
+        run: ./run-tests.sh
+
 
   # integration_tests:
   #   runs-on: ubuntu-latest
