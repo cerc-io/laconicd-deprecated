@@ -1,9 +1,9 @@
 record:
   hash_reference:
-    /: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
+    ref: QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9
   targeted_arch: x86_64
   runtime_version: go 1.18
   repo_reference:
-    /: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
+    ref: QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D
   version: 1.0.0
   type: Binary
