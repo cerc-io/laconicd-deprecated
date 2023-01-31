@@ -102,7 +102,7 @@ jobs:
         run: docker compose up -d
       - name: run-tests.sh
         working-directory: tests/sdk_tests
-        run: ./run-tests.sh
+        run: ./run-all-tests.sh
 
 
   # integration_tests:
