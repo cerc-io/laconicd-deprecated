@@ -2,7 +2,10 @@ services:
   laconicd:
     restart: unless-stopped
     image: cerc-io/laconicd:local-test
-    command: ["sh", "TEST_AUCTION_ENABLED=true", "TEST_NAMESERVICE_EXPIRY=true", "/docker-entrypoint-scripts.d/create-fixturenet.sh"]
+    environment:
+      - TEST_AUCTION_ENABLED=true
+      - TEST_NAMESERVICE_EXPIRY=true
+    command: ["sh", "/docker-entrypoint-scripts.d/create-fixturenet.sh"]
     volumes:
             - ../../init.sh:/docker-entrypoint-scripts.d/create-fixturenet.sh
     healthcheck:
