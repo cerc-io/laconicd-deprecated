@@ -12,7 +12,7 @@ laconicd_gql_endpoint=http://laconicd:9473/api
 docker network inspect sdk_tests_default
 sleep 30s
 
-#docker compose exec sdk-test-runner sh -c "COSMOS_CHAIN_ID=${cosmos_chain_id} LACONICD_REST_ENDPOINT=${laconicd_rest_endpoint} LACONICD_GQL_ENDPOINT=${laconicd_gql_endpoint} PRIVATE_KEY=${laconicd_key} yarn test"
-#docker compose exec sdk-test-runner sh -c "COSMOS_CHAIN_ID=${cosmos_chain_id} LACONICD_REST_ENDPOINT=${laconicd_rest_endpoint} LACONICD_GQL_ENDPOINT=${laconicd_gql_endpoint} PRIVATE_KEY=${laconicd_key} yarn test:auctions"
+docker compose exec sdk-test-runner sh -c "COSMOS_CHAIN_ID=${cosmos_chain_id} LACONICD_REST_ENDPOINT=${laconicd_rest_endpoint} LACONICD_GQL_ENDPOINT=${laconicd_gql_endpoint} PRIVATE_KEY=${laconicd_key} yarn test"
+docker compose exec sdk-test-runner sh -c "COSMOS_CHAIN_ID=${cosmos_chain_id} LACONICD_REST_ENDPOINT=${laconicd_rest_endpoint} LACONICD_GQL_ENDPOINT=${laconicd_gql_endpoint} PRIVATE_KEY=${laconicd_key} yarn test:auctions"
 docker compose exec sdk-test-runner sh -c "COSMOS_CHAIN_ID=${cosmos_chain_id} LACONICD_REST_ENDPOINT=${laconicd_rest_endpoint} LACONICD_GQL_ENDPOINT=${laconicd_gql_endpoint} PRIVATE_KEY=${laconicd_key} yarn test:nameservice-expiry"
 docker logs sdk_tests-laconicd-1
