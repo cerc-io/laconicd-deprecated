@@ -102,8 +102,28 @@ jobs:
         run: docker compose up -d
       - name: run-tests.sh
         working-directory: tests/sdk_tests
-        run: ./run-all-tests.sh
-
+        run: ./run-tests.sh
+      - name: reset containers for auction tests
+        working-directory: tests/sdk_tests
+        run: docker compose down
+      - name: start auction containers
+        working-directory: tests/sdk_tests
+        run: docker compose up -d -f docker-compose-auctions.yml
+      - name: run-acution-tests.sh
+        working-directory: tests/sdk_tests
+        run: ./run-auction-tests.sh
+      - name: reset containers for nameservice tests
+        working-directory: tests/sdk_tests
+        run: docker compose down
+      - name: start auction containers
+        working-directory: tests/sdk_tests
+        run: docker compose up -d -f docker-compose-nameservice.yml
+      - name: run-nameservice-expiry-tests.sh
+        working-directory: tests/sdk_tests
+        run: ./run-nameservice-expiry-tests.sh
+      - name: reset containers for nameservice tests
+        working-directory: tests/sdk_tests
+        run: docker compose down
 
   # integration_tests:
   #   runs-on: ubuntu-latest
