@@ -108,7 +108,7 @@ jobs:
         run: docker compose down
       - name: start auction containers
         working-directory: tests/sdk_tests
-        run: docker compose up -d -f docker-compose-auctions.yml
+        run: docker compose -f docker-compose-auctions.yml up -d
       - name: run-acution-tests.sh
         working-directory: tests/sdk_tests
         run: ./run-auction-tests.sh
@@ -117,7 +117,7 @@ jobs:
         run: docker compose down
       - name: start auction containers
         working-directory: tests/sdk_tests
-        run: docker compose up -d -f docker-compose-nameservice.yml
+        run: docker compose -f docker-compose-nameservice.yml up -d
       - name: run-nameservice-expiry-tests.sh
         working-directory: tests/sdk_tests
         run: ./run-nameservice-expiry-tests.sh
