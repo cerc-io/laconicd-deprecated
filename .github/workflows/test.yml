@@ -105,6 +105,7 @@ jobs:
         run: ./run-tests.sh
       - name: reset containers for auction tests
         working-directory: tests/sdk_tests
+        if: always()
         run: docker compose down
       - name: start auction containers
         working-directory: tests/sdk_tests
@@ -114,6 +115,7 @@ jobs:
         run: ./run-auction-tests.sh
       - name: reset containers for nameservice tests
         working-directory: tests/sdk_tests
+        if: always()
         run: docker compose down
       - name: start auction containers
         working-directory: tests/sdk_tests
@@ -123,6 +125,7 @@ jobs:
         run: ./run-nameservice-expiry-tests.sh
       - name: reset containers for nameservice tests
         working-directory: tests/sdk_tests
+        if: always()
         run: docker compose down
 
   # integration_tests:
