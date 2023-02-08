@@ -116,7 +116,7 @@ jobs:
       - name: reset containers for nameservice tests
         working-directory: tests/sdk_tests
         if: always()
-        run: docker compose down
+        run: docker compose -f docker-compose-auctions.yml down
       - name: start auction containers
         working-directory: tests/sdk_tests
         run: docker compose -f docker-compose-nameservice.yml up -d
@@ -126,7 +126,7 @@ jobs:
       - name: reset containers for nameservice tests
         working-directory: tests/sdk_tests
         if: always()
-        run: docker compose down
+        run: docker compose -f docker-compose-nameservice.yml down
 
   # integration_tests:
   #   runs-on: ubuntu-latest
