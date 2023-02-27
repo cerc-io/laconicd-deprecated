@@ -8,17 +8,16 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/ipld/go-ipld-prime/fluent"
-	"github.com/ipld/go-ipld-prime/linking"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	"github.com/ipld/go-ipld-prime/multicodec"
-	"github.com/ipld/go-ipld-prime/storage/memstore"
-
 	canonicalJson "github.com/gibson042/canonicaljson-go"
 	"github.com/ipfs/go-cid"
 	cbor "github.com/ipfs/go-ipld-cbor"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/linking"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/multicodec"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/storage/memstore"
 	mh "github.com/multiformats/go-multihash"
 )
 
@@ -68,7 +67,17 @@ func GetAttributeAsString(obj map[string]interface{}, attr string) (string, erro
 }
 
 // CIDFromJSONBytesUsingIpldPrime returns CID (dagcbor) for json (as bytes).
+// This is combination of samples for unmarshalling and linking
+// see: https://pkg.go.dev/github.com/ipld/go-ipld-prime
 func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
+	np := basicnode.Prototype.Any                       // Pick a stle for the in-memory data.
+	nb := np.NewBuilder()                               // Create a builder.
+	err := dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!
+	if err != nil {
+		return "", err
+	}
+	n := nb.Build() // Call 'Build' to get the resulting Node.  (It's immutable!)
+
 	lsys := cidlink.DefaultLinkSystem()
 
 	// We want to store the serialized data somewhere.
@@ -86,14 +95,6 @@ func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
 		MhType:   0x12, // 0x12 means "sha2-256" -- See the multicodecs table: https://github.com/multiformats/multicodec/
 		MhLength: 32,   // sha2-256 hash has a 32-byte sum.
 	}}
-
-	// And we need some data to link to!  Here's a quick piece of example data:
-	n, err := fluent.Build(basicnode.Prototype.Any, func(na fluent.NodeAssembler) {
-		na.AssignBytes(content)
-	})
-	if err != nil {
-		return "", err
-	}
 
 	// Now: time to apply the LinkSystem, and do the actual store operation!
 	lnk, err := lsys.Store(
