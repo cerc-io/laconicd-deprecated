@@ -5,9 +5,6 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/cerc-io/laconicd/x/registry/types";
 
-message HashReference{
-  string ref =1;
-}
 
 message ServiceProviderRecord {
   string bond_id    = 1 [(gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""];
@@ -30,10 +27,10 @@ message ServiceProviderRecord {
 
 message WebsiteRegistrationRecord {
   string url                          = 1 [(gogoproto.moretags) = "json:\"url\" yaml:\"url\""];
-  HashReference repo_reference = 2
+   map<string,string> repo_reference = 2
       [(gogoproto.moretags) = "json:\"repoReference\" yaml:\"repoReference\""];
-  HashReference build_artifact_ref = 3 [(gogoproto.moretags) = "json:\"buildArtifactRef\" yaml:\"buildArtifactRef\""];
-  HashReference tls_cert_ref       = 4 [(gogoproto.moretags) = "json:\"tlsCertRef\" yaml:\"tlsCertRef\""];
+   map<string,string> build_artifact_ref = 3 [(gogoproto.moretags) = "json:\"buildArtifactRef\" yaml:\"buildArtifactRef\""];
+   map<string,string> tls_cert_ref       = 4 [(gogoproto.moretags) = "json:\"tlsCertRef\" yaml:\"tlsCertRef\""];
   string type               = 5 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
   string version            = 6 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
 }
@@ -47,36 +44,36 @@ message GitRepository{
 }
 
 message Binary{
-  HashReference hash_reference=1;
+   map<string,string> hash_reference=1;
   string targeted_arch=2;
   string runtime_version=3;
-  HashReference repo_reference=4;
+   map<string,string> repo_reference=4;
   string version=5;
   string type=6;
 }
 
 message DockerImage{
   string image_id=1;
-  HashReference binary_reference=2;
-  HashReference repo_reference=3;
+   map<string,string> binary_reference=2;
+   map<string,string> repo_reference=3;
   string version=4;
   string type=5;
 }
 
 message WatcherRegistrationRecord{
   WatcherMetadata metadata =1;
-  HashReference repo_reference=2;
+   map<string,string> repo_reference=2;
   WASMBinary wasm=3;
   string version=4;
   string type=5;
 
   message WatcherMetadata{
     string version=1;
-    HashReference chain_reference=2;
+     map<string,string> chain_reference=2;
   }
 
   message WASMBinary{
-    HashReference hash_reference=1;
+     map<string,string> hash_reference=1;
     WASMBinaryMetadata metadata=2;
   }
   
@@ -87,16 +84,16 @@ message WatcherRegistrationRecord{
 }
 
 message ResponderContract{
-  HashReference service_provider_ref=1;
-  HashReference auction_ref=2;
-  HashReference watcher_ref=3;
+   map<string,string> service_provider_ref=1;
+   map<string,string> auction_ref=2;
+   map<string,string> watcher_ref=3;
   string version=4;
   string type=5;
 }
 
 message JSPackage{
-  HashReference repo_reference=1;
-  HashReference js_package_ref=2;
+   map<string,string> repo_reference=1;
+   map<string,string> js_package_ref=2;
   string version=3;
   string type=4;
   string name =5;
@@ -109,5 +106,5 @@ message ChainRegistrationRecord{
   string version=4;
   string chain_id=5;
   string network_id=6;
-  HashReference genesis_hash=7;
+   map<string,string> genesis_hash=7;
 }
