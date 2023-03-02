@@ -241,7 +241,7 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	resourceSignBytes, _ := record.GetSignBytes()
 	cid, err := record.GetCID()
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprint("Invalid record JSON, err=", err))
 	}
 
 	record.ID = cid
