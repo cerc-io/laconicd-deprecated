@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/stretchr/testify/assert"
 	"github.com/tendermint/tendermint/libs/rand"
 
@@ -168,7 +168,7 @@ func TestGenesisContractInfoMarshalUnmarshal(t *testing.T) {
 
 	anyTime := time.Now().UTC()
 	// using gov proposal here as a random protobuf types as it contains an Any type inside for nested unpacking
-	myExtension, err := govtypes.NewProposal(&govtypes.TextProposal{Title: "bar"}, 1, anyTime, anyTime)
+	myExtension, err := govv1beta1.NewProposal(&govv1beta1.TextProposal{Title: "bar"}, 1, anyTime, anyTime)
 	require.NoError(t, err)
 	myExtension.TotalDeposit = nil
 
@@ -182,10 +182,10 @@ func TestGenesisContractInfoMarshalUnmarshal(t *testing.T) {
 	// register proposal as extension type
 	interfaceRegistry.RegisterImplementations(
 		(*ContractInfoExtension)(nil),
-		&govtypes.Proposal{},
+		&govv1beta1.Proposal{},
 	)
 	// register gov types for nested Anys
-	govtypes.RegisterInterfaces(interfaceRegistry)
+	govv1beta1.RegisterInterfaces(interfaceRegistry)
 
 	// when encode
 	gs := GenesisState{
@@ -205,7 +205,7 @@ func TestGenesisContractInfoMarshalUnmarshal(t *testing.T) {
 	dest := destGs.Contracts[0].ContractInfo
 	assert.Equal(t, src, dest)
 	// and sanity check nested any
-	var destExt govtypes.Proposal
+	var destExt govv1beta1.Proposal
 	require.NoError(t, dest.ReadExtension(&destExt))
 	assert.Equal(t, destExt.GetTitle(), "bar")
 }
