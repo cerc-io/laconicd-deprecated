@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/../../helpers/examples/service_provider_example.yml"
+				payloadPath := dir + "/../../helpers/examples/website_registration_example.yml"
 
 				tc.args = append([]string{payloadPath, bondID}, tc.args...)
 			}
@@ -213,6 +213,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 				var d sdk.TxResponse
 				err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
 				sr.NoError(err)
+				fmt.Println("TX Resp=====", d)
 				sr.Zero(d.Code)
 			}
 		})
