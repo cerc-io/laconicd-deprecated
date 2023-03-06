@@ -47,6 +47,7 @@ WORKDIR /app
 RUN \
     git clone https://github.com/cerc-io/laconic-sdk.git \
     && cd laconic-sdk \
+    && git checkout feature_test_record_types \
     && yarn install
 
 WORKDIR /app/laconic-sdk
