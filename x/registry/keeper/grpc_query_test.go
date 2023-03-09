@@ -110,7 +110,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&registrytypes.QueryListRecordsRequest{
 				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
 					{
-						Key: "metadata---chain_reference---/---",
+						Key: "metadata---chain_reference---ref---",
 						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
 							Type:    "string",
 							String_: "QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9",
