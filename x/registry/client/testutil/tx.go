@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) TestGetCmdSetRecord() {
 				bondID := GetBondID(s)
 				dir, err := os.Getwd()
 				sr.NoError(err)
-				payloadPath := dir + "/../../helpers/examples/service_provider_example.yml"
+				payloadPath := dir + "/../../helpers/examples/watcher_registration_example.yml"
 
 				tc.args = append([]string{payloadPath, bondID}, tc.args...)
 			}

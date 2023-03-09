@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/cerc-io/laconicd/x/registry/types";
 
 message HashReference{
-  string ref =1;
+  string ref =1 [(gogoproto.jsontag) = "/"];
 }
 
 message ServiceProviderRecord {

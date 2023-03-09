@@ -45,7 +45,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 		"/../helpers/examples/js_package_example.yml",
 		"/../helpers/examples/responder_contract_example.yml",
 		"/../helpers/examples/service_provider_example.yml",
-		"/../helpers/examples/watcher_registraion_example.yml",
+		"/../helpers/examples/watcher_registration_example.yml",
 		"/../helpers/examples/website_registration_example.yml",
 	}
 	testCases := []struct {
@@ -110,7 +110,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&registrytypes.QueryListRecordsRequest{
 				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
 					{
-						Key: "metadata---chain_reference---ref---",
+						Key: "metadata---chain_reference---/---",
 						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
 							Type:    "string",
 							String_: "QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9",
