@@ -417,7 +417,7 @@ func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Aucti
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal string.")
 	}
 
-	cid, err := wnsUtils.CIDFromJSONBytesUsingIpldPrime(revealBytes)
+	cid, err := wnsUtils.CIDFromJSONBytes(revealBytes)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal JSON.")
 	}

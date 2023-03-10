@@ -33,7 +33,7 @@ func GenerateHash(json map[string]interface{}) (string, []byte, error) {
 		return "", nil, err
 	}
 
-	cidString, err := CIDFromJSONBytesUsingIpldPrime(content)
+	cidString, err := CIDFromJSONBytes(content)
 	if err != nil {
 		return "", nil, err
 	}
@@ -54,10 +54,10 @@ func GetAttributeAsString(obj map[string]interface{}, attr string) (string, erro
 	return "", errors.New("attribute not found")
 }
 
-// CIDFromJSONBytesUsingIpldPrime returns CID (dagcbor) for json (as bytes).
+// CIDFromJSONBytes returns CID (dagcbor) for json (as bytes).
 // This is combination of samples for unmarshalling and linking
 // see: https://pkg.go.dev/github.com/ipld/go-ipld-prime
-func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
+func CIDFromJSONBytes(content []byte) (string, error) {
 	if len(content) == 0 {
 		return "", nil
 	}

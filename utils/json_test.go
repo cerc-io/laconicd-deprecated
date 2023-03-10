@@ -26,7 +26,7 @@ func TestAndValidateCIDGeneration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		newImpl, err := CIDFromJSONBytesUsingIpldPrime([]byte(tc.content))
+		newImpl, err := CIDFromJSONBytes([]byte(tc.content))
 		require.NoError(t, err)
 		require.Equal(t, tc.expected, newImpl)
 	}
