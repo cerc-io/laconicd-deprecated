@@ -1,4 +1,4 @@
-# Validator Guide for laconic_81337-5 Testnet
+# Validator Guide for laconic_81337-6 Testnet
 
 ## Hardware Prerequisites
 
@@ -48,8 +48,8 @@ sudo apt install git curl build-essential make jq -y
 # Remove any existing installation of `go`
 sudo rm -rf /usr/local/go
 
-# Install Go version 1.18.8
-curl https://dl.google.com/go/go1.18.8.linux-amd64.tar.gz | sudo tar -C/usr/local -zxvf -
+# Install Go version 1.19.7
+curl https://dl.google.com/go/go1.19.7.linux-amd64.tar.gz | sudo tar -C/usr/local -zxvf -
 
 # Update env variables to include go
 cat <<'EOF' >>$HOME/.profile
@@ -67,7 +67,7 @@ Check the version of go installed
 ```sh
 go version
 
-# Should return something like: go version go1.17.2 linux/amd64
+# Should return something like: go version go1.19.7 linux/amd64
 ```
 
 ---
@@ -80,16 +80,17 @@ cd laconicd
 
 # Checkout main branch
 git fetch --all
-git checkout v0.6.0
+git checkout v0.8.0
 
 # Build and install laconic
-make install
+make VERSION=v0.8.0 install
 ```
 
 Verify your installation
 
 ```sh
 laconicd version --long
+
 ```
 
 On running the above command, you should see a similar response like this. Make sure that the _version_ and _commit
@@ -122,13 +123,13 @@ Make sure the directory `~/.laconicd` does not exist or is empty
 >In order to run the below commands in a docker container:
 >```sh
 >docker run -ti -v ~/.laconicd:/root/.laconicd \
->git.vdb.to/cerc-io/laconicd/laconicd:v0.6.0 /bin/sh
+>git.vdb.to/cerc-io/laconicd/laconicd:v0.8.0 /bin/sh
 >```
 ---
 
 ```sh
 # Initialize the validator node
-laconicd init <your-node-moniker> --chain-id laconic_81337-5
+laconicd init <your-node-moniker> --chain-id laconic_81337-6
 ```
 
 Running the above commands will initialize the validator node with default configuration. The config files will be saved in the default location (`~/.laconicd/config`).
@@ -168,7 +169,7 @@ Create Your `gentx` transaction file
 ```sh
 laconicd gentx <key-name> 12900000000000000000000achk \
   --pubkey=$(laconicd tendermint show-validator) \
-  --chain-id="laconic_81337-5" \
+  --chain-id="laconic_81337-6" \
   --moniker="<your-moniker-name>" \
   --website="<your-validator-website>" \
   --details="<your-validator-description>" \
@@ -198,10 +199,10 @@ Submit your `gentx` file to the [https://github.com/cerc-io/laconic-testnet](htt
 To submit the gentx file, follow the below process:
 
 - Fork the [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) repository
-- Upload your gentx file in the `laconic_81337-5/config/gentxs` folder
+- Upload your gentx file in the `laconic_81337-6/config/gentxs` folder
 - Submit Pull Request to [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) with name `ADD <your-moniker> gentx`
 
-The genesis file will be published in the `laconic_81337-5/config/` folder within the [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) repository.
+The genesis file will be published in the `laconic_81337-6/config/` folder within the [https://github.com/cerc-io/laconic-testnet](https://github.com/cerc-io/laconic-testnet) repository.
 
 # CONTINUE WITH BELOW STEPS ONLY AFTER GENESIS FILE HAS BEEN PUBLISHED
 
@@ -271,25 +272,33 @@ journalctl -f -u laconicd
 In this example the Tendermint RPC and Prometheus metrics ports are exposed only to localhost. You may want to change 127.0.0.1 to private or public network interface of your host if you need to access these ports remotely.
 
 ```sh
-docker create --name laconic-testnet-5 -v ~/.laconicd:/root/.laconicd -p 26656:26656 -p 127.0.0.1:26657:26657 -p 127.0.0.1:26660:26660 git.vdb.to/cerc-io/laconicd/laconicd:v0.6.0 laconicd start --gql-playground --gql-server --log_level=warn
+docker create \
+--name laconic-testnet-6 \
+--restart always \
+-v ~/.laconicd:/root/.laconicd \
+-p 26656:26656 \
+-p 127.0.0.1:26657:26657 \
+-p 127.0.0.1:26660:26660 \
+git.vdb.to/cerc-io/laconicd/laconicd:v0.8.0 \
+laconicd start --gql-playground --gql-server --log_level=warn
 ```
 
 ### Run validator node
 
 ```sh
-docker start laconic-testnet-5
+docker start laconic-testnet-6
 ```
 
 ### Check validator node logs
 
 ```sh
-docker logs laconic-testnet-5
+docker logs laconic-testnet-6
 ```
 
 ### Run shell inside docker container
 
 ```sh
-docker exec -ti laconic-testnet-5 /bin/sh
+docker exec -ti laconic-testnet-6 /bin/sh
 ```
 ---
 ## Helpful commands
