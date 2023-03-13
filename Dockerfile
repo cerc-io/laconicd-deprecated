@@ -20,7 +20,7 @@ RUN make build
 FROM alpine:3.17.0
 
 # Install ca-certificates
-RUN apk add --update ca-certificates jq
+RUN apk add --update ca-certificates jq curl
 WORKDIR /
 
 # Copy over binaries from the build-env

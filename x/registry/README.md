@@ -9,9 +9,9 @@ $ make build
 
 ```bash
 ./build/laconicd keys add root
-./build/laconicd init test-moniker --chain-id ethermint_9000-1
+./build/laconicd init test-moniker --chain-id laconic_9000-1
 ./build/laconicd add-genesis-account $(./build/laconicd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
-./build/laconicd gentx root 1000000000000000000stake --chain-id ethermint_9000-1
+./build/laconicd gentx root 1000000000000000000stake --chain-id laconic_9000-1
 ./build/laconicd collect-gentxs
 ./build/laconicd start
 ```
@@ -58,7 +58,7 @@ $ ./build/laconicd q registry params -o json | jq .
 > First you have to Create bond
 
 ```bash
-$ ./build/laconicd tx registry set ~/Desktop/examples/records/service_provider_example.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id ethermint_9000-1 --yes -o json
+$ ./build/laconicd tx registry set ~/Desktop/examples/records/service_provider_example.yml 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d --from root --chain-id laconic_9000-1 --yes -o json
 {
   "height": "0",
   "txhash": "BA44ABE1194724694E7CB290F9F3121DB4E63E1A030D95CB84813EEA132CF95F",
@@ -121,7 +121,7 @@ $ ./build/laconicd q registry get bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my
 ## Reserve name
 
 ```bash
- ./build/laconicd tx registry reserve-name hello --from root --chain-id ethermint_9000-1 --owner $(./build/laconicd key
+ ./build/laconicd tx registry reserve-name hello --from root --chain-id laconic_9000-1 --owner $(./build/laconicd key
 s show root -a) -y -o json | jq .
 {
   "height": "0",
@@ -181,8 +181,8 @@ $ ./build/laconicd q registry  balance -o json | jq .
 ## add bond to the authority
 
 ```bash
-$ ./build/laconicd tx registry authority-bond [Authority Name] [Bond ID ]  --from root --chain-id ethermint_9000-1  -y -o json | jq .
-$ ./build/laconicd tx registry authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id ethermint_9000-1  -y -o json | jq .
+$ ./build/laconicd tx registry authority-bond [Authority Name] [Bond ID ]  --from root --chain-id laconic_9000-1  -y -o json | jq .
+$ ./build/laconicd tx registry authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id laconic_9000-1  -y -o json | jq .
 ```
 
 ## Query the records by associate bond id
@@ -209,7 +209,7 @@ $ ./build/laconicd q registry query-by-bond 95f68b1b862bfd1609b0c9aaf7300287b92f
 ## dissociate bond from record
 
 ```bash
-$ ./build/laconicd tx registry dissociate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae  --from root --chain-id ethermint_9000-1
+$ ./build/laconicd tx registry dissociate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae  --from root --chain-id laconic_9000-1
 {"body":{"messages":[{"@type":"/vulcanize.registry.v1beta1.MsgDissociateBond","record_id":"bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae","signer":"ethm1mfdjngh5jvjs9lqtt9a7y2hlgw8v3syh3hsqzk"}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}
 
 confirm transaction before signing and broadcasting [y/N]: y
@@ -231,7 +231,7 @@ txhash: 7AFEF524CB0D92D6576FC08601A787786E802449888FD8DDAA7635698CC85060
 ## Associate bond with record
 
 ```bash
-./build/laconicd tx registry associate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
+./build/laconicd tx registry associate-bond bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id laconic_9000-1  -y -o json | jq .
 {
   "height": "0",
   "txhash": "F75C2BF2FE73668AE1332E1237F924AC549E31E822A56394DE5AC17200B199F9",
@@ -252,7 +252,7 @@ txhash: 7AFEF524CB0D92D6576FC08601A787786E802449888FD8DDAA7635698CC85060
 ## dissociate-records => remove all record from bond
 
 ```bash
-$./build/laconicd tx registry dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id ethermint_9000-1  -y -o json | jq .
+$./build/laconicd tx registry dissociate-records c3f7a78c5042d2003880962ba31ff3b01fcf5942960e0bc3ca331f816346a440 --from root --chain-id laconic_9000-1  -y -o json | jq .
 {
   "height": "0",
   "txhash": "0316F503E5DEA47CB108AE6C7C7FFAF3F71CC56BC22F63CB97322E1BE48B33B9",
@@ -274,14 +274,14 @@ $./build/laconicd tx registry dissociate-records c3f7a78c5042d2003880962ba31ff3b
 > When a record is expires , needs to renew record
 
 ```bash
-$ ./build/laconicd tx registry renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id ethermint_9000-1
+$ ./build/laconicd tx registry renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id laconic_9000-1
 
 ```
 
 ## Set the authority name
 
 ```bash
-$ ./build/laconicd tx registry set-name crn://hello/test test_hello_cid  --from root --chain-id ethermint_9000-1 -y -o json | jq .
+$ ./build/laconicd tx registry set-name crn://hello/test test_hello_cid  --from root --chain-id laconic_9000-1 -y -o json | jq .
 {
   "height": "0",
   "txhash": "66A63C73B076EEE9A2F7605354448EDEB161F0115D4D03AF68C01BA28DB97486",
@@ -301,7 +301,7 @@ $ ./build/laconicd tx registry set-name crn://hello/test test_hello_cid  --from 
 ## Delete the name
 
 ```bash
-$./build/laconicd tx registry delete-name crn://hello/test --from root --chain-id ethermint_9000-1 -y
+$./build/laconicd tx registry delete-name crn://hello/test --from root --chain-id laconic_9000-1 -y
 code: 0
 codespace: ""
 data: ""
