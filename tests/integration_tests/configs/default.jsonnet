@@ -4,13 +4,6 @@
     cmd: 'laconicd',
     'start-flags': '--trace',
     config: {
-<<<<<<< HEAD
-      consensus: {
-        // larger timeout for more stable mempool tests
-        timeout_commit: '2s',
-      },
-=======
->>>>>>> v0.21.0
       mempool: {
         // use v1 mempool to enable tx prioritization
         version: 'v1',

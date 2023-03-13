@@ -330,7 +330,9 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			} else {
 				_, jsonRPCPort, err := server.FreeTCPAddr()
 				if err != nil {
-					return nil, err
+					// ignore semgrep: Missing mutex unlock before returning from a function.
+					// unlocking in cleanup func
+					return nil, err // nosemgrep
 				}
 				appCfg.JSONRPC.Address = fmt.Sprintf("127.0.0.1:%s", jsonRPCPort)
 			}

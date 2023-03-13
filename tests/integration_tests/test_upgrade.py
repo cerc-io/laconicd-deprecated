@@ -92,12 +92,6 @@ def test_cosmovisor_upgrade(custom_ethermint: Ethermint):
     - check that queries on legacy blocks still works after upgrade.
     """
     cli = custom_ethermint.cosmos_cli()
-<<<<<<< HEAD
-    height = cli.block_height()
-    target_height = height + 10
-    print("upgrade height", target_height)
-=======
->>>>>>> v0.21.0
 
     w3 = custom_ethermint.w3
     contract, _ = deploy_contract(w3, CONTRACTS["TestERC20A"])
