@@ -331,8 +331,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) { // nosemgrep
 				appCfg.JSONRPC.Address = cfg.JSONRPCAddress
 			} else {
 				_, jsonRPCPort, err := server.FreeTCPAddr()
-				if err != nil {
-
+				if err != nil { // nosemgrep
 					return nil, err // nosemgrep
 				}
 				appCfg.JSONRPC.Address = fmt.Sprintf("127.0.0.1:%s", jsonRPCPort)
