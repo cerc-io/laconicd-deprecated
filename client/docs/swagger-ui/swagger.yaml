@@ -14180,10 +14180,6 @@ paths:
           type: boolean
       tags:
         - Query
-=======
->>>>>>> v0.20.0
-=======
->>>>>>> v0.21.0
 definitions:
   ethermint.evm.v1.ChainConfig:
     type: object

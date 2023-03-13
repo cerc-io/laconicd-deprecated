@@ -228,7 +228,9 @@ func NewCLILogger(cmd *cobra.Command) CLILogger {
 }
 
 // New creates a new Network for integration tests or in-process testnets run via the CLI
-func New(l Logger, baseDir string, cfg Config) (*Network, error) {
+func New(l Logger, baseDir string, cfg Config) (*Network, error) { // nosemgrep
+	// ignore semgrep: Missing mutex unlock before returning from a function.
+	// unlocking in cleanup func
 	// only one caller/test can create and use a network at a time
 	l.Log("acquiring test network lock")
 	lock.Lock()
@@ -330,8 +332,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			} else {
 				_, jsonRPCPort, err := server.FreeTCPAddr()
 				if err != nil {
-					// ignore semgrep: Missing mutex unlock before returning from a function.
-					// unlocking in cleanup func
+
 					return nil, err // nosemgrep
 				}
 				appCfg.JSONRPC.Address = fmt.Sprintf("127.0.0.1:%s", jsonRPCPort)

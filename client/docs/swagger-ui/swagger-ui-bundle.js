@@ -3048,7 +3048,7 @@
                 })
             }, t.getCommonExtensions = function(e) {
                 return e.filter(function(e, t) {
-                    return /^pattern|maxLength|minLength|maximum|minimum/.test(t)
+                    return /^pattern$|^maxLength$|^minLength$|^maximum$|^minimum$/.test(t)
                 })
             }
         }).call(t, n(54).Buffer)
