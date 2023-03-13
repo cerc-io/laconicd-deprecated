@@ -590,6 +590,7 @@ paths:
 
                          foo := &pb.Foo{...}
 <<<<<<< HEAD
+<<<<<<< HEAD
                          any, err := ptypes.MarshalAny(foo)
                          ...
                          foo := &pb.Foo{}
@@ -603,6 +604,15 @@ paths:
                          foo := &pb.Foo{}
                          if err := any.UnmarshalTo(foo); err != nil {
 >>>>>>> v0.20.0
+=======
+                         any, err := anypb.New(foo)
+                         if err != nil {
+                           ...
+                         }
+                         ...
+                         foo := &pb.Foo{}
+                         if err := any.UnmarshalTo(foo); err != nil {
+>>>>>>> v0.21.0
                            ...
                          }
 
@@ -1766,6 +1776,7 @@ paths:
                           Eip-4345 (bomb delay) switch block (nil = no fork, 0 =
                           already activated)
 <<<<<<< HEAD
+<<<<<<< HEAD
                       merge_fork_block:
                         type: string
                         title: >-
@@ -1775,6 +1786,11 @@ paths:
                       gray_glacier_block:
                         type: string
                         title: >-
+=======
+                      gray_glacier_block:
+                        type: string
+                        title: >-
+>>>>>>> v0.21.0
                           EIP-5133 (bomb delay) switch block (nil = no fork, 0 =
                           already activated)
                       merge_netsplit_block:
@@ -1782,7 +1798,10 @@ paths:
                         title: >-
                           Virtual fork after The Merge to use as a network
                           splitter
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
                     description: >-
                       ChainConfig defines the Ethereum ChainConfig parameters
                       using *sdk.Int values
@@ -1793,10 +1812,14 @@ paths:
                     description: >-
                       Allow unprotected transactions defines if replay-protected
 <<<<<<< HEAD
+<<<<<<< HEAD
                       (i.e non EIP155 
 =======
                       (i.e non EIP155
 >>>>>>> v0.20.0
+=======
+                      (i.e non EIP155
+>>>>>>> v0.21.0
 
                       signed) transactions can be executed on the state machine.
                 title: Params defines the EVM module parameters
@@ -2560,6 +2583,7 @@ paths:
           required: false
           type: string
 <<<<<<< HEAD
+<<<<<<< HEAD
         - name: trace_config.overrides.merge_fork_block
           description: >-
             EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in
@@ -2567,6 +2591,10 @@ paths:
 =======
         - name: trace_config.overrides.gray_glacier_block
           description: >-
+=======
+        - name: trace_config.overrides.gray_glacier_block
+          description: >-
+>>>>>>> v0.21.0
             EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
             activated).
           in: query
@@ -2574,7 +2602,10 @@ paths:
           type: string
         - name: trace_config.overrides.merge_netsplit_block
           description: Virtual fork after The Merge to use as a network splitter.
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
           in: query
           required: false
           type: string
@@ -3038,6 +3069,7 @@ paths:
           required: false
           type: string
 <<<<<<< HEAD
+<<<<<<< HEAD
         - name: trace_config.overrides.merge_fork_block
           description: >-
             EIP-3675 (TheMerge) switch block (nil = no fork, 0 = already in
@@ -3045,6 +3077,10 @@ paths:
 =======
         - name: trace_config.overrides.gray_glacier_block
           description: >-
+=======
+        - name: trace_config.overrides.gray_glacier_block
+          description: >-
+>>>>>>> v0.21.0
             EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
             activated).
           in: query
@@ -3052,7 +3088,10 @@ paths:
           type: string
         - name: trace_config.overrides.merge_netsplit_block
           description: Virtual fork after The Merge to use as a network splitter.
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
           in: query
           required: false
           type: string
@@ -3332,6 +3371,7 @@ paths:
           type: string
       tags:
         - Query
+<<<<<<< HEAD
 <<<<<<< HEAD
   /cosmos/auth/v1beta1/accounts:
     get:
@@ -14197,6 +14237,8 @@ paths:
         - Query
 =======
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
 definitions:
   ethermint.evm.v1.ChainConfig:
     type: object
@@ -14257,6 +14299,7 @@ definitions:
           Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
           activated)
 <<<<<<< HEAD
+<<<<<<< HEAD
       merge_fork_block:
         type: string
         title: >-
@@ -14266,12 +14309,20 @@ definitions:
       gray_glacier_block:
         type: string
         title: >-
+=======
+      gray_glacier_block:
+        type: string
+        title: >-
+>>>>>>> v0.21.0
           EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
           activated)
       merge_netsplit_block:
         type: string
         title: Virtual fork after The Merge to use as a network splitter
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
     description: >-
       ChainConfig defines the Ethereum ChainConfig parameters using *sdk.Int
       values
@@ -14675,6 +14726,7 @@ definitions:
               Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
               activated)
 <<<<<<< HEAD
+<<<<<<< HEAD
           merge_fork_block:
             type: string
             title: >-
@@ -14684,12 +14736,20 @@ definitions:
           gray_glacier_block:
             type: string
             title: >-
+=======
+          gray_glacier_block:
+            type: string
+            title: >-
+>>>>>>> v0.21.0
               EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
               activated)
           merge_netsplit_block:
             type: string
             title: Virtual fork after The Merge to use as a network splitter
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
         description: >-
           ChainConfig defines the Ethereum ChainConfig parameters using *sdk.Int
           values
@@ -14700,10 +14760,14 @@ definitions:
         description: >-
           Allow unprotected transactions defines if replay-protected (i.e non
 <<<<<<< HEAD
+<<<<<<< HEAD
           EIP155 
 =======
           EIP155
 >>>>>>> v0.20.0
+=======
+          EIP155
+>>>>>>> v0.21.0
 
           signed) transactions can be executed on the state machine.
     title: Params defines the EVM module parameters
@@ -14859,6 +14923,7 @@ definitions:
                   Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
                   activated)
 <<<<<<< HEAD
+<<<<<<< HEAD
               merge_fork_block:
                 type: string
                 title: >-
@@ -14868,12 +14933,20 @@ definitions:
               gray_glacier_block:
                 type: string
                 title: >-
+=======
+              gray_glacier_block:
+                type: string
+                title: >-
+>>>>>>> v0.21.0
                   EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
                   activated)
               merge_netsplit_block:
                 type: string
                 title: Virtual fork after The Merge to use as a network splitter
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
             description: >-
               ChainConfig defines the Ethereum ChainConfig parameters using
               *sdk.Int values
@@ -14884,10 +14957,14 @@ definitions:
             description: >-
               Allow unprotected transactions defines if replay-protected (i.e
 <<<<<<< HEAD
+<<<<<<< HEAD
               non EIP155 
 =======
               non EIP155
 >>>>>>> v0.20.0
+=======
+              non EIP155
+>>>>>>> v0.21.0
 
               signed) transactions can be executed on the state machine.
         title: Params defines the EVM module parameters
@@ -15029,6 +15106,7 @@ definitions:
               Eip-4345 (bomb delay) switch block (nil = no fork, 0 = already
               activated)
 <<<<<<< HEAD
+<<<<<<< HEAD
           merge_fork_block:
             type: string
             title: >-
@@ -15038,12 +15116,20 @@ definitions:
           gray_glacier_block:
             type: string
             title: >-
+=======
+          gray_glacier_block:
+            type: string
+            title: >-
+>>>>>>> v0.21.0
               EIP-5133 (bomb delay) switch block (nil = no fork, 0 = already
               activated)
           merge_netsplit_block:
             type: string
             title: Virtual fork after The Merge to use as a network splitter
+<<<<<<< HEAD
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0
         description: >-
           ChainConfig defines the Ethereum ChainConfig parameters using *sdk.Int
           values
@@ -15394,6 +15480,7 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+<<<<<<< HEAD
 <<<<<<< HEAD
   cosmos.auth.v1beta1.Params:
     type: object
@@ -21357,3 +21444,5 @@ definitions:
       state transition machine.
 =======
 >>>>>>> v0.20.0
+=======
+>>>>>>> v0.21.0

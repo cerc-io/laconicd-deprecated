@@ -3,7 +3,7 @@
 # "stable" mode tests assume data is static
 # "live" mode tests assume data dynamic
 
-SCRIPT=$(basename ${BASH_SOURCE[0]})
+SCRIPT=$(basename "${BASH_SOURCE[0]}")
 TEST=""
 QTD=1
 SLEEP_TIMEOUT=5
@@ -16,7 +16,7 @@ REMOVE_DATA_DIR=false
 RPC_PORT="854"
 # Ethereum JSONRPC Websocket
 WS_PORT="855"
-IP_ADDR="0.0.0.0"
+IP_ADDR="127.0.0.1"
 
 KEY="mykey"
 CHAINID="laconic_9000-1"

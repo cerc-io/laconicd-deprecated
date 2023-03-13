@@ -1,6 +1,7 @@
 syntax = "proto3";
 package ethermint.evm.v1;
 
+import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "ethermint/evm/v1/evm.proto";
 import "gogoproto/gogo.proto";
@@ -15,6 +16,9 @@ service Msg {
   rpc EthereumTx(MsgEthereumTx) returns (MsgEthereumTxResponse) {
     option (google.api.http).post = "/ethermint/evm/v1/ethereum_tx";
   };
+  // UpdateParams defined a governance operation for updating the x/evm module parameters.
+  // The authority is hard-coded to the Cosmos SDK x/gov module account
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgEthereumTx encapsulates an Ethereum transaction as an SDK message.
@@ -38,7 +42,7 @@ message MsgEthereumTx {
 // NOTE: All non-protected transactions (i.e non EIP155 signed) will fail if the
 // AllowUnprotectedTxs parameter is disabled.
 message LegacyTx {
-  option (gogoproto.goproto_getters)         = false;
+  option (gogoproto.goproto_getters) = false;
   option (cosmos_proto.implements_interface) = "TxData";
 
   // nonce corresponds to the account nonce (transaction sequence).
@@ -64,14 +68,14 @@ message LegacyTx {
 
 // AccessListTx is the data of EIP-2930 access list transactions.
 message AccessListTx {
-  option (gogoproto.goproto_getters)         = false;
+  option (gogoproto.goproto_getters) = false;
   option (cosmos_proto.implements_interface) = "TxData";
 
   // chain_id of the destination EVM chain
   string chain_id = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.customname) = "ChainID",
-    (gogoproto.jsontag)    = "chainID"
+    (gogoproto.jsontag) = "chainID"
   ];
   // nonce corresponds to the account nonce (transaction sequence).
   uint64 nonce = 2;
@@ -99,14 +103,14 @@ message AccessListTx {
 
 // DynamicFeeTx is the data of EIP-1559 dinamic fee transactions.
 message DynamicFeeTx {
-  option (gogoproto.goproto_getters)         = false;
+  option (gogoproto.goproto_getters) = false;
   option (cosmos_proto.implements_interface) = "TxData";
 
   // chain_id of the destination EVM chain
   string chain_id = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.customname) = "ChainID",
-    (gogoproto.jsontag)    = "chainID"
+    (gogoproto.jsontag) = "chainID"
   ];
   // nonce corresponds to the account nonce (transaction sequence).
   uint64 nonce = 2;
@@ -158,3 +162,19 @@ message MsgEthereumTxResponse {
   // gas_used specifies how much gas was consumed by the transaction
   uint64 gas_used = 5;
 }
+
+// MsgUpdateParams defines a Msg for updating the x/evm module parameters.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // params defines the x/evm parameters to update.
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+message MsgUpdateParamsResponse {}

@@ -1,12 +1,11 @@
 let
   pkgs = import ../../../nix { };
-  fetchEthermint = rev: builtins.fetchTarball "https://github.com/evmos/ethermint/archive/${rev}.tar.gz";
+  fetchEthermint = rev: builtins.fetchTarball "https://github.com/cerc-io/laconicd/archive/${rev}.tar.gz";
   released = pkgs.buildGo118Module rec {
     name = "laconicd";
-    # the commit before https://github.com/evmos/ethermint/pull/943
-    src = fetchEthermint "f21592ebfe74da7590eb42ed926dae970b2a9a3f";
+    src = fetchEthermint "d29cdad6e667f6089dfecbedd36bb8d3a2a7d025";
     subPackages = [ "cmd/laconicd" ];
-    vendorSha256 = "sha256-ABm5t6R/u2S6pThGrgdsqe8n3fH5tIWw7a57kxJPbYw=";
+    vendorSha256 = "sha256-cQAol54b6hNzsA4Q3MP9mTqFWM1MvR5uMPrYpaoj3SY=";
     doCheck = false;
   };
   current = pkgs.callPackage ../../../. { };

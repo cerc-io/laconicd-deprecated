@@ -1,8 +1,11 @@
+from pathlib import Path
+
 import pytest
 from eth_abi import abi
 from hexbytes import HexBytes
 from web3 import Web3
 
+from .network import setup_custom_ethermint, setup_ethermint
 from .utils import (
     ADDRS,
     CONTRACTS,
@@ -51,6 +54,86 @@ def test_get_logs_by_topic(cluster):
     assert len(logs) == 0
 
 
+@pytest.fixture(scope="module")
+def custom_ethermint(tmp_path_factory):
+    path = tmp_path_factory.mktemp("filters")
+    yield from setup_ethermint(path, 26200, long_timeout_commit=True)
+
+
+@pytest.fixture(scope="module")
+def ethermint_indexer(tmp_path_factory):
+    path = tmp_path_factory.mktemp("indexer")
+    yield from setup_custom_ethermint(
+        path, 26660, Path(__file__).parent / "configs/enable-indexer.jsonnet"
+    )
+
+
+@pytest.fixture(
+    scope="module", params=["ethermint", "geth", "ethermint-ws", "enable-indexer"]
+)
+def cluster(request, custom_ethermint, ethermint_indexer, geth):
+    """
+    run on both ethermint and geth
+    """
+    provider = request.param
+    if provider == "ethermint":
+        yield custom_ethermint
+    elif provider == "geth":
+        yield geth
+    elif provider == "ethermint-ws":
+        ethermint_ws = custom_ethermint.copy()
+        ethermint_ws.use_websocket()
+        yield ethermint_ws
+    elif provider == "enable-indexer":
+        yield ethermint_indexer
+    else:
+        raise NotImplementedError
+
+
+def test_basic(cluster):
+    w3 = cluster.w3
+    assert w3.eth.chain_id == 9000
+
+
+# Smart contract names
+GREETER_CONTRACT = "Greeter"
+ERC20_CONTRACT = "TestERC20A"
+
+# ChangeGreeting topic from Greeter contract calculated from event signature
+CHANGE_GREETING_TOPIC = Web3.keccak(text="ChangeGreeting(address,string)")
+# ERC-20 Transfer event topic
+TRANSFER_TOPIC = Web3.keccak(text="Transfer(address,address,uint256)")
+
+
+def test_get_logs_by_topic(cluster):
+    w3: Web3 = cluster.w3
+
+    contract, _ = deploy_contract(w3, CONTRACTS["Greeter"])
+
+    topic = Web3.keccak(text="ChangeGreeting(address,string)")
+
+    # with tx
+    tx = contract.functions.setGreeting("world").build_transaction()
+    receipt = send_transaction(w3, tx)
+    assert receipt.status == 1
+
+    # The getLogs method under the hood works as a filter
+    # with the specified topics and a block range.
+    # If the block range is not specified, it defaults
+    # to fromBlock: "latest", toBlock: "latest".
+    # Then, if we make a getLogs call within the same block that the tx
+    # happened, we will get a log in the result. However, if we make the call
+    # one or more blocks later, the result will be an empty array.
+    logs = w3.eth.get_logs({"topics": [topic.hex()]})
+
+    assert len(logs) == 1
+    assert logs[0]["address"] == contract.address
+
+    w3_wait_for_new_blocks(w3, 2)
+    logs = w3.eth.get_logs({"topics": [topic.hex()]})
+    assert len(logs) == 0
+
+
 def test_pending_transaction_filter(cluster):
     w3: Web3 = cluster.w3
     flt = w3.eth.filter("pending")
@@ -58,6 +141,7 @@ def test_pending_transaction_filter(cluster):
     # without tx
     assert flt.get_new_entries() == []  # GetFilterChanges
 
+    w3_wait_for_new_blocks(w3, 1, sleep=0.1)
     # with tx
     txhash = send_successful_transaction(w3)
     assert txhash in flt.get_new_entries()

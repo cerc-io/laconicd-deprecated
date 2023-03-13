@@ -4,7 +4,6 @@
 
 ![banner](docs/laconic.jpeg)
 
-
 The Source of Proof. Laconic is a next generation data availability & verifiability layer with cryptographic proofs, powering internet-scale Web3 applications, built on Proof-of-Stake with fast-finality using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/) which runs on top of [Tendermint Core](https://github.com/tendermint/tendermint) consensus engine.
 
 **Note**: Requires [Go 1.19+](https://golang.org/dl/)

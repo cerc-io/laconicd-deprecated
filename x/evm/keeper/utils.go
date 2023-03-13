@@ -1,3 +1,18 @@
+// Copyright 2021 Evmos Foundation
+// This file is part of Evmos' Ethermint library.
+//
+// The Ethermint library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Ethermint library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
 package keeper
 
 import (
@@ -9,12 +24,37 @@ import (
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 
-	evmtypes "github.com/cerc-io/laconicd/x/evm/types"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
+
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/cerc-io/laconicd/x/evm/types"
 )
+
+// GetCoinbaseAddress returns the block proposer's validator operator address.
+func (k Keeper) GetCoinbaseAddress(ctx sdk.Context, proposerAddress sdk.ConsAddress) (common.Address, error) {
+	validator, found := k.stakingKeeper.GetValidatorByConsAddr(ctx, GetProposerAddress(ctx, proposerAddress))
+	if !found {
+		return common.Address{}, errorsmod.Wrapf(
+			stakingtypes.ErrNoValidatorFound,
+			"failed to retrieve validator from block proposer address %s",
+			proposerAddress.String(),
+		)
+	}
+
+	coinbase := common.BytesToAddress(validator.GetOperator())
+	return coinbase, nil
+}
+
+// GetProposerAddress returns current block proposer's address when provided proposer address is empty.
+func GetProposerAddress(ctx sdk.Context, proposerAddress sdk.ConsAddress) sdk.ConsAddress {
+	if len(proposerAddress) == 0 {
+		proposerAddress = ctx.BlockHeader().ProposerAddress
+	}
+	return proposerAddress
+}
 
 // DeductTxCostsFromUserBalance deducts the fees from the user balance. Returns an
 // error if the specified sender address does not exist or the account balance is not sufficient.
@@ -41,7 +81,7 @@ func (k *Keeper) DeductTxCostsFromUserBalance(
 // gas limit is not reached, the gas limit is higher than the intrinsic gas and that the
 // base fee is higher than the gas fee cap.
 func VerifyFee(
-	txData evmtypes.TxData,
+	txData types.TxData,
 	denom string,
 	baseFee *big.Int,
 	homestead, istanbul, isCheckTx bool,
@@ -92,7 +132,7 @@ func VerifyFee(
 // sender has enough funds to pay for the fees and value of the transaction.
 func CheckSenderBalance(
 	balance sdkmath.Int,
-	txData evmtypes.TxData,
+	txData types.TxData,
 ) error {
 	cost := txData.Cost()
 

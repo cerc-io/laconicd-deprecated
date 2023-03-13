@@ -1,3 +1,18 @@
+// Copyright 2021 Evmos Foundation
+// This file is part of Evmos' Ethermint library.
+//
+// The Ethermint library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The Ethermint library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the Ethermint library. If not, see https://github.com/evmos/ethermint/blob/main/LICENSE
 package backend
 
 import (
@@ -146,41 +161,42 @@ func (b *Backend) FeeHistory(
 ) (*rpctypes.FeeHistoryResult, error) {
 	blockEnd := int64(lastBlock)
 
-	if blockEnd <= 0 {
+	if blockEnd < 0 {
 		blockNumber, err := b.BlockNumber()
 		if err != nil {
 			return nil, err
 		}
 		blockEnd = int64(blockNumber)
 	}
-	userBlockCountInt := int64(userBlockCount)
+
+	blocks := int64(userBlockCount)
 	maxBlockCount := int64(b.cfg.JSONRPC.FeeHistoryCap)
-	if userBlockCountInt > maxBlockCount {
-		return nil, fmt.Errorf("FeeHistory user block count %d higher than %d", userBlockCountInt, maxBlockCount)
-	}
-	blockStart := blockEnd - userBlockCountInt
-	if blockStart < 0 {
-		blockStart = 0
+	if blocks > maxBlockCount {
+		return nil, fmt.Errorf("FeeHistory user block count %d higher than %d", blocks, maxBlockCount)
 	}
 
-	blockCount := blockEnd - blockStart
-
+	if blockEnd+1 < blocks {
+		blocks = blockEnd + 1
+	}
+	// Ensure not trying to retrieve before genesis.
+	blockStart := blockEnd + 1 - blocks
 	oldestBlock := (*hexutil.Big)(big.NewInt(blockStart))
 
 	// prepare space
-	reward := make([][]*hexutil.Big, blockCount)
+	reward := make([][]*hexutil.Big, blocks)
 	rewardCount := len(rewardPercentiles)
-	for i := 0; i < int(blockCount); i++ {
+	for i := 0; i < int(blocks); i++ {
 		reward[i] = make([]*hexutil.Big, rewardCount)
 	}
-	thisBaseFee := make([]*hexutil.Big, blockCount)
-	thisGasUsedRatio := make([]float64, blockCount)
+
+	thisBaseFee := make([]*hexutil.Big, blocks+1)
+	thisGasUsedRatio := make([]float64, blocks)
 
 	// rewards should only be calculated if reward percentiles were included
 	calculateRewards := rewardCount != 0
 
 	// fetch block
-	for blockID := blockStart; blockID < blockEnd; blockID++ {
+	for blockID := blockStart; blockID <= blockEnd; blockID++ {
 		index := int32(blockID - blockStart)
 		// tendermint block
 		tendermintblock, err := b.TendermintBlockByNumber(rpctypes.BlockNumber(blockID))
@@ -209,6 +225,7 @@ func (b *Backend) FeeHistory(
 
 		// copy
 		thisBaseFee[index] = (*hexutil.Big)(oneFeeHistory.BaseFee)
+		thisBaseFee[index+1] = (*hexutil.Big)(oneFeeHistory.NextBaseFee)
 		thisGasUsedRatio[index] = oneFeeHistory.GasUsedRatio
 		if calculateRewards {
 			for j := 0; j < rewardCount; j++ {

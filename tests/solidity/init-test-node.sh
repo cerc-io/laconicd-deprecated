@@ -38,8 +38,20 @@ laconicd init $MONIKER --chain-id $CHAINID
 # Set gas limit in genesis
 cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
 
-# Reduce the block time to 1s
-sed -i -e '/^timeout_commit =/ s/= .*/= "850ms"/' $HOME/.laconicd/config/config.toml
+# modified default configs
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
+    sed -i '' 's/prometheus-retention-time = 0/prometheus-retention-time  = 1000000000000/g' $HOME/.laconicd/config/app.toml
+    sed -i '' 's/enabled = false/enabled = true/g' $HOME/.laconicd/config/app.toml
+    sed -i '' 's/prometheus = false/prometheus = true/' $HOME/.laconicd/config/config.toml
+    sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $HOME/.laconicd/config/config.toml
+else
+    sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
+    sed -i 's/prometheus-retention-time  = "0"/prometheus-retention-time  = "1000000000000"/g' $HOME/.laconicd/config/app.toml
+    sed -i 's/enabled = false/enabled = true/g' $HOME/.laconicd/config/app.toml
+    sed -i 's/prometheus = false/prometheus = true/' $HOME/.laconicd/config/config.toml
+    sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $HOME/.laconicd/config/config.toml
+fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
 laconicd add-genesis-account "$(laconicd keys show $VAL_KEY   -a --keyring-backend test)" 1000000000000000000000aphoton,1000000000000000000stake --keyring-backend test
