@@ -61,7 +61,7 @@ jobs:
       - uses: cachix/install-nix-action@v18
       - uses: cachix/cachix-action@v12
         with:
-          name: ethermint
+          name: laconicd
       - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
@@ -71,21 +71,23 @@ jobs:
         if: env.GIT_DIFF
   gomod2nix:
     name: Check gomod2nix.toml file is up to date
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4
       - uses: cachix/install-nix-action@v18
       - uses: cachix/cachix-action@v12
         with:
-          name: ethermint
+          name: laconicd
       - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.py
       - name: run gomod2nix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           nix run -f ./nix gomod2nix
           git diff --no-ext-diff --exit-code
+        with:
+          github-token: ${{ secrets.github_token }}
         if: env.GIT_DIFF
