@@ -36,7 +36,6 @@ usage() {
     echo "-s <number>  -- Sleep between operations in secs. eg: 5"
     echo "-m <string>  -- Mode for testing. eg: rpc"
     echo "-r <string>  -- Remove test dir after, eg: true, default is false"
-    exit 1
 }
 
 while getopts "h?t:q:z:s:m:r:" args; do
@@ -74,7 +73,7 @@ init_func() {
     "$PWD"/build/laconicd keys add $KEY"$i" --keyring-backend test --home "$DATA_DIR$i" --no-backup --algo "eth_secp256k1"
     "$PWD"/build/laconicd init $MONIKER --chain-id $CHAINID --home "$DATA_DIR$i"
     # Set gas limit in genesis
-    cat $DATA_DIR$i/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $DATA_DIR$i/config/tmp_genesis.json && mv $DATA_DIR$i/config/tmp_genesis.json $DATA_DIR$i/config/genesis.json
+    < "$DATA_DIR""$i"/config/genesis.json jq '.consensus_params["block"]["max_gas"]="10000000"' > "$DATA_DIR""$i"/config/tmp_genesis.json && mv "$DATA_DIR""$i"/config/tmp_genesis.json "$DATA_DIR""$i"/config/genesis.json
     "$PWD"/build/laconicd add-genesis-account \
     "$("$PWD"/build/laconicd keys show "$KEY$i" --keyring-backend test -a --home "$DATA_DIR$i")" 1000000000000000000aphoton,1000000000000000000stake \
     --keyring-backend test --home "$DATA_DIR$i"
@@ -83,27 +82,27 @@ init_func() {
     "$PWD"/build/laconicd validate-genesis --home "$DATA_DIR$i"
 
     if [[ $MODE == "pending" ]]; then
-      ls $DATA_DIR$i
+      ls "$DATA_DIR""$i"
       if [[ "$OSTYPE" == "darwin"* ]]; then
-        sed -i '' 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_propose = "3s"/timeout_propose = "30s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "2s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_prevote = "1s"/timeout_prevote = "120s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "2s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "2s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $DATA_DIR$i/config/config.toml
-        sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $DATA_DIR$i/config/config.toml
+        sed -i '' 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_propose = "3s"/timeout_propose = "30s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "2s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_prevote = "1s"/timeout_prevote = "120s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "2s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "2s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' "$DATA_DIR""$i"/config/config.toml
       else
-        sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_propose = "3s"/timeout_propose = "30s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "2s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_prevote = "1s"/timeout_prevote = "120s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "2s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "2s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $DATA_DIR$i/config/config.toml
-        sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $DATA_DIR$i/config/config.toml
+        sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_propose = "3s"/timeout_propose = "30s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "2s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_prevote = "1s"/timeout_prevote = "120s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "2s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "2s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' "$DATA_DIR""$i"/config/config.toml
+        sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' "$DATA_DIR""$i"/config/config.toml
       fi
     fi
 }
@@ -169,9 +168,9 @@ stop_func() {
     kill -9 "$LACONICD_PID"
     wait "$LACONICD_PID"
 
-    if [ $REMOVE_DATA_DIR == "true" ]
+    if [ "$REMOVE_DATA_DIR" == "true" ]
     then
-        rm -rf $DATA_DIR*
+        rm -rf "$DATA_DIR"*
     fi
 }
 
@@ -180,7 +179,7 @@ for i in "${arr[@]}"; do
 done
 
 if [[ (-z $TEST || $TEST == "rpc") && $TEST_FAIL -ne 0 ]]; then
-    exit $TEST_FAIL
+    exit "$TEST_FAIL"
 else
     exit 0
 fi
