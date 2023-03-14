@@ -71,6 +71,8 @@ jobs:
         if: env.GIT_DIFF
   gomod2nix:
     name: Check gomod2nix.toml file is up to date
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.4

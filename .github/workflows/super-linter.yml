@@ -26,7 +26,6 @@ jobs:
         uses: github/super-linter@v4
         env:
           LINTER_RULES_PATH: /
-          FILTER_REGEX_EXCLUDE: "Dockerfile"
           YAML_CONFIG_FILE: .yamllint
           VALIDATE_ALL_CODEBASE: false
           MARKDOWN_CONFIG_FILE: .markdownlint.yml
@@ -37,5 +36,6 @@ jobs:
           VALIDATE_GO: false
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_GITLEAKS: false
+          VALIDATE_DOCKERFILE_HADOLINT: false
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
