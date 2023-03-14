@@ -27,30 +27,30 @@ USER4_MNEMONIC="doll midnight silk carpet brush boring pluck office gown inquiry
 rm -rf ~/.laconic*
 
 # Import keys from mnemonics
-echo "$VAL_MNEMONIC"   | laconicd keys add $VAL_KEY   --recover --keyring-backend test --algo "eth_secp256k1"
-echo "$USER1_MNEMONIC" | laconicd keys add $USER1_KEY --recover --keyring-backend test --algo "eth_secp256k1"
-echo "$USER2_MNEMONIC" | laconicd keys add $USER2_KEY --recover --keyring-backend test --algo "eth_secp256k1"
-echo "$USER3_MNEMONIC" | laconicd keys add $USER3_KEY --recover --keyring-backend test --algo "eth_secp256k1"
-echo "$USER4_MNEMONIC" | laconicd keys add $USER4_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $VAL_MNEMONIC   | laconicd keys add $VAL_KEY   --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER1_MNEMONIC | laconicd keys add $USER1_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER2_MNEMONIC | laconicd keys add $USER2_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER3_MNEMONIC | laconicd keys add $USER3_KEY --recover --keyring-backend test --algo "eth_secp256k1"
+echo $USER4_MNEMONIC | laconicd keys add $USER4_KEY --recover --keyring-backend test --algo "eth_secp256k1"
 
 laconicd init $MONIKER --chain-id $CHAINID
 
 # Set gas limit in genesis
-< "$HOME"/.laconicd/config/genesis.json jq '.consensus_params["block"]["max_gas"]="10000000"' > "$HOME"/.laconicd/config/tmp_genesis.json && mv "$HOME"/.laconicd/config/tmp_genesis.json "$HOME"/.laconicd/config/genesis.json
+cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
 
 # modified default configs
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' 's/create_empty_blocks = true/create_empty_blocks = false/g' "$HOME"/.laconicd/config/config.toml
-    sed -i '' 's/prometheus-retention-time = 0/prometheus-retention-time  = 1000000000000/g' "$HOME"/.laconicd/config/app.toml
-    sed -i '' 's/enabled = false/enabled = true/g' "$HOME"/.laconicd/config/app.toml
-    sed -i '' 's/prometheus = false/prometheus = true/' "$HOME"/.laconicd/config/config.toml
-    sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' "$HOME"/.laconicd/config/config.toml
+    sed -i '' 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
+    sed -i '' 's/prometheus-retention-time = 0/prometheus-retention-time  = 1000000000000/g' $HOME/.laconicd/config/app.toml
+    sed -i '' 's/enabled = false/enabled = true/g' $HOME/.laconicd/config/app.toml
+    sed -i '' 's/prometheus = false/prometheus = true/' $HOME/.laconicd/config/config.toml
+    sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $HOME/.laconicd/config/config.toml
 else
-    sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' "$HOME"/.laconicd/config/config.toml
-    sed -i 's/prometheus-retention-time  = "0"/prometheus-retention-time  = "1000000000000"/g' "$HOME"/.laconicd/config/app.toml
-    sed -i 's/enabled = false/enabled = true/g' "$HOME"/.laconicd/config/app.toml
-    sed -i 's/prometheus = false/prometheus = true/' "$HOME"/.laconicd/config/config.toml
-    sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' "$HOME"/.laconicd/config/config.toml
+    sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
+    sed -i 's/prometheus-retention-time  = "0"/prometheus-retention-time  = "1000000000000"/g' $HOME/.laconicd/config/app.toml
+    sed -i 's/enabled = false/enabled = true/g' $HOME/.laconicd/config/app.toml
+    sed -i 's/prometheus = false/prometheus = true/' $HOME/.laconicd/config/config.toml
+    sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' $HOME/.laconicd/config/config.toml
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)

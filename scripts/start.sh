@@ -3,7 +3,7 @@
 # "stable" mode tests assume data is static
 # "live" mode tests assume data dynamic
 
-SCRIPT=$(basename "${BASH_SOURCE[0]}")
+SCRIPT=$(basename ${BASH_SOURCE[0]})
 TEST=""
 QTD=1
 SLEEP_TIMEOUT=5
@@ -30,6 +30,7 @@ usage() {
     echo "-q <number>  -- Quantity of nodes to run. eg: 3"
     echo "-z <number>  -- Quantity of nodes to run tests against eg: 3"
     echo "-s <number>  -- Sleep between operations in secs. eg: 5"
+    exit 1
 }
 
 while getopts "h?t:q:z:s:" args; do
@@ -150,7 +151,7 @@ for i in "${arr[@]}"; do
 done
 
 if [[ (-z $TEST || $TEST == "rpc") && $TEST_FAIL -ne 0 ]]; then
-    exit "$TEST_FAIL"
+    exit $TEST_FAIL
 else
     exit 0
 fi

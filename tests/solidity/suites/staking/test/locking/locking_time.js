@@ -6,7 +6,7 @@ const { approveAndStake } = require('../helpers/helpers')(artifacts)
 const { DEFAULT_STAKE_AMOUNT, DEFAULT_LOCK_AMOUNT, EMPTY_DATA } = require('../helpers/constants')
 const { STAKING_ERRORS, TIME_LOCK_MANAGER_ERRORS } = require('../helpers/errors')
 
-const TimeLockManagerMock = artifacts.require('TimeLockManagerMock')
+const TimeLockManagerMock = artifacts.require('TimeLockManagerMock');
 
 contract('Staking app, Time locking', ([owner]) => {
   let token, staking, manager
@@ -17,7 +17,7 @@ contract('Staking app, Time locking', ([owner]) => {
   const DEFAULT_TIME = 1000
   const DEFAULT_BLOCKS = 10
 
-  const approveStakeAndLock = async (unit, start, end, lockAmount = DEFAULT_LOCK_AMOUNT, stakeAmount = DEFAULT_STAKE_AMOUNT) => {
+  const approveStakeAndLock = async(unit, start, end, lockAmount = DEFAULT_LOCK_AMOUNT, stakeAmount = DEFAULT_STAKE_AMOUNT) => {
     await approveAndStake({ staking, amount: stakeAmount, from: owner })
     // allow manager
     await staking.allowManager(manager.address, lockAmount, EMPTY_DATA)
@@ -40,23 +40,23 @@ contract('Staking app, Time locking', ([owner]) => {
 
     // check lock values
     const { _amount, _allowance } = await staking.getLock(owner, manager.address)
-    assertBn(_amount, DEFAULT_LOCK_AMOUNT, 'locked amount should match')
-    assertBn(_allowance, DEFAULT_LOCK_AMOUNT, 'locked allowance should match')
+    assertBn(_amount, DEFAULT_LOCK_AMOUNT, "locked amount should match")
+    assertBn(_allowance, DEFAULT_LOCK_AMOUNT, "locked allowance should match")
 
     // check time values
     const { unit, start, end } = await manager.getTimeInterval(owner)
-    assert.equal(unit.toString(), TIME_UNIT_SECONDS.toString(), 'interval unit should match')
-    assert.equal(start.toString(), startTime.toString(), 'interval start should match')
-    assert.equal(end.toString(), endTime.toString(), 'interval end should match')
+    assert.equal(unit.toString(), TIME_UNIT_SECONDS.toString(), "interval unit should match")
+    assert.equal(start.toString(), startTime.toString(), "interval start should match")
+    assert.equal(end.toString(), endTime.toString(), "interval end should match")
 
     // can not unlock
     assert.equal(await staking.canUnlock(owner, owner, manager.address, 0), false, "Shouldn't be able to unlock")
-    assertBn(await staking.unlockedBalanceOf(owner), DEFAULT_STAKE_AMOUNT.sub(DEFAULT_LOCK_AMOUNT), 'Unlocked balance should match')
+    assertBn(await staking.unlockedBalanceOf(owner), DEFAULT_STAKE_AMOUNT.sub(DEFAULT_LOCK_AMOUNT), "Unlocked balance should match")
 
     await manager.setTimestamp(endTime.add(bn(1)))
     // can unlock
-    assert.equal(await staking.canUnlock(owner, owner, manager.address, 0), true, 'Should be able to unlock')
-    assertBn(await staking.unlockedBalanceOf(owner), DEFAULT_STAKE_AMOUNT.sub(DEFAULT_LOCK_AMOUNT), 'Unlocked balance should match')
+    assert.equal(await staking.canUnlock(owner, owner, manager.address, 0), true, "Should be able to unlock")
+    assertBn(await staking.unlockedBalanceOf(owner), DEFAULT_STAKE_AMOUNT.sub(DEFAULT_LOCK_AMOUNT), "Unlocked balance should match")
   })
 
   it('locks using blocks', async () => {
@@ -66,22 +66,22 @@ contract('Staking app, Time locking', ([owner]) => {
 
     // check lock values
     const { _amount, _allowance } = await staking.getLock(owner, manager.address)
-    assertBn(_amount, DEFAULT_LOCK_AMOUNT, 'locked amount should match')
-    assertBn(_allowance, DEFAULT_LOCK_AMOUNT, 'locked allowance should match')
+    assertBn(_amount, DEFAULT_LOCK_AMOUNT, "locked amount should match")
+    assertBn(_allowance, DEFAULT_LOCK_AMOUNT, "locked allowance should match")
 
     // check time values
     const { unit, start, end } = await manager.getTimeInterval(owner)
-    assert.equal(unit.toString(), TIME_UNIT_BLOCKS.toString(), 'interval unit should match')
-    assert.equal(start.toString(), startBlock.toString(), 'interval start should match')
-    assert.equal(end.toString(), endBlock.toString(), 'interval end should match')
+    assert.equal(unit.toString(), TIME_UNIT_BLOCKS.toString(), "interval unit should match")
+    assert.equal(start.toString(), startBlock.toString(), "interval start should match")
+    assert.equal(end.toString(), endBlock.toString(), "interval end should match")
 
     // can not unlock
     assert.equal(await staking.canUnlock(owner, owner, manager.address, 0), false, "Shouldn't be able to unlock")
-    assertBn(await staking.unlockedBalanceOf(owner), DEFAULT_STAKE_AMOUNT.sub(DEFAULT_LOCK_AMOUNT), 'Unlocked balance should match')
+    assertBn(await staking.unlockedBalanceOf(owner), DEFAULT_STAKE_AMOUNT.sub(DEFAULT_LOCK_AMOUNT), "Unlocked balance should match")
 
     await manager.setBlockNumber(endBlock.add(bn(1)))
     // can unlock
-    assert.equal(await staking.canUnlock(owner, owner, manager.address, 0), true, 'Should be able to unlock')
+    assert.equal(await staking.canUnlock(owner, owner, manager.address, 0), true, "Should be able to unlock")
   })
 
   it('fails to unlock if can not unlock', async () => {
@@ -90,7 +90,7 @@ contract('Staking app, Time locking', ([owner]) => {
     await approveStakeAndLock(TIME_UNIT_SECONDS, startTime, endTime)
 
     // tries to unlock
-    await assertRevert(staking.unlockAndRemoveManager(owner, manager.address)/*, STAKING_ERRORS.ERROR_CANNOT_UNLOCK */)
+    await assertRevert(staking.unlockAndRemoveManager(owner, manager.address)/*, STAKING_ERRORS.ERROR_CANNOT_UNLOCK*/)
   })
 
   it('fails trying to lock twice', async () => {
@@ -98,8 +98,9 @@ contract('Staking app, Time locking', ([owner]) => {
     const endTime = startTime.add(bn(DEFAULT_TIME))
     await approveStakeAndLock(TIME_UNIT_SECONDS, startTime, endTime)
 
-    await assertRevert(manager.lock(staking.address, owner, DEFAULT_LOCK_AMOUNT, TIME_UNIT_SECONDS, startTime, endTime)/*, TIME_LOCK_MANAGER_ERRORS.ERROR_ALREADY_LOCKED */)
+    await assertRevert(manager.lock(staking.address, owner, DEFAULT_LOCK_AMOUNT, TIME_UNIT_SECONDS, startTime, endTime)/*, TIME_LOCK_MANAGER_ERRORS.ERROR_ALREADY_LOCKED*/)
   })
+
 
   it('fails trying to lock with wrong interval', async () => {
     const startTime = await manager.getTimestampExt()
@@ -109,6 +110,6 @@ contract('Staking app, Time locking', ([owner]) => {
     // allow manager
     await staking.allowManager(manager.address, DEFAULT_STAKE_AMOUNT, EMPTY_DATA)
     // times are reverted!
-    await assertRevert(manager.lock(staking.address, owner, DEFAULT_LOCK_AMOUNT, TIME_UNIT_SECONDS, endTime, startTime)/*, TIME_LOCK_MANAGER_ERRORS.ERROR_WRONG_INTERVAL */)
+    await assertRevert(manager.lock(staking.address, owner, DEFAULT_LOCK_AMOUNT, TIME_UNIT_SECONDS, endTime, startTime)/*, TIME_LOCK_MANAGER_ERRORS.ERROR_WRONG_INTERVAL*/)
   })
 })

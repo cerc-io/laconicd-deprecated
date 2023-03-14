@@ -31,7 +31,7 @@ contract('Checkpointing', () => {
         })
 
         context('when the given time is greater than zero', async () => {
-          const time = bn(1)
+          const time= bn(1)
 
           it('adds the new value', async () => {
             await checkpointing.add(time, value)
@@ -49,15 +49,15 @@ contract('Checkpointing', () => {
         })
 
         context('when the given time is previous to the latest registered value', async () => {
-          const time = bn(40)
+          const time= bn(40)
 
           it('reverts', async () => {
-            await assertRevert(checkpointing.add(time, value)/*, CHECKPOINT_ERRORS.CANNOT_ADD_PAST_VALUE */)
+            await assertRevert(checkpointing.add(time, value)/*, CHECKPOINT_ERRORS.CANNOT_ADD_PAST_VALUE*/)
           })
         })
 
         context('when the given time is equal to the latest registered value', async () => {
-          const time = bn(90)
+          const time= bn(90)
 
           it('updates the already registered value', async () => {
             await checkpointing.add(time, value)
@@ -68,7 +68,7 @@ contract('Checkpointing', () => {
         })
 
         context('when the given time is after the latest registered value', async () => {
-          const time = bn(95)
+          const time= bn(95)
 
           it('adds the new last value', async () => {
             const previousLast = await checkpointing.getLast()
@@ -87,7 +87,7 @@ contract('Checkpointing', () => {
       const value = MAX_UINT256
 
       it('reverts', async () => {
-        await assertRevert(checkpointing.add(0, value)/*, CHECKPOINT_ERRORS.VALUE_TOO_BIG */)
+        await assertRevert(checkpointing.add(0, value)/*, CHECKPOINT_ERRORS.VALUE_TOO_BIG*/)
       })
     })
   })
@@ -135,7 +135,7 @@ contract('Checkpointing', () => {
   describe('get', () => {
     context('when there are no values registered yet', () => {
       context('when there given time is zero', () => {
-        const time = bn(0)
+        const time= bn(0)
 
         it('returns zero', async () => {
           await assertFetchedValue(time, bn(0))
@@ -143,7 +143,7 @@ contract('Checkpointing', () => {
       })
 
       context('when there given time is greater than zero', () => {
-        const time = bn(1)
+        const time= bn(1)
 
         it('returns zero', async () => {
           await assertFetchedValue(time, bn(0))
@@ -159,7 +159,7 @@ contract('Checkpointing', () => {
       })
 
       context('when there given time is zero', () => {
-        const time = bn(0)
+        const time= bn(0)
 
         it('returns zero', async () => {
           await assertFetchedValue(time, bn(0))
@@ -167,7 +167,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is previous to the time of first registered value', () => {
-        const time = bn(10)
+        const time= bn(10)
 
         it('returns zero', async () => {
           await assertFetchedValue(time, bn(0))
@@ -175,7 +175,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is equal to the time of first registered value', () => {
-        const time = bn(30)
+        const time= bn(30)
 
         it('returns the first registered value', async () => {
           await assertFetchedValue(time, bn(1))
@@ -183,7 +183,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is between the times of first and the second registered values', () => {
-        const time = bn(40)
+        const time= bn(40)
 
         it('returns the first registered value', async () => {
           await assertFetchedValue(time, bn(1))
@@ -191,7 +191,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is the time of the second registered values', () => {
-        const time = bn(50)
+        const time= bn(50)
 
         it('returns the second registered value', async () => {
           await assertFetchedValue(time, bn(2))
@@ -199,7 +199,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is between the times of second and the third registered values', () => {
-        const time = bn(60)
+        const time= bn(60)
 
         it('returns the second registered value', async () => {
           await assertFetchedValue(time, bn(2))
@@ -207,7 +207,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is equal to the time of the third registered values', () => {
-        const time = bn(90)
+        const time= bn(90)
 
         it('returns the third registered value', async () => {
           await assertFetchedValue(time, bn(3))
@@ -215,7 +215,7 @@ contract('Checkpointing', () => {
       })
 
       context('when the given time is after the time of the third registered values', () => {
-        const time = bn(100)
+        const time= bn(100)
 
         it('returns the third registered value', async () => {
           await assertFetchedValue(time, bn(3))

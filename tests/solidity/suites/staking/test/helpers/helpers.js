@@ -31,7 +31,7 @@ module.exports = (artifacts) => {
 
   // funds flows helpers
 
-  function UserState (address, walletBalance) {
+  function UserState(address, walletBalance) {
     this.address = address
     this.walletBalance = walletBalance
     this.stakedBalance = bn(0)
@@ -230,7 +230,7 @@ module.exports = (artifacts) => {
             */
           )
           await assertRevert(
-            staking.slashAndUnstake(user.address, to, user.lockedBalance.add(bn(1)), { from: managers[i] })/*
+            staking.slashAndUnstake(user.address, to, user.lockedBalance.add(bn(1)), { from: managers[i] }),/*
             STAKING_ERRORS.ERROR_NOT_ENOUGH_LOCK
             */
           )
@@ -239,12 +239,12 @@ module.exports = (artifacts) => {
         const lockManagerAddress = managers[managers.length - 1]
         const lockManager = await LockManagerMock.at(lockManagerAddress)
         await assertRevert(
-          lockManager.slash(staking.address, user.address, to, user.lockedBalance.add(bn(1)))/*
+          lockManager.slash(staking.address, user.address, to, user.lockedBalance.add(bn(1))),/*
           STAKING_ERRORS.ERROR_NOT_ENOUGH_LOCK
           */
         )
         await assertRevert(
-          lockManager.slashAndUnstake(staking.address, user.address, to, user.lockedBalance.add(bn(1)))/*
+          lockManager.slashAndUnstake(staking.address, user.address, to, user.lockedBalance.add(bn(1))),/*
           STAKING_ERRORS.ERROR_NOT_ENOUGH_LOCK
           */
         )
@@ -278,6 +278,6 @@ module.exports = (artifacts) => {
     slashAndUnstakeWithState,
     slashFromContractWithState,
     slashAndUnstakeFromContractWithState,
-    checkInvariants
+    checkInvariants,
   }
 }

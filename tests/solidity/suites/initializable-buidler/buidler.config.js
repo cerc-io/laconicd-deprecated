@@ -1,6 +1,6 @@
 const { usePlugin } = require('@nomiclabs/buidler/config')
 
-usePlugin('@nomiclabs/buidler-ganache')
+usePlugin("@nomiclabs/buidler-ganache")
 usePlugin('@nomiclabs/buidler-truffle5')
 
 module.exports = {
@@ -9,20 +9,20 @@ module.exports = {
     ganache: {
       url: 'http://localhost:8545',
       gasLimit: 5000000,
-      gasPrice: 1000000000, // 1 gwei (in wei)
+      gasPrice: 1000000000,  // 1 gwei (in wei)
       defaultBalanceEther: 100
     },
     ethermint: {
       url: 'http://localhost:8545',
-      gasLimit: 5000000, // Gas sent with each transaction
-      gasPrice: 1000000000 // 1 gwei (in wei)
-    }
+      gasLimit: 5000000,     // Gas sent with each transaction
+      gasPrice: 1000000000,  // 1 gwei (in wei)
+    },
   },
   solc: {
     version: '0.4.24',
     optimizer: {
       enabled: true,
-      runs: 10000
-    }
-  }
+      runs: 10000,
+    },
+  },
 }

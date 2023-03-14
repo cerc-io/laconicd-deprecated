@@ -15,7 +15,7 @@ const {
   slashAndUnstakeWithState,
   slashFromContractWithState,
   slashAndUnstakeFromContractWithState,
-  checkInvariants
+  checkInvariants,
 } = require('../helpers/helpers')(artifacts)
 const { DEFAULT_STAKE_AMOUNT, DEFAULT_LOCK_AMOUNT, EMPTY_DATA, ZERO_ADDRESS } = require('../helpers/constants')
 
@@ -108,12 +108,12 @@ contract('Staking app, Locking funds flows', ([_, owner, user1, user2, user3]) =
           })
 
           const unlockAndUnstake = async (unlockAmount) => {
-            await unlockWithState({ staking, managerAddress: lockManagerAddress, unlockAmount, user: users[0] })
+            await unlockWithState({ staking, managerAddress: lockManagerAddress, unlockAmount, user: users[0]})
             await unstake(stakeAmount.sub(lockAmount.sub(unlockAmount)))
           }
 
           const unlockAndUnstakeFromManager = async (unlockAmount) => {
-            await unlockFromManagerWithState({ staking, lockManager, unlockAmount, user: users[0] })
+            await unlockFromManagerWithState({ staking, lockManager, unlockAmount, user: users[0]})
             await unstake(stakeAmount.sub(lockAmount.sub(unlockAmount)))
           }
 
