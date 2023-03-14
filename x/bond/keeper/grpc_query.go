@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -30,7 +31,7 @@ func (q Querier) GetBondByID(c context.Context, req *types.QueryGetBondByIDReque
 	ctx := sdk.UnwrapSDKContext(c)
 	bondID := req.GetId()
 	if len(bondID) == 0 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bond id required")
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "bond id required")
 	}
 	bond := q.Keeper.GetBond(ctx, req.GetId())
 	return &types.QueryGetBondByIDResponse{Bond: &bond}, nil
@@ -40,7 +41,7 @@ func (q Querier) GetBondsByOwner(c context.Context, req *types.QueryGetBondsByOw
 	ctx := sdk.UnwrapSDKContext(c)
 	owner := req.GetOwner()
 	if len(owner) == 0 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "owner id required")
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "owner id required")
 	}
 	bonds := q.Keeper.QueryBondsByOwner(ctx, owner)
 	return &types.QueryGetBondsByOwnerResponse{Bonds: bonds}, nil
