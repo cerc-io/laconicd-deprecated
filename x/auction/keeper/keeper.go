@@ -341,7 +341,7 @@ func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*typ
 
 func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Bid, error) {
 	if !k.HasAuction(ctx, msg.AuctionId) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Auction not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction not found")
 	}
 
 	auction := k.GetAuction(ctx, msg.AuctionId)
