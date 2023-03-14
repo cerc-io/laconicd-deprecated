@@ -130,7 +130,7 @@ func (k Keeper) CreateBond(ctx sdk.Context, ownerAddress sdk.AccAddress, coins s
 
 	bond := types.Bond{Id: bondID, Owner: ownerAddress.String(), Balance: coins}
 	if bond.Balance.IsAnyGT(maxBondAmount) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Max bond amount exceeded.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Max bond amount exceeded")
 	}
 
 	// Move funds into the bond account module.
@@ -222,18 +222,18 @@ func (k Keeper) QueryBondsByOwner(ctx sdk.Context, ownerAddress string) []types.
 // RefillBond refills an existing bond.
 func (k Keeper) RefillBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddress, coins sdk.Coins) (*types.Bond, error) {
 	if !k.HasBond(ctx, id) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bond not found")
 	}
 
 	bond := k.GetBond(ctx, id)
 	if bond.Owner != ownerAddress.String() {
-		return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "bond owner mismatch")
 	}
 
 	// Check if account has funds.
 	for _, coin := range coins {
 		if !k.bankKeeper.HasBalance(ctx, ownerAddress, coin) {
-			return nil, errors.Wrap(sdkerrors.ErrInsufficientFunds, "Insufficient funds.")
+			return nil, errors.Wrap(sdkerrors.ErrInsufficientFunds, "insufficient funds")
 		}
 	}
 
@@ -241,7 +241,7 @@ func (k Keeper) RefillBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddre
 
 	updatedBalance := bond.Balance.Add(coins...)
 	if updatedBalance.IsAnyGT(maxBondAmount) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Max bond amount exceeded.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "max bond amount exceeded")
 	}
 
 	// Move funds into the bond account module.
@@ -260,17 +260,17 @@ func (k Keeper) RefillBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddre
 // WithdrawBond withdraws funds from a bond.
 func (k Keeper) WithdrawBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddress, coins sdk.Coins) (*types.Bond, error) {
 	if !k.HasBond(ctx, id) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bond not found")
 	}
 
 	bond := k.GetBond(ctx, id)
 	if bond.Owner != ownerAddress.String() {
-		return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "bond owner mismatch")
 	}
 
 	updatedBalance, isNeg := bond.Balance.SafeSub(coins...)
 	if isNeg {
-		return nil, errors.Wrap(sdkerrors.ErrInsufficientFunds, "Insufficient bond balance.")
+		return nil, errors.Wrap(sdkerrors.ErrInsufficientFunds, "insufficient bond balance")
 	}
 
 	// Move funds from the bond into the account.
@@ -289,18 +289,18 @@ func (k Keeper) WithdrawBond(ctx sdk.Context, id string, ownerAddress sdk.AccAdd
 // CancelBond cancels a bond, returning funds to the owner.
 func (k Keeper) CancelBond(ctx sdk.Context, id string, ownerAddress sdk.AccAddress) (*types.Bond, error) {
 	if !k.HasBond(ctx, id) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bond not found")
 	}
 
 	bond := k.GetBond(ctx, id)
 	if bond.Owner != ownerAddress.String() {
-		return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "bond owner mismatch")
 	}
 
 	// Check if bond is used in other modules.
 	for _, usageKeeper := range k.usageKeepers {
 		if usageKeeper.UsesBond(ctx, id) {
-			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprintf("Bond in use by the '%s' module.", usageKeeper.ModuleName()))
+			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprintf("bond in use by the '%s' module", usageKeeper.ModuleName()))
 		}
 	}
 
@@ -341,13 +341,13 @@ func (k Keeper) TransferCoinsToModuleAccount(ctx sdk.Context, id, moduleAccount 
 
 	if isNeg {
 		// Check if bond has sufficient funds.
-		return errors.Wrap(sdkerrors.ErrInsufficientFunds, "Insufficient funds.")
+		return errors.Wrap(sdkerrors.ErrInsufficientFunds, "insufficient funds")
 	}
 
 	// Move funds from bond module to record rent module.
 	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, moduleAccount, coins)
 	if err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Error transferring funds.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "error transferring funds")
 	}
 
 	// Update bond balance.

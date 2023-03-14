@@ -159,7 +159,7 @@ func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types
 // ProcessRenewRecord renews a record.
 func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) error {
 	if !k.HasRecord(ctx, msg.RecordId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Record not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "record not found")
 	}
 
 	// Check if renewal is required (i.e. expired record marked as deleted).
@@ -170,7 +170,7 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 	}
 
 	if !record.Deleted || expiryTime.After(ctx.BlockTime()) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "renewal not required")
 	}
 
 	recordType := record.ToRecordType()
@@ -185,23 +185,23 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 // ProcessAssociateBond associates a record with a bond.
 func (k Keeper) ProcessAssociateBond(ctx sdk.Context, msg types.MsgAssociateBond) error {
 	if !k.HasRecord(ctx, msg.RecordId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Record not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "record not found")
 	}
 
 	if !k.bondKeeper.HasBond(ctx, msg.BondId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "bond not found")
 	}
 
 	// Check if already associated with a bond.
 	record := k.GetRecord(ctx, msg.RecordId)
 	if record.BondId != "" || len(record.BondId) != 0 {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond already exists.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "bond already exists")
 	}
 
 	// Only the bond owner can associate a record with the bond.
 	bond := k.bondKeeper.GetBond(ctx, msg.BondId)
 	if msg.Signer != bond.Owner {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "bond owner mismatch")
 	}
 
 	record.BondId = msg.BondId
@@ -219,20 +219,20 @@ func (k Keeper) ProcessAssociateBond(ctx sdk.Context, msg types.MsgAssociateBond
 // ProcessDissociateBond dissociates a record from its bond.
 func (k Keeper) ProcessDissociateBond(ctx sdk.Context, msg types.MsgDissociateBond) error {
 	if !k.HasRecord(ctx, msg.RecordId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Record not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "record not found")
 	}
 
 	// Check if associated with a bond.
 	record := k.GetRecord(ctx, msg.RecordId)
 	bondID := record.BondId
 	if bondID == "" || len(bondID) == 0 {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond not found.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "bond not found")
 	}
 
 	// Only the bond owner can dissociate a record from the bond.
 	bond := k.bondKeeper.GetBond(ctx, bondID)
 	if msg.Signer != bond.Owner {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "bond owner mismatch")
 	}
 
 	// Clear bond ID.
@@ -246,13 +246,13 @@ func (k Keeper) ProcessDissociateBond(ctx sdk.Context, msg types.MsgDissociateBo
 // ProcessDissociateRecords dissociates all records associated with a given bond.
 func (k Keeper) ProcessDissociateRecords(ctx sdk.Context, msg types.MsgDissociateRecords) error {
 	if !k.bondKeeper.HasBond(ctx, msg.BondId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "bond not found")
 	}
 
 	// Only the bond owner can dissociate all records from the bond.
 	bond := k.bondKeeper.GetBond(ctx, msg.BondId)
 	if msg.Signer != bond.Owner {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "bond owner mismatch")
 	}
 
 	// Dissociate all records from the bond.
@@ -270,22 +270,22 @@ func (k Keeper) ProcessDissociateRecords(ctx sdk.Context, msg types.MsgDissociat
 // ProcessReAssociateRecords switches records from and old to new bond.
 func (k Keeper) ProcessReAssociateRecords(ctx sdk.Context, msg types.MsgReAssociateRecords) error {
 	if !k.bondKeeper.HasBond(ctx, msg.OldBondId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Old bond not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "old bond not found")
 	}
 
 	if !k.bondKeeper.HasBond(ctx, msg.NewBondId) {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "New bond not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "new bond not found")
 	}
 
 	// Only the bond owner can re-associate all records.
 	oldBond := k.bondKeeper.GetBond(ctx, msg.OldBondId)
 	if msg.Signer != oldBond.Owner {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Old bond owner mismatch.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "old bond owner mismatch")
 	}
 
 	newBond := k.bondKeeper.GetBond(ctx, msg.NewBondId)
 	if msg.Signer != newBond.Owner {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "New bond owner mismatch.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "new bond owner mismatch")
 	}
 
 	// Re-associate all records.

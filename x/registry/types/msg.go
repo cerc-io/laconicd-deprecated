@@ -33,11 +33,11 @@ func (msg MsgSetName) Type() string { return "set-name" }
 // ValidateBasic Implements Msg.
 func (msg MsgSetName) ValidateBasic() error {
 	if msg.Crn == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "CRN is required.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "crn is required")
 	}
 
 	if msg.Cid == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "CID is required.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "cid is required")
 	}
 
 	if len(msg.Signer) == 0 {
@@ -77,7 +77,7 @@ func (msg MsgReserveAuthority) Type() string { return "reserve-authority" }
 // ValidateBasic Implements Msg.
 func (msg MsgReserveAuthority) ValidateBasic() error {
 	if len(msg.Name) == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "name is required.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "name is required")
 	}
 
 	if len(msg.Signer) == 0 {
@@ -117,15 +117,15 @@ func (msg MsgSetAuthorityBond) Type() string { return "authority-bond" }
 // ValidateBasic Implements Msg.
 func (msg MsgSetAuthorityBond) ValidateBasic() error {
 	if len(msg.Name) == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "name is required.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "name is required")
 	}
 
 	if len(msg.Signer) == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer")
 	}
 
 	if len(msg.BondId) == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "bond id is required.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "bond id is required")
 	}
 
 	return nil
@@ -160,16 +160,16 @@ func (msg MsgDeleteNameAuthority) Type() string { return "delete-name" }
 // ValidateBasic Implements Msg.
 func (msg MsgDeleteNameAuthority) ValidateBasic() error {
 	if len(msg.Crn) == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "crn is required.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "crn is required")
 	}
 
 	if len(msg.Signer) == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer")
 	}
 
 	_, err := url.Parse(msg.Crn)
 	if err != nil {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid crn.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid crn")
 	}
 
 	return nil

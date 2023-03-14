@@ -37,15 +37,15 @@ func (msg MsgCreateAuction) ValidateBasic() error {
 	}
 
 	if msg.CommitsDuration <= 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "commit phase duration invalid.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "commit phase duration invalid")
 	}
 
 	if msg.RevealsDuration <= 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "reveal phase duration invalid.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "reveal phase duration invalid")
 	}
 
 	if !msg.MinimumBid.IsPositive() {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "minimum bid should be greater than zero.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "minimum bid should be greater than zero")
 	}
 
 	return nil
@@ -80,15 +80,15 @@ func (msg MsgCommitBid) Type() string { return "commit" }
 // ValidateBasic Implements Msg.
 func (msg MsgCommitBid) ValidateBasic() error {
 	if msg.Signer == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address")
 	}
 
 	if msg.AuctionId == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID")
 	}
 
 	if msg.CommitHash == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid commit hash.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid commit hash")
 	}
 
 	return nil
@@ -123,15 +123,15 @@ func (msg MsgRevealBid) Type() string { return "reveal" }
 // ValidateBasic Implements Msg.
 func (msg MsgRevealBid) ValidateBasic() error {
 	if msg.Signer == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address")
 	}
 
 	if msg.AuctionId == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID")
 	}
 
 	if msg.Reveal == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal data.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal data")
 	}
 
 	return nil

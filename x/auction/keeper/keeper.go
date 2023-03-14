@@ -307,7 +307,7 @@ func (k Keeper) CreateAuction(ctx sdk.Context, msg types.MsgCreateAuction) (*typ
 	// Generate auction Id.
 	account := k.accountKeeper.GetAccount(ctx, signerAddress)
 	if account == nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidAddress, "Account not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidAddress, "account not found")
 	}
 
 	auctionID := types.AuctionID{
@@ -346,7 +346,7 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Bid, 
 
 	auction := k.GetAuction(ctx, msg.AuctionId)
 	if auction.Status != types.AuctionStatusCommitPhase {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Auction is not in commit phase.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction is not in commit phase")
 	}
 
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -391,12 +391,12 @@ func (k Keeper) CommitBid(ctx sdk.Context, msg types.MsgCommitBid) (*types.Bid, 
 // RevealBid reeals a bid committed earlier.
 func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Auction, error) {
 	if !k.HasAuction(ctx, msg.AuctionId) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Auction not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction not found")
 	}
 
 	auction := k.GetAuction(ctx, msg.AuctionId)
 	if auction.Status != types.AuctionStatusRevealPhase {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Auction is not in reveal phase.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction is not in reveal phase")
 	}
 
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -405,65 +405,65 @@ func (k Keeper) RevealBid(ctx sdk.Context, msg types.MsgRevealBid) (*types.Aucti
 	}
 
 	if !k.HasBid(ctx, msg.AuctionId, signerAddress.String()) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Bid not found.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bid not found")
 	}
 
 	bid := k.GetBid(ctx, auction.Id, signerAddress.String())
 	if bid.Status != types.BidStatusCommitted {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Bid not in committed state.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bid not in committed state")
 	}
 
 	revealBytes, err := hex.DecodeString(msg.Reveal)
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal string.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal string")
 	}
 
 	cid, err := wnsUtils.CIDFromJSONBytes(revealBytes)
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal JSON.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal JSON")
 	}
 
 	if bid.CommitHash != cid {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Commit hash mismatch.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "commit hash mismatch")
 	}
 
 	var reveal map[string]interface{}
 	err = json.Unmarshal(revealBytes, &reveal)
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Reveal JSON unmarshal error.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "reveal JSON unmarshal error")
 	}
 
 	chainID, err := wnsUtils.GetAttributeAsString(reveal, "chainId")
 	if err != nil || chainID != ctx.ChainID() {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal chainID.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal chainID")
 	}
 
 	auctionID, err := wnsUtils.GetAttributeAsString(reveal, "auctionId")
 	if err != nil || auctionID != msg.AuctionId {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal auction Id.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal auction Id")
 	}
 
 	bidderAddress, err := wnsUtils.GetAttributeAsString(reveal, "bidderAddress")
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal bid address.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal bid address")
 	}
 
 	if bidderAddress != signerAddress.String() {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Reveal bid address mismatch.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "reveal bid address mismatch")
 	}
 
 	bidAmountStr, err := wnsUtils.GetAttributeAsString(reveal, "bidAmount")
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal bid amount.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal bid amount")
 	}
 
 	bidAmount, err := sdk.ParseCoinNormalized(bidAmountStr)
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid reveal bid amount.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal bid amount")
 	}
 
 	if bidAmount.IsLT(auction.MinimumBid) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Bid is lower than minimum bid.")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bid is lower than minimum bid")
 	}
 
 	// Lock bid amount.
