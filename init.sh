@@ -82,7 +82,7 @@ if [[ $1 == "pending" ]]; then
       sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' "$HOME"/.laconicd/config/config.toml
       sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' "$HOME"/.laconicd/config/config.toml
   else
-      sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.laconicd/config/config.toml
+      sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' "$HOME"/.laconicd/config/config.toml
       sed -i 's/timeout_propose = "3s"/timeout_propose = "30s"/g' "$HOME"/.laconicd/config/config.toml
       sed -i 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "5s"/g' "$HOME"/.laconicd/config/config.toml
       sed -i 's/timeout_prevote = "1s"/timeout_prevote = "10s"/g' "$HOME"/.laconicd/config/config.toml
