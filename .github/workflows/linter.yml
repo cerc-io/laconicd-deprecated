@@ -1,0 +1,14 @@
+linter:
+  # By default, Super-Linter will run all linters
+  # You can disable specific linters here by removing them from the list
+  # You can add additional linters that Super-Linter does not support by opening a pull request
+  # See https://github.com/github/super-linter#supported-linters
+  # An example of adding a custom linter is available at https://github.com/github/super-linter/tree/main/custom_linters
+  #
+  Disabled linters
+  - gitleaks  # Remove this line to enable gitleaks
+
+  # Enabled linters
+  # - ansible-lint
+  # - arm-ttk
+  # - ...

@@ -4,7 +4,7 @@ const { assertRevert } = require('@aragon/contract-helpers-test/src/asserts')
 const LifecycleMock = artifacts.require('LifecycleMock')
 
 const ERRORS = {
-  INIT_ALREADY_INITIALIZED: 'INIT_ALREADY_INITIALIZED',
+  INIT_ALREADY_INITIALIZED: 'INIT_ALREADY_INITIALIZED'
 }
 
 contract('Lifecycle', () => {
@@ -36,11 +36,11 @@ contract('Lifecycle', () => {
     })
 
     it('cannot be re-initialized', async () => {
-      await assertRevert(lifecycle.initializeMock()/*, ERRORS.INIT_ALREADY_INITIALIZED*/)
+      await assertRevert(lifecycle.initializeMock()/*, ERRORS.INIT_ALREADY_INITIALIZED */)
     })
 
     it('cannot be petrified', async () => {
-      await assertRevert(lifecycle.petrifyMock()/*, ERRORS.INIT_ALREADY_INITIALIZED*/)
+      await assertRevert(lifecycle.petrifyMock()/*, ERRORS.INIT_ALREADY_INITIALIZED */)
     })
   })
 
@@ -58,7 +58,7 @@ contract('Lifecycle', () => {
     })
 
     it('cannot be petrified again', async () => {
-      await assertRevert(lifecycle.petrifyMock()/*, ERRORS.INIT_ALREADY_INITIALIZED*/)
+      await assertRevert(lifecycle.petrifyMock()/*, ERRORS.INIT_ALREADY_INITIALIZED */)
     })
 
     it('has initialization block in the future', async () => {

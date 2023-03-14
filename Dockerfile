@@ -7,9 +7,9 @@ ENV PACKAGES git build-base
 WORKDIR /go/src/github.com/cerc-io/laconicd
 
 # Install dependencies
-RUN apk add --no-cache $PACKAGES
+RUN apk add --no-cache $PACKAGES=~
 
-RUN apk add linux-headers
+RUN apk add --no-cache linux-headers=~
 
 # Add source files
 COPY . .
@@ -21,7 +21,7 @@ RUN make build
 FROM alpine:3.17.1
 
 # Install ca-certificates
-RUN apk add --no-cache ca-certificates jq curl
+RUN apk add --no-cache ca-certificates=~ jq=~ curl=~
 WORKDIR /
 
 # Copy over binaries from the build-env

@@ -1,22 +1,22 @@
-const Counter = artifacts.require("Counter")
-const truffleAssert = require('truffle-assertions');
+const Counter = artifacts.require('Counter')
+const truffleAssert = require('truffle-assertions')
 
-async function expectRevert(promise) {
+async function expectRevert (promise) {
   try {
-    await promise;
+    await promise
   } catch (error) {
     if (error.message.indexOf('revert') === -1) {
-      expect('revert').to.equal(error.message, 'Wrong kind of exception received');
+      expect('revert').to.equal(error.message, 'Wrong kind of exception received')
     }
-    return;
+    return
   }
-  expect.fail('Expected an exception but none was received');
+  expect.fail('Expected an exception but none was received')
 }
 
 contract('Counter', (accounts) => {
-  console.log(`Using Accounts (${accounts.length}): \n${accounts.join('\n')}`);
-  console.log('==========================\n');
-  const [one, two, three] = accounts;
+  console.log(`Using Accounts (${accounts.length}): \n${accounts.join('\n')}`)
+  console.log('==========================\n')
+  const [one, two, three] = accounts
   let counter
 
   beforeEach(async () => {
@@ -76,14 +76,13 @@ contract('Counter', (accounts) => {
 
     // Check lifecycle of events
     const contract = new web3.eth.Contract(counter.abi, counter.address)
-    const allEvents = await contract.getPastEvents("allEvents", { fromBlock: 1, toBlock: 'latest' })
-    const changedEvents = await contract.getPastEvents("Changed", { fromBlock: 1, toBlock: 'latest' })
+    const allEvents = await contract.getPastEvents('allEvents', { fromBlock: 1, toBlock: 'latest' })
+    const changedEvents = await contract.getPastEvents('Changed', { fromBlock: 1, toBlock: 'latest' })
     console.log('allEvents', allEvents)
     console.log('changedEvents', changedEvents)
     assert.equal(allEvents.length, 3)
     assert.equal(changedEvents.length, 2)
 
-    await expectRevert(counter.subtract());
-
+    await expectRevert(counter.subtract())
   })
 })

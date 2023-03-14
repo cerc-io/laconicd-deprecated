@@ -29,24 +29,24 @@ contract('Staking app, Approve and call fallback', ([owner, user]) => {
 
     const finalUserBalance = await token.balanceOf(user)
     const finalStakingBalance = await token.balanceOf(stakingAddress)
-    assertBn(finalUserBalance, initialUserBalance.sub(DEFAULT_STAKE_AMOUNT), "user balance should match")
-    assertBn(finalStakingBalance, initialStakingBalance.add(DEFAULT_STAKE_AMOUNT), "Staking app balance should match")
-    assertBn(await staking.totalStakedFor(user), DEFAULT_STAKE_AMOUNT, "staked value should match")
+    assertBn(finalUserBalance, initialUserBalance.sub(DEFAULT_STAKE_AMOUNT), 'user balance should match')
+    assertBn(finalStakingBalance, initialStakingBalance.add(DEFAULT_STAKE_AMOUNT), 'Staking app balance should match')
+    assertBn(await staking.totalStakedFor(user), DEFAULT_STAKE_AMOUNT, 'staked value should match')
     // total stake
-    assertBn(await staking.totalStaked(), DEFAULT_STAKE_AMOUNT, "Total stake should match")
+    assertBn(await staking.totalStaked(), DEFAULT_STAKE_AMOUNT, 'Total stake should match')
   })
 
   it('fails staking 0 amount through approveAndCall', async () => {
-    await assertRevert(token.approveAndCall(stakingAddress, 0, EMPTY_DATA, { from: user })/*, STAKING_ERRORS.ERROR_AMOUNT_ZERO*/)
+    await assertRevert(token.approveAndCall(stakingAddress, 0, EMPTY_DATA, { from: user })/*, STAKING_ERRORS.ERROR_AMOUNT_ZERO */)
   })
 
   it('fails calling approveAndCall on a different token', async () => {
     const token2 = await MiniMeToken.new(ZERO_ADDRESS, ZERO_ADDRESS, 0, 'Test Token 2', 18, 'TT2', true)
     await token2.generateTokens(user, DEFAULT_STAKE_AMOUNT)
-    await assertRevert(token2.approveAndCall(stakingAddress, 0, EMPTY_DATA, { from: user })/*, STAKING_ERRORS.ERROR_WRONG_TOKEN*/)
+    await assertRevert(token2.approveAndCall(stakingAddress, 0, EMPTY_DATA, { from: user })/*, STAKING_ERRORS.ERROR_WRONG_TOKEN */)
   })
 
   it('fails calling receiveApproval from a different account than the token', async () => {
-    await assertRevert(staking.receiveApproval(user, DEFAULT_STAKE_AMOUNT, tokenAddress, EMPTY_DATA)/*, STAKING_ERRORS.ERROR_TOKEN_NOT_SENDER*/)
+    await assertRevert(staking.receiveApproval(user, DEFAULT_STAKE_AMOUNT, tokenAddress, EMPTY_DATA)/*, STAKING_ERRORS.ERROR_TOKEN_NOT_SENDER */)
   })
 })

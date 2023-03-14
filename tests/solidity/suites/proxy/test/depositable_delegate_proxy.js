@@ -13,26 +13,26 @@ const PROXY_FORWARD_GAS = TX_BASE_GAS + 2e6 // high gas amount to ensure that th
 const FALLBACK_SETUP_GAS = 100 // rough estimation of how much gas it spends before executing the fallback code
 const SOLIDITY_TRANSFER_GAS = 2300
 
-async function assertOutOfGas(blockOrPromise) {
+async function assertOutOfGas (blockOrPromise) {
   try {
     typeof blockOrPromise === 'function'
       ? await blockOrPromise()
-      : await blockOrPromise;
+      : await blockOrPromise
   } catch (error) {
     const errorMatchesExpected =
       error.message.search('out of gas') !== -1 ||
-      error.message.search('consuming all gas') !== -1;
+      error.message.search('consuming all gas') !== -1
     assert(
       errorMatchesExpected,
       `Expected error code "out of gas" or "consuming all gas" but failed with "${error}" instead.`
-    );
-    return error;
+    )
+    return error
   }
 
-  assert(false, `Expected "out of gas" or "consuming all gas" but it did not fail`);
+  assert(false, 'Expected "out of gas" or "consuming all gas" but it did not fail')
 }
 
-contract('DepositableDelegateProxy', ([ sender ]) => {
+contract('DepositableDelegateProxy', ([sender]) => {
   let ethSender, proxy, target, proxyTargetWithoutFallbackBase, proxyTargetWithFallbackBase
 
   // Initial setup
@@ -126,7 +126,7 @@ contract('DepositableDelegateProxy', ([ sender ]) => {
 
           assertBn(bn(await web3.eth.getBalance(proxy.address)), initialBalance.add(value), 'Target balance should be correct')
           assertAmountOfEvents(receipt, 'ProxyDeposit', { decodeForAbi: DepositableDelegateProxyMock.abi })
-          assertEvent(receipt, 'ProxyDeposit', { decodeForAbi: DepositableDelegateProxyMock.abi, expectedArgs: { sender, value  } })
+          assertEvent(receipt, 'ProxyDeposit', { decodeForAbi: DepositableDelegateProxyMock.abi, expectedArgs: { sender, value } })
 
           return receipt
         }
