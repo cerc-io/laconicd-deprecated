@@ -181,8 +181,8 @@ $ ./build/laconicd q registry  balance -o json | jq .
 ## add bond to the authority
 
 ```bash
-$ ./build/laconicd tx registry authority-bond [Authority Name] [Bond ID ]  --from root --chain-id laconic_9000-1  -y -o json | jq .
-$ ./build/laconicd tx registry authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id laconic_9000-1  -y -o json | jq .
+./build/laconicd tx registry authority-bond [Authority Name] [Bond ID ]  --from root --chain-id laconic_9000-1  -y -o json | jq .
+./build/laconicd tx registry authority-bond hello 95f68b1b862bfd1609b0c9aaf7300287b92fec90ac64027092c3e723af36e83d  --from root --chain-id laconic_9000-1  -y -o json | jq .
 ```
 
 ## Query the records by associate bond id
@@ -274,7 +274,7 @@ $./build/laconicd tx registry dissociate-records c3f7a78c5042d2003880962ba31ff3b
 > When a record is expires , needs to renew record
 
 ```bash
-$ ./build/laconicd tx registry renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id laconic_9000-1
+./build/laconicd tx registry renew-record bafyreih7un2ntk235wshncebus5emlozdhdixrrv675my5umb6fgdergae --from root --chain-id laconic_9000-1
 
 ```
 

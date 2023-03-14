@@ -74,7 +74,7 @@ make install
 laconicd version --long
 ```
 
-On running the above command, you should see a similar response like this. Make sure that the _version_ and _commit
+On running the above command, you should see a similar response like this. Make sure that the *version* and commit
 hash_ are accurate
 
 ```
@@ -102,7 +102,7 @@ NOTE: Backup node and validator keys . You will need to use these keys at a late
 ## 1) Download Final Genesis
 
 Use `curl` to download the genesis file
-**Replace your **genesis** file with published genesis file**
+**Replace your**genesis**file with published genesis file**
 
 ```shell
 # Will be updated

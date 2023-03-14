@@ -14,23 +14,32 @@ make build
 The following steps need to be followed only before running the chain for the first time.
 
 1. Add the root key:
+
    ```
    ./build/laconicd keys add root
    ```
+
    Keep a note of the keyring passphrase if you set it.
 2. Init the chain:
+
    ```
    ./build/laconicd init test-moniker --chain-id laconic_9000-1
    ```
+
 3. Add genesis account:
+
    ```
    ./build/laconicd add-genesis-account $(./build/laconicd keys show root -a) 1000000000000000000aphoton,1000000000000000000stake
    ```
+
 4. Make a genesis tx:
+
    ```
    ./build/laconicd gentx root 1000000000000000000stake --chain-id laconic_9000-1
    ```
+
 5. Collect gentxs:
+
    ```
    ./build/laconicd collect-gentxs
    ```

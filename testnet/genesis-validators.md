@@ -24,11 +24,14 @@
 # Blockchain client Setup
 
 There are two options of running a laconicd
+
 1. As a systemd service
 2. In a docker container
 
 ## Systemd service
+
 Skip this section if you use docker
+
 ### Install required software packages
 
 ```sh
@@ -93,7 +96,7 @@ laconicd version --long
 
 ```
 
-On running the above command, you should see a similar response like this. Make sure that the _version_ and _commit
+On running the above command, you should see a similar response like this. Make sure that the *version* and commit
 hash_ are accurate
 
 ```sh
@@ -121,10 +124,12 @@ Make sure the directory `~/.laconicd` does not exist or is empty
 ---
 >**Docker**<br/>
 >In order to run the below commands in a docker container:
+>
 >```sh
 >docker run -ti -v ~/.laconicd:/root/.laconicd \
 >git.vdb.to/cerc-io/laconicd/laconicd:v0.8.0 /bin/sh
 >```
+>
 ---
 
 ```sh
@@ -218,9 +223,11 @@ moniker="<your moniker>"
 # Update seeds, persistent_peers and prometheus parameters in config.toml
 sed -i.bak -e "s/^seeds *=.*/seeds = \"$seeds\"/; s/^persistent_peers *=.*/persistent_peers = \"$peers\"/; s/^prometheus *=.*/prometheus = true/; s/^moniker *=.*/moniker = \"$moniker\"/; s/^external_address *=.*/external_address = \"tcp:\/\/$external_address:26656\"/" $HOME/.laconicd/config/config.toml
 ```
+
 ---
 
 ## Create systemd validator service (skip for Docker)
+
 ```sh
 sudo tee /etc/systemd/system/laconicd.service > /dev/null <<EOF
 [Unit]
@@ -266,9 +273,13 @@ journalctl --since "1 day ago" -u laconicd
 journalctl -f -u laconicd
 
 ```
+
 ---
+
 ## Run validator node in Docker container
+
 ### Create docker container
+
 In this example the Tendermint RPC and Prometheus metrics ports are exposed only to localhost. You may want to change 127.0.0.1 to private or public network interface of your host if you need to access these ports remotely.
 
 ```sh
@@ -300,7 +311,9 @@ docker logs laconic-testnet-6
 ```sh
 docker exec -ti laconic-testnet-6 /bin/sh
 ```
+
 ---
+
 ## Helpful commands
 
 ```sh
@@ -313,7 +326,5 @@ curl http://localhost:26657/consensus_state
 # Check the sync status of your validator node (for docker need to run shell inside the container fist)
 laconicd status | jq .SyncInfo
 ```
+
 ---
-
-
-

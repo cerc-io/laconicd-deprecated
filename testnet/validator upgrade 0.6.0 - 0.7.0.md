@@ -5,10 +5,12 @@ This guide assumes you have followed the instructions to crete a systemd service
 It is highly recommended to make the backup of your datadir after you stop v0.6.0 and before you start v0.7.0. Unless you changed your datadir, it should be located in `~/.laconicd`
 
 ## Systemd service
+
 Skip this section if you use docker
 
 This is very similar to building v0.6.0. We keep v 0.6.0 running until v0.7.0 is built and only after the successful build we should replace 0.6.0 binary with v0.7.0. This is to avoid jailing your validator for long downtime.
 The general upgrade plan is the following:
+
   1. Install Go v1.19.5 (we used 1.18 for v0.6.0)
   2. Remove old copy of the github repository and build directory
   3. Download the latest laconicd repository and checkout v0.7.0
@@ -18,8 +20,6 @@ The general upgrade plan is the following:
   7. Start laconicd service
 
 >***You have ~10 minutes after step 5 to complete steps 6 and 7 before your validator is jailed for downtime. Getting jailed for downtime is not a disaster, however would require manual unjailing.***
-
-
 
 ### Install Go 1.19
 
@@ -62,6 +62,7 @@ rm -rf laconicd
 ---
 
 ### Download `laconicd` repository
+
 ```sh
 git clone https://github.com/cerc-io/laconicd.git
 cd laconicd
@@ -107,6 +108,7 @@ Verify your installation
 ```sh
 laconicd version
 ```
+
 This should return `0.7.0`
 
 ---
@@ -123,12 +125,12 @@ Verify that the node joined the network and produces new blocks
 journalctl -f -u laconicd
 ```
 
-
 ---
 
 ## Docker container
 
 Upgrade plan:
+
   1. Stop running v0.6.0 container
   2. Delete v0.6.0 container
   3. Create v0.7.0 container
@@ -137,6 +139,7 @@ Upgrade plan:
 >***You have ~10 minutes to complete the upgrade procedure before your validator is jailed for downtime. Getting jailed for downtime is not a disaster, however would require manual unjailing.***
 
 ### Stop running v0.6.0 container
+
 ```sh
 docker stop laconic-testnet-5
 ```
@@ -144,6 +147,7 @@ docker stop laconic-testnet-5
 ---
 
 ### Delete v0.6.0 container
+
 ```sh
 docker rm laconic-testnet-5
 ```
@@ -151,6 +155,7 @@ docker rm laconic-testnet-5
 ---
 
 ### Create v0.7.0 container
+
 ```sh
 docker create --name laconic-testnet-5 \
 --restart always \
@@ -165,6 +170,7 @@ laconicd start --gql-playground --gql-server --log_level=warn
 ---
 
 ### Start v0.7.0 container
+
 ```sh
 docker start laconic-testnet-5
 ```
