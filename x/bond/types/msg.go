@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -28,10 +29,10 @@ func (msg MsgCreateBond) Type() string { return "create" }
 
 func (msg MsgCreateBond) ValidateBasic() error {
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	if len(msg.Coins) == 0 || !msg.Coins.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
+		return errors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
 	}
 	return nil
 }
@@ -64,13 +65,13 @@ func (msg MsgRefillBond) Type() string { return "refill" }
 
 func (msg MsgRefillBond) ValidateBasic() error {
 	if len(msg.Id) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	if len(msg.Coins) == 0 || !msg.Coins.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
+		return errors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
 	}
 	return nil
 }
@@ -103,13 +104,13 @@ func (msg MsgWithdrawBond) Type() string { return "withdraw" }
 
 func (msg MsgWithdrawBond) ValidateBasic() error {
 	if len(msg.Id) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	if len(msg.Coins) == 0 || !msg.Coins.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
+		return errors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
 	}
 	return nil
 }
@@ -141,10 +142,10 @@ func (msg MsgCancelBond) Type() string { return "cancel" }
 
 func (msg MsgCancelBond) ValidateBasic() error {
 	if len(msg.Id) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, msg.Id)
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	return nil
 }

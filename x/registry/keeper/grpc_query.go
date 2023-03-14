@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/errors"
 	"github.com/cerc-io/laconicd/x/registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -48,7 +49,7 @@ func (q Querier) GetRecord(c context.Context, req *types.QueryRecordByIDRequest)
 	ctx := sdk.UnwrapSDKContext(c)
 	id := req.GetId()
 	if !q.Keeper.HasRecord(ctx, id) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "Record not found.")
+		return nil, errors.Wrap(sdkerrors.ErrUnknownRequest, "Record not found.")
 	}
 	record := q.Keeper.GetRecord(ctx, id)
 	return &types.QueryRecordByIDResponse{Record: record}, nil
@@ -86,11 +87,11 @@ func (q Querier) LookupCrn(c context.Context, req *types.QueryLookupCrn) (*types
 	ctx := sdk.UnwrapSDKContext(c)
 	crn := req.GetCrn()
 	if !q.Keeper.HasNameRecord(ctx, crn) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "CRN not found.")
+		return nil, errors.Wrap(sdkerrors.ErrUnknownRequest, "CRN not found.")
 	}
 	nameRecord := q.Keeper.GetNameRecord(ctx, crn)
 	if nameRecord == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "name record not found.")
+		return nil, errors.Wrap(sdkerrors.ErrUnknownRequest, "name record not found.")
 	}
 	return &types.QueryLookupCrnResponse{Name: nameRecord}, nil
 }
@@ -100,7 +101,7 @@ func (q Querier) ResolveCrn(c context.Context, req *types.QueryResolveCrn) (*typ
 	crn := req.GetCrn()
 	record := q.Keeper.ResolveCRN(ctx, crn)
 	if record == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, "record not found.")
+		return nil, errors.Wrap(sdkerrors.ErrUnknownRequest, "record not found.")
 	}
 	return &types.QueryResolveCrnResponse{Record: record}, nil
 }

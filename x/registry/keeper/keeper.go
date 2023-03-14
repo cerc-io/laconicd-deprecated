@@ -7,6 +7,7 @@ import (
 	"sort"
 	"time"
 
+	"cosmossdk.io/errors"
 	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
 	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
 	"github.com/cerc-io/laconicd/x/registry/helpers"
@@ -240,7 +241,7 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	resourceSignBytes, _ := record.GetSignBytes()
 	cid, err := record.GetCID()
 	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
 	}
 
 	record.ID = cid
@@ -255,13 +256,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
 			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
 			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}

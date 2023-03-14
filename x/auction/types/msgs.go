@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -32,19 +33,19 @@ func (msg MsgCreateAuction) Type() string { return "create" }
 // ValidateBasic Implements Msg.
 func (msg MsgCreateAuction) ValidateBasic() error {
 	if msg.Signer == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 
 	if msg.CommitsDuration <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "commit phase duration invalid.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "commit phase duration invalid.")
 	}
 
 	if msg.RevealsDuration <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "reveal phase duration invalid.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "reveal phase duration invalid.")
 	}
 
 	if !msg.MinimumBid.IsPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "minimum bid should be greater than zero.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "minimum bid should be greater than zero.")
 	}
 
 	return nil
@@ -79,15 +80,15 @@ func (msg MsgCommitBid) Type() string { return "commit" }
 // ValidateBasic Implements Msg.
 func (msg MsgCommitBid) ValidateBasic() error {
 	if msg.Signer == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
 	}
 
 	if msg.AuctionId == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID.")
 	}
 
 	if msg.CommitHash == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid commit hash.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid commit hash.")
 	}
 
 	return nil
@@ -122,15 +123,15 @@ func (msg MsgRevealBid) Type() string { return "reveal" }
 // ValidateBasic Implements Msg.
 func (msg MsgRevealBid) ValidateBasic() error {
 	if msg.Signer == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
+		return errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer address.")
 	}
 
 	if msg.AuctionId == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid auction ID.")
 	}
 
 	if msg.Reveal == "" {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal data.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid reveal data.")
 	}
 
 	return nil

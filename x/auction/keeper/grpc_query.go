@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	errors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -26,7 +27,7 @@ func (q Querier) Auctions(c context.Context, req *types.AuctionsRequest) (*types
 func (q Querier) GetAuction(c context.Context, req *types.AuctionRequest) (*types.AuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	if req.Id == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "auction ID is required")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction ID is required")
 	}
 
 	resp := q.Keeper.GetAuction(ctx, req.Id)
@@ -37,10 +38,10 @@ func (q Querier) GetAuction(c context.Context, req *types.AuctionRequest) (*type
 func (q Querier) GetBid(c context.Context, req *types.BidRequest) (*types.BidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	if req.AuctionId == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "auction ID is required")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction ID is required")
 	}
 	if req.Bidder == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bidder address is required")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bidder address is required")
 	}
 	resp := q.Keeper.GetBid(ctx, req.AuctionId, req.Bidder)
 	return &types.BidResponse{Bid: &resp}, nil
@@ -50,7 +51,7 @@ func (q Querier) GetBid(c context.Context, req *types.BidRequest) (*types.BidRes
 func (q Querier) GetBids(c context.Context, req *types.BidsRequest) (*types.BidsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	if req.AuctionId == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "auction ID is required")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "auction ID is required")
 	}
 	resp := q.Keeper.GetBids(ctx, req.AuctionId)
 	return &types.BidsResponse{Bids: resp}, nil
@@ -60,7 +61,7 @@ func (q Querier) GetBids(c context.Context, req *types.BidsRequest) (*types.Bids
 func (q Querier) AuctionsByBidder(c context.Context, req *types.AuctionsByBidderRequest) (*types.AuctionsByBidderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	if req.BidderAddress == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bidder address is required")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "bidder address is required")
 	}
 	resp := q.Keeper.QueryAuctionsByBidder(ctx, req.BidderAddress)
 	return &types.AuctionsByBidderResponse{Auctions: &types.Auctions{Auctions: resp}}, nil
@@ -70,7 +71,7 @@ func (q Querier) AuctionsByBidder(c context.Context, req *types.AuctionsByBidder
 func (q Querier) AuctionsByOwner(c context.Context, req *types.AuctionsByOwnerRequest) (*types.AuctionsByOwnerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	if req.OwnerAddress == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "owner address is required")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "owner address is required")
 	}
 	resp := q.Keeper.QueryAuctionsByOwner(ctx, req.OwnerAddress)
 	return &types.AuctionsByOwnerResponse{Auctions: &types.Auctions{Auctions: resp}}, nil

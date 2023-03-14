@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"cosmossdk.io/errors"
 	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
 	"github.com/cerc-io/laconicd/x/registry/helpers"
 	"github.com/cerc-io/laconicd/x/registry/types"
@@ -112,12 +113,12 @@ func (k Keeper) updateBlockChangeSetForName(ctx sdk.Context, crn string) {
 func (k Keeper) getAuthority(ctx sdk.Context, crn string) (string, *url.URL, *types.NameAuthority, error) {
 	parsedCRN, err := url.Parse(crn)
 	if err != nil {
-		return "", nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid CRN.")
+		return "", nil, nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid CRN.")
 	}
 
 	name := parsedCRN.Host
 	if !k.HasNameAuthority(ctx, name) {
-		return name, nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
+		return name, nil, nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
 	}
 	authority := k.GetNameAuthority(ctx, name)
 	return name, parsedCRN, &authority, nil
@@ -131,19 +132,19 @@ func (k Keeper) checkCRNAccess(ctx sdk.Context, signer sdk.AccAddress, crn strin
 
 	formattedCRN := fmt.Sprintf("crn://%s%s", name, parsedCRN.RequestURI())
 	if formattedCRN != crn {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid CRN.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid CRN.")
 	}
 
 	if authority.OwnerAddress != signer.String() {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "Access denied.")
 	}
 
 	if authority.Status != types.AuthorityActive {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Authority is not active.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "Authority is not active.")
 	}
 
 	if authority.BondId == "" || len(authority.BondId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Authority bond not found.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "Authority bond not found.")
 	}
 
 	if authority.OwnerPublicKey == "" {
@@ -323,13 +324,13 @@ func (k Keeper) ProcessReserveSubAuthority(ctx sdk.Context, name string, msg typ
 
 	// Check if parent authority exists.
 	if !k.HasNameAuthority(ctx, parent) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Parent authority not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Parent authority not found.")
 	}
 	parentAuthority := k.GetNameAuthority(ctx, parent)
 
 	// Sub-authority creator needs to be the owner of the parent authority.
 	if parentAuthority.OwnerAddress != msg.Signer {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "Access denied.")
 	}
 
 	// Sub-authority owner defaults to parent authority owner.
@@ -362,17 +363,17 @@ func (k Keeper) createAuthority(ctx sdk.Context, name string, owner string, isRo
 	if k.HasNameAuthority(ctx, name) {
 		authority := k.GetNameAuthority(ctx, name)
 		if authority.Status != types.AuthorityExpired {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name already reserved.")
+			return errors.Wrap(sdkerrors.ErrInvalidRequest, "Name already reserved.")
 		}
 	}
 
 	ownerAddress, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid owner address.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid owner address.")
 	}
 	ownerAccount := k.accountKeeper.GetAccount(ctx, ownerAddress)
 	if ownerAccount == nil {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "Account not found.")
+		return errors.Wrap(sdkerrors.ErrUnknownAddress, "Account not found.")
 	}
 
 	authority := types.NameAuthority{
@@ -430,11 +431,11 @@ func (k Keeper) ProcessReserveAuthority(ctx sdk.Context, msg types.MsgReserveAut
 	crn := fmt.Sprintf("crn://%s", msg.GetName())
 	parsedCrn, err := url.Parse(crn)
 	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
 	}
 	name := parsedCrn.Host
 	if fmt.Sprintf("crn://%s", name) != crn {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid name")
 	}
 	if strings.Contains(name, ".") {
 		return k.ProcessReserveSubAuthority(ctx, name, msg)
@@ -450,20 +451,20 @@ func (k Keeper) ProcessSetAuthorityBond(ctx sdk.Context, msg types.MsgSetAuthori
 	name := msg.GetName()
 	signer := msg.GetSigner()
 	if !k.HasNameAuthority(ctx, name) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Name authority not found.")
 	}
 	authority := k.GetNameAuthority(ctx, name)
 	if authority.OwnerAddress != signer {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Access denied")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "Access denied")
 	}
 
 	if !k.bondKeeper.HasBond(ctx, msg.BondId) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Bond not found.")
 	}
 	//
 	bond := k.bondKeeper.GetBond(ctx, msg.BondId)
 	if bond.Owner != signer {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond owner mismatch.")
 	}
 
 	// No-op if bond hasn't changed.
@@ -496,7 +497,7 @@ func (k Keeper) ProcessDeleteName(ctx sdk.Context, msg types.MsgDeleteNameAuthor
 	}
 
 	if !k.HasNameRecord(ctx, msg.Crn) {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Name not found.")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "Name not found.")
 	}
 
 	// Set CID to empty string.
