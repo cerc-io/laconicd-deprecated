@@ -241,7 +241,7 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	resourceSignBytes, _ := record.GetSignBytes()
 	cid, err := record.GetCID()
 	if err != nil {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid record JSON")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid record JSON")
 	}
 
 	record.ID = cid
@@ -256,13 +256,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
 			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "invalid public key")
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
 			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return nil, errors.Wrap(sdkerrors.ErrUnauthorized, "invalid signature")
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}

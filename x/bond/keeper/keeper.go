@@ -130,7 +130,7 @@ func (k Keeper) CreateBond(ctx sdk.Context, ownerAddress sdk.AccAddress, coins s
 
 	bond := types.Bond{Id: bondID, Owner: ownerAddress.String(), Balance: coins}
 	if bond.Balance.IsAnyGT(maxBondAmount) {
-		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "Max bond amount exceeded")
+		return nil, errors.Wrap(sdkerrors.ErrInvalidRequest, "max bond amount exceeded")
 	}
 
 	// Move funds into the bond account module.
@@ -331,7 +331,7 @@ func (k Keeper) GetBondModuleBalances(ctx sdk.Context) sdk.Coins {
 // TransferCoinsToModuleAccount moves funds from the bonds module account to another module account.
 func (k Keeper) TransferCoinsToModuleAccount(ctx sdk.Context, id, moduleAccount string, coins sdk.Coins) error {
 	if !k.HasBond(ctx, id) {
-		return errors.Wrap(sdkerrors.ErrUnauthorized, "Bond not found.")
+		return errors.Wrap(sdkerrors.ErrUnauthorized, "bond not found")
 	}
 
 	bondObj := k.GetBond(ctx, id)

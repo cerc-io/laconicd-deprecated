@@ -32,7 +32,7 @@ func (msg MsgCreateBond) ValidateBasic() error {
 		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	if len(msg.Coins) == 0 || !msg.Coins.IsValid() {
-		return errors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
+		return errors.Wrap(sdkerrors.ErrInvalidCoins, "invalid amount")
 	}
 	return nil
 }
@@ -71,7 +71,7 @@ func (msg MsgRefillBond) ValidateBasic() error {
 		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	if len(msg.Coins) == 0 || !msg.Coins.IsValid() {
-		return errors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
+		return errors.Wrap(sdkerrors.ErrInvalidCoins, "invalid amount")
 	}
 	return nil
 }
@@ -110,7 +110,7 @@ func (msg MsgWithdrawBond) ValidateBasic() error {
 		return errors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	if len(msg.Coins) == 0 || !msg.Coins.IsValid() {
-		return errors.Wrap(sdkerrors.ErrInvalidCoins, "Invalid amount.")
+		return errors.Wrap(sdkerrors.ErrInvalidCoins, "invalid amount")
 	}
 	return nil
 }
