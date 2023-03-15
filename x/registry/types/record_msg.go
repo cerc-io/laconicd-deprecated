@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -34,17 +35,17 @@ func (msg MsgSetRecord) Type() string { return "set-record" }
 
 func (msg MsgSetRecord) ValidateBasic() error {
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, msg.Signer)
 	}
 	owners := msg.Payload.Record.Owners
 	for _, owner := range owners {
 		if owner == "" {
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Record owner not set.")
+			return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "Record owner not set.")
 		}
 	}
 
 	if len(msg.BondId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "Bond ID is required.")
+		return errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Bond ID is required.")
 	}
 	return nil
 }
@@ -83,11 +84,11 @@ func (msg MsgRenewRecord) Type() string { return "renew-record" }
 // ValidateBasic Implements Msg.
 func (msg MsgRenewRecord) ValidateBasic() error {
 	if len(msg.RecordId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "record id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "record id is required.")
 	}
 
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
 	}
 
 	return nil
@@ -123,13 +124,13 @@ func (msg MsgAssociateBond) Type() string { return "associate-bond" }
 // ValidateBasic Implements Msg.
 func (msg MsgAssociateBond) ValidateBasic() error {
 	if len(msg.RecordId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "record id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "record id is required.")
 	}
 	if len(msg.BondId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bond id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "bond id is required.")
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
 	}
 
 	return nil
@@ -164,10 +165,10 @@ func (msg MsgDissociateBond) Type() string { return "dissociate-bond" }
 // ValidateBasic Implements Msg.
 func (msg MsgDissociateBond) ValidateBasic() error {
 	if len(msg.RecordId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "record id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "record id is required.")
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
 	}
 
 	return nil
@@ -202,10 +203,10 @@ func (msg MsgDissociateRecords) Type() string { return "dissociate-records" }
 // ValidateBasic Implements Msg.
 func (msg MsgDissociateRecords) ValidateBasic() error {
 	if len(msg.BondId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "bond id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "bond id is required.")
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
 	}
 
 	return nil
@@ -241,13 +242,13 @@ func (msg MsgReAssociateRecords) Type() string { return "reassociate-records" }
 // ValidateBasic Implements Msg.
 func (msg MsgReAssociateRecords) ValidateBasic() error {
 	if len(msg.OldBondId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "old-bond-id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "old-bond-id is required.")
 	}
 	if len(msg.NewBondId) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "new-bond-id is required.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "new-bond-id is required.")
 	}
 	if len(msg.Signer) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidAddress, "invalid signer.")
 	}
 
 	return nil
