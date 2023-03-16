@@ -10,7 +10,6 @@ import (
 
 	canonicalJson "github.com/gibson042/canonicaljson-go"
 	"github.com/ipfs/go-cid"
-	cbor "github.com/ipfs/go-ipld-cbor"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/linking"
@@ -18,7 +17,6 @@ import (
 	"github.com/ipld/go-ipld-prime/multicodec"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/storage/memstore"
-	mh "github.com/multiformats/go-multihash"
 )
 
 var store = memstore.Store{}
@@ -35,22 +33,12 @@ func GenerateHash(json map[string]interface{}) (string, []byte, error) {
 		return "", nil, err
 	}
 
-	cidString, err := CIDFromJSONBytesUsingIpldPrime(content)
+	cidString, err := CIDFromJSONBytes(content)
 	if err != nil {
 		return "", nil, err
 	}
 
 	return cidString, content, nil
-}
-
-// CIDFromJSONBytes returns CID (cbor) for json (as bytes).
-func CIDFromJSONBytes(content []byte) (string, error) {
-	cid, err := cbor.FromJSON(bytes.NewReader(content), mh.SHA2_256, -1)
-	if err != nil {
-		return "", err
-	}
-
-	return cid.String(), nil
 }
 
 // GetAttributeAsString returns a map attribute as string, if possible.
@@ -66,10 +54,14 @@ func GetAttributeAsString(obj map[string]interface{}, attr string) (string, erro
 	return "", errors.New("attribute not found")
 }
 
-// CIDFromJSONBytesUsingIpldPrime returns CID (dagcbor) for json (as bytes).
+// CIDFromJSONBytes returns CID (dagcbor) for json (as bytes).
 // This is combination of samples for unmarshalling and linking
 // see: https://pkg.go.dev/github.com/ipld/go-ipld-prime
-func CIDFromJSONBytesUsingIpldPrime(content []byte) (string, error) {
+func CIDFromJSONBytes(content []byte) (string, error) {
+	if len(content) == 0 {
+		return "", nil
+	}
+
 	np := basicnode.Prototype.Any                       // Pick a stle for the in-memory data.
 	nb := np.NewBuilder()                               // Create a builder.
 	err := dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!

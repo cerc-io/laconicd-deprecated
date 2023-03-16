@@ -27,10 +27,8 @@ require (
 	github.com/holiman/uint256 v1.2.1
 	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/ipfs/go-cid v0.3.2
-	github.com/ipfs/go-ipld-cbor v0.0.6
 	github.com/ipld/go-ipld-prime v0.18.0
 	github.com/miguelmota/go-ethereum-hdwallet v0.1.1
-	github.com/multiformats/go-multihash v0.2.0
 	github.com/onsi/ginkgo/v2 v2.7.0
 	github.com/onsi/gomega v1.24.2
 	github.com/pkg/errors v0.9.1
@@ -133,9 +131,6 @@ require (
 	github.com/holiman/bloomfilter/v2 v2.0.3 // indirect
 	github.com/huin/goupnp v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
-	github.com/ipfs/go-block-format v0.0.2 // indirect
-	github.com/ipfs/go-ipfs-util v0.0.1 // indirect
-	github.com/ipfs/go-ipld-format v0.0.1 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
@@ -161,6 +156,7 @@ require (
 	github.com/multiformats/go-base32 v0.0.3 // indirect
 	github.com/multiformats/go-base36 v0.1.0 // indirect
 	github.com/multiformats/go-multibase v0.0.3 // indirect
+	github.com/multiformats/go-multihash v0.2.0 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
@@ -192,7 +188,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.10 // indirect
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
-	github.com/whyrusleeping/cbor-gen v0.0.0-20200123233031-1cdf64d27158 // indirect
 	github.com/zondax/hid v0.9.1 // indirect
 	github.com/zondax/ledger-go v0.14.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
