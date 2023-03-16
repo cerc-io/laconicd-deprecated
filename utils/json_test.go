@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestAndValidateCIDGeneration(t *testing.T) {
@@ -11,13 +12,12 @@ func TestAndValidateCIDGeneration(t *testing.T) {
 		content  string
 		expected string
 	}{
-		// empty string and empty json blows up
-		// {
-		//  	"empty string", "", "bafyreiengp2sbi6ez34a2jctv34bwyjl7yoliteleaswgcwtqzrhmpyt2m",
-		// },
-		// {
-		//		"empty json", "{}", "bafyreihpfkdvib5muloxlj5b3tgdwibjdcu3zdsuhyft33z7gtgnlzlkpm",
-		// },
+		{
+			"empty string", "", "",
+		},
+		{
+			"empty json", "{}", "bafyreigbtj4x7ip5legnfznufuopl4sg4knzc2cof6duas4b3q2fy6swua",
+		},
 
 		{
 			"test record", "{\"build_artifact_cid\":\"QmP8jTG1m9GSDJLCbeWhVSVgEzCPPwXRdCRuJtQ5Tz9Kc9\",\"repo_registration_record_cid\":\"QmSnuWmxptJZdLJpKRarxBMS2Ju2oANVrgbr2xWbie9b2D\",\"tls_cert_cid\":\"QmbWqxBEKC3P8tqsKc98xmWNzrzDtRLMiMPL8wBuTGsMnR\",\"type\":\"WebsiteRegistrationRecord\",\"url\":\"https://cerc.io\",\"version\":\"0.0.1\"}",
@@ -26,10 +26,8 @@ func TestAndValidateCIDGeneration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		deprecatedAndCorrect, _ := CIDFromJSONBytes([]byte(tc.content))
-		newImpl, err := CIDFromJSONBytesUsingIpldPrime([]byte(tc.content))
+		newImpl, err := CIDFromJSONBytes([]byte(tc.content))
 		require.NoError(t, err)
-		require.Equal(t, deprecatedAndCorrect, newImpl, tc.name)
 		require.Equal(t, tc.expected, newImpl)
 	}
 }

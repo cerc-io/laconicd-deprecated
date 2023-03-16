@@ -70,7 +70,7 @@ func UnMarshalMapFromJSONBytes(bytes []byte) map[string]interface{} {
 
 // GetCid gets the content ID.
 func GetCid(content []byte) (string, error) {
-	return wnsUtils.CIDFromJSONBytesUsingIpldPrime(content)
+	return wnsUtils.CIDFromJSONBytes(content)
 }
 
 // BytesToBase64 encodes a byte array as a base64 string.
