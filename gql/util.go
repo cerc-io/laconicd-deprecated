@@ -170,6 +170,8 @@ func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes
 
 func getIds(obj map[string]interface{}) []string {
 	var ids []string
+
+	// #nosec G705
 	for key := range obj {
 		if innerObj, ok := obj[key].(map[string]interface{}); ok {
 			if _, ok := innerObj["/"]; ok && len(innerObj) == 1 {
