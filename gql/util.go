@@ -170,8 +170,8 @@ func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes
 
 func getIds(obj map[string]interface{}) []string {
 	var ids []string
-	for _, val := range obj {
-		if innerObj, ok := val.(map[string]interface{}); ok {
+	for key := range obj {
+		if innerObj, ok := obj[key].(map[string]interface{}); ok {
 			if _, ok := innerObj["/"]; ok && len(innerObj) == 1 {
 				if _, ok := innerObj["/"].(string); ok {
 					ids = append(ids, innerObj["/"].(string))
