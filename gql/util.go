@@ -164,24 +164,24 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 }
 
 func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes.RecordType) ([]*Record, error) {
-	var ids []string
+	ids := getIds(r.Attributes)
+	return resolver.GetRecordsByIds(ctx, ids)
+}
 
-	// #nosec G705
-	for key := range r.Attributes {
-		//nolint: all
-		switch r.Attributes[key].(type) {
-		case interface{}:
-			if obj, ok := r.Attributes[key].(map[string]interface{}); ok {
-				if _, ok := obj["/"]; ok && len(obj) == 1 {
-					if _, ok := obj["/"].(string); ok {
-						ids = append(ids, obj["/"].(string))
-					}
+func getIds(obj map[string]interface{}) []string {
+	var ids []string
+	for _, val := range obj {
+		if innerObj, ok := val.(map[string]interface{}); ok {
+			if _, ok := innerObj["/"]; ok && len(innerObj) == 1 {
+				if _, ok := innerObj["/"].(string); ok {
+					ids = append(ids, innerObj["/"].(string))
 				}
+			} else {
+				ids = append(ids, getIds(innerObj)...)
 			}
 		}
 	}
-
-	return resolver.GetRecordsByIds(ctx, ids)
+	return ids
 }
 
 func getAttributes(r *registrytypes.RecordType) ([]*KeyValue, error) {
