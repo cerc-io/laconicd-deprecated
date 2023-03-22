@@ -19,6 +19,9 @@ test/
 tests/
 *_test.go
 
+# false positive; TODO: https://github.com/cerc-io/laconicd/issues/104
+testutil/network/network.go
+
 # Semgrep rules folder
 .semgrep
 
