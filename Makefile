@@ -72,7 +72,7 @@ ifeq ($(ENABLE_ROCKSDB),true)
   BUILD_TAGS += rocksdb_build
   test_tags += rocksdb_build
 else
-  $(warning RocksDB support is disabled; to build and test with RocksDB support, set ENABLE_ROCKSDB=true)
+  $(info RocksDB support is disabled; to build and test with RocksDB support, set ENABLE_ROCKSDB=true)
 endif
 
 # DB backend selection
@@ -145,7 +145,7 @@ docker-build:
 	# update old container
 	docker rm laconicd || true
 	# create a new container from the latest image
-	docker create --name laconic -t -i cerc-io/laconicd:latest laconicd
+	docker create --name laconic -t -i ${DOCKER_IMAGE}:${DOCKER_TAG} laconicd
 	# move the binaries to the ./build directory
 	mkdir -p ./build/
 	docker cp laconic:/usr/bin/laconicd ./build/

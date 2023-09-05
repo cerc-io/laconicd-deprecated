@@ -3,3 +3,8 @@ localnet-setup
 
 # build
 build
+
+**/node_modules
+
+Dockerfile
+init.sh

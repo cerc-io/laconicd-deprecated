@@ -5,18 +5,19 @@ CHAINID="laconic_9000-1"
 MONIKER="localtestnet"
 KEYRING="test"
 KEYALGO="eth_secp256k1"
-LOGLEVEL="info"
+LOGLEVEL="${LOGLEVEL:-info}"
 # trace evm
 TRACE="--trace"
 # TRACE=""
 
 # validate dependencies are installed
-command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"; exit 1; }
+command -v jq > /dev/null 2>&1 || {
+  echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
+  exit 1
+}
 
 # remove existing daemon and client
 rm -rf ~/.laconic*
-
-make install
 
 laconicd config keyring-backend $KEYRING
 laconicd config chain-id $CHAINID
@@ -27,71 +28,70 @@ laconicd keys add $KEY --keyring-backend $KEYRING --algo $KEYALGO
 # Set moniker and chain-id for Ethermint (Moniker can be anything, chain-id must be an integer)
 laconicd init $MONIKER --chain-id $CHAINID
 
+update_genesis() {
+  jq "$1" $HOME/.laconicd/config/genesis.json > $HOME/.laconicd/config/tmp_genesis.json &&
+    mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+}
+
 # Change parameter token denominations to aphoton
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["staking"]["params"]["bond_denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["mint"]["params"]["mint_denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+update_genesis '.app_state["staking"]["params"]["bond_denom"]="aphoton"'
+update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="aphoton"'
+update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="aphoton"'
+update_genesis '.app_state["mint"]["params"]["mint_denom"]="aphoton"'
 # Custom modules
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["record_rent"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_rent"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_auction_commit_fee"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_auction_reveal_fee"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_auction_minimum_bid"]["denom"]="aphoton"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+update_genesis '.app_state["registry"]["params"]["record_rent"]["denom"]="aphoton"'
+update_genesis '.app_state["registry"]["params"]["authority_rent"]["denom"]="aphoton"'
+update_genesis '.app_state["registry"]["params"]["authority_auction_commit_fee"]["denom"]="aphoton"'
+update_genesis '.app_state["registry"]["params"]["authority_auction_reveal_fee"]["denom"]="aphoton"'
+update_genesis '.app_state["registry"]["params"]["authority_auction_minimum_bid"]["denom"]="aphoton"'
 
 if [[ "$TEST_REGISTRY_EXPIRY" == "true" ]]; then
   echo "Setting timers for expiry tests."
 
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["record_rent_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_grace_period"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_rent_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+  update_genesis '.app_state["registry"]["params"]["record_rent_duration"]="60s"'
+  update_genesis '.app_state["registry"]["params"]["authority_grace_period"]="60s"'
+  update_genesis '.app_state["registry"]["params"]["authority_rent_duration"]="60s"'
 fi
 
 if [[ "$TEST_AUCTION_ENABLED" == "true" ]]; then
   echo "Enabling auction and setting timers."
 
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_auction_enabled"]=true' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_rent_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_grace_period"]="300s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_auction_commits_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
-  cat $HOME/.laconicd/config/genesis.json | jq '.app_state["registry"]["params"]["authority_auction_reveals_duration"]="60s"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+  update_genesis '.app_state["registry"]["params"]["authority_auction_enabled"]=true'
+  update_genesis '.app_state["registry"]["params"]["authority_rent_duration"]="60s"'
+  update_genesis '.app_state["registry"]["params"]["authority_grace_period"]="300s"'
+  update_genesis '.app_state["registry"]["params"]["authority_auction_commits_duration"]="60s"'
+  update_genesis '.app_state["registry"]["params"]["authority_auction_reveals_duration"]="60s"'
 fi
 
 # increase block time (?)
-cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["time_iota_ms"]="1000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+update_genesis '.consensus_params["block"]["time_iota_ms"]="1000"'
 
 # Set gas limit in genesis
-cat $HOME/.laconicd/config/genesis.json | jq '.consensus_params["block"]["max_gas"]="10000000"' > $HOME/.laconicd/config/tmp_genesis.json && mv $HOME/.laconicd/config/tmp_genesis.json $HOME/.laconicd/config/genesis.json
+update_genesis '.consensus_params["block"]["max_gas"]="10000000"'
 
 # disable produce empty block
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
-  else
-    sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
+  sed -i '' 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
+else
+  sed -i 's/create_empty_blocks = true/create_empty_blocks = false/g' $HOME/.laconicd/config/config.toml
 fi
 
-if [[ $1 == "pending" ]]; then
+if [[ "$1" == "pending" ]]; then
+  alias sed-i="sed -i"
   if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_propose = "3s"/timeout_propose = "30s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "5s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_prevote = "1s"/timeout_prevote = "10s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.laconicd/config/config.toml
-      sed -i '' 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.laconicd/config/config.toml
-  else
-      sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_propose = "3s"/timeout_propose = "30s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "5s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_prevote = "1s"/timeout_prevote = "10s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_commit = "5s"/timeout_commit = "150s"/g' $HOME/.laconicd/config/config.toml
-      sed -i 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' $HOME/.laconicd/config/config.toml
+    alias sed-i="sed -i ''"
   fi
+  sed-i \
+    -e 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' \
+    -e 's/timeout_propose = "3s"/timeout_propose = "30s"/g' \
+    -e 's/timeout_propose_delta = "500ms"/timeout_propose_delta = "5s"/g' \
+    -e 's/timeout_prevote = "1s"/timeout_prevote = "10s"/g' \
+    -e 's/timeout_prevote_delta = "500ms"/timeout_prevote_delta = "5s"/g' \
+    -e 's/timeout_precommit = "1s"/timeout_precommit = "10s"/g' \
+    -e 's/timeout_precommit_delta = "500ms"/timeout_precommit_delta = "5s"/g' \
+    -e 's/timeout_commit = "5s"/timeout_commit = "150s"/g' \
+    -e 's/timeout_broadcast_tx_commit = "10s"/timeout_broadcast_tx_commit = "150s"/g' \
+    $HOME/.laconicd/config/config.toml
 fi
 
 # Allocate genesis accounts (cosmos formatted addresses)
@@ -106,9 +106,16 @@ laconicd collect-gentxs
 # Run this to ensure everything worked and that the genesis file is setup correctly
 laconicd validate-genesis
 
-if [[ $1 == "pending" ]]; then
+if [[ "$1" == "pending" ]]; then
   echo "pending mode is on, please wait for the first block committed."
 fi
 
 # Start the node (remove the --pruning=nothing flag if historical queries are not needed)
-laconicd start --pruning=nothing --evm.tracer=json $TRACE --log_level $LOGLEVEL --minimum-gas-prices=0.0001aphoton --json-rpc.api eth,txpool,personal,net,debug,web3,miner --api.enable --gql-server --gql-playground
+laconicd start \
+  --pruning=nothing \
+  --evm.tracer=json $TRACE \
+  --log_level $LOGLEVEL \
+  --minimum-gas-prices=0.0001aphoton \
+  --json-rpc.api eth,txpool,personal,net,debug,web3,miner \
+  --api.enable \
+  --gql-server --gql-playground

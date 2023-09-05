@@ -1,14 +1,10 @@
 FROM golang:alpine AS build-env
 
-# Set up dependencies
-ENV PACKAGES git build-base
+# Install dependencies
+RUN apk add --update git build-base linux-headers
 
 # Set working directory for the build
 WORKDIR /go/src/github.com/cerc-io/laconicd
-
-# Install dependencies
-RUN apk add --update $PACKAGES
-RUN apk add linux-headers
 
 # Add source files
 COPY . .
@@ -21,10 +17,10 @@ FROM alpine:3.17.0
 
 # Install ca-certificates
 RUN apk add --update ca-certificates jq curl
-WORKDIR /
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/src/github.com/cerc-io/laconicd/build/laconicd /usr/bin/laconicd
 
+WORKDIR /
 # Run laconicd by default
-CMD ["laconicd"]
+ENTRYPOINT ["laconicd"]
