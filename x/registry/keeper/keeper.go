@@ -256,13 +256,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
 			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "Invalid public key: %s", err)
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
 			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "Invalid signature: %s", sig.PubKey)
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}

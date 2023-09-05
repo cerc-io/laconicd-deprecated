@@ -1,3 +1,2 @@
 #!/usr/bin/env bash
-docker build -t cerc-io/laconicd:local-test ../../
-
+docker build -t cerc/laconicd:local-test ../..

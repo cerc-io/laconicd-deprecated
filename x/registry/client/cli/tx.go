@@ -72,10 +72,6 @@ $ %s tx %s set [payload file path] [bond-id]
 			}
 
 			msg := types.NewMsgSetRecord(payload, args[1], clientCtx.GetFromAddress())
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}

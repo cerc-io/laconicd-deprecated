@@ -42,7 +42,8 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			resp, _ := rest.GetRequest(tc.url)
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -60,7 +61,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}
 }
 
-//nolint: all
+// nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -110,11 +111,11 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun(authorityName)
-				tc.url = fmt.Sprintf(tc.url, authorityName)
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			tc.preRun(authorityName)
+			tc.url = fmt.Sprintf(tc.url, authorityName)
+
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -131,7 +132,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	val := s.network.Validators[0]
 	sr := s.Require()
-	reqURL := val.APIAddress + "/vulcanize/registry/v1beta1/lookup?crn=%s"
+	reqURL := val.APIAddress + "/vulcanize/registry/v1beta1/lookup"
 	authorityName := "QueryLookUp"
 
 	testCases := []struct {
@@ -151,7 +152,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 		},
 		{
 			"Success",
-			reqURL,
+			fmt.Sprintf(reqURL+"?crn=crn://%s/", authorityName),
 			false,
 			"",
 			func(authorityName string) {
@@ -163,11 +164,9 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun(authorityName)
-				tc.url = fmt.Sprintf(reqURL, fmt.Sprintf("crn://%s/", authorityName))
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			tc.preRun(authorityName)
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			if tc.expectErr {
 				sr.Contains(string(resp), tc.errorMsg)
 			} else {
@@ -180,7 +179,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}
 }
 
-//nolint: all
+// nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -233,12 +232,11 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun(s.bondID)
-			}
+			tc.preRun(s.bondID)
 			// wait 12 seconds for records expires
 			time.Sleep(time.Second * 12)
-			resp, _ := rest.GetRequest(tc.url)
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -252,7 +250,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	}
 }
 
-//nolint: all
+// nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -303,13 +301,12 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun("QueryAuthorityExpiryQueue")
-			}
+			tc.preRun("QueryAuthorityExpiryQueue")
 			// wait 12 seconds to name authorites expires
 			time.Sleep(time.Second * 12)
 
-			resp, _ := rest.GetRequest(tc.url)
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -324,7 +321,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	}
 }
 
-//nolint: all
+// nolint: all
 func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -377,10 +374,9 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun(s.bondID)
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			tc.preRun(s.bondID)
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -443,12 +439,11 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			var recordID string
-			if !tc.expectErr {
-				recordID = tc.preRun(s.bondID)
-				tc.url = fmt.Sprintf(reqURL, recordID)
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			recordID := tc.preRun(s.bondID)
+			tc.url = fmt.Sprintf(reqURL, recordID)
+
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -498,11 +493,11 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun(s.bondID)
-				tc.url = fmt.Sprintf(reqURL, s.bondID)
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			tc.preRun(s.bondID)
+			tc.url = fmt.Sprintf(reqURL, s.bondID)
+
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -552,10 +547,9 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRegistryModuleBalance() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun(s.bondID)
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			tc.preRun(s.bondID)
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -603,10 +597,9 @@ func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			if !tc.expectErr {
-				tc.preRun("ListNameRecords")
-			}
-			resp, _ := rest.GetRequest(tc.url)
+			tc.preRun("ListNameRecords")
+			resp, err := rest.GetRequest(tc.url)
+			s.NoError(err)
 			require := s.Require()
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errorMsg)
@@ -643,5 +636,5 @@ func createRecord(bondID string, s *IntegrationTestSuite) {
 	var d sdk.TxResponse
 	err = val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &d)
 	sr.NoError(err)
-	sr.Zero(d.Code)
+	sr.Zero(d.Code, d.RawLog)
 }

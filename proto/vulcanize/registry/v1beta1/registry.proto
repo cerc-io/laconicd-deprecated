@@ -56,7 +56,7 @@ message Params {
   ];
 }
 
-// Params defines the registry module records
+// Record defines a registry record
 message Record {
   string              id          = 1 [(gogoproto.moretags) = "json:\"id\" yaml:\"id\""];
   string              bond_id     = 2 [(gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""];
@@ -69,7 +69,7 @@ message Record {
   string              type        = 9 [(gogoproto.moretags) = "json:\"types\" yaml:\"types\""];
 }
 
-// AuthorityEntry defines the registry module AuthorityEntries
+// AuthorityEntry defines a registry authority
 message AuthorityEntry {
   string        name  = 1;
   NameAuthority entry = 2;
@@ -99,7 +99,7 @@ message NameEntry {
   NameRecord entry = 2;
 }
 
-// NameRecord
+// NameRecord defines a versioned name record
 message NameRecord {
   NameRecordEntry          latest  = 1;
   repeated NameRecordEntry history = 2;

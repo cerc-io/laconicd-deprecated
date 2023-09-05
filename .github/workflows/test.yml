@@ -94,39 +94,34 @@ jobs:
           ref: jest_timeout
       - name: Environment
         run: ls -tlh && env
-      - name: build containers scripts
+      - name: Build containers scripts
         working-directory: tests/sdk_tests
         run: ./build-laconicd-container.sh && ./build-sdk-test-container.sh
-      - name: start containers
+
+      - name: Start containers
         working-directory: tests/sdk_tests
         run: docker compose up -d
-      - name: run-tests.sh
+      - name: Run tests
         working-directory: tests/sdk_tests
         run: ./run-tests.sh
-      - name: reset containers for auction tests
+
+      - name: Start auction containers
         working-directory: tests/sdk_tests
-        if: always()
-        run: docker compose down
-      - name: start auction containers
+        env:
+          TEST_AUCTION_ENABLED: true
+        run: docker compose up -d
+      - name: Run auction tests
         working-directory: tests/sdk_tests
-        run: docker compose -f docker-compose-auctions.yml up -d
-      - name: run-acution-tests.sh
+        run: ./run-tests.sh test:auctions
+
+      - name: Start auction containers
         working-directory: tests/sdk_tests
-        run: ./run-auction-tests.sh
-      - name: reset containers for nameservice tests
+        env:
+          TEST_REGISTRY_EXPIRY: true
+        run: docker compose up -d
+      - name: Run nameservice expiry tests
         working-directory: tests/sdk_tests
-        if: always()
-        run: docker compose -f docker-compose-auctions.yml down
-      - name: start auction containers
-        working-directory: tests/sdk_tests
-        run: docker compose -f docker-compose-nameservice.yml up -d
-      - name: run-nameservice-expiry-tests.sh
-        working-directory: tests/sdk_tests
-        run: ./run-nameservice-expiry-tests.sh
-      - name: reset containers for nameservice tests
-        working-directory: tests/sdk_tests
-        if: always()
-        run: docker compose -f docker-compose-nameservice.yml down
+        run: ./run-tests.sh test:nameservice-expiry
 
   # integration_tests:
   #   runs-on: ubuntu-latest

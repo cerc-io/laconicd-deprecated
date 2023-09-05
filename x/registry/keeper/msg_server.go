@@ -25,11 +25,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		return nil, err
 	}
 
-	record, err := m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
-		BondId:  msg.GetBondId(),
-		Signer:  msg.GetSigner(),
-		Payload: msg.GetPayload(),
-	})
+	record, err := m.Keeper.ProcessSetRecord(ctx, *msg)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +47,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 	return &types.MsgSetRecordResponse{Id: record.ID}, nil
 }
 
-//nolint: all
+// nolint: all
 func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.MsgSetNameResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -108,7 +104,7 @@ func (m msgServer) ReserveName(c context.Context, msg *types.MsgReserveAuthority
 	return &types.MsgReserveAuthorityResponse{}, nil
 }
 
-//nolint: all
+// nolint: all
 func (m msgServer) SetAuthorityBond(c context.Context, msg *types.MsgSetAuthorityBond) (*types.MsgSetAuthorityBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
@@ -185,7 +181,7 @@ func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*t
 	return &types.MsgRenewRecordResponse{}, nil
 }
 
-//nolint: all
+// nolint: all
 func (m msgServer) AssociateBond(c context.Context, msg *types.MsgAssociateBond) (*types.MsgAssociateBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	_, err := sdk.AccAddressFromBech32(msg.Signer)

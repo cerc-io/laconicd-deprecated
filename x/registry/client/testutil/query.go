@@ -538,9 +538,6 @@ func createNameRecord(authorityName string, s *IntegrationTestSuite) {
 	sr.NoError(err)
 	sr.Zero(d.Code)
 
-	// creating the bond
-	CreateBond(s)
-
 	// Get the bond-id
 	bondID := GetBondID(s)
 
