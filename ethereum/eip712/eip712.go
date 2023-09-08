@@ -2,6 +2,7 @@ package eip712
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"math/big"
@@ -9,17 +10,15 @@ import (
 	"strings"
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	errorsmod "cosmossdk.io/errors"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
-
-	registry "github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/signer/core/apitypes"
@@ -34,24 +33,6 @@ func WrapTxToTypedData(
 	data []byte,
 	feeDelegation *FeeDelegationOptions,
 ) (apitypes.TypedData, error) {
-	txData := make(map[string]interface{})
-
-	if err := json.Unmarshal(data, &txData); err != nil {
-		return apitypes.TypedData{}, errorsmod.Wrap(errortypes.ErrJSONUnmarshal, "failed to JSON unmarshal data")
-	}
-
-	if txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"] != nil {
-		setRecordMsg := msg.(*registry.MsgSetRecord)
-		var attr []interface{}
-		for _, b := range setRecordMsg.Payload.Record.Attributes.Value {
-			attr = append(attr, fmt.Sprintf("%v", b))
-		}
-
-		txData["msgs"].([]interface{})[0].(map[string]interface{})["value"].(map[string]interface{})["payload"].(map[string]interface{})["record"].(map[string]interface{})["attributes"] = map[string]interface{}{ //nolint:lll
-			"type_url": setRecordMsg.Payload.Record.Attributes.TypeUrl,
-			"value":    attr,
-		}
-	}
 
 	domain := apitypes.TypedDataDomain{
 		Name:              "Cosmos Web3",
@@ -66,22 +47,13 @@ func WrapTxToTypedData(
 		return apitypes.TypedData{}, err
 	}
 
-	if msgTypes["TypePayloadRecord"] != nil {
-		msgTypes["TypePayloadRecord"] = []apitypes.Type{
-			{Name: "id", Type: "string"},
-			{Name: "bond_id", Type: "string"},
-			{Name: "create_time", Type: "string"},
-			{Name: "expiry_time", Type: "string"},
-			{Name: "deleted", Type: "bool"},
-			{Name: "attributes", Type: "TypePayloadRecordAttributes"},
-		}
+	txData := make(map[string]interface{})
+	if err := json.Unmarshal(data, &txData); err != nil {
+		return apitypes.TypedData{}, errorsmod.Wrap(errortypes.ErrJSONUnmarshal, "failed to JSON unmarshal data")
 	}
-	if msgTypes["TypePayloadRecordAttributes"] != nil {
-		msgTypes["TypePayloadRecordAttributes"] = []apitypes.Type{
-			{Name: "type_url", Type: "string"},
-			{Name: "value", Type: "uint8[]"},
-		}
-		delete(msgTypes, "TypePayloadRecordAttributesValue")
+
+	if err := patchTxData(txData, msgTypes, "Tx"); err != nil {
+		return apitypes.TypedData{}, errorsmod.Wrap(errortypes.ErrJSONUnmarshal, "failed to patch JSON data")
 	}
 
 	if feeDelegation != nil {
@@ -320,10 +292,15 @@ func traverseFields(
 		ethTyp := typToEth(fieldType)
 		if len(ethTyp) > 0 {
 			// Support array of uint64
-			if isCollection && fieldType.Kind() != reflect.Slice && fieldType.Kind() != reflect.Array {
-				ethTyp += "[]"
+			if isCollection {
+				if fieldType.Kind() != reflect.Slice && fieldType.Kind() != reflect.Array {
+					ethTyp += "[]"
+				}
+				// convert uint8[] to bytes
+				if fieldType.Kind() == reflect.Uint8 {
+					ethTyp = "bytes"
+				}
 			}
-
 			if prefix == typeDefPrefix {
 				typeMap[rootType] = append(typeMap[rootType], apitypes.Type{
 					Name: fieldName,
@@ -466,14 +443,13 @@ func typToEth(typ reflect.Type) string {
 		return "uint32"
 	case reflect.Uint64:
 		return "uint64"
-	case reflect.Slice:
+	case reflect.Slice | reflect.Array:
+		// Note: this case may never be reached due to previous handling in traverseFields
 		ethName := typToEth(typ.Elem())
 		if len(ethName) > 0 {
-			return ethName + "[]"
-		}
-	case reflect.Array:
-		ethName := typToEth(typ.Elem())
-		if len(ethName) > 0 {
+			if ethName == "uint8" {
+				return "bytes"
+			}
 			return ethName + "[]"
 		}
 	case reflect.Ptr:
@@ -509,4 +485,78 @@ func doRecover(err *error) {
 
 		*err = fmt.Errorf("%v", r)
 	}
+}
+
+// Performs extra type conversions on JSON-decoded data accoding to the provided type definitions
+// for compatibility with Geth's encoding
+func patchTxData(data map[string]any, schema apitypes.Types, rootType string) error {
+	// Scan the data for any types that need to be converted.
+	// This is adapted from TypedData.EncodeData
+	for _, field := range schema[rootType] {
+		encType := field.Type
+		encValue := data[field.Name]
+		if encType[len(encType)-1:] == "]" {
+			arrayValue, ok := encValue.([]interface{})
+			if !ok {
+				return dataMismatchError(encType, encValue)
+			}
+
+			parsedType := strings.Split(encType, "[")[0]
+			if schema[parsedType] != nil {
+				for _, item := range arrayValue {
+					mapValue, ok := item.(map[string]interface{})
+					if !ok {
+						return dataMismatchError(parsedType, item)
+					}
+
+					err := patchTxData(mapValue, schema, parsedType)
+					if err != nil {
+						return err
+					}
+				}
+			} else {
+				for i, item := range arrayValue {
+					converted, err := handleConversion(parsedType, item)
+					if err != nil {
+						return err
+					}
+					arrayValue[i] = converted
+				}
+			}
+
+		} else if schema[encType] != nil {
+			mapValue, ok := encValue.(map[string]interface{})
+			if !ok {
+				return dataMismatchError(encType, encValue)
+			}
+			err := patchTxData(mapValue, schema, encType)
+			if err != nil {
+				return err
+			}
+		} else {
+			converted, err := handleConversion(encType, encValue)
+			if err != nil {
+				return err
+			}
+			data[field.Name] = converted
+		}
+	}
+	return nil
+}
+
+func handleConversion(encType string, encValue any) (any, error) {
+	switch encType {
+	case "bytes":
+		// Protobuf encodes byte strings in base64
+		if v, ok := encValue.(string); ok {
+			return base64.StdEncoding.DecodeString(v)
+		}
+	}
+	return encValue, nil
+}
+
+// dataMismatchError generates an error for a mismatch between
+// the provided type and data
+func dataMismatchError(encType string, encValue any) error {
+	return fmt.Errorf("provided data '%v' doesn't match type '%s'", encValue, encType)
 }

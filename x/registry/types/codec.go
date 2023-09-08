@@ -39,17 +39,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgReAssociateRecords{},
 	)
 
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ServiceProvideRegistration",
-		(*Attributes)(nil),
-		&ServiceProviderRegistration{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.WebsiteRegistrationRecord",
-		(*Attributes)(nil),
-		&WebsiteRegistrationRecord{},
-	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 

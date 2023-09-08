@@ -7,13 +7,13 @@ import "vulcanize/registry/v1beta1/registry.proto";
 
 option go_package = "github.com/cerc-io/laconicd/x/registry/types";
 
-// Msg
+// Msg is a service which exposes the registry functionality
 service Msg {
-  // SetRecord will records a new record with given payload and bond id
+  // SetRecord records a new record with given payload and bond id
   rpc SetRecord(MsgSetRecord) returns (MsgSetRecordResponse) {
     option (google.api.http).post = "/vulcanize/registry/v1beta1/set_record";
   }
-  // Renew Record will renew the expire record
+  // Renew Record renews an expired record
   rpc RenewRecord(MsgRenewRecord) returns (MsgRenewRecordResponse) {
     option (google.api.http).post = "/vulcanize/registry/v1beta1/renew_record";
   }
@@ -66,8 +66,10 @@ message MsgSetRecordResponse {
 // Payload
 message Payload {
   Record             record     = 1;
-  repeated Signature signatures = 2
-      [(gogoproto.nullable) = false, (gogoproto.moretags) = "json:\"signatures\" yaml:\"signatures\""];
+  repeated Signature signatures = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "json:\"signatures\" yaml:\"signatures\""
+  ];
 }
 
 // MsgSetName
@@ -91,7 +93,7 @@ message MsgReserveAuthority {
 // MsgReserveNameResponse
 message MsgReserveAuthorityResponse {}
 
-// MsgSetAuthorityBond is SDK message for SetAuthorityBond
+// MsgSetAuthorityBond
 message MsgSetAuthorityBond {
   string name    = 1;
   string bond_id = 2 [(gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""];
@@ -101,7 +103,7 @@ message MsgSetAuthorityBond {
 // MsgSetAuthorityBondResponse
 message MsgSetAuthorityBondResponse {}
 
-// MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
+// MsgDeleteNameAuthority
 message MsgDeleteNameAuthority {
   string crn    = 1;
   string signer = 2;
@@ -110,7 +112,7 @@ message MsgDeleteNameAuthority {
 // MsgDeleteNameAuthorityResponse
 message MsgDeleteNameAuthorityResponse {}
 
-// MsgRenewRecord is SDK message for Renew a record
+// MsgRenewRecord
 message MsgRenewRecord {
   string record_id = 1 [(gogoproto.moretags) = "json:\"recordId\" yaml:\"recordId\""];
   string signer    = 2;
@@ -129,30 +131,30 @@ message MsgAssociateBond {
 // MsgAssociateBondResponse
 message MsgAssociateBondResponse {}
 
-// MsgDissociateBond is SDK message for Msg/DissociateBond
+// MsgDissociateBond
 message MsgDissociateBond {
   string record_id = 1 [(gogoproto.moretags) = "json:\"recordId\" yaml:\"recordId\""];
   string signer    = 2;
 }
 
-// MsgDissociateBondResponse is response type for MsgDissociateBond
+// MsgDissociateBondResponse
 message MsgDissociateBondResponse {}
 
-// MsgDissociateRecords is SDK message for Msg/DissociateRecords
+// MsgDissociateRecords
 message MsgDissociateRecords {
   string bond_id = 1 [(gogoproto.moretags) = "json:\"bondId\" yaml:\"bondId\""];
   string signer  = 2;
 }
 
-// MsgDissociateRecordsResponse is response type for MsgDissociateRecords
+// MsgDissociateRecordsResponse
 message MsgDissociateRecordsResponse {}
 
-// MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
+// MsgReAssociateRecords
 message MsgReAssociateRecords {
   string new_bond_id = 1 [(gogoproto.moretags) = "json:\"newBondId\" yaml:\"newBondId\""];
   string old_bond_id = 2 [(gogoproto.moretags) = "json:\"oldBondId\" yaml:\"oldBondId\""];
   string signer      = 3;
 }
 
-// MsgReAssociateRecordsResponse is response type for MsgReAssociateRecords
+// MsgReAssociateRecordsResponse
 message MsgReAssociateRecordsResponse {}

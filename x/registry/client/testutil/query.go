@@ -114,7 +114,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryForRecords() {
 				sr.Error(err)
 			} else {
 				sr.NoError(err)
-				var records []types.RecordType
+				var records []types.RecordEncodable
 				err := json.Unmarshal(out.Bytes(), &records)
 				sr.NoError(err)
 				sr.Equal(tc.noOfRecords, len(records))

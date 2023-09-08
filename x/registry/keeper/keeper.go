@@ -112,7 +112,8 @@ func (k Keeper) GetRecord(ctx sdk.Context, id string) (record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	result := store.Get(GetRecordIndexKey(id))
 	k.cdc.MustUnmarshal(result, &record)
-	return recordObjToRecord(store, record)
+	decodeRecordNames(store, &record)
+	return record
 }
 
 // ListRecords - get all records.
@@ -125,15 +126,17 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 	for ; itr.Valid(); itr.Next() {
 		bz := store.Get(itr.Key())
 		if bz != nil {
-			var obj types.Record
-			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, obj))
+			var record types.Record
+			k.cdc.MustUnmarshal(bz, &record)
+			decodeRecordNames(store, &record)
+			records = append(records, record)
 		}
 	}
 
 	return records
 }
 
+// RecordsFromAttributes gets a list of records whose attributes match all provided values
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
@@ -157,11 +160,11 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 			continue
 		}
 		store := ctx.KVStore(k.storeKey)
-		recordWithNames := recordObjToRecord(store, record)
-		if !all && len(recordWithNames.Names) == 0 {
+		decodeRecordNames(store, &record)
+		if !all && len(record.Names) == 0 {
 			continue
 		}
-		records = append(records, recordWithNames)
+		records = append(records, record)
 	}
 	return records, nil
 }
@@ -233,9 +236,9 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 }
 
 // ProcessSetRecord creates a record.
-func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordType, error) {
+func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordEncodable, error) {
 	payload := msg.Payload.ToReadablePayload()
-	record := types.RecordType{Attributes: payload.Record, BondID: msg.BondId}
+	record := types.RecordEncodable{Attributes: payload.Record, BondID: msg.BondId}
 
 	// Check signatures.
 	resourceSignBytes, _ := record.GetSignBytes()
@@ -276,11 +279,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	return &record, nil
 }
 
-func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenewal bool) error {
+func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordEncodable, isRenewal bool) error {
 	params := k.GetParams(ctx)
 	rent := params.RecordRent
 
-	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondID, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
+	err := k.bondKeeper.TransferCoinsToModuleAccount(
+		ctx, record.BondID, types.RecordRentModuleAccountName, sdk.NewCoins(rent),
+	)
 	if err != nil {
 		return err
 	}
@@ -295,7 +300,15 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	}
 	k.PutRecord(ctx, recordObj)
 
-	if err := k.ProcessAttributes(ctx, *record); err != nil {
+	// TODO process type here
+	// recordType, ok := record.Attributes["type"].(string)
+
+	if err := k.processAttributes(ctx, record.Attributes, record.ID, ""); err != nil {
+		return err
+	}
+
+	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
+	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
 		return err
 	}
 
@@ -316,47 +329,17 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	k.updateBlockChangeSetForRecord(ctx, record.Id)
 }
 
-func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
-	switch record.Attributes["type"] {
-	case "ServiceProviderRegistration":
-		{
-			// #nosec G705
-			for key := range record.Attributes {
-				if key == "x500" {
-					// #nosec G705
-					for x500Key, x500Val := range record.Attributes[key].(map[string]interface{}) {
-						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
-						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-							return err
-						}
-					}
-				} else {
-					indexKey := GetAttributesIndexKey(key, record.Attributes[key])
-					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-						return err
-					}
-				}
+func (k Keeper) processAttributes(ctx sdk.Context, attrs map[string]any, id string, prefix string) error {
+	for key, value := range attrs {
+		if subRecord, ok := value.(map[string]any); ok {
+			k.processAttributes(ctx, subRecord, id, key)
+		} else {
+			indexKey := GetAttributesIndexKey(prefix+key, value)
+			if err := k.SetAttributeMapping(ctx, indexKey, id); err != nil {
+				return err
 			}
 		}
-	case "WebsiteRegistrationRecord":
-		{
-			// #nosec G705
-			for key := range record.Attributes {
-				indexKey := GetAttributesIndexKey(key, record.Attributes[key])
-				if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-					return err
-				}
-			}
-		}
-	default:
-		return fmt.Errorf("unsupported record type %s", record.Attributes["type"])
 	}
-
-	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
-	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -394,7 +377,7 @@ func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, erro
 
 	var recordIds []string
 	if err := json.Unmarshal(store.Get(key), &recordIds); err != nil {
-		return nil, fmt.Errorf("cannont unmarshal byte array, error, %w", err)
+		return nil, fmt.Errorf("cannot unmarshal byte array, error, %w", err)
 	}
 
 	return recordIds, nil
@@ -572,7 +555,7 @@ func (k Keeper) GetModuleBalances(ctx sdk.Context) []*types.AccountBalance {
 	return balances
 }
 
-func recordObjToRecord(store sdk.KVStore, record types.Record) types.Record {
+func decodeRecordNames(store sdk.KVStore, record *types.Record) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(record.Id)
 
 	if store.Has(reverseNameIndexKey) {
@@ -583,6 +566,4 @@ func recordObjToRecord(store sdk.KVStore, record types.Record) types.Record {
 
 		record.Names = names
 	}
-
-	return record
 }

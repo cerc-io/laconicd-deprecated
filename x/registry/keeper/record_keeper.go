@@ -147,9 +147,10 @@ func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types
 		cid := itr.Key()[len(bondIDPrefix):]
 		bz := store.Get(append(PrefixCIDToRecordIndex, cid...))
 		if bz != nil {
-			var obj types.Record
-			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, obj))
+			var record types.Record
+			k.cdc.MustUnmarshal(bz, &record)
+			decodeRecordNames(store, &record)
+			records = append(records, record)
 		}
 	}
 
@@ -173,7 +174,7 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
 	}
 
-	recordType := record.ToRecordType()
+	recordType := record.ToReadableRecord()
 	err = k.processRecord(ctx, &recordType, true)
 	if err != nil {
 		return err

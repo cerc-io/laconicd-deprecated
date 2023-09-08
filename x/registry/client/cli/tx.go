@@ -66,17 +66,10 @@ $ %s tx %s set [payload file path] [bond-id]
 				return err
 			}
 
-			payload, err := payloadType.ToPayload()
-			if err != nil {
-				return err
-			}
+			payload := payloadType.ToPayload()
 
 			msg := types.NewMsgSetRecord(payload, args[1], clientCtx.GetFromAddress())
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
@@ -269,7 +262,7 @@ $ %s tx %s set-name [crn] [cid]
 			if err != nil {
 				return err
 			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
@@ -377,8 +370,8 @@ $ %s tx %s delete-name [crn]
 }
 
 // GetPayloadFromFile  Load payload object from YAML file.
-func GetPayloadFromFile(filePath string) (*types.PayloadType, error) {
-	var payload types.PayloadType
+func GetPayloadFromFile(filePath string) (*types.PayloadEncodable, error) {
+	var payload types.PayloadEncodable
 
 	data, err := os.ReadFile(filePath) // #nosec G304
 	if err != nil {

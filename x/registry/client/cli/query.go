@@ -161,9 +161,9 @@ $ %s query %s list
 			}
 
 			recordsList := res.GetRecords()
-			records := make([]types.RecordType, len(recordsList))
+			records := make([]types.RecordEncodable, len(recordsList))
 			for i, record := range res.GetRecords() {
-				records[i] = record.ToRecordType()
+				records[i] = record.ToReadableRecord()
 			}
 			bytesResult, err := json.Marshal(records)
 			if err != nil {

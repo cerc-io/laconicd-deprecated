@@ -64,7 +64,7 @@ message Record {
   string              expiry_time = 4 [(gogoproto.moretags) = "json:\"expiryTime\" yaml:\"expiryTime\""];
   bool                deleted     = 5;
   repeated string     owners      = 6 [(gogoproto.moretags) = "json:\"owners\" yaml:\"owners\""];
-  google.protobuf.Any attributes  = 7 [(gogoproto.moretags) = "json:\"attributes\" yaml:\"attributes\""];
+  bytes               attributes  = 7 [(gogoproto.moretags) = "json:\"attributes\" yaml:\"attributes\""];
   repeated string     names       = 8 [(gogoproto.moretags) = "json:\"names\" yaml:\"names\""];
   string              type        = 9 [(gogoproto.moretags) = "json:\"types\" yaml:\"types\""];
 }
