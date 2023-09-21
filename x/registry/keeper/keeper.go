@@ -389,7 +389,7 @@ func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, erro
 	store := ctx.KVStore(k.storeKey)
 
 	if !store.Has(key) {
-		return nil, fmt.Errorf("store doesn't have key")
+		return nil, nil
 	}
 
 	var recordIds []string
