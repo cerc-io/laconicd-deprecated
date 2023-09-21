@@ -2,15 +2,15 @@ package gql
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"reflect" // #nosec G702
+	"fmt" // #nosec G702
 	"strconv"
 
 	auctiontypes "github.com/cerc-io/laconicd/x/auction/types"
 	bondtypes "github.com/cerc-io/laconicd/x/bond/types"
 	registrytypes "github.com/cerc-io/laconicd/x/registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 )
 
 // OwnerAttributeName denotes the owner attribute name for a bond.
@@ -61,13 +61,21 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record registryty
 		return nil, nil
 	}
 
-	recordType := record.ToReadableRecord()
-	attributes, err := getAttributes(&recordType)
+	node, err := ipld.Decode(record.Attributes, dagjson.Decode)
+	if err != nil {
+		return nil, err
+	}
+	if node.Kind() != ipld.Kind_Map {
+		return nil, fmt.Errorf("invalid record attributes")
+	}
+
+	var links []string
+	attributes, err := resolveIPLDNode(node, &links)
 	if err != nil {
 		return nil, err
 	}
 
-	references, err := getReferences(ctx, resolver, &recordType)
+	references, err := resolver.GetRecordsByIds(ctx, links)
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +87,94 @@ func getGQLRecord(ctx context.Context, resolver QueryResolver, record registryty
 		ExpiryTime: record.GetExpiryTime(),
 		Owners:     record.GetOwners(),
 		Names:      record.GetNames(),
-		Attributes: attributes,
+		Attributes: attributes.(MapValue).Value,
 		References: references,
 	}, nil
+}
+
+func resolveIPLDNode(node ipld.Node, links *[]string) (Value, error) {
+	switch node.Kind() {
+	case ipld.Kind_Map:
+		var entries []*Attribute
+		for itr := node.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return nil, err
+			}
+			if k.Kind() != ipld.Kind_String {
+				return nil, fmt.Errorf("invalid record attribute key type: %s", k.Kind())
+			}
+			s, err := k.AsString()
+			if err != nil {
+				return nil, err
+			}
+			val, err := resolveIPLDNode(v, links)
+			if err != nil {
+				return nil, err
+			}
+			entries = append(entries, &Attribute{
+				Key:   s,
+				Value: val,
+			})
+		}
+		return MapValue{entries}, nil
+	case ipld.Kind_List:
+		var values []Value
+		for itr := node.ListIterator(); !itr.Done(); {
+			_, v, err := itr.Next()
+			if err != nil {
+				return nil, err
+			}
+			val, err := resolveIPLDNode(v, links)
+			if err != nil {
+				return nil, err
+			}
+			values = append(values, val)
+		}
+		return ArrayValue{values}, nil
+	case ipld.Kind_Null:
+		return nil, nil
+	case ipld.Kind_Bool:
+		val, err := node.AsBool()
+		if err != nil {
+			return nil, err
+		}
+		return BooleanValue{val}, nil
+	case ipld.Kind_Int:
+		val, err := node.AsInt()
+		if err != nil {
+			return nil, err
+		}
+		// TODO: handle bigger ints
+		return IntValue{int(val)}, nil
+	case ipld.Kind_Float:
+		val, err := node.AsFloat()
+		if err != nil {
+			return nil, err
+		}
+		return FloatValue{val}, nil
+	case ipld.Kind_String:
+		val, err := node.AsString()
+		if err != nil {
+			return nil, err
+		}
+		return StringValue{val}, nil
+	case ipld.Kind_Bytes:
+		val, err := node.AsBytes()
+		if err != nil {
+			return nil, err
+		}
+		return BytesValue{string(val)}, nil
+	case ipld.Kind_Link:
+		val, err := node.AsLink()
+		if err != nil {
+			return nil, err
+		}
+		*links = append(*links, val.String())
+		return LinkValue{Link(val.String())}, nil
+	default:
+		return nil, fmt.Errorf("invalid node kind")
+	}
 }
 
 func getGQLNameRecord(record *registrytypes.NameRecord) (*NameRecord, error) {
@@ -163,136 +256,64 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 	return &gqlAuction, nil
 }
 
-func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes.RecordEncodable) ([]*Record, error) {
-	var ids []string
+func parseRequestValue(value *ValueInput) *registrytypes.QueryListRecordsRequest_ValueInput {
+	if value == nil {
+		return nil
+	}
+	var val registrytypes.QueryListRecordsRequest_ValueInput
 
-	// #nosec G705
-	for key := range r.Attributes {
-		//nolint: all
-		switch r.Attributes[key].(type) {
-		case interface{}:
-			if obj, ok := r.Attributes[key].(map[string]interface{}); ok {
-				if _, ok := obj["/"]; ok && len(obj) == 1 {
-					if _, ok := obj["/"].(string); ok {
-						ids = append(ids, obj["/"].(string))
-					}
-				}
-			}
-		}
+	if value.String != nil {
+		val.String_ = *value.String
+		val.Type = "string"
 	}
 
-	return resolver.GetRecordsByIds(ctx, ids)
-}
-
-func getAttributes(r *registrytypes.RecordEncodable) ([]*KeyValue, error) {
-	return mapToKeyValuePairs(r.Attributes)
-}
-
-func mapToKeyValuePairs(attrs map[string]interface{}) ([]*KeyValue, error) {
-	kvPairs := []*KeyValue{}
-
-	trueVal := true
-	falseVal := false
-
-	// #nosec G705
-	for key, value := range attrs {
-		kvPair := &KeyValue{
-			Key:   key,
-			Value: &Value{},
-		}
-
-		switch val := value.(type) {
-		case nil:
-			kvPair.Value.Null = &trueVal
-		case int:
-			kvPair.Value.Int = &val
-		case float64:
-			kvPair.Value.Float = &val
-		case string:
-			kvPair.Value.String = &val
-		case bool:
-			kvPair.Value.Boolean = &val
-		case interface{}:
-			if obj, ok := value.(map[string]interface{}); ok {
-				if _, ok := obj["/"]; ok && len(obj) == 1 {
-					if _, ok := obj["/"].(string); ok {
-						kvPair.Value.Reference = &Reference{
-							ID: obj["/"].(string),
-						}
-					}
-				} else {
-					bytes, err := json.Marshal(obj)
-					if err != nil {
-						return nil, err
-					}
-
-					jsonStr := string(bytes)
-					kvPair.Value.JSON = &jsonStr
-				}
-			}
-		}
-
-		if kvPair.Value.Null == nil {
-			kvPair.Value.Null = &falseVal
-		}
-
-		valueType := reflect.ValueOf(value)
-		if valueType.Kind() == reflect.Slice {
-			bytes, err := json.Marshal(value)
-			if err != nil {
-				return nil, err
-			}
-
-			jsonStr := string(bytes)
-			kvPair.Value.JSON = &jsonStr
-		}
-
-		kvPairs = append(kvPairs, kvPair)
+	if value.Int != nil {
+		val.Int = int64(*value.Int)
+		val.Type = "int"
 	}
 
-	return kvPairs, nil
+	if value.Float != nil {
+		val.Float = *value.Float
+		val.Type = "float"
+	}
+
+	if value.Boolean != nil {
+		val.Boolean = *value.Boolean
+		val.Type = "boolean"
+	}
+
+	if value.Link != nil {
+		reference := &registrytypes.QueryListRecordsRequest_ReferenceInput{
+			Id: value.Link.String(),
+		}
+
+		val.Reference = reference
+		val.Type = "reference"
+	}
+
+	// handle arrays
+	if value.Array != nil {
+		values := []*registrytypes.QueryListRecordsRequest_ValueInput{}
+		for _, v := range value.Array {
+			val := parseRequestValue(v)
+			values = append(values, val)
+		}
+		val.Values = values
+		val.Type = "array"
+	}
+
+	return &val
 }
 
 func parseRequestAttributes(attrs []*KeyValueInput) []*registrytypes.QueryListRecordsRequest_KeyValueInput {
 	kvPairs := []*registrytypes.QueryListRecordsRequest_KeyValueInput{}
 
 	for _, value := range attrs {
+		parsedValue := parseRequestValue(value.Value)
 		kvPair := &registrytypes.QueryListRecordsRequest_KeyValueInput{
 			Key:   value.Key,
-			Value: &registrytypes.QueryListRecordsRequest_ValueInput{},
+			Value: parsedValue,
 		}
-
-		if value.Value.String != nil {
-			kvPair.Value.String_ = *value.Value.String
-			kvPair.Value.Type = "string"
-		}
-
-		if value.Value.Int != nil {
-			kvPair.Value.Int = int64(*value.Value.Int)
-			kvPair.Value.Type = "int"
-		}
-
-		if value.Value.Float != nil {
-			kvPair.Value.Float = *value.Value.Float
-			kvPair.Value.Type = "float"
-		}
-
-		if value.Value.Boolean != nil {
-			kvPair.Value.Boolean = *value.Value.Boolean
-			kvPair.Value.Type = "boolean"
-		}
-
-		if value.Value.Reference != nil {
-			reference := &registrytypes.QueryListRecordsRequest_ReferenceInput{
-				Id: value.Value.Reference.ID,
-			}
-
-			kvPair.Value.Reference = reference
-			kvPair.Value.Type = "reference"
-		}
-
-		// TODO: Handle arrays.
-
 		kvPairs = append(kvPairs, kvPair)
 	}
 

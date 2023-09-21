@@ -362,8 +362,6 @@ func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string
 		if err != nil {
 			return fmt.Errorf("cannot unmarshal byte array, error, %w", err)
 		}
-	} else {
-		recordIds = []string{}
 	}
 	recordIds = append(recordIds, recordID)
 	bz, err := json.Marshal(recordIds)
