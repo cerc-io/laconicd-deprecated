@@ -26,7 +26,7 @@ services:
       - "1317"
 
   sdk-test-runner:
-    image: cerc/laconic-sdk-tester:local-test
+    image: cerc/laconic-sdk-tester:local
     depends_on:
       laconicd:
         condition: service_healthy

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Forwards all args to yarn on the sdk-test-runner container
+
 if [ -n "$CERC_SCRIPT_DEBUG" ]; then
     set -x
 fi
