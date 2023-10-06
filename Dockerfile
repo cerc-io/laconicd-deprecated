@@ -6,6 +6,10 @@ RUN apk add --update git build-base linux-headers
 # Set working directory for the build
 WORKDIR /go/src/github.com/cerc-io/laconicd
 
+# Cache Go modules
+COPY go.mod go.sum ./
+RUN go mod download
+
 # Add source files
 COPY . .
 
