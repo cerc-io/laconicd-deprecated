@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t cerc/laconicd:local-test ../..
+docker build -t cerc/laconicd:local ../.. --progress=plain
