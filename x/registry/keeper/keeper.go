@@ -150,20 +150,13 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 
 // RecordsFromAttributes gets a list of records whose attributes match all provided values
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
-	log := logger(ctx).With("function", "RecordsFromAttributes")
-
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
-		val, err := EncodeAttributeValue2(attr.Value)
+		suffix, err := EncodeQueryValue(attr.Value)
 		if err != nil {
 			return nil, err
 		}
-		attributeIndex := GetAttributesIndexKey(attr.Key, val)
-		log.Debug("attribute index",
-			"key", attr.Key,
-			"value", val,
-			"value_type", fmt.Sprintf("%T", val),
-			"index", attributeIndex)
+		attributeIndex := GetAttributesIndexKey(attr.Key, suffix)
 		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
 		if err != nil {
 			return nil, err
@@ -191,8 +184,8 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 	return records, nil
 }
 
-// TODO non recursive
-func EncodeAttributeValue2(input *types.QueryListRecordsRequest_ValueInput) ([]byte, error) {
+// TODO not recursive, and only should be if we want to support querying with whole sub-objects
+func EncodeQueryValue(input *types.QueryListRecordsRequest_ValueInput) ([]byte, error) {
 	np := basicnode.Prototype.Any
 	nb := np.NewBuilder()
 
@@ -344,7 +337,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordEncodable, is
 		return err
 	}
 
-	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
+	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, []byte(record.ExpiryTime))
 	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
 		return err
 	}
@@ -391,7 +384,6 @@ func (k Keeper) processAttributeMap(ctx sdk.Context, n ipld.Node, id string, pre
 			return err
 		}
 
-		// for key, value := range attrs {
 		if valuenode.Kind() == ipld.Kind_Map {
 			k.processAttributeMap(ctx, valuenode, id, key)
 		} else {
@@ -409,9 +401,10 @@ func (k Keeper) processAttributeMap(ctx sdk.Context, n ipld.Node, id string, pre
 	return nil
 }
 
-func GetAttributesIndexKey(key string, value interface{}) []byte {
-	keyString := fmt.Sprintf("%s%s", key, value)
+func GetAttributesIndexKey(key string, suffix []byte) []byte {
+	keyString := fmt.Sprintf("%s%s", key, suffix)
 	return append(PrefixAttributesIndex, []byte(keyString)...)
+	// return append(append(PrefixAttributesIndex, key...), suffix...)
 }
 
 func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string) error {
