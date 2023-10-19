@@ -17,17 +17,23 @@ const (
 // become specific to content records. schema records will either occupy a new message or have new
 // more general purpose helper types.
 
+type DagJsonBlob []byte
+
+func (b DagJsonBlob) MarshalJSON() ([]byte, error) {
+	return b, nil
+}
+
 // PayloadEncodable represents a signed record payload that can be serialized from/to YAML.
 type PayloadEncodable struct {
-	Record     map[string]interface{} `json:"record"`
-	Signatures []Signature            `json:"signatures"`
+	RecordAttributes DagJsonBlob `json:"record"`
+	Signatures       []Signature `json:"signatures"`
 }
 
 // ToPayload converts PayloadEncodable to Payload object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
 func (payloadObj *PayloadEncodable) ToPayload() Payload {
 	// Note: record directly contains the attributes here
-	attributes := helpers.MarshalMapToJSONBytes(payloadObj.Record)
+	attributes := payloadObj.RecordAttributes
 	payload := Payload{
 		Record: &Record{
 			Deleted:    false,
@@ -36,7 +42,6 @@ func (payloadObj *PayloadEncodable) ToPayload() Payload {
 		},
 		Signatures: payloadObj.Signatures,
 	}
-	// TODO rm error
 	return payload
 }
 
@@ -44,7 +49,7 @@ func (payloadObj *PayloadEncodable) ToPayload() Payload {
 func (payload Payload) ToReadablePayload() PayloadEncodable {
 	var encodable PayloadEncodable
 
-	encodable.Record = helpers.UnMarshalMapFromJSONBytes(payload.Record.Attributes)
+	encodable.RecordAttributes = payload.Record.Attributes
 	encodable.Signatures = payload.Signatures
 
 	return encodable
@@ -61,28 +66,27 @@ func (r *Record) ToReadableRecord() RecordEncodable {
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
 	resourceObj.Names = r.Names
-	resourceObj.Attributes = helpers.UnMarshalMapFromJSONBytes(r.Attributes)
+	resourceObj.Attributes = r.Attributes
 
 	return resourceObj
 }
 
 // RecordEncodable represents a WNS record.
 type RecordEncodable struct {
-	ID         string                 `json:"id,omitempty"`
-	Names      []string               `json:"names,omitempty"`
-	BondID     string                 `json:"bondId,omitempty"`
-	CreateTime string                 `json:"createTime,omitempty"`
-	ExpiryTime string                 `json:"expiryTime,omitempty"`
-	Deleted    bool                   `json:"deleted,omitempty"`
-	Owners     []string               `json:"owners,omitempty"`
-	Attributes map[string]interface{} `json:"attributes,omitempty"`
+	ID         string   `json:"id,omitempty"`
+	Names      []string `json:"names,omitempty"`
+	BondID     string   `json:"bondId,omitempty"`
+	CreateTime string   `json:"createTime,omitempty"`
+	ExpiryTime string   `json:"expiryTime,omitempty"`
+	Deleted    bool     `json:"deleted,omitempty"`
+	Owners     []string `json:"owners,omitempty"`
+	// Attributes map[string]interface{} `json:"attributes,omitempty"`
+	Attributes DagJsonBlob `json:"attributes,omitempty"`
 }
 
 // ToRecordObj converts Record to RecordObj.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
 func (r *RecordEncodable) ToRecordObj() (Record, error) {
-	attributes := helpers.MarshalMapToJSONBytes(r.Attributes)
-
 	var resourceObj Record
 
 	resourceObj.Id = r.ID
@@ -91,7 +95,7 @@ func (r *RecordEncodable) ToRecordObj() (Record, error) {
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
-	resourceObj.Attributes = attributes
+	resourceObj.Attributes = r.Attributes
 
 	return resourceObj, nil
 }
@@ -100,7 +104,7 @@ func (r *RecordEncodable) ToRecordObj() (Record, error) {
 func (r *RecordEncodable) CanonicalJSON() []byte {
 	bytes, err := canonicalJson.Marshal(r.Attributes)
 	if err != nil {
-		panic("Record marshal error.")
+		panic("Record marshal error: " + err.Error())
 	}
 
 	return bytes

@@ -129,9 +129,9 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 						recAttr := helpers.UnMarshalMapFromJSONBytes(record.Attributes)
 						for _, attr := range test.req.GetAttributes() {
 							if attr.Key[:4] == "x500" {
-								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
+								sr.Equal(keeper.EncodeAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
 							} else {
-								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr[attr.Key])
+								sr.Equal(keeper.EncodeAttributeValue(attr.Value), recAttr[attr.Key])
 							}
 						}
 					}

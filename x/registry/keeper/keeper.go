@@ -22,7 +22,10 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
+	cid "github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
@@ -147,10 +150,20 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 
 // RecordsFromAttributes gets a list of records whose attributes match all provided values
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
+	log := logger(ctx).With("function", "RecordsFromAttributes")
+
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
-		val := GetAttributeValue(attr.Value)
+		val, err := EncodeAttributeValue2(attr.Value)
+		if err != nil {
+			return nil, err
+		}
 		attributeIndex := GetAttributesIndexKey(attr.Key, val)
+		log.Debug("attribute index",
+			"key", attr.Key,
+			"value", val,
+			"value_type", fmt.Sprintf("%T", val),
+			"index", attributeIndex)
 		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
 		if err != nil {
 			return nil, err
@@ -178,27 +191,38 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 	return records, nil
 }
 
-func GetAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
+// TODO non recursive
+func EncodeAttributeValue2(input *types.QueryListRecordsRequest_ValueInput) ([]byte, error) {
+	np := basicnode.Prototype.Any
+	nb := np.NewBuilder()
+
 	switch value := input.GetValue().(type) {
 	case *types.QueryListRecordsRequest_ValueInput_String_:
-		return value.String_
+		nb.AssignString(value.String_)
 	case *types.QueryListRecordsRequest_ValueInput_Int:
-		return value.Int
+		nb.AssignInt(value.Int)
 	case *types.QueryListRecordsRequest_ValueInput_Float:
-		return value.Float
+		nb.AssignFloat(value.Float)
 	case *types.QueryListRecordsRequest_ValueInput_Boolean:
-		return value.Boolean
+		nb.AssignBool(value.Boolean)
 	case *types.QueryListRecordsRequest_ValueInput_Link:
-		return value.Link
+		link := cidlink.Link{Cid: cid.MustParse(value.Link)}
+		nb.AssignLink(link)
 	case *types.QueryListRecordsRequest_ValueInput_Array:
-		return value.Array
+		// TODO
 	case *types.QueryListRecordsRequest_ValueInput_Map:
-		return value.Map
-	case nil:
-		return nil
+		// TODO
 	default:
-		return fmt.Errorf("Value has unepxpected type %T", value)
+		return nil, fmt.Errorf("Value has unepxpected type %T", value)
 	}
+
+	n := nb.Build()
+	var buf bytes.Buffer
+	if err := dagjson.Encode(n, &buf); err != nil {
+		return nil, err
+	}
+	value := buf.Bytes()
+	return value, nil
 }
 
 func getIntersection(a []string, b []string) []string {
@@ -251,7 +275,7 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 // ProcessSetRecord creates a record.
 func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordEncodable, error) {
 	payload := msg.Payload.ToReadablePayload()
-	record := types.RecordEncodable{Attributes: payload.Record, BondID: msg.BondId}
+	record := types.RecordEncodable{Attributes: payload.RecordAttributes, BondID: msg.BondId}
 
 	// Check signatures.
 	resourceSignBytes, _ := record.GetSignBytes()
@@ -342,19 +366,40 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	k.updateBlockChangeSetForRecord(ctx, record.Id)
 }
 
-func (k Keeper) processAttributes(ctx sdk.Context, attrs map[string]any, id string, prefix string) error {
-	np := basicnode.Prototype.Any                       // Pick a stle for the in-memory data.
-	nb := np.NewBuilder()                               // Create a builder.
-	err := dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!
+func (k Keeper) processAttributes(ctx sdk.Context, attrs []byte, id string, prefix string) error {
+	np := basicnode.Prototype.Map
+	nb := np.NewBuilder()
+	err := dagjson.Decode(nb, bytes.NewReader(attrs))
 	if err != nil {
-		return "", err
+		return err
 	}
-	n := nb.Build() // Call 'Build' to get the resulting Node.  (It's immutable!)
+	n := nb.Build()
+	if n.Kind() != ipld.Kind_Map {
+		return fmt.Errorf("Record attributes must be a map, not %T", n.Kind())
+	}
+	return k.processAttributeMap(ctx, n, id, prefix)
+}
 
-	for key, value := range attrs {
-		if subRecord, ok := value.(map[string]any); ok {
-			k.processAttributes(ctx, subRecord, id, key)
+func (k Keeper) processAttributeMap(ctx sdk.Context, n ipld.Node, id string, prefix string) error {
+	for it := n.MapIterator(); !it.Done(); {
+		keynode, valuenode, err := it.Next()
+		if err != nil {
+			return err
+		}
+		key, err := keynode.AsString()
+		if err != nil {
+			return err
+		}
+
+		// for key, value := range attrs {
+		if valuenode.Kind() == ipld.Kind_Map {
+			k.processAttributeMap(ctx, valuenode, id, key)
 		} else {
+			var buf bytes.Buffer
+			if err := dagjson.Encode(valuenode, &buf); err != nil {
+				return err
+			}
+			value := buf.Bytes()
 			indexKey := GetAttributesIndexKey(prefix+key, value)
 			if err := k.SetAttributeMapping(ctx, indexKey, id); err != nil {
 				return err
