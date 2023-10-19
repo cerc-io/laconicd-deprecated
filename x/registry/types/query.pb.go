@@ -177,24 +177,22 @@ func (m *QueryListRecordsRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-type QueryListRecordsRequest_ReferenceInput struct {
+type QueryListRecordsRequest_LinkInput struct {
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *QueryListRecordsRequest_ReferenceInput) Reset() {
-	*m = QueryListRecordsRequest_ReferenceInput{}
-}
-func (m *QueryListRecordsRequest_ReferenceInput) String() string { return proto.CompactTextString(m) }
-func (*QueryListRecordsRequest_ReferenceInput) ProtoMessage()    {}
-func (*QueryListRecordsRequest_ReferenceInput) Descriptor() ([]byte, []int) {
+func (m *QueryListRecordsRequest_LinkInput) Reset()         { *m = QueryListRecordsRequest_LinkInput{} }
+func (m *QueryListRecordsRequest_LinkInput) String() string { return proto.CompactTextString(m) }
+func (*QueryListRecordsRequest_LinkInput) ProtoMessage()    {}
+func (*QueryListRecordsRequest_LinkInput) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dfadc1ce52446f26, []int{2, 0}
 }
-func (m *QueryListRecordsRequest_ReferenceInput) XXX_Unmarshal(b []byte) error {
+func (m *QueryListRecordsRequest_LinkInput) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryListRecordsRequest_ReferenceInput) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryListRecordsRequest_LinkInput) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryListRecordsRequest_ReferenceInput.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryListRecordsRequest_LinkInput.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -204,40 +202,139 @@ func (m *QueryListRecordsRequest_ReferenceInput) XXX_Marshal(b []byte, determini
 		return b[:n], nil
 	}
 }
-func (m *QueryListRecordsRequest_ReferenceInput) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryListRecordsRequest_ReferenceInput.Merge(m, src)
+func (m *QueryListRecordsRequest_LinkInput) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListRecordsRequest_LinkInput.Merge(m, src)
 }
-func (m *QueryListRecordsRequest_ReferenceInput) XXX_Size() int {
+func (m *QueryListRecordsRequest_LinkInput) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryListRecordsRequest_ReferenceInput) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryListRecordsRequest_ReferenceInput.DiscardUnknown(m)
+func (m *QueryListRecordsRequest_LinkInput) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListRecordsRequest_LinkInput.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryListRecordsRequest_ReferenceInput proto.InternalMessageInfo
+var xxx_messageInfo_QueryListRecordsRequest_LinkInput proto.InternalMessageInfo
 
-func (m *QueryListRecordsRequest_ReferenceInput) GetId() string {
+func (m *QueryListRecordsRequest_LinkInput) GetId() string {
 	if m != nil {
 		return m.Id
 	}
 	return ""
 }
 
+// message ValueInput {
+//   string type                   = 1;
+//   string string                 = 2;
+//   int64 int                     = 3;
+//   double float                  = 4;
+//   bool                boolean   = 5;
+//   LinkInput      reference = 6;
+//   repeated ValueInput values    = 7;
+// }
+type QueryListRecordsRequest_ArrayInput struct {
+	Values []*QueryListRecordsRequest_ValueInput `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty"`
+}
+
+func (m *QueryListRecordsRequest_ArrayInput) Reset()         { *m = QueryListRecordsRequest_ArrayInput{} }
+func (m *QueryListRecordsRequest_ArrayInput) String() string { return proto.CompactTextString(m) }
+func (*QueryListRecordsRequest_ArrayInput) ProtoMessage()    {}
+func (*QueryListRecordsRequest_ArrayInput) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dfadc1ce52446f26, []int{2, 1}
+}
+func (m *QueryListRecordsRequest_ArrayInput) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryListRecordsRequest_ArrayInput) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryListRecordsRequest_ArrayInput.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryListRecordsRequest_ArrayInput) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListRecordsRequest_ArrayInput.Merge(m, src)
+}
+func (m *QueryListRecordsRequest_ArrayInput) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryListRecordsRequest_ArrayInput) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListRecordsRequest_ArrayInput.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryListRecordsRequest_ArrayInput proto.InternalMessageInfo
+
+func (m *QueryListRecordsRequest_ArrayInput) GetValues() []*QueryListRecordsRequest_ValueInput {
+	if m != nil {
+		return m.Values
+	}
+	return nil
+}
+
+type QueryListRecordsRequest_MapInput struct {
+	Values map[string]*QueryListRecordsRequest_ValueInput `protobuf:"bytes,1,rep,name=values,proto3" json:"values,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (m *QueryListRecordsRequest_MapInput) Reset()         { *m = QueryListRecordsRequest_MapInput{} }
+func (m *QueryListRecordsRequest_MapInput) String() string { return proto.CompactTextString(m) }
+func (*QueryListRecordsRequest_MapInput) ProtoMessage()    {}
+func (*QueryListRecordsRequest_MapInput) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dfadc1ce52446f26, []int{2, 2}
+}
+func (m *QueryListRecordsRequest_MapInput) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryListRecordsRequest_MapInput) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryListRecordsRequest_MapInput.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryListRecordsRequest_MapInput) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryListRecordsRequest_MapInput.Merge(m, src)
+}
+func (m *QueryListRecordsRequest_MapInput) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryListRecordsRequest_MapInput) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryListRecordsRequest_MapInput.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryListRecordsRequest_MapInput proto.InternalMessageInfo
+
+func (m *QueryListRecordsRequest_MapInput) GetValues() map[string]*QueryListRecordsRequest_ValueInput {
+	if m != nil {
+		return m.Values
+	}
+	return nil
+}
+
 type QueryListRecordsRequest_ValueInput struct {
-	Type      string                                  `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	String_   string                                  `protobuf:"bytes,2,opt,name=string,proto3" json:"string,omitempty"`
-	Int       int64                                   `protobuf:"varint,3,opt,name=int,proto3" json:"int,omitempty"`
-	Float     float64                                 `protobuf:"fixed64,4,opt,name=float,proto3" json:"float,omitempty"`
-	Boolean   bool                                    `protobuf:"varint,5,opt,name=boolean,proto3" json:"boolean,omitempty"`
-	Reference *QueryListRecordsRequest_ReferenceInput `protobuf:"bytes,6,opt,name=reference,proto3" json:"reference,omitempty"`
-	Values    []*QueryListRecordsRequest_ValueInput   `protobuf:"bytes,7,rep,name=values,proto3" json:"values,omitempty"`
+	// Types that are valid to be assigned to Value:
+	//	*QueryListRecordsRequest_ValueInput_String_
+	//	*QueryListRecordsRequest_ValueInput_Int
+	//	*QueryListRecordsRequest_ValueInput_Float
+	//	*QueryListRecordsRequest_ValueInput_Boolean
+	//	*QueryListRecordsRequest_ValueInput_Link
+	//	*QueryListRecordsRequest_ValueInput_Array
+	//	*QueryListRecordsRequest_ValueInput_Map
+	Value isQueryListRecordsRequest_ValueInput_Value `protobuf_oneof:"value"`
 }
 
 func (m *QueryListRecordsRequest_ValueInput) Reset()         { *m = QueryListRecordsRequest_ValueInput{} }
 func (m *QueryListRecordsRequest_ValueInput) String() string { return proto.CompactTextString(m) }
 func (*QueryListRecordsRequest_ValueInput) ProtoMessage()    {}
 func (*QueryListRecordsRequest_ValueInput) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dfadc1ce52446f26, []int{2, 1}
+	return fileDescriptor_dfadc1ce52446f26, []int{2, 3}
 }
 func (m *QueryListRecordsRequest_ValueInput) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -266,53 +363,109 @@ func (m *QueryListRecordsRequest_ValueInput) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryListRecordsRequest_ValueInput proto.InternalMessageInfo
 
-func (m *QueryListRecordsRequest_ValueInput) GetType() string {
+type isQueryListRecordsRequest_ValueInput_Value interface {
+	isQueryListRecordsRequest_ValueInput_Value()
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+type QueryListRecordsRequest_ValueInput_String_ struct {
+	String_ string `protobuf:"bytes,1,opt,name=string,proto3,oneof" json:"string,omitempty"`
+}
+type QueryListRecordsRequest_ValueInput_Int struct {
+	Int int64 `protobuf:"varint,2,opt,name=int,proto3,oneof" json:"int,omitempty"`
+}
+type QueryListRecordsRequest_ValueInput_Float struct {
+	Float float64 `protobuf:"fixed64,3,opt,name=float,proto3,oneof" json:"float,omitempty"`
+}
+type QueryListRecordsRequest_ValueInput_Boolean struct {
+	Boolean bool `protobuf:"varint,4,opt,name=boolean,proto3,oneof" json:"boolean,omitempty"`
+}
+type QueryListRecordsRequest_ValueInput_Link struct {
+	Link string `protobuf:"bytes,5,opt,name=link,proto3,oneof" json:"link,omitempty"`
+}
+type QueryListRecordsRequest_ValueInput_Array struct {
+	Array *QueryListRecordsRequest_ArrayInput `protobuf:"bytes,6,opt,name=array,proto3,oneof" json:"array,omitempty"`
+}
+type QueryListRecordsRequest_ValueInput_Map struct {
+	Map *QueryListRecordsRequest_MapInput `protobuf:"bytes,7,opt,name=map,proto3,oneof" json:"map,omitempty"`
+}
+
+func (*QueryListRecordsRequest_ValueInput_String_) isQueryListRecordsRequest_ValueInput_Value() {}
+func (*QueryListRecordsRequest_ValueInput_Int) isQueryListRecordsRequest_ValueInput_Value()     {}
+func (*QueryListRecordsRequest_ValueInput_Float) isQueryListRecordsRequest_ValueInput_Value()   {}
+func (*QueryListRecordsRequest_ValueInput_Boolean) isQueryListRecordsRequest_ValueInput_Value() {}
+func (*QueryListRecordsRequest_ValueInput_Link) isQueryListRecordsRequest_ValueInput_Value()    {}
+func (*QueryListRecordsRequest_ValueInput_Array) isQueryListRecordsRequest_ValueInput_Value()   {}
+func (*QueryListRecordsRequest_ValueInput_Map) isQueryListRecordsRequest_ValueInput_Value()     {}
+
+func (m *QueryListRecordsRequest_ValueInput) GetValue() isQueryListRecordsRequest_ValueInput_Value {
 	if m != nil {
-		return m.Type
+		return m.Value
 	}
-	return ""
+	return nil
 }
 
 func (m *QueryListRecordsRequest_ValueInput) GetString_() string {
-	if m != nil {
-		return m.String_
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_String_); ok {
+		return x.String_
 	}
 	return ""
 }
 
 func (m *QueryListRecordsRequest_ValueInput) GetInt() int64 {
-	if m != nil {
-		return m.Int
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_Int); ok {
+		return x.Int
 	}
 	return 0
 }
 
 func (m *QueryListRecordsRequest_ValueInput) GetFloat() float64 {
-	if m != nil {
-		return m.Float
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_Float); ok {
+		return x.Float
 	}
 	return 0
 }
 
 func (m *QueryListRecordsRequest_ValueInput) GetBoolean() bool {
-	if m != nil {
-		return m.Boolean
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_Boolean); ok {
+		return x.Boolean
 	}
 	return false
 }
 
-func (m *QueryListRecordsRequest_ValueInput) GetReference() *QueryListRecordsRequest_ReferenceInput {
-	if m != nil {
-		return m.Reference
+func (m *QueryListRecordsRequest_ValueInput) GetLink() string {
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_Link); ok {
+		return x.Link
+	}
+	return ""
+}
+
+func (m *QueryListRecordsRequest_ValueInput) GetArray() *QueryListRecordsRequest_ArrayInput {
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_Array); ok {
+		return x.Array
 	}
 	return nil
 }
 
-func (m *QueryListRecordsRequest_ValueInput) GetValues() []*QueryListRecordsRequest_ValueInput {
-	if m != nil {
-		return m.Values
+func (m *QueryListRecordsRequest_ValueInput) GetMap() *QueryListRecordsRequest_MapInput {
+	if x, ok := m.GetValue().(*QueryListRecordsRequest_ValueInput_Map); ok {
+		return x.Map
 	}
 	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*QueryListRecordsRequest_ValueInput) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*QueryListRecordsRequest_ValueInput_String_)(nil),
+		(*QueryListRecordsRequest_ValueInput_Int)(nil),
+		(*QueryListRecordsRequest_ValueInput_Float)(nil),
+		(*QueryListRecordsRequest_ValueInput_Boolean)(nil),
+		(*QueryListRecordsRequest_ValueInput_Link)(nil),
+		(*QueryListRecordsRequest_ValueInput_Array)(nil),
+		(*QueryListRecordsRequest_ValueInput_Map)(nil),
+	}
 }
 
 type QueryListRecordsRequest_KeyValueInput struct {
@@ -324,7 +477,7 @@ func (m *QueryListRecordsRequest_KeyValueInput) Reset()         { *m = QueryList
 func (m *QueryListRecordsRequest_KeyValueInput) String() string { return proto.CompactTextString(m) }
 func (*QueryListRecordsRequest_KeyValueInput) ProtoMessage()    {}
 func (*QueryListRecordsRequest_KeyValueInput) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dfadc1ce52446f26, []int{2, 2}
+	return fileDescriptor_dfadc1ce52446f26, []int{2, 4}
 }
 func (m *QueryListRecordsRequest_KeyValueInput) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1381,7 +1534,10 @@ func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "vulcanize.registry.v1beta1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "vulcanize.registry.v1beta1.QueryParamsResponse")
 	proto.RegisterType((*QueryListRecordsRequest)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest")
-	proto.RegisterType((*QueryListRecordsRequest_ReferenceInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.ReferenceInput")
+	proto.RegisterType((*QueryListRecordsRequest_LinkInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.LinkInput")
+	proto.RegisterType((*QueryListRecordsRequest_ArrayInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.ArrayInput")
+	proto.RegisterType((*QueryListRecordsRequest_MapInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.MapInput")
+	proto.RegisterMapType((map[string]*QueryListRecordsRequest_ValueInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.MapInput.ValuesEntry")
 	proto.RegisterType((*QueryListRecordsRequest_ValueInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.ValueInput")
 	proto.RegisterType((*QueryListRecordsRequest_KeyValueInput)(nil), "vulcanize.registry.v1beta1.QueryListRecordsRequest.KeyValueInput")
 	proto.RegisterType((*QueryListRecordsResponse)(nil), "vulcanize.registry.v1beta1.QueryListRecordsResponse")
@@ -1412,96 +1568,100 @@ func init() {
 }
 
 var fileDescriptor_dfadc1ce52446f26 = []byte{
-	// 1411 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xcb, 0x6f, 0xdc, 0x54,
-	0x17, 0xcf, 0x4d, 0x32, 0x93, 0xe6, 0xe4, 0x6b, 0xfa, 0xf5, 0x12, 0xb5, 0x53, 0x53, 0x26, 0xa9,
-	0xfb, 0x9a, 0xa4, 0x1d, 0x9b, 0x24, 0x2d, 0x2d, 0x2d, 0xa0, 0x66, 0x4a, 0x1b, 0x55, 0x94, 0x47,
-	0xac, 0x52, 0x24, 0x58, 0x14, 0x8f, 0xe7, 0x76, 0xea, 0xd6, 0xf1, 0x9d, 0xfa, 0x91, 0x76, 0xa8,
-	0xba, 0x01, 0x89, 0x25, 0x42, 0x42, 0x08, 0x04, 0x6b, 0x1e, 0xea, 0x86, 0x0d, 0xac, 0x79, 0xac,
-	0x2a, 0xb1, 0xa9, 0xc4, 0x86, 0x55, 0x41, 0x0d, 0x12, 0xfb, 0xfe, 0x05, 0xc8, 0xf7, 0xe1, 0xb1,
-	0x93, 0x79, 0x78, 0xa6, 0x41, 0x62, 0x35, 0xd7, 0xd7, 0xe7, 0x77, 0xce, 0xef, 0x3c, 0xee, 0xb9,
-	0xc7, 0x03, 0x87, 0xd6, 0x42, 0xc7, 0x32, 0x5d, 0xfb, 0x3d, 0xa2, 0x7b, 0xa4, 0x6e, 0xfb, 0x81,
-	0xd7, 0xd4, 0xd7, 0xe6, 0xab, 0x24, 0x30, 0xe7, 0xf5, 0x9b, 0x21, 0xf1, 0x9a, 0x5a, 0xc3, 0xa3,
-	0x01, 0xc5, 0x4a, 0x2c, 0xa7, 0x49, 0x39, 0x4d, 0xc8, 0x29, 0xb3, 0x5d, 0x74, 0xc4, 0xc2, 0x4c,
-	0x8d, 0xb2, 0xb7, 0x4e, 0x69, 0xdd, 0x21, 0xba, 0xd9, 0xb0, 0x75, 0xd3, 0x75, 0x69, 0x60, 0x06,
-	0x36, 0x75, 0x7d, 0xf1, 0x76, 0xce, 0xa2, 0xfe, 0x2a, 0xf5, 0xf5, 0xaa, 0xe9, 0x13, 0x6e, 0x3d,
-	0xd6, 0xd3, 0x30, 0xeb, 0xb6, 0xcb, 0x84, 0x85, 0xec, 0x54, 0x9d, 0xd6, 0x29, 0x5b, 0xea, 0xd1,
-	0x4a, 0xec, 0x16, 0x93, 0x1a, 0x24, 0xd6, 0xa2, 0xb6, 0x40, 0xa9, 0x53, 0x80, 0x57, 0x22, 0xbd,
-	0x6f, 0x98, 0x9e, 0xb9, 0xea, 0x1b, 0xe4, 0x66, 0x48, 0xfc, 0x40, 0x5d, 0x81, 0xa7, 0x52, 0xbb,
-	0x7e, 0x83, 0xba, 0x3e, 0xc1, 0xa7, 0x20, 0xdf, 0x60, 0x3b, 0x05, 0x34, 0x83, 0x4a, 0x13, 0x0b,
-	0xaa, 0xd6, 0x39, 0x08, 0x9a, 0xc0, 0x0a, 0x84, 0xfa, 0x6d, 0x0e, 0x76, 0x33, 0x9d, 0x17, 0x6d,
-	0x3f, 0x30, 0x88, 0x45, 0xbd, 0x9a, 0x34, 0x87, 0x4d, 0x00, 0x33, 0x08, 0x3c, 0xbb, 0x1a, 0x06,
-	0x24, 0xd2, 0x3d, 0x52, 0x9a, 0x58, 0x58, 0xea, 0xa6, 0xbb, 0x83, 0x22, 0xed, 0x15, 0xd2, 0xbc,
-	0x6c, 0x3a, 0x21, 0xb9, 0xe0, 0x36, 0xc2, 0xc0, 0x48, 0x28, 0xc5, 0xff, 0x87, 0x11, 0xd3, 0x71,
-	0x0a, 0xc3, 0x33, 0xa8, 0xb4, 0xcd, 0x88, 0x96, 0xf8, 0x3c, 0x40, 0x2b, 0x86, 0x85, 0x11, 0xe6,
-	0xd0, 0x21, 0x8d, 0x87, 0x4b, 0x8b, 0xc2, 0xa5, 0xf1, 0x74, 0xb7, 0xfc, 0xa9, 0x13, 0x61, 0xc7,
-	0x48, 0x20, 0x95, 0x19, 0x98, 0x34, 0xc8, 0x55, 0xe2, 0x11, 0xd7, 0xe2, 0x76, 0xf1, 0x24, 0x0c,
-	0xdb, 0x35, 0x16, 0xa2, 0x71, 0x63, 0xd8, 0xae, 0x29, 0xdf, 0x0f, 0x03, 0xb4, 0x68, 0x61, 0x0c,
-	0xa3, 0x41, 0xb3, 0x41, 0x84, 0x00, 0x5b, 0xe3, 0x5d, 0x90, 0xf7, 0x03, 0xcf, 0x76, 0xeb, 0x8c,
-	0xe1, 0xb8, 0x21, 0x9e, 0x22, 0xda, 0xb6, 0x1b, 0x30, 0x76, 0x23, 0x46, 0xb4, 0xc4, 0x53, 0x90,
-	0xbb, 0xea, 0x50, 0x33, 0x28, 0x8c, 0xce, 0xa0, 0x12, 0x32, 0xf8, 0x03, 0x2e, 0xc0, 0x58, 0x95,
-	0x52, 0x87, 0x98, 0x6e, 0x21, 0xc7, 0x5c, 0x94, 0x8f, 0xf8, 0x5d, 0x18, 0xf7, 0x24, 0xbd, 0x42,
-	0x9e, 0x79, 0x59, 0x19, 0x24, 0xb4, 0x69, 0x1f, 0x8d, 0x96, 0x52, 0x7c, 0x19, 0xf2, 0x6b, 0x91,
-	0x77, 0x7e, 0x61, 0x8c, 0x65, 0xee, 0xa5, 0x41, 0xd4, 0x27, 0xd2, 0x26, 0xb4, 0x29, 0xb7, 0x60,
-	0x7b, 0x2a, 0x9f, 0x51, 0x30, 0x6e, 0x90, 0xa6, 0x88, 0x5b, 0xb4, 0xc4, 0x97, 0x20, 0xc7, 0x84,
-	0x59, 0xd4, 0x9e, 0xdc, 0x32, 0x57, 0xa6, 0x7e, 0x83, 0xa0, 0xb0, 0x59, 0x5a, 0x9c, 0x81, 0x0a,
-	0x8c, 0x79, 0x7c, 0x4b, 0x14, 0x6a, 0xd7, 0x43, 0xc0, 0xd1, 0x95, 0xd1, 0xfb, 0x0f, 0xa7, 0x87,
-	0x0c, 0x09, 0xc4, 0xcb, 0xa9, 0xd2, 0xe3, 0xdc, 0x0f, 0xf7, 0x2c, 0x3d, 0x4e, 0x20, 0x59, 0x7b,
-	0x6a, 0x09, 0x76, 0x31, 0xa2, 0xc2, 0x4c, 0xf3, 0xc2, 0xcb, 0xf2, 0x48, 0x6d, 0xa8, 0x41, 0xf5,
-	0x1d, 0x71, 0xfa, 0x92, 0x92, 0xc2, 0xa3, 0x33, 0x90, 0xe7, 0xc4, 0xb2, 0x9c, 0xea, 0x94, 0x43,
-	0x02, 0xa7, 0x06, 0xa0, 0xa4, 0x94, 0x57, 0xa8, 0x5b, 0xeb, 0x48, 0x65, 0xc3, 0xc1, 0x1b, 0x1e,
-	0xf4, 0xe0, 0xa9, 0xf7, 0x10, 0x3c, 0xdd, 0xd6, 0xec, 0x7f, 0x31, 0x53, 0xfb, 0x60, 0x7a, 0x99,
-	0x04, 0x86, 0xb0, 0xfa, 0x2a, 0xad, 0x85, 0x0e, 0xa9, 0x98, 0x8e, 0xe9, 0x5a, 0xd2, 0x37, 0xf5,
-	0x3a, 0xcc, 0x74, 0x16, 0x11, 0x3e, 0x9d, 0x87, 0x6d, 0x55, 0xbe, 0x25, 0x9d, 0x9a, 0xeb, 0xe6,
-	0xd4, 0x92, 0x65, 0xd1, 0xd0, 0x0d, 0xa4, 0x96, 0x18, 0xab, 0xfe, 0x8d, 0x60, 0x32, 0xfd, 0x12,
-	0x5f, 0x84, 0xff, 0x99, 0x7c, 0xe7, 0x8a, 0x6b, 0xae, 0x8a, 0xf6, 0x54, 0x99, 0x7d, 0xfc, 0x70,
-	0xfa, 0xe0, 0x75, 0x9f, 0xba, 0xa7, 0x54, 0xf1, 0xf6, 0x35, 0x73, 0x95, 0xa8, 0x33, 0x4d, 0x73,
-	0xd5, 0x49, 0x6f, 0x19, 0x13, 0x89, 0x27, 0xfc, 0x21, 0x82, 0x31, 0x61, 0xad, 0x30, 0xc2, 0x88,
-	0xee, 0x49, 0x85, 0x4d, 0x32, 0x3c, 0x4b, 0x6d, 0xb7, 0xb2, 0x12, 0x05, 0xfd, 0xf1, 0xc3, 0xe9,
-	0x67, 0xb8, 0x21, 0x81, 0x93, 0x46, 0xe4, 0xe3, 0xbd, 0x3f, 0xa6, 0x4b, 0x75, 0x3b, 0xb8, 0x16,
-	0x56, 0x35, 0x8b, 0xae, 0xea, 0xe2, 0x62, 0xe3, 0x3f, 0x65, 0xbf, 0x76, 0x43, 0x8f, 0x3a, 0xa9,
-	0xcf, 0x34, 0xfa, 0x86, 0x34, 0xae, 0x12, 0x51, 0x24, 0xd1, 0x59, 0x8e, 0x98, 0x6d, 0xb8, 0x7a,
-	0xd2, 0xc5, 0x88, 0x9e, 0xa4, 0x18, 0xf7, 0xb6, 0xb7, 0x23, 0x32, 0xb7, 0x04, 0xb9, 0x28, 0xac,
-	0x32, 0x6d, 0x07, 0xbb, 0xa5, 0x2d, 0xc2, 0x9f, 0x73, 0x03, 0xaf, 0x29, 0xca, 0x91, 0x23, 0xb7,
-	0xae, 0x18, 0x0f, 0xc3, 0x4e, 0xc6, 0xf5, 0xad, 0x6b, 0xd4, 0x8e, 0x23, 0x81, 0x61, 0xb4, 0x95,
-	0x77, 0x83, 0xad, 0xd5, 0x2f, 0x90, 0x18, 0x0f, 0x84, 0xa4, 0xf0, 0xe5, 0x03, 0x04, 0x93, 0xd1,
-	0xfb, 0x2b, 0x66, 0x18, 0x5c, 0xa3, 0x9e, 0x1d, 0x34, 0x45, 0xe4, 0x66, 0x7b, 0x79, 0xb5, 0x24,
-	0x01, 0x95, 0x79, 0x91, 0xf3, 0x59, 0x9e, 0x73, 0x37, 0xf9, 0x52, 0x66, 0x3e, 0xbd, 0x69, 0x6c,
-	0x4f, 0x3f, 0xab, 0x30, 0xc9, 0x23, 0x4e, 0xe9, 0x8d, 0xb0, 0x71, 0xd6, 0x73, 0xa3, 0x0b, 0xc2,
-	0xf2, 0x5c, 0x79, 0x41, 0x58, 0x9e, 0xab, 0x5e, 0x12, 0x0d, 0x32, 0x96, 0x49, 0xcc, 0x32, 0x2d,
-	0x77, 0xa3, 0x94, 0xf7, 0x20, 0xce, 0xd3, 0x29, 0xc2, 0xb2, 0x1f, 0x76, 0x88, 0xc6, 0xe3, 0x53,
-	0x67, 0x8d, 0xb4, 0x37, 0xfd, 0x66, 0xdc, 0x71, 0xa5, 0x50, 0x72, 0x8e, 0xea, 0xb7, 0xe3, 0xc6,
-	0xbd, 0xd6, 0x82, 0x3d, 0x4c, 0x2d, 0x6b, 0x15, 0xd1, 0xce, 0xb9, 0xdb, 0x0d, 0xdb, 0x6b, 0xae,
-	0x84, 0x24, 0x24, 0x5b, 0x56, 0xcd, 0x3f, 0x20, 0xd8, 0xd7, 0xd1, 0x4a, 0xec, 0xc6, 0xf2, 0xc6,
-	0x06, 0x5b, 0xee, 0xe6, 0x47, 0x4a, 0x03, 0x73, 0x69, 0xeb, 0xbb, 0xec, 0xf3, 0xb0, 0x73, 0x93,
-	0x99, 0x4d, 0xf7, 0xcf, 0x54, 0x6b, 0x68, 0x18, 0x29, 0x8d, 0xcb, 0x4b, 0xff, 0xaa, 0x38, 0xbf,
-	0xcb, 0x24, 0x88, 0x4b, 0xec, 0xdf, 0x08, 0xed, 0x4f, 0x08, 0x0e, 0x74, 0x33, 0x14, 0x47, 0xf7,
-	0x75, 0x98, 0x90, 0xc7, 0xcb, 0x26, 0x03, 0x46, 0x38, 0xa9, 0x61, 0xcb, 0xa2, 0xbc, 0xf0, 0xd1,
-	0x0e, 0xc8, 0x31, 0x17, 0xf0, 0xa7, 0x08, 0xf2, 0x7c, 0xce, 0xc7, 0x5a, 0xcf, 0xd9, 0x2b, 0xf5,
-	0x89, 0xa1, 0xe8, 0x99, 0xe5, 0x39, 0x03, 0x75, 0xee, 0xfd, 0xdf, 0xfe, 0xfa, 0x64, 0xf8, 0x00,
-	0x56, 0xf5, 0x2e, 0x5f, 0x57, 0xfc, 0x63, 0x03, 0x7f, 0x85, 0x60, 0x22, 0x31, 0xbc, 0xe1, 0xc5,
-	0x01, 0x06, 0x43, 0xe5, 0x58, 0x7f, 0x20, 0x41, 0xf3, 0x08, 0xa3, 0x79, 0x10, 0xef, 0xd7, 0xbb,
-	0x7e, 0x04, 0x72, 0x5e, 0x5f, 0x23, 0x18, 0x8f, 0x8f, 0x18, 0x5e, 0xe8, 0x69, 0x70, 0xd3, 0x9c,
-	0xa7, 0x2c, 0xf6, 0x85, 0x11, 0x1c, 0x9f, 0x65, 0x1c, 0xe7, 0x70, 0x29, 0x03, 0x47, 0xfd, 0x8e,
-	0x5d, 0xbb, 0x8b, 0x7f, 0x46, 0xb0, 0x33, 0x26, 0x2a, 0x27, 0x2d, 0xfc, 0x5c, 0x66, 0xe3, 0xa9,
-	0x89, 0x50, 0x39, 0xd1, 0x37, 0x4e, 0x10, 0x3f, 0xcd, 0x88, 0x1f, 0xc7, 0x8b, 0x19, 0x88, 0x97,
-	0xab, 0xcd, 0x72, 0x95, 0xba, 0xb5, 0xb2, 0x5d, 0xe3, 0x3e, 0xfc, 0x82, 0xa0, 0xd0, 0x69, 0xc0,
-	0xc2, 0xa7, 0xbb, 0x51, 0xea, 0x31, 0xb9, 0x29, 0x2f, 0x0c, 0x06, 0xee, 0xa7, 0x62, 0xc4, 0x38,
-	0x83, 0xbf, 0x43, 0xb0, 0x63, 0xc3, 0x88, 0x81, 0x4f, 0x64, 0x2a, 0xd4, 0xcd, 0xc3, 0x8f, 0x72,
-	0xb2, 0x7f, 0xa0, 0xe0, 0x3c, 0xcb, 0x38, 0xef, 0xc7, 0xfb, 0xba, 0x71, 0xe6, 0x53, 0xcb, 0xe7,
-	0x08, 0x72, 0x6c, 0x7c, 0xc0, 0xe5, 0x9e, 0xe6, 0x92, 0x03, 0x89, 0xa2, 0x65, 0x15, 0xef, 0xa7,
-	0xaa, 0x6f, 0x45, 0x10, 0xfd, 0x4e, 0x44, 0xed, 0x2e, 0xfe, 0x0c, 0xc1, 0x78, 0x6b, 0x7a, 0x98,
-	0xeb, 0x1d, 0x0d, 0x29, 0xab, 0x2c, 0x64, 0x97, 0xed, 0xaf, 0x81, 0x39, 0x0c, 0x86, 0xbf, 0x44,
-	0x00, 0x89, 0xe9, 0xe2, 0x48, 0x86, 0x03, 0x23, 0x85, 0x33, 0xb5, 0x84, 0x8d, 0x23, 0x49, 0xd6,
-	0xb6, 0xc5, 0x70, 0xf8, 0x47, 0x04, 0x53, 0x6d, 0xe7, 0x8f, 0xe3, 0x3d, 0x4d, 0xb7, 0x83, 0x29,
-	0x2f, 0x0e, 0x04, 0x8b, 0xb9, 0xcf, 0x33, 0xee, 0x47, 0xf0, 0x6c, 0xef, 0xae, 0x50, 0x26, 0x0c,
-	0x8f, 0x7f, 0x45, 0xb0, 0xbb, 0xd3, 0x4d, 0x7f, 0x32, 0x0b, 0x9b, 0x76, 0x48, 0xe5, 0xcc, 0xa0,
-	0xc8, 0xd8, 0x95, 0x63, 0xcc, 0x15, 0x0d, 0x1f, 0xed, 0xe6, 0x4a, 0x3c, 0x75, 0x0b, 0x6f, 0x2a,
-	0xe7, 0xef, 0x3f, 0x2a, 0xa2, 0x07, 0x8f, 0x8a, 0xe8, 0xcf, 0x47, 0x45, 0xf4, 0xf1, 0x7a, 0x71,
-	0xe8, 0xc1, 0x7a, 0x71, 0xe8, 0xf7, 0xf5, 0xe2, 0xd0, 0xdb, 0x47, 0x93, 0x1f, 0x4c, 0xc4, 0xb3,
-	0xca, 0x36, 0xd5, 0x1d, 0xd3, 0xa2, 0xae, 0x6d, 0xd5, 0xf4, 0xdb, 0x2d, 0xd5, 0xec, 0xd3, 0xa9,
-	0x9a, 0x67, 0xff, 0x09, 0x2e, 0xfe, 0x13, 0x00, 0x00, 0xff, 0xff, 0x6a, 0xbd, 0x35, 0xd0, 0x04,
-	0x15, 0x00, 0x00,
+	// 1483 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x4f, 0x6c, 0x13, 0xc7,
+	0x1a, 0xf7, 0xd8, 0xb1, 0x43, 0xbe, 0x3c, 0xc2, 0x63, 0x5e, 0x04, 0x66, 0xe1, 0x39, 0x61, 0xf9,
+	0xe7, 0x04, 0xec, 0x7d, 0x49, 0xe0, 0x41, 0x81, 0x56, 0xc4, 0x14, 0x12, 0x54, 0x68, 0xc9, 0x8a,
+	0x52, 0xa9, 0x3d, 0xd0, 0xf1, 0x7a, 0x30, 0x4b, 0xd6, 0x3b, 0x66, 0x77, 0x1d, 0x70, 0x11, 0x97,
+	0x56, 0xea, 0xb1, 0xaa, 0x54, 0x55, 0xad, 0xda, 0x73, 0x5b, 0x89, 0x4b, 0x4f, 0x55, 0x8f, 0xfd,
+	0x73, 0x42, 0xea, 0x05, 0xa9, 0x97, 0x9e, 0x68, 0x05, 0x95, 0xb8, 0x73, 0xe8, 0xb9, 0xda, 0x99,
+	0xd9, 0xf5, 0xae, 0x13, 0xff, 0x25, 0xad, 0x7a, 0xf2, 0xce, 0xcc, 0xf7, 0xe7, 0xf7, 0xfb, 0xbe,
+	0x99, 0x6f, 0xbe, 0x31, 0x1c, 0x5c, 0x6b, 0x58, 0x06, 0xb1, 0xcd, 0x77, 0xa8, 0xe6, 0xd0, 0xaa,
+	0xe9, 0x7a, 0x4e, 0x53, 0x5b, 0x9b, 0x2b, 0x53, 0x8f, 0xcc, 0x69, 0xb7, 0x1a, 0xd4, 0x69, 0x16,
+	0xeb, 0x0e, 0xf3, 0x18, 0x56, 0x42, 0xb9, 0x62, 0x20, 0x57, 0x94, 0x72, 0xca, 0x4c, 0x17, 0x1b,
+	0xa1, 0x30, 0x37, 0xa3, 0xec, 0xa9, 0x32, 0x56, 0xb5, 0xa8, 0x46, 0xea, 0xa6, 0x46, 0x6c, 0x9b,
+	0x79, 0xc4, 0x33, 0x99, 0xed, 0xca, 0xd5, 0x59, 0x83, 0xb9, 0x35, 0xe6, 0x6a, 0x65, 0xe2, 0x52,
+	0xe1, 0x3d, 0xb4, 0x53, 0x27, 0x55, 0xd3, 0xe6, 0xc2, 0x52, 0x76, 0xb2, 0xca, 0xaa, 0x8c, 0x7f,
+	0x6a, 0xfe, 0x97, 0x9c, 0xcd, 0x45, 0x2d, 0x04, 0xba, 0x06, 0x33, 0xa5, 0x96, 0x3a, 0x09, 0x78,
+	0xc5, 0xb7, 0x7b, 0x99, 0x38, 0xa4, 0xe6, 0xea, 0xf4, 0x56, 0x83, 0xba, 0x9e, 0xba, 0x02, 0xff,
+	0x89, 0xcd, 0xba, 0x75, 0x66, 0xbb, 0x14, 0x9f, 0x84, 0x4c, 0x9d, 0xcf, 0x64, 0xd1, 0x34, 0xca,
+	0x8f, 0xcf, 0xab, 0xc5, 0xce, 0x41, 0x28, 0x4a, 0x5d, 0xa9, 0xa1, 0xfe, 0x31, 0x0a, 0x3b, 0xb9,
+	0xcd, 0x8b, 0xa6, 0xeb, 0xe9, 0xd4, 0x60, 0x4e, 0x25, 0x70, 0x87, 0x09, 0x00, 0xf1, 0x3c, 0xc7,
+	0x2c, 0x37, 0x3c, 0xea, 0xdb, 0x4e, 0xe5, 0xc7, 0xe7, 0x17, 0xbb, 0xd9, 0xee, 0x60, 0xa8, 0xf8,
+	0x0a, 0x6d, 0x5e, 0x25, 0x56, 0x83, 0x5e, 0xb0, 0xeb, 0x0d, 0x4f, 0x8f, 0x18, 0xc5, 0xff, 0x86,
+	0x14, 0xb1, 0xac, 0x6c, 0x72, 0x1a, 0xe5, 0xb7, 0xe8, 0xfe, 0x27, 0x3e, 0x0f, 0xd0, 0x8a, 0x61,
+	0x36, 0xc5, 0x09, 0x1d, 0x2c, 0x8a, 0x70, 0x15, 0xfd, 0x70, 0x15, 0x45, 0xba, 0x5b, 0x7c, 0xaa,
+	0x54, 0xfa, 0xd1, 0x23, 0x9a, 0xca, 0x6e, 0x18, 0xbb, 0x68, 0xda, 0xab, 0xdc, 0x25, 0x9e, 0x80,
+	0xa4, 0x59, 0xe1, 0xd1, 0x19, 0xd3, 0x93, 0x66, 0x45, 0xa9, 0x00, 0x2c, 0x3a, 0x0e, 0x69, 0x8a,
+	0xd5, 0xab, 0x90, 0x59, 0xf3, 0xe1, 0x05, 0x1c, 0x5f, 0x1a, 0x86, 0x63, 0x84, 0xa0, 0xb4, 0xa6,
+	0x3c, 0x45, 0xb0, 0xe5, 0x12, 0xa9, 0x0b, 0x27, 0x6f, 0xb7, 0x39, 0x59, 0x1e, 0xc6, 0x49, 0x60,
+	0x4d, 0x78, 0x73, 0xcf, 0xd9, 0x9e, 0xd3, 0x0c, 0xdd, 0x35, 0x61, 0x3c, 0x32, 0xed, 0x87, 0x76,
+	0x95, 0x36, 0x25, 0x69, 0xff, 0x13, 0x5f, 0x81, 0x34, 0x17, 0xe5, 0xe1, 0x7e, 0x7e, 0x9a, 0xc2,
+	0xd8, 0xc9, 0xe4, 0x09, 0xa4, 0x7c, 0x9b, 0x04, 0x68, 0xad, 0xe0, 0x2c, 0x64, 0x5c, 0xcf, 0x31,
+	0xed, 0xaa, 0xf0, 0xbe, 0x9c, 0xd0, 0xe5, 0x18, 0x63, 0x48, 0x99, 0xb6, 0xc7, 0x01, 0xa4, 0x96,
+	0x13, 0xba, 0x3f, 0xc0, 0x3b, 0x20, 0x7d, 0xdd, 0x62, 0xc4, 0xe3, 0xc9, 0x46, 0xcb, 0x09, 0x5d,
+	0x0c, 0xb1, 0x02, 0xa3, 0x65, 0xc6, 0x2c, 0x4a, 0xec, 0xec, 0x88, 0xbf, 0x3f, 0x96, 0x13, 0x7a,
+	0x30, 0x81, 0x27, 0x61, 0xc4, 0x32, 0xed, 0xd5, 0x6c, 0x5a, 0xda, 0xe7, 0x23, 0x7c, 0x15, 0xd2,
+	0xc4, 0x4f, 0x6b, 0x36, 0x33, 0x3c, 0xc1, 0xd6, 0xbe, 0xf0, 0x91, 0x70, 0x73, 0xf8, 0x32, 0xa4,
+	0x6a, 0xa4, 0x9e, 0x1d, 0xe5, 0x56, 0x4f, 0x3f, 0x4f, 0xe2, 0x7c, 0xce, 0x35, 0x52, 0x2f, 0x8d,
+	0xca, 0x54, 0x28, 0xb7, 0x61, 0x6b, 0xec, 0x74, 0xfc, 0x5d, 0x69, 0x53, 0xbf, 0x42, 0x90, 0x5d,
+	0x2f, 0x2d, 0x2b, 0x4a, 0x09, 0x46, 0x1d, 0x31, 0x25, 0x77, 0x6b, 0xd7, 0x92, 0x22, 0xb4, 0x4b,
+	0x23, 0x0f, 0x1e, 0x4d, 0x25, 0xf4, 0x40, 0x11, 0x2f, 0xc5, 0x0e, 0xb2, 0xc0, 0x7e, 0xa8, 0xe7,
+	0x41, 0x16, 0x00, 0xa2, 0x27, 0x59, 0xcd, 0xc3, 0x0e, 0x0e, 0x54, 0xba, 0x69, 0x5e, 0x78, 0x39,
+	0x28, 0x50, 0x6d, 0xc7, 0x5a, 0x7d, 0x4b, 0xd6, 0xb2, 0xa8, 0xa4, 0x64, 0x74, 0x06, 0x32, 0x02,
+	0x58, 0x3f, 0x35, 0x32, 0x46, 0x48, 0xea, 0xa9, 0x1e, 0x28, 0x31, 0xe3, 0x25, 0x66, 0x57, 0x3a,
+	0x42, 0x69, 0x2b, 0x63, 0xc9, 0x61, 0xcb, 0x98, 0x7a, 0x1f, 0xc1, 0xee, 0x0d, 0xdd, 0xfe, 0x13,
+	0x33, 0xb5, 0x17, 0xa6, 0x96, 0xa8, 0xa7, 0x4b, 0xaf, 0x97, 0x58, 0xa5, 0x61, 0xd1, 0x12, 0xb1,
+	0x88, 0x6d, 0x04, 0xdc, 0xd4, 0x9b, 0x30, 0xdd, 0x59, 0x44, 0x72, 0x3a, 0x0f, 0x5b, 0xca, 0x62,
+	0x2a, 0x20, 0x35, 0xdb, 0x8d, 0xd4, 0xa2, 0x61, 0xb0, 0x86, 0xed, 0x05, 0x56, 0x42, 0x5d, 0xf5,
+	0x29, 0x82, 0x89, 0xf8, 0x22, 0xbe, 0x08, 0xff, 0x22, 0x62, 0xe6, 0x9a, 0x4d, 0x6a, 0x54, 0x24,
+	0xac, 0x34, 0xf3, 0xec, 0xd1, 0xd4, 0x81, 0x9b, 0x2e, 0xb3, 0x4f, 0xaa, 0x72, 0xf5, 0x55, 0x52,
+	0xa3, 0xea, 0x74, 0x93, 0xd4, 0xac, 0xf8, 0x94, 0x3e, 0x1e, 0x19, 0xe1, 0xf7, 0x11, 0x8c, 0x4a,
+	0x6f, 0xd9, 0x14, 0x07, 0xba, 0x2b, 0x16, 0xb6, 0x00, 0xe1, 0x59, 0x66, 0xda, 0xa5, 0x15, 0x3f,
+	0xe8, 0xcf, 0x1e, 0x4d, 0xfd, 0x57, 0x38, 0x92, 0x7a, 0x81, 0x93, 0x60, 0x78, 0xff, 0xd7, 0xa9,
+	0x7c, 0xd5, 0xf4, 0x6e, 0x34, 0xca, 0x45, 0x83, 0xd5, 0x34, 0xd9, 0x26, 0x88, 0x9f, 0x82, 0x5b,
+	0x59, 0xd5, 0xbc, 0x66, 0x9d, 0xba, 0xdc, 0xa2, 0xab, 0x07, 0xce, 0x55, 0x2a, 0x37, 0x89, 0x7f,
+	0x96, 0x7d, 0x64, 0x6d, 0x17, 0x79, 0x7c, 0x33, 0xa2, 0xe7, 0xd9, 0x8c, 0x7b, 0x36, 0xf6, 0x23,
+	0x33, 0xb7, 0x08, 0x69, 0x3f, 0xac, 0x41, 0xda, 0x0e, 0x74, 0x4b, 0x9b, 0xaf, 0xcf, 0x6f, 0x2a,
+	0xb9, 0x1d, 0x85, 0xe6, 0xe6, 0x6d, 0xc6, 0x43, 0xb0, 0x9d, 0x63, 0x7d, 0xe3, 0x06, 0x33, 0xc3,
+	0x48, 0x60, 0x18, 0x69, 0xe5, 0x5d, 0xe7, 0xdf, 0xea, 0x67, 0x48, 0x36, 0x5b, 0x52, 0x52, 0x72,
+	0x79, 0x0f, 0xc1, 0x84, 0xbf, 0x7e, 0x8d, 0x34, 0xbc, 0x1b, 0xcc, 0x31, 0xbd, 0xa6, 0x8c, 0xdc,
+	0x4c, 0x2f, 0x56, 0x8b, 0x81, 0x42, 0x69, 0x4e, 0xe6, 0x7c, 0x46, 0xe4, 0xdc, 0x8e, 0x2e, 0x06,
+	0x99, 0x8f, 0x4f, 0xea, 0x5b, 0xe3, 0x63, 0x15, 0x26, 0x44, 0xc4, 0x19, 0x5b, 0x6d, 0xd4, 0xcf,
+	0x3a, 0xb6, 0x7f, 0x41, 0x18, 0x8e, 0x1d, 0x5c, 0x10, 0x86, 0x63, 0xab, 0x57, 0x64, 0x81, 0x0c,
+	0x65, 0x22, 0x9d, 0x61, 0x8b, 0xae, 0x9f, 0xf2, 0x1e, 0xc0, 0x45, 0x3a, 0x65, 0x58, 0xf6, 0xc1,
+	0x36, 0x59, 0x78, 0x5c, 0x66, 0xad, 0xd1, 0x8d, 0x5d, 0xbf, 0x1e, 0x56, 0xdc, 0x40, 0x28, 0xda,
+	0x95, 0x0e, 0x5a, 0x71, 0xc3, 0x5a, 0x6b, 0xc0, 0x2e, 0x6e, 0x96, 0x97, 0x0a, 0x7f, 0xe6, 0xdc,
+	0x9d, 0xba, 0xe9, 0x34, 0x57, 0x1a, 0xb4, 0x41, 0x37, 0x6d, 0x37, 0x7f, 0x83, 0x60, 0x6f, 0x47,
+	0x2f, 0x21, 0x8d, 0xa5, 0xf6, 0x02, 0x5b, 0xe8, 0xc6, 0x23, 0x66, 0x81, 0x53, 0xda, 0xfc, 0x2a,
+	0xfb, 0x02, 0x6c, 0x5f, 0xe7, 0x66, 0xdd, 0xfd, 0x33, 0xd9, 0x6a, 0x1a, 0x52, 0xf9, 0xb1, 0xe0,
+	0xd2, 0xbf, 0x2e, 0xcf, 0xef, 0x12, 0xf5, 0xc2, 0x2d, 0xf6, 0x57, 0x84, 0xf6, 0x7b, 0x04, 0xfb,
+	0xbb, 0x39, 0x0a, 0xa3, 0xfb, 0x1a, 0x8c, 0x07, 0xc7, 0xcb, 0xa4, 0x43, 0x46, 0x38, 0x6a, 0x61,
+	0xd3, 0xa2, 0x3c, 0xff, 0xc1, 0x36, 0x48, 0x73, 0x0a, 0xf8, 0x63, 0x04, 0x19, 0xf1, 0x6a, 0xc2,
+	0xc5, 0x9e, 0xbd, 0x57, 0xec, 0xc1, 0xa6, 0x68, 0x7d, 0xcb, 0x0b, 0x04, 0xea, 0xec, 0xbb, 0x3f,
+	0xff, 0xfe, 0x51, 0x72, 0x3f, 0x56, 0xb5, 0x2e, 0x6f, 0x55, 0xf1, 0x74, 0xc3, 0x5f, 0x20, 0x18,
+	0x8f, 0x34, 0x6f, 0x78, 0x61, 0x88, 0xc6, 0x50, 0x39, 0x3a, 0x98, 0x92, 0x84, 0x79, 0x98, 0xc3,
+	0x3c, 0x80, 0xf7, 0x69, 0x5d, 0x9f, 0xd4, 0x02, 0xd7, 0x97, 0x08, 0xc6, 0xc2, 0x23, 0x86, 0xe7,
+	0x7b, 0x3a, 0x5c, 0xd7, 0xe7, 0x29, 0x0b, 0x03, 0xe9, 0x48, 0x8c, 0xff, 0xe3, 0x18, 0x67, 0x71,
+	0xbe, 0x0f, 0x8c, 0xda, 0x5d, 0xb3, 0x72, 0x0f, 0xff, 0x80, 0x60, 0x7b, 0x08, 0x34, 0xe8, 0xb4,
+	0xf0, 0xff, 0xfb, 0x76, 0x1e, 0xeb, 0x08, 0x95, 0xe3, 0x03, 0xeb, 0x49, 0xe0, 0xa7, 0x38, 0xf0,
+	0x63, 0x78, 0xa1, 0x0f, 0xe0, 0x85, 0x72, 0xb3, 0x50, 0x66, 0x76, 0xa5, 0x60, 0x56, 0x04, 0x87,
+	0x1f, 0x11, 0x64, 0x3b, 0x35, 0x58, 0xf8, 0x54, 0x37, 0x48, 0x3d, 0x3a, 0x37, 0xe5, 0xf4, 0x70,
+	0xca, 0x83, 0xec, 0x18, 0xd9, 0xce, 0xe0, 0xaf, 0x11, 0x6c, 0x6b, 0x6b, 0x31, 0xf0, 0xf1, 0xbe,
+	0x36, 0xea, 0xfa, 0xe6, 0x47, 0x39, 0x31, 0xb8, 0xa2, 0xc4, 0x3c, 0xc3, 0x31, 0xef, 0xc3, 0x7b,
+	0xbb, 0x61, 0x16, 0x5d, 0xcb, 0xa7, 0x08, 0xd2, 0xbc, 0x7d, 0xc0, 0x85, 0x9e, 0xee, 0xa2, 0x0d,
+	0x89, 0x52, 0xec, 0x57, 0x7c, 0x90, 0x5d, 0x7d, 0xdb, 0x57, 0xd1, 0xee, 0xfa, 0xd0, 0xee, 0xe1,
+	0x4f, 0x10, 0x8c, 0xb5, 0xba, 0x87, 0xd9, 0xde, 0xd1, 0x08, 0x64, 0x95, 0xf9, 0xfe, 0x65, 0x07,
+	0x2b, 0x60, 0x16, 0x57, 0xc3, 0x9f, 0x23, 0x80, 0x48, 0x77, 0x71, 0xb8, 0x8f, 0x03, 0x13, 0x08,
+	0xf7, 0x55, 0x12, 0xda, 0x5b, 0x92, 0x7e, 0xcb, 0x16, 0xd7, 0xc3, 0xdf, 0x21, 0x98, 0xdc, 0xb0,
+	0xff, 0x38, 0xd6, 0xd3, 0xf5, 0x46, 0x6a, 0xca, 0x8b, 0x43, 0xa9, 0x85, 0xd8, 0xe7, 0x38, 0xf6,
+	0xc3, 0x78, 0xa6, 0x77, 0x55, 0x28, 0x50, 0xae, 0x8f, 0x7f, 0x42, 0xb0, 0xb3, 0xd3, 0x4d, 0x7f,
+	0xa2, 0x1f, 0x34, 0x1b, 0x69, 0x2a, 0x67, 0x86, 0xd5, 0x0c, 0xa9, 0x1c, 0xe5, 0x54, 0x8a, 0xf8,
+	0x48, 0x37, 0x2a, 0x61, 0xd7, 0x2d, 0xd9, 0x94, 0xce, 0x3f, 0x78, 0x9c, 0x43, 0x0f, 0x1f, 0xe7,
+	0xd0, 0x6f, 0x8f, 0x73, 0xe8, 0xc3, 0x27, 0xb9, 0xc4, 0xc3, 0x27, 0xb9, 0xc4, 0x2f, 0x4f, 0x72,
+	0x89, 0x37, 0x8f, 0x44, 0x1f, 0x4c, 0xd4, 0x31, 0x0a, 0x26, 0xd3, 0x2c, 0x62, 0x30, 0xdb, 0x34,
+	0x2a, 0xda, 0x9d, 0x96, 0x69, 0xfe, 0x74, 0x2a, 0x67, 0xf8, 0x3f, 0xac, 0x0b, 0x7f, 0x06, 0x00,
+	0x00, 0xff, 0xff, 0x66, 0xb8, 0xf3, 0x95, 0x52, 0x16, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2083,7 +2243,7 @@ func (m *QueryListRecordsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryListRecordsRequest_ReferenceInput) Marshal() (dAtA []byte, err error) {
+func (m *QueryListRecordsRequest_LinkInput) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -2093,12 +2253,12 @@ func (m *QueryListRecordsRequest_ReferenceInput) Marshal() (dAtA []byte, err err
 	return dAtA[:n], nil
 }
 
-func (m *QueryListRecordsRequest_ReferenceInput) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryListRecordsRequest_LinkInput) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryListRecordsRequest_ReferenceInput) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryListRecordsRequest_LinkInput) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2109,6 +2269,92 @@ func (m *QueryListRecordsRequest_ReferenceInput) MarshalToSizedBuffer(dAtA []byt
 		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryListRecordsRequest_ArrayInput) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryListRecordsRequest_ArrayInput) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ArrayInput) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Values) > 0 {
+		for iNdEx := len(m.Values) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Values[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryListRecordsRequest_MapInput) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryListRecordsRequest_MapInput) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_MapInput) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Values) > 0 {
+		for k := range m.Values {
+			v := m.Values[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintQuery(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintQuery(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintQuery(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -2133,23 +2379,98 @@ func (m *QueryListRecordsRequest_ValueInput) MarshalToSizedBuffer(dAtA []byte) (
 	_ = i
 	var l int
 	_ = l
-	if len(m.Values) > 0 {
-		for iNdEx := len(m.Values) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Values[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
+	if m.Value != nil {
+		{
+			size := m.Value.Size()
+			i -= size
+			if _, err := m.Value.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
 			}
-			i--
-			dAtA[i] = 0x3a
 		}
 	}
-	if m.Reference != nil {
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryListRecordsRequest_ValueInput_String_) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_String_) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i -= len(m.String_)
+	copy(dAtA[i:], m.String_)
+	i = encodeVarintQuery(dAtA, i, uint64(len(m.String_)))
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+func (m *QueryListRecordsRequest_ValueInput_Int) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_Int) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i = encodeVarintQuery(dAtA, i, uint64(m.Int))
+	i--
+	dAtA[i] = 0x10
+	return len(dAtA) - i, nil
+}
+func (m *QueryListRecordsRequest_ValueInput_Float) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_Float) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i -= 8
+	encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Float))))
+	i--
+	dAtA[i] = 0x19
+	return len(dAtA) - i, nil
+}
+func (m *QueryListRecordsRequest_ValueInput_Boolean) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_Boolean) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i--
+	if m.Boolean {
+		dAtA[i] = 1
+	} else {
+		dAtA[i] = 0
+	}
+	i--
+	dAtA[i] = 0x20
+	return len(dAtA) - i, nil
+}
+func (m *QueryListRecordsRequest_ValueInput_Link) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_Link) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i -= len(m.Link)
+	copy(dAtA[i:], m.Link)
+	i = encodeVarintQuery(dAtA, i, uint64(len(m.Link)))
+	i--
+	dAtA[i] = 0x2a
+	return len(dAtA) - i, nil
+}
+func (m *QueryListRecordsRequest_ValueInput_Array) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_Array) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Array != nil {
 		{
-			size, err := m.Reference.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Array.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -2159,44 +2480,29 @@ func (m *QueryListRecordsRequest_ValueInput) MarshalToSizedBuffer(dAtA []byte) (
 		i--
 		dAtA[i] = 0x32
 	}
-	if m.Boolean {
-		i--
-		if m.Boolean {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
+	return len(dAtA) - i, nil
+}
+func (m *QueryListRecordsRequest_ValueInput_Map) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryListRecordsRequest_ValueInput_Map) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Map != nil {
+		{
+			size, err := m.Map.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x28
-	}
-	if m.Float != 0 {
-		i -= 8
-		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Float))))
-		i--
-		dAtA[i] = 0x21
-	}
-	if m.Int != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.Int))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.String_) > 0 {
-		i -= len(m.String_)
-		copy(dAtA[i:], m.String_)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.String_)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Type) > 0 {
-		i -= len(m.Type)
-		copy(dAtA[i:], m.Type)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Type)))
-		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x3a
 	}
 	return len(dAtA) - i, nil
 }
-
 func (m *QueryListRecordsRequest_KeyValueInput) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -3085,7 +3391,7 @@ func (m *QueryListRecordsRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryListRecordsRequest_ReferenceInput) Size() (n int) {
+func (m *QueryListRecordsRequest_LinkInput) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3098,33 +3404,12 @@ func (m *QueryListRecordsRequest_ReferenceInput) Size() (n int) {
 	return n
 }
 
-func (m *QueryListRecordsRequest_ValueInput) Size() (n int) {
+func (m *QueryListRecordsRequest_ArrayInput) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Type)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	l = len(m.String_)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	if m.Int != 0 {
-		n += 1 + sovQuery(uint64(m.Int))
-	}
-	if m.Float != 0 {
-		n += 9
-	}
-	if m.Boolean {
-		n += 2
-	}
-	if m.Reference != nil {
-		l = m.Reference.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
 	if len(m.Values) > 0 {
 		for _, e := range m.Values {
 			l = e.Size()
@@ -3134,6 +3419,111 @@ func (m *QueryListRecordsRequest_ValueInput) Size() (n int) {
 	return n
 }
 
+func (m *QueryListRecordsRequest_MapInput) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Values) > 0 {
+		for k, v := range m.Values {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovQuery(uint64(l))
+			}
+			mapEntrySize := 1 + len(k) + sovQuery(uint64(len(k))) + l
+			n += mapEntrySize + 1 + sovQuery(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func (m *QueryListRecordsRequest_ValueInput) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Value != nil {
+		n += m.Value.Size()
+	}
+	return n
+}
+
+func (m *QueryListRecordsRequest_ValueInput_String_) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.String_)
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+func (m *QueryListRecordsRequest_ValueInput_Int) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	n += 1 + sovQuery(uint64(m.Int))
+	return n
+}
+func (m *QueryListRecordsRequest_ValueInput_Float) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	n += 9
+	return n
+}
+func (m *QueryListRecordsRequest_ValueInput_Boolean) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	n += 2
+	return n
+}
+func (m *QueryListRecordsRequest_ValueInput_Link) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Link)
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+func (m *QueryListRecordsRequest_ValueInput_Array) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Array != nil {
+		l = m.Array.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+func (m *QueryListRecordsRequest_ValueInput_Map) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Map != nil {
+		l = m.Map.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
 func (m *QueryListRecordsRequest_KeyValueInput) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3746,7 +4136,7 @@ func (m *QueryListRecordsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListRecordsRequest_ReferenceInput) Unmarshal(dAtA []byte) error {
+func (m *QueryListRecordsRequest_LinkInput) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3769,10 +4159,10 @@ func (m *QueryListRecordsRequest_ReferenceInput) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ReferenceInput: wiretype end group for non-group")
+			return fmt.Errorf("proto: LinkInput: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ReferenceInput: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LinkInput: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3828,7 +4218,7 @@ func (m *QueryListRecordsRequest_ReferenceInput) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryListRecordsRequest_ValueInput) Unmarshal(dAtA []byte) error {
+func (m *QueryListRecordsRequest_ArrayInput) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3851,163 +4241,13 @@ func (m *QueryListRecordsRequest_ValueInput) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ValueInput: wiretype end group for non-group")
+			return fmt.Errorf("proto: ArrayInput: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ValueInput: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ArrayInput: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Type = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field String_", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.String_ = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Int", wireType)
-			}
-			m.Int = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Int |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 4:
-			if wireType != 1 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Float", wireType)
-			}
-			var v uint64
-			if (iNdEx + 8) > l {
-				return io.ErrUnexpectedEOF
-			}
-			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
-			iNdEx += 8
-			m.Float = float64(math.Float64frombits(v))
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Boolean", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Boolean = bool(v != 0)
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Reference", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Reference == nil {
-				m.Reference = &QueryListRecordsRequest_ReferenceInput{}
-			}
-			if err := m.Reference.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Values", wireType)
 			}
@@ -4040,6 +4280,421 @@ func (m *QueryListRecordsRequest_ValueInput) Unmarshal(dAtA []byte) error {
 			if err := m.Values[len(m.Values)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryListRecordsRequest_MapInput) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MapInput: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MapInput: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Values", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Values == nil {
+				m.Values = make(map[string]*QueryListRecordsRequest_ValueInput)
+			}
+			var mapkey string
+			var mapvalue *QueryListRecordsRequest_ValueInput
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthQuery
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthQuery
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthQuery
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthQuery
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &QueryListRecordsRequest_ValueInput{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipQuery(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthQuery
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Values[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryListRecordsRequest_ValueInput) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ValueInput: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ValueInput: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field String_", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Value = &QueryListRecordsRequest_ValueInput_String_{string(dAtA[iNdEx:postIndex])}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Int", wireType)
+			}
+			var v int64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Value = &QueryListRecordsRequest_ValueInput_Int{v}
+		case 3:
+			if wireType != 1 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Float", wireType)
+			}
+			var v uint64
+			if (iNdEx + 8) > l {
+				return io.ErrUnexpectedEOF
+			}
+			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
+			iNdEx += 8
+			m.Value = &QueryListRecordsRequest_ValueInput_Float{float64(math.Float64frombits(v))}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Boolean", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.Value = &QueryListRecordsRequest_ValueInput_Boolean{b}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Link", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Value = &QueryListRecordsRequest_ValueInput_Link{string(dAtA[iNdEx:postIndex])}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Array", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &QueryListRecordsRequest_ArrayInput{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Value = &QueryListRecordsRequest_ValueInput_Array{v}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Map", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &QueryListRecordsRequest_MapInput{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Value = &QueryListRecordsRequest_ValueInput_Map{v}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

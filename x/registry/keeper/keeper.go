@@ -179,22 +179,26 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 }
 
 func GetAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
-	if input.Type == "int" {
-		return input.GetInt()
+	switch value := input.GetValue().(type) {
+	case *types.QueryListRecordsRequest_ValueInput_String_:
+		return value.String_
+	case *types.QueryListRecordsRequest_ValueInput_Int:
+		return value.Int
+	case *types.QueryListRecordsRequest_ValueInput_Float:
+		return value.Float
+	case *types.QueryListRecordsRequest_ValueInput_Boolean:
+		return value.Boolean
+	case *types.QueryListRecordsRequest_ValueInput_Link:
+		return value.Link
+	case *types.QueryListRecordsRequest_ValueInput_Array:
+		return value.Array
+	case *types.QueryListRecordsRequest_ValueInput_Map:
+		return value.Map
+	case nil:
+		return nil
+	default:
+		return fmt.Errorf("Value has unepxpected type %T", value)
 	}
-	if input.Type == "float" {
-		return input.GetFloat()
-	}
-	if input.Type == "string" {
-		return input.GetString_()
-	}
-	if input.Type == "boolean" {
-		return input.GetBoolean()
-	}
-	if input.Type == "reference" {
-		return input.GetReference().GetId()
-	}
-	return nil
 }
 
 func getIntersection(a []string, b []string) []string {

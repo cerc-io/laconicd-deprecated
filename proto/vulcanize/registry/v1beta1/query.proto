@@ -67,17 +67,25 @@ message QueryParamsResponse {
 
 // QueryListRecordsRequest is request type for registry records list
 message QueryListRecordsRequest {
-  message ReferenceInput {
+  message LinkInput {
     string id = 1;
   }
+  message ArrayInput {
+    repeated ValueInput values = 1;
+  }
+  message MapInput {
+    map<string, ValueInput> values = 1;
+  }
   message ValueInput {
-    string type                   = 1;
-    string string                 = 2;
-    int64 int                     = 3;
-    double float                  = 4;
-    bool                boolean   = 5;
-    ReferenceInput      reference = 6;
-    repeated ValueInput values    = 7;
+    oneof value {
+      string string    = 1;
+      int64 int        = 2;
+      double float     = 3;
+      bool boolean     = 4;
+      string link      = 5;
+      ArrayInput array = 6;
+      MapInput map     = 7;
+    }
   }
   message KeyValueInput {
     string     key   = 1;
