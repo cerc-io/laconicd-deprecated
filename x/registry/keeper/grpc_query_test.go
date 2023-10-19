@@ -68,8 +68,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 					{
 						Key: "type",
 						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
-							Type:    "string",
-							String_: "WebsiteRegistrationRecord",
+							Value: &registrytypes.QueryListRecordsRequest_ValueInput_String_{"WebsiteRegistrationRecord"},
 						},
 					},
 				},
@@ -86,8 +85,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 					{
 						Key: "x500state_name",
 						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
-							Type:    "string",
-							String_: "california",
+							Value: &registrytypes.QueryListRecordsRequest_ValueInput_String_{"california"},
 						},
 					},
 				},

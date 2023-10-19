@@ -256,60 +256,43 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 	return &gqlAuction, nil
 }
 
-func parseRequestValue(value *ValueInput) *registrytypes.QueryListRecordsRequest_ValueInput {
-	if value == nil {
+func toRpcValue(value *ValueInput) *registrytypes.QueryListRecordsRequest_ValueInput {
+	var rpcval registrytypes.QueryListRecordsRequest_ValueInput
+
+	switch {
+	case value == nil:
 		return nil
-	}
-	var val registrytypes.QueryListRecordsRequest_ValueInput
-
-	if value.String != nil {
-		val.String_ = *value.String
-		val.Type = "string"
-	}
-
-	if value.Int != nil {
-		val.Int = int64(*value.Int)
-		val.Type = "int"
-	}
-
-	if value.Float != nil {
-		val.Float = *value.Float
-		val.Type = "float"
-	}
-
-	if value.Boolean != nil {
-		val.Boolean = *value.Boolean
-		val.Type = "boolean"
-	}
-
-	if value.Link != nil {
-		reference := &registrytypes.QueryListRecordsRequest_ReferenceInput{
-			Id: value.Link.String(),
+	case value.Int != nil:
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_Int{int64(*value.Int)}
+	case value.Float != nil:
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_Float{*value.Float}
+	case value.String != nil:
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_String_{*value.String}
+	case value.Boolean != nil:
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_Boolean{*value.Boolean}
+	case value.Link != nil:
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_Link{value.Link.String()}
+	case value.Array != nil:
+		var contents registrytypes.QueryListRecordsRequest_ArrayInput
+		for _, val := range value.Array {
+			contents.Values = append(contents.Values, toRpcValue(val))
 		}
-
-		val.Reference = reference
-		val.Type = "reference"
-	}
-
-	// handle arrays
-	if value.Array != nil {
-		values := []*registrytypes.QueryListRecordsRequest_ValueInput{}
-		for _, v := range value.Array {
-			val := parseRequestValue(v)
-			values = append(values, val)
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_Array{&contents}
+	case value.Map != nil:
+		var contents registrytypes.QueryListRecordsRequest_MapInput
+		for _, kv := range value.Map {
+			contents.Values[kv.Key] = toRpcValue(kv.Value)
 		}
-		val.Values = values
-		val.Type = "array"
+		rpcval.Value = &registrytypes.QueryListRecordsRequest_ValueInput_Map{&contents}
 	}
-
-	return &val
+	return &rpcval
 }
 
-func parseRequestAttributes(attrs []*KeyValueInput) []*registrytypes.QueryListRecordsRequest_KeyValueInput {
+func toRpcAttributes(attrs []*KeyValueInput) []*registrytypes.QueryListRecordsRequest_KeyValueInput {
 	kvPairs := []*registrytypes.QueryListRecordsRequest_KeyValueInput{}
 
 	for _, value := range attrs {
-		parsedValue := parseRequestValue(value.Value)
+		parsedValue := toRpcValue(value.Value)
 		kvPair := &registrytypes.QueryListRecordsRequest_KeyValueInput{
 			Key:   value.Key,
 			Value: parsedValue,

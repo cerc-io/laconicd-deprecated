@@ -21,6 +21,9 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 var (
@@ -336,6 +339,14 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 }
 
 func (k Keeper) processAttributes(ctx sdk.Context, attrs map[string]any, id string, prefix string) error {
+	np := basicnode.Prototype.Any                       // Pick a stle for the in-memory data.
+	nb := np.NewBuilder()                               // Create a builder.
+	err := dagjson.Decode(nb, bytes.NewReader(content)) // Hand the builder to decoding -- decoding will fill it in!
+	if err != nil {
+		return "", err
+	}
+	n := nb.Build() // Call 'Build' to get the resulting Node.  (It's immutable!)
+
 	for key, value := range attrs {
 		if subRecord, ok := value.(map[string]any); ok {
 			k.processAttributes(ctx, subRecord, id, key)
