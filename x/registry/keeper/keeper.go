@@ -8,10 +8,6 @@ import (
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
-	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
-	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
-	"github.com/cerc-io/laconicd/x/registry/helpers"
-	"github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -20,13 +16,18 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/tendermint/tendermint/libs/log"
-
+	"github.com/gibson042/canonicaljson-go"
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/tendermint/tendermint/libs/log"
+
+	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
+	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
+	"github.com/cerc-io/laconicd/x/registry/helpers"
+	"github.com/cerc-io/laconicd/x/registry/types"
 )
 
 var (
@@ -152,7 +153,7 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
-		suffix, err := EncodeQueryValue(attr.Value)
+		suffix, err := QueryValueToJSON(attr.Value)
 		if err != nil {
 			return nil, err
 		}
@@ -184,8 +185,9 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 	return records, nil
 }
 
-// TODO not recursive, and only should be if we want to support querying with whole sub-objects
-func EncodeQueryValue(input *types.QueryListRecordsRequest_ValueInput) ([]byte, error) {
+// TODO not recursive, and only should be if we want to support querying with whole sub-objects,
+// which seems unnecessary.
+func QueryValueToJSON(input *types.QueryListRecordsRequest_ValueInput) ([]byte, error) {
 	np := basicnode.Prototype.Any
 	nb := np.NewBuilder()
 
@@ -202,20 +204,19 @@ func EncodeQueryValue(input *types.QueryListRecordsRequest_ValueInput) ([]byte, 
 		link := cidlink.Link{Cid: cid.MustParse(value.Link)}
 		nb.AssignLink(link)
 	case *types.QueryListRecordsRequest_ValueInput_Array:
-		// TODO
+		return nil, fmt.Errorf("Recursive query values are not supported")
 	case *types.QueryListRecordsRequest_ValueInput_Map:
-		// TODO
+		return nil, fmt.Errorf("Recursive query values are not supported")
 	default:
-		return nil, fmt.Errorf("Value has unepxpected type %T", value)
+		return nil, fmt.Errorf("Value has unexpected type %T", value)
 	}
 
 	n := nb.Build()
 	var buf bytes.Buffer
 	if err := dagjson.Encode(n, &buf); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("encoding value to JSON failed: %w", err)
 	}
-	value := buf.Bytes()
-	return value, nil
+	return buf.Bytes(), nil
 }
 
 func getIntersection(a []string, b []string) []string {
@@ -288,14 +289,12 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	for _, sig := range payload.Signatures {
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
-			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprint("Error decoding pubKey from bytes: ", err))
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
-			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprint("Signature mismatch: ", sig.PubKey))
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}
@@ -359,17 +358,25 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	k.updateBlockChangeSetForRecord(ctx, record.Id)
 }
 
-func (k Keeper) processAttributes(ctx sdk.Context, attrs []byte, id string, prefix string) error {
+func (k Keeper) processAttributes(ctx sdk.Context, attrs types.AttributeMap, id string, prefix string) error {
 	np := basicnode.Prototype.Map
 	nb := np.NewBuilder()
-	err := dagjson.Decode(nb, bytes.NewReader(attrs))
+	encAttrs, err := canonicaljson.Marshal(attrs)
 	if err != nil {
 		return err
+	}
+	if len(attrs) == 0 {
+		encAttrs = []byte("{}")
+	}
+	err = dagjson.Decode(nb, bytes.NewReader(encAttrs))
+	if err != nil {
+		return fmt.Errorf("failed to decode attributes: %w", err)
 	}
 	n := nb.Build()
 	if n.Kind() != ipld.Kind_Map {
 		return fmt.Errorf("Record attributes must be a map, not %T", n.Kind())
 	}
+
 	return k.processAttributeMap(ctx, n, id, prefix)
 }
 
@@ -404,7 +411,6 @@ func (k Keeper) processAttributeMap(ctx sdk.Context, n ipld.Node, id string, pre
 func GetAttributesIndexKey(key string, suffix []byte) []byte {
 	keyString := fmt.Sprintf("%s%s", key, suffix)
 	return append(PrefixAttributesIndex, []byte(keyString)...)
-	// return append(append(PrefixAttributesIndex, key...), suffix...)
 }
 
 func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string) error {

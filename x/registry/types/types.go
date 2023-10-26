@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 
 	"github.com/cerc-io/laconicd/x/registry/helpers"
-	canonicalJson "github.com/gibson042/canonicaljson-go"
+	"github.com/gibson042/canonicaljson-go"
 )
 
 const (
@@ -17,16 +17,24 @@ const (
 // become specific to content records. schema records will either occupy a new message or have new
 // more general purpose helper types.
 
-type DagJsonBlob []byte
-
-func (b DagJsonBlob) MarshalJSON() ([]byte, error) {
-	return b, nil
-}
+type AttributeMap map[string]interface{}
 
 // PayloadEncodable represents a signed record payload that can be serialized from/to YAML.
 type PayloadEncodable struct {
-	RecordAttributes DagJsonBlob `json:"record"`
-	Signatures       []Signature `json:"signatures"`
+	RecordAttributes AttributeMap `json:"record" yaml:"record"`
+	Signatures       []Signature  `json:"signatures" yaml:"signatures"`
+}
+
+// RecordEncodable represents a WNS record.
+type RecordEncodable struct {
+	ID         string       `json:"id,omitempty"`
+	Names      []string     `json:"names,omitempty"`
+	BondID     string       `json:"bondId,omitempty"`
+	CreateTime string       `json:"createTime,omitempty"`
+	ExpiryTime string       `json:"expiryTime,omitempty"`
+	Deleted    bool         `json:"deleted,omitempty"`
+	Owners     []string     `json:"owners,omitempty"`
+	Attributes AttributeMap `json:"attributes,omitempty"`
 }
 
 // ToPayload converts PayloadEncodable to Payload object.
@@ -38,7 +46,7 @@ func (payloadObj *PayloadEncodable) ToPayload() Payload {
 		Record: &Record{
 			Deleted:    false,
 			Owners:     nil,
-			Attributes: attributes,
+			Attributes: helpers.MustMarshalJSON(attributes),
 		},
 		Signatures: payloadObj.Signatures,
 	}
@@ -49,39 +57,10 @@ func (payloadObj *PayloadEncodable) ToPayload() Payload {
 func (payload Payload) ToReadablePayload() PayloadEncodable {
 	var encodable PayloadEncodable
 
-	encodable.RecordAttributes = payload.Record.Attributes
+	encodable.RecordAttributes = helpers.MustUnmarshalJSON[AttributeMap](payload.Record.Attributes)
 	encodable.Signatures = payload.Signatures
 
 	return encodable
-}
-
-// ToReadableRecord converts Record to a serializable object
-func (r *Record) ToReadableRecord() RecordEncodable {
-	var resourceObj RecordEncodable
-
-	resourceObj.ID = r.Id
-	resourceObj.BondID = r.BondId
-	resourceObj.CreateTime = r.CreateTime
-	resourceObj.ExpiryTime = r.ExpiryTime
-	resourceObj.Deleted = r.Deleted
-	resourceObj.Owners = r.Owners
-	resourceObj.Names = r.Names
-	resourceObj.Attributes = r.Attributes
-
-	return resourceObj
-}
-
-// RecordEncodable represents a WNS record.
-type RecordEncodable struct {
-	ID         string   `json:"id,omitempty"`
-	Names      []string `json:"names,omitempty"`
-	BondID     string   `json:"bondId,omitempty"`
-	CreateTime string   `json:"createTime,omitempty"`
-	ExpiryTime string   `json:"expiryTime,omitempty"`
-	Deleted    bool     `json:"deleted,omitempty"`
-	Owners     []string `json:"owners,omitempty"`
-	// Attributes map[string]interface{} `json:"attributes,omitempty"`
-	Attributes DagJsonBlob `json:"attributes,omitempty"`
 }
 
 // ToRecordObj converts Record to RecordObj.
@@ -95,16 +74,32 @@ func (r *RecordEncodable) ToRecordObj() (Record, error) {
 	resourceObj.ExpiryTime = r.ExpiryTime
 	resourceObj.Deleted = r.Deleted
 	resourceObj.Owners = r.Owners
-	resourceObj.Attributes = r.Attributes
+	resourceObj.Attributes = helpers.MustMarshalJSON(r.Attributes)
 
 	return resourceObj, nil
 }
 
+// ToReadableRecord converts Record to a serializable object
+func (r *Record) ToReadableRecord() RecordEncodable {
+	var resourceObj RecordEncodable
+
+	resourceObj.ID = r.Id
+	resourceObj.BondID = r.BondId
+	resourceObj.CreateTime = r.CreateTime
+	resourceObj.ExpiryTime = r.ExpiryTime
+	resourceObj.Deleted = r.Deleted
+	resourceObj.Owners = r.Owners
+	resourceObj.Names = r.Names
+	resourceObj.Attributes = helpers.MustUnmarshalJSON[AttributeMap](r.Attributes)
+
+	return resourceObj
+}
+
 // CanonicalJSON returns the canonical JSON representation of the record.
 func (r *RecordEncodable) CanonicalJSON() []byte {
-	bytes, err := canonicalJson.Marshal(r.Attributes)
+	bytes, err := canonicaljson.Marshal(r.Attributes)
 	if err != nil {
-		panic("Record marshal error: " + err.Error())
+		panic("error marshalling record: " + err.Error())
 	}
 
 	return bytes

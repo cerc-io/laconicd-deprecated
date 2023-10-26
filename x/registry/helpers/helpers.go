@@ -47,24 +47,20 @@ func Int64ToBytes(num int64) []byte {
 	return buf.Bytes()
 }
 
-// MarshalMapToJSONBytes converts map[string]interface{} to bytes.
-func MarshalMapToJSONBytes(val map[string]interface{}) (bytes []byte) {
+func MustMarshalJSON[T any](val T) (bytes []byte) {
 	bytes, err := json.Marshal(val)
 	if err != nil {
-		panic("Marshal error.")
+		panic("JSON marshal error:" + err.Error())
 	}
-
 	return
 }
 
-// UnMarshalMapFromJSONBytes converts bytes to map[string]interface{}.
-func UnMarshalMapFromJSONBytes(bytes []byte) map[string]interface{} {
-	var val map[string]interface{}
+func MustUnmarshalJSON[T any](bytes []byte) T {
+	var val T
 	err := json.Unmarshal(bytes, &val)
 	if err != nil {
-		panic("Unmarshal error.")
+		panic("JSON unmarshal error:" + err.Error())
 	}
-
 	return val
 }
 

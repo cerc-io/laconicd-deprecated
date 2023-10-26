@@ -126,12 +126,16 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())
 
 					for _, record := range resp.GetRecords() {
-						recAttr := helpers.UnMarshalMapFromJSONBytes(record.Attributes)
+						recAttr := helpers.MustUnmarshalJSON[registrytypes.AttributeMap](record.Attributes)
+
 						for _, attr := range test.req.GetAttributes() {
+							enc, err := keeper.QueryValueToJSON(attr.Value)
+							sr.NoError(err)
+							expected := helpers.MustUnmarshalJSON[any](enc)
 							if attr.Key[:4] == "x500" {
-								sr.Equal(keeper.EncodeAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
+								sr.Equal(expected, recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
 							} else {
-								sr.Equal(keeper.EncodeAttributeValue(attr.Value), recAttr[attr.Key])
+								sr.Equal(expected, recAttr[attr.Key])
 							}
 						}
 					}
