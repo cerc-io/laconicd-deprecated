@@ -370,8 +370,8 @@ $ %s tx %s delete-name [crn]
 }
 
 // GetPayloadFromFile  Load payload object from YAML file.
-func GetPayloadFromFile(filePath string) (*types.PayloadEncodable, error) {
-	var payload types.PayloadEncodable
+func GetPayloadFromFile(filePath string) (*types.ReadablePayload, error) {
+	var payload types.ReadablePayload
 
 	data, err := os.ReadFile(filePath) // #nosec G304
 	if err != nil {

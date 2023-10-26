@@ -433,7 +433,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 				}
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 				sr.NoError(err)
-				var records []nstypes.RecordEncodable
+				var records []nstypes.ReadableRecord
 				err = json.Unmarshal(out.Bytes(), &records)
 				sr.NoError(err)
 				return records[0].ID
