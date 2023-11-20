@@ -13,7 +13,7 @@ linters:
     - goconst
     - gocritic
     - gofumpt
-    - revive
+#    - revive # 20231120 overly sensitive unused detection
     - gosec
     - gosimple
     - govet
