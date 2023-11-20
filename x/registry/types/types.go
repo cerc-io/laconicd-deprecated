@@ -68,6 +68,33 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 			}
 			return codectypes.NewAnyWithValue(&attributes)
 		}
+	case "ApplicationRecord":
+		{
+			var attributes ApplicationRecord
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "WebAppDeploymentRecord":
+		{
+			var attributes WebAppDeploymentRecord
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "GeneralRecord":
+		{
+			var attributes GeneralRecord
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
 	default:
 		return &codectypes.Any{}, fmt.Errorf("unsupported record type %s", recordType.(string))
 	}
@@ -130,6 +157,45 @@ func GetJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
 	case "WebsiteRegistrationRecord":
 		{
 			var attributes WebsiteRegistrationRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "ApplicationRecord":
+		{
+			var attributes ApplicationRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "WebAppDeploymentRecord":
+		{
+			var attributes WebAppDeploymentRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "GeneralRecord":
+		{
+			var attributes GeneralRecord
 			err := proto.Unmarshal(any.Value, &attributes)
 			if err != nil {
 				panic("Proto unmarshal error")

@@ -31,3 +31,44 @@ message WebsiteRegistrationRecord {
   string type               = 5 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
   string version            = 6 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
 }
+
+message ApplicationRecord {
+  string type           = 1 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
+  string name           = 2 [(gogoproto.moretags) = "json:\"name\" yaml:\"name\""];
+  string description    = 3 [(gogoproto.moretags) = "json:\"description\" yaml:\"description\""];
+  string version        = 4 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+  string homepage       = 5 [(gogoproto.moretags) = "json:\"homepage\" yaml:\"homepage\""];
+  string license        = 6 [(gogoproto.moretags) = "json:\"license\" yaml:\"license\""];
+  string author         = 7 [(gogoproto.moretags) = "json:\"author\" yaml:\"author\""];
+  string repository     = 8 [(gogoproto.moretags) = "json:\"repository\" yaml:\"repository\""];
+  string repository_tag = 9 [(gogoproto.moretags) = "json:\"repositoryTag\" yaml:\"repositoryTag\""];
+  string app_version    = 10 [(gogoproto.moretags) = "json:\"appVersion\" yaml:\"appVersion\""];
+  string app_type       = 11 [(gogoproto.moretags) = "json:\"appType\" yaml:\"appType\""];
+  string engines        = 12 [(gogoproto.moretags) = "json:\"engines\" yaml:\"engines\""];
+  repeated string os    = 13 [(gogoproto.moretags) = "json:\"os\" yaml:\"os\""];
+  repeated string cpu   = 14 [(gogoproto.moretags) = "json:\"cpu\" yaml:\"cpu\""];
+  string meta           = 20 [(gogoproto.moretags) = "json:\"meta\" yaml:\"meta\""];
+  repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
+}
+
+message WebAppDeploymentRecord {
+  string type           = 1 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
+  string name           = 2 [(gogoproto.moretags) = "json:\"name\" yaml:\"name\""];
+  string description    = 3 [(gogoproto.moretags) = "json:\"description\" yaml:\"description\""];
+  string version        = 4 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+  string application    = 5 [(gogoproto.moretags) = "json:\"application\" yaml:\"application\""];
+  string url            = 6 [(gogoproto.moretags) = "json:\"url\" yaml:\"url\""];
+  string meta           = 20 [(gogoproto.moretags) = "json:\"meta\" yaml:\"meta\""];
+  repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
+}
+
+message GeneralRecord {
+  string type           = 1 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
+  string name           = 2 [(gogoproto.moretags) = "json:\"name\" yaml:\"name\""];
+  string description    = 3 [(gogoproto.moretags) = "json:\"description\" yaml:\"description\""];
+  string version        = 4 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+  string category       = 5 [(gogoproto.moretags) = "json:\"category\" yaml:\"category\""];
+  string value          = 6 [(gogoproto.moretags) = "json:\"value\" yaml:\"value\""];
+  string meta           = 20 [(gogoproto.moretags) = "json:\"meta\" yaml:\"meta\""];
+  repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
+}

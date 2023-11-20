@@ -338,7 +338,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 				}
 			}
 		}
-	case "WebsiteRegistrationRecord":
+	case "WebsiteRegistrationRecord", "ApplicationRecord", "WebAppDeploymentRecord", "GeneralRecord":
 		{
 			// #nosec G705
 			for key := range record.Attributes {
@@ -389,7 +389,7 @@ func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, erro
 	store := ctx.KVStore(k.storeKey)
 
 	if !store.Has(key) {
-		return nil, fmt.Errorf("store doesn't have key")
+		return nil, fmt.Errorf("store doesn't have key: %q", key)
 	}
 
 	var recordIds []string
