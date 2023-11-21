@@ -15,6 +15,8 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
 
+const badPath = "/asdasd"
+
 func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -28,7 +30,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}{
 		{
 			"invalid url",
-			reqURL + "/asdasd",
+			reqURL + badPath,
 			true,
 			"",
 		},
@@ -75,7 +77,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqUrl + badPath,
 			true,
 			"",
 			func(authorityName string) {
@@ -143,7 +145,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}{
 		{
 			"invalid url",
-			reqURL + "/asdasd",
+			reqURL + badPath,
 			true,
 			"",
 			func(authorityName string) {
@@ -195,7 +197,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqUrl + badPath,
 			true,
 			"",
 			func(bondId string) {
@@ -267,7 +269,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqUrl + badPath,
 			true,
 			"",
 			func(authorityName string) {
@@ -339,7 +341,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	}{
 		{
 			"invalid url",
-			reqUrl + "/asdasd",
+			reqUrl + badPath,
 			true,
 			"",
 			func(bondId string) {
@@ -409,7 +411,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 	}{
 		{
 			"invalid url",
-			reqURL + "/asdasd",
+			reqURL + badPath,
 			true,
 			"",
 			func(bondId string) string {
@@ -478,7 +480,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByBondID() {
 	}{
 		{
 			"invalid url",
-			reqURL + "/asdasd",
+			reqURL + badPath,
 			true,
 			"",
 			func(bondId string) {
@@ -532,7 +534,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRegistryModuleBalance() {
 	}{
 		{
 			"invalid url",
-			reqURL + "/asdasd",
+			reqURL + badPath,
 			true,
 			"",
 			func(bondId string) {
@@ -583,7 +585,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryNamesList() {
 	}{
 		{
 			"invalid url",
-			reqURL + "/asdasd",
+			reqURL + badPath,
 			true,
 			"",
 			func(authorityName string) {

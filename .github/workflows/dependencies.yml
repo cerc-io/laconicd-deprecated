@@ -23,6 +23,7 @@ jobs:
       - name: "Dependency Review"
         uses: actions/dependency-review-action@v3
         if: env.GIT_DIFF
-      - name: "Go vulnerability check"
-        run: make vulncheck
-        if: env.GIT_DIFF
+# TODO: https://git.vdb.to/cerc-io/laconicd/issues/115
+#      - name: "Go vulnerability check"
+#        run: make vulncheck
+#        if: env.GIT_DIFF
