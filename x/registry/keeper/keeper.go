@@ -236,9 +236,9 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 }
 
 // ProcessSetRecord creates a record.
-func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordEncodable, error) {
+func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.ReadableRecord, error) {
 	payload := msg.Payload.ToReadablePayload()
-	record := types.RecordEncodable{Attributes: payload.Record, BondID: msg.BondId}
+	record := types.ReadableRecord{Attributes: payload.Record, BondID: msg.BondId}
 
 	// Check signatures.
 	resourceSignBytes, _ := record.GetSignBytes()
@@ -279,7 +279,7 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	return &record, nil
 }
 
-func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordEncodable, isRenewal bool) error {
+func (k Keeper) processRecord(ctx sdk.Context, record *types.ReadableRecord, isRenewal bool) error {
 	params := k.GetParams(ctx)
 	rent := params.RecordRent
 

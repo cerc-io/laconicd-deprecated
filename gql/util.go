@@ -163,7 +163,7 @@ func GetGQLAuction(auction *auctiontypes.Auction, bids []*auctiontypes.Bid) (*Au
 	return &gqlAuction, nil
 }
 
-func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes.RecordEncodable) ([]*Record, error) {
+func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes.ReadableRecord) ([]*Record, error) {
 	var ids []string
 
 	// #nosec G705
@@ -184,7 +184,7 @@ func getReferences(ctx context.Context, resolver QueryResolver, r *registrytypes
 	return resolver.GetRecordsByIds(ctx, ids)
 }
 
-func getAttributes(r *registrytypes.RecordEncodable) ([]*KeyValue, error) {
+func getAttributes(r *registrytypes.ReadableRecord) ([]*KeyValue, error) {
 	return mapToKeyValuePairs(r.Attributes)
 }
 

@@ -161,7 +161,7 @@ $ %s query %s list
 			}
 
 			recordsList := res.GetRecords()
-			records := make([]types.RecordEncodable, len(recordsList))
+			records := make([]types.ReadableRecord, len(recordsList))
 			for i, record := range res.GetRecords() {
 				records[i] = record.ToReadableRecord()
 			}

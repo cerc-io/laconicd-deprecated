@@ -17,15 +17,27 @@ const (
 // become specific to content records. schema records will either occupy a new message or have new
 // more general purpose helper types.
 
-// PayloadEncodable represents a signed record payload that can be serialized from/to YAML.
-type PayloadEncodable struct {
+// ReadablePayload represents a signed record payload that can be serialized from/to YAML.
+type ReadablePayload struct {
 	Record     map[string]interface{} `json:"record"`
 	Signatures []Signature            `json:"signatures"`
 }
 
+// ReadableRecord represents a WNS record.
+type ReadableRecord struct {
+	ID         string                 `json:"id,omitempty"`
+	Names      []string               `json:"names,omitempty"`
+	BondID     string                 `json:"bondId,omitempty"`
+	CreateTime string                 `json:"createTime,omitempty"`
+	ExpiryTime string                 `json:"expiryTime,omitempty"`
+	Deleted    bool                   `json:"deleted,omitempty"`
+	Owners     []string               `json:"owners,omitempty"`
+	Attributes map[string]interface{} `json:"attributes,omitempty"`
+}
+
 // ToPayload converts PayloadEncodable to Payload object.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func (payloadObj *PayloadEncodable) ToPayload() Payload {
+func (payloadObj *ReadablePayload) ToPayload() Payload {
 	// Note: record directly contains the attributes here
 	attributes := helpers.MarshalMapToJSONBytes(payloadObj.Record)
 	payload := Payload{
@@ -41,8 +53,8 @@ func (payloadObj *PayloadEncodable) ToPayload() Payload {
 }
 
 // ToReadablePayload converts Payload to a serializable object
-func (payload Payload) ToReadablePayload() PayloadEncodable {
-	var encodable PayloadEncodable
+func (payload Payload) ToReadablePayload() ReadablePayload {
+	var encodable ReadablePayload
 
 	encodable.Record = helpers.UnMarshalMapFromJSONBytes(payload.Record.Attributes)
 	encodable.Signatures = payload.Signatures
@@ -51,8 +63,8 @@ func (payload Payload) ToReadablePayload() PayloadEncodable {
 }
 
 // ToReadableRecord converts Record to a serializable object
-func (r *Record) ToReadableRecord() RecordEncodable {
-	var resourceObj RecordEncodable
+func (r *Record) ToReadableRecord() ReadableRecord {
+	var resourceObj ReadableRecord
 
 	resourceObj.ID = r.Id
 	resourceObj.BondID = r.BondId
@@ -66,21 +78,9 @@ func (r *Record) ToReadableRecord() RecordEncodable {
 	return resourceObj
 }
 
-// RecordEncodable represents a WNS record.
-type RecordEncodable struct {
-	ID         string                 `json:"id,omitempty"`
-	Names      []string               `json:"names,omitempty"`
-	BondID     string                 `json:"bondId,omitempty"`
-	CreateTime string                 `json:"createTime,omitempty"`
-	ExpiryTime string                 `json:"expiryTime,omitempty"`
-	Deleted    bool                   `json:"deleted,omitempty"`
-	Owners     []string               `json:"owners,omitempty"`
-	Attributes map[string]interface{} `json:"attributes,omitempty"`
-}
-
 // ToRecordObj converts Record to RecordObj.
 // Why? Because go-amino can't handle maps: https://github.com/tendermint/go-amino/issues/4.
-func (r *RecordEncodable) ToRecordObj() (Record, error) {
+func (r *ReadableRecord) ToRecordObj() (Record, error) {
 	attributes := helpers.MarshalMapToJSONBytes(r.Attributes)
 
 	var resourceObj Record
@@ -97,7 +97,7 @@ func (r *RecordEncodable) ToRecordObj() (Record, error) {
 }
 
 // CanonicalJSON returns the canonical JSON representation of the record.
-func (r *RecordEncodable) CanonicalJSON() []byte {
+func (r *ReadableRecord) CanonicalJSON() []byte {
 	bytes, err := canonicalJson.Marshal(r.Attributes)
 	if err != nil {
 		panic("Record marshal error.")
@@ -107,7 +107,7 @@ func (r *RecordEncodable) CanonicalJSON() []byte {
 }
 
 // GetSignBytes generates a record hash to be signed.
-func (r *RecordEncodable) GetSignBytes() ([]byte, []byte) {
+func (r *ReadableRecord) GetSignBytes() ([]byte, []byte) {
 	// Double SHA256 hash.
 
 	// Input to the first round of hashing.
@@ -127,7 +127,7 @@ func (r *RecordEncodable) GetSignBytes() ([]byte, []byte) {
 }
 
 // GetCID gets the record CID.
-func (r *RecordEncodable) GetCID() (string, error) {
+func (r *ReadableRecord) GetCID() (string, error) {
 	id, err := helpers.GetCid(r.CanonicalJSON())
 	if err != nil {
 		return "", err
