@@ -300,8 +300,7 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.ReadableRecord, isR
 	}
 	k.PutRecord(ctx, recordObj)
 
-	// TODO process type here
-	// recordType, ok := record.Attributes["type"].(string)
+	// TODO look up/validate record type here
 
 	if err := k.processAttributes(ctx, record.Attributes, record.ID, ""); err != nil {
 		return err

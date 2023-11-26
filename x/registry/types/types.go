@@ -13,10 +13,6 @@ const (
 	AuthorityUnderAuction = "auction"
 )
 
-// TODO if schema records are to be more permissive than allowing a map of fields, this type will
-// become specific to content records. schema records will either occupy a new message or have new
-// more general purpose helper types.
-
 // ReadablePayload represents a signed record payload that can be serialized from/to YAML.
 type ReadablePayload struct {
 	Record     map[string]interface{} `json:"record"`
