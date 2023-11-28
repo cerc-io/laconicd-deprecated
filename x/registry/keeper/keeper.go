@@ -20,6 +20,7 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 var (
@@ -94,6 +95,11 @@ func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeep
 		cdc:           cdc,
 		paramSubspace: ps,
 	}
+}
+
+// Logger returns a module-specific logger.
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", types.ModuleName)
 }
 
 // GetRecordIndexKey Generates Bond ID -> Bond index key.
@@ -389,7 +395,8 @@ func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, erro
 	store := ctx.KVStore(k.storeKey)
 
 	if !store.Has(key) {
-		return nil, fmt.Errorf("store doesn't have key: %q", key)
+		k.Logger(ctx).Debug(fmt.Sprintf("store doesn't have key: %q", key))
+		return []string{}, nil
 	}
 
 	var recordIds []string
