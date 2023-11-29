@@ -80,6 +80,24 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			1,
 		},
 		{
+			"Filter test for key collision (https://git.vdb.to/cerc-io/laconicd/issues/122)",
+			&registrytypes.QueryListRecordsRequest{
+				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "typ",
+						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "eWebsiteRegistrationRecord",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			0,
+		},
+		{
 			"Filter with attributes ServiceProviderRegistration",
 			&registrytypes.QueryListRecordsRequest{
 				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
@@ -123,7 +141,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			} else {
 				sr.NoError(err)
 				sr.Equal(test.noOfRecords, len(resp.GetRecords()))
-				if test.createRecords {
+				if test.createRecords && test.noOfRecords > 0 {
 					recordId = resp.GetRecords()[0].GetId()
 					sr.NotZero(resp.GetRecords())
 					sr.Equal(resp.GetRecords()[0].GetBondId(), suite.bond.GetId())

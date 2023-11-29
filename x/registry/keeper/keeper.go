@@ -367,7 +367,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 }
 
 func GetAttributesIndexKey(key string, value interface{}) []byte {
-	keyString := fmt.Sprintf("%s%s", key, value)
+	keyString := fmt.Sprintf("%s=%s", key, value)
 	return append(PrefixAttributesIndex, []byte(keyString)...)
 }
 
