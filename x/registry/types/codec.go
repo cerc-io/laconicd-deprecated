@@ -58,9 +58,21 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	)
 
 	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.WebAppDeploymentRecord",
+		"vulcanize.registry.v1beta1.ApplicationDeploymentRequest",
 		(*Attributes)(nil),
-		&WebAppDeploymentRecord{},
+		&ApplicationDeploymentRequest{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.ApplicationDeploymentRecord",
+		(*Attributes)(nil),
+		&ApplicationDeploymentRecord{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.DnsRecord",
+		(*Attributes)(nil),
+		&DnsRecord{},
 	)
 
 	registry.RegisterInterface(
