@@ -68,7 +68,7 @@ message ApplicationDeploymentRequest {
   string application    = 4 [(gogoproto.moretags) = "json:\"application\" yaml:\"application\""];
   string dns            = 5 [(gogoproto.moretags) = "json:\"dns\" yaml:\"dns\""];
   string config         = 6 [(gogoproto.moretags) = "json:\"config\" yaml:\"config\""];
-  repeated string crn   = 7 [(gogoproto.moretags) = "json:\"crn\" yaml:\"crn\""];
+  string deployment     = 7 [(gogoproto.moretags) = "json:\"deployment\" yaml:\"deployment\""];
   string meta           = 20 [(gogoproto.moretags) = "json:\"meta\" yaml:\"meta\""];
   repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
 }
