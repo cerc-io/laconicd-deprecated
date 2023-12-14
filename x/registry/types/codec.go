@@ -70,6 +70,12 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	)
 
 	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.ApplicationArtifact",
+		(*Attributes)(nil),
+		&ApplicationArtifact{},
+	)
+
+	registry.RegisterInterface(
 		"vulcanize.registry.v1beta1.DnsRecord",
 		(*Attributes)(nil),
 		&DnsRecord{},

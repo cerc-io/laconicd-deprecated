@@ -345,7 +345,7 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 			}
 		}
 	case "WebsiteRegistrationRecord", "ApplicationRecord", "ApplicationDeploymentRequest",
-		"ApplicationDeploymentRecord", "DnsRecord", "GeneralRecord":
+		"ApplicationDeploymentRecord", "ApplicationArtifact", "DnsRecord", "GeneralRecord":
 		{
 			// #nosec G705
 			for key := range record.Attributes {
