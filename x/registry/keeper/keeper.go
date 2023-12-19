@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"time"
 
@@ -349,9 +350,20 @@ func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) erro
 		{
 			// #nosec G705
 			for key := range record.Attributes {
-				indexKey := GetAttributesIndexKey(key, record.Attributes[key])
-				if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-					return err
+				attr := record.Attributes[key]
+				if reflect.Slice == reflect.TypeOf(attr).Kind() {
+					av := attr.([]interface{})
+					for i := range av {
+						indexKey := GetAttributesIndexKey(key, av[i])
+						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
+							return err
+						}
+					}
+				} else {
+					indexKey := GetAttributesIndexKey(key, attr)
+					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
+						return err
+					}
 				}
 			}
 		}

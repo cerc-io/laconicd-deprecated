@@ -3,12 +3,12 @@ package keeper_test
 import (
 	"context"
 	"fmt"
-	"os"
-
 	"github.com/cerc-io/laconicd/x/registry/client/cli"
 	"github.com/cerc-io/laconicd/x/registry/helpers"
 	"github.com/cerc-io/laconicd/x/registry/keeper"
 	registrytypes "github.com/cerc-io/laconicd/x/registry/types"
+	"os"
+	"reflect"
 )
 
 func (suite *KeeperTestSuite) TestGrpcQueryParams() {
@@ -39,6 +39,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 	examples := []string{
 		"/../helpers/examples/service_provider_example.yml",
 		"/../helpers/examples/website_registration_example.yml",
+		"/../helpers/examples/general_record_example.yml",
 	}
 	testCases := []struct {
 		msg           string
@@ -59,7 +60,7 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			&registrytypes.QueryListRecordsRequest{},
 			true,
 			false,
-			2,
+			3,
 		},
 		{
 			"Filter with type",
@@ -78,6 +79,42 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 			true,
 			false,
 			1,
+		},
+		{
+			"Filter with tag (extant) (https://git.vdb.to/cerc-io/laconicd/issues/129)",
+			&registrytypes.QueryListRecordsRequest{
+				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "tags",
+						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "tagA",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			1,
+		},
+		{
+			"Filter with tag (non-existent) (https://git.vdb.to/cerc-io/laconicd/issues/129)",
+			&registrytypes.QueryListRecordsRequest{
+				Attributes: []*registrytypes.QueryListRecordsRequest_KeyValueInput{
+					{
+						Key: "tags",
+						Value: &registrytypes.QueryListRecordsRequest_ValueInput{
+							Type:    "string",
+							String_: "NOEXIST",
+						},
+					},
+				},
+				All: true,
+			},
+			true,
+			false,
+			0,
 		},
 		{
 			"Filter test for key collision (https://git.vdb.to/cerc-io/laconicd/issues/122)",
@@ -151,10 +188,25 @@ func (suite *KeeperTestSuite) TestGrpcGetRecordLists() {
 						sr.NoError(err)
 						recAttr := helpers.UnMarshalMapFromJSONBytes(bz)
 						for _, attr := range test.req.GetAttributes() {
-							if attr.Key[:4] == "x500" {
-								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
+							av := keeper.GetAttributeValue(attr.Value)
+							if nil != av && nil != recAttr[attr.Key] &&
+								reflect.Slice == reflect.TypeOf(recAttr[attr.Key]).Kind() &&
+								reflect.Slice != reflect.TypeOf(av).Kind() {
+								found := false
+								allValues := recAttr[attr.Key].([]interface{})
+								for i := range allValues {
+									if av == allValues[i] {
+										fmt.Printf("Found %s in %s", allValues[i], recAttr[attr.Key])
+										found = true
+									}
+								}
+								sr.Equal(true, found, fmt.Sprintf("Unable to find %s in %s", av, recAttr[attr.Key]))
 							} else {
-								sr.Equal(keeper.GetAttributeValue(attr.Value), recAttr[attr.Key])
+								if attr.Key[:4] == "x500" {
+									sr.Equal(av, recAttr["x500"].(map[string]interface{})[attr.Key[4:]])
+								} else {
+									sr.Equal(av, recAttr[attr.Key])
+								}
 							}
 						}
 					}
