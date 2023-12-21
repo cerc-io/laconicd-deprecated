@@ -95,6 +95,24 @@ func payLoadAttributes(recordPayLoad map[string]interface{}) (*codectypes.Any, e
 			}
 			return codectypes.NewAnyWithValue(&attributes)
 		}
+	case "ApplicationDeploymentRemovalRequest":
+		{
+			var attributes ApplicationDeploymentRemovalRequest
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
+	case "ApplicationDeploymentRemovalRecord":
+		{
+			var attributes ApplicationDeploymentRemovalRecord
+			err := json.Unmarshal(bz, &attributes)
+			if err != nil {
+				return &codectypes.Any{}, err
+			}
+			return codectypes.NewAnyWithValue(&attributes)
+		}
 	case "ApplicationArtifact":
 		{
 			var attributes ApplicationArtifact
@@ -223,6 +241,32 @@ func GetJSONBytesFromAny(any codectypes.Any) ([]byte, error) {
 	case "ApplicationDeploymentRecord":
 		{
 			var attributes ApplicationDeploymentRecord
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "ApplicationDeploymentRemovalRequest":
+		{
+			var attributes ApplicationDeploymentRemovalRequest
+			err := proto.Unmarshal(any.Value, &attributes)
+			if err != nil {
+				panic("Proto unmarshal error")
+			}
+
+			bz, err = json.Marshal(attributes)
+			if err != nil {
+				panic("JSON marshal error")
+			}
+		}
+	case "ApplicationDeploymentRemovalRecord":
+		{
+			var attributes ApplicationDeploymentRemovalRecord
 			err := proto.Unmarshal(any.Value, &attributes)
 			if err != nil {
 				panic("Proto unmarshal error")

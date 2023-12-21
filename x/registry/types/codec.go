@@ -76,6 +76,18 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	)
 
 	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.ApplicationDeploymentRemovalRequest",
+		(*Attributes)(nil),
+		&ApplicationDeploymentRemovalRequest{},
+	)
+
+	registry.RegisterInterface(
+		"vulcanize.registry.v1beta1.ApplicationDeploymentRemovalRecord",
+		(*Attributes)(nil),
+		&ApplicationDeploymentRemovalRecord{},
+	)
+
+	registry.RegisterInterface(
 		"vulcanize.registry.v1beta1.DnsRecord",
 		(*Attributes)(nil),
 		&DnsRecord{},

@@ -101,6 +101,24 @@ message ApplicationDeploymentRecord {
   repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
 }
 
+message ApplicationDeploymentRemovalRequest {
+  string type           = 1 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
+  string version        = 2 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+  string deployment     = 3 [(gogoproto.moretags) = "json:\"deployment\" yaml:\"deployment\""];
+  string request        = 4 [(gogoproto.moretags) = "json:\"request\" yaml:\"request\""];
+  string meta           = 20 [(gogoproto.moretags) = "json:\"meta\" yaml:\"meta\""];
+  repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
+}
+
+message ApplicationDeploymentRemovalRecord {
+  string type           = 1 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
+  string version        = 2 [(gogoproto.moretags) = "json:\"version\" yaml:\"version\""];
+  string deployment     = 3 [(gogoproto.moretags) = "json:\"deployment\" yaml:\"deployment\""];
+  string request        = 4 [(gogoproto.moretags) = "json:\"request\" yaml:\"request\""];
+  string meta           = 20 [(gogoproto.moretags) = "json:\"meta\" yaml:\"meta\""];
+  repeated string tags  = 21 [(gogoproto.moretags) = "json:\"tags\" yaml:\"tags\""];
+}
+
 message GeneralRecord {
   string type           = 1 [(gogoproto.moretags) = "json:\"type\" yaml:\"type\""];
   string name           = 2 [(gogoproto.moretags) = "json:\"name\" yaml:\"name\""];
