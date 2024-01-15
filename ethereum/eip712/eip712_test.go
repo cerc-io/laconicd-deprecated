@@ -4,28 +4,25 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-
-	"github.com/cerc-io/laconicd/ethereum/eip712"
+	registrytypes "github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/ethereum/go-ethereum/crypto"
-
-	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/cerc-io/laconicd/app"
-	"github.com/cerc-io/laconicd/encoding"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/cerc-io/laconicd/app"
+	"github.com/cerc-io/laconicd/crypto/ethsecp256k1"
+	"github.com/cerc-io/laconicd/encoding"
+	"github.com/cerc-io/laconicd/ethereum/eip712"
 )
 
 // Unit tests for single-signer EIP-712 signature verification. Multi-signer verification tests are included
@@ -331,6 +328,54 @@ func (suite *EIP712TestSuite) TestEIP712SignatureVerification() {
 			accountNumber: 25,
 			sequence:      78,
 			expectSuccess: false,
+		},
+
+		// test laconic registry messages
+		{
+			title: "Succeeds - Standard MsgSetName",
+			fee: txtypes.Fee{
+				Amount:   suite.makeCoins("aphoton", math.NewInt(2000)),
+				GasLimit: 100000,
+			},
+			memo: "",
+			msgs: []sdk.Msg{
+				registrytypes.NewMsgSetName(
+					"testcrn",
+					"testcid",
+					suite.createTestAddress(),
+				),
+			},
+			accountNumber: 25,
+			sequence:      78,
+			expectSuccess: true,
+		},
+		{
+			title: "Succeeds - Standard MsgSetRecord",
+			fee: txtypes.Fee{
+				Amount:   suite.makeCoins("aphoton", math.NewInt(2000)),
+				GasLimit: 100000,
+			},
+			memo: "",
+			msgs: []sdk.Msg{
+				registrytypes.NewMsgSetRecord(
+					registrytypes.Payload{
+						Record: &registrytypes.Record{
+							Attributes: []byte("test attributes"),
+						},
+						Signatures: []registrytypes.Signature{
+							{
+								Sig:    "fake sig",
+								PubKey: "fake pubkey",
+							},
+						},
+					},
+					"testbondid",
+					suite.createTestAddress(),
+				),
+			},
+			accountNumber: 25,
+			sequence:      78,
+			expectSuccess: true,
 		},
 	}
 

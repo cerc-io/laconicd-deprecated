@@ -385,7 +385,7 @@ func (m *MsgReserveAuthorityResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgReserveAuthorityResponse proto.InternalMessageInfo
 
-// MsgSetAuthorityBond is SDK message for SetAuthorityBond
+// MsgSetAuthorityBond
 type MsgSetAuthorityBond struct {
 	Name   string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	BondId string `protobuf:"bytes,2,opt,name=bond_id,json=bondId,proto3" json:"bond_id,omitempty" json:"bondId" yaml:"bondId"`
@@ -483,7 +483,7 @@ func (m *MsgSetAuthorityBondResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSetAuthorityBondResponse proto.InternalMessageInfo
 
-// MsgDeleteNameAuthority is SDK message for DeleteNameAuthority
+// MsgDeleteNameAuthority
 type MsgDeleteNameAuthority struct {
 	Crn    string `protobuf:"bytes,1,opt,name=crn,proto3" json:"crn,omitempty"`
 	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -573,7 +573,7 @@ func (m *MsgDeleteNameAuthorityResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDeleteNameAuthorityResponse proto.InternalMessageInfo
 
-// MsgRenewRecord is SDK message for Renew a record
+// MsgRenewRecord
 type MsgRenewRecord struct {
 	RecordId string `protobuf:"bytes,1,opt,name=record_id,json=recordId,proto3" json:"record_id,omitempty" json:"recordId" yaml:"recordId"`
 	Signer   string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -761,7 +761,7 @@ func (m *MsgAssociateBondResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAssociateBondResponse proto.InternalMessageInfo
 
-// MsgDissociateBond is SDK message for Msg/DissociateBond
+// MsgDissociateBond
 type MsgDissociateBond struct {
 	RecordId string `protobuf:"bytes,1,opt,name=record_id,json=recordId,proto3" json:"record_id,omitempty" json:"recordId" yaml:"recordId"`
 	Signer   string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -814,7 +814,7 @@ func (m *MsgDissociateBond) GetSigner() string {
 	return ""
 }
 
-// MsgDissociateBondResponse is response type for MsgDissociateBond
+// MsgDissociateBondResponse
 type MsgDissociateBondResponse struct {
 }
 
@@ -851,7 +851,7 @@ func (m *MsgDissociateBondResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDissociateBondResponse proto.InternalMessageInfo
 
-// MsgDissociateRecords is SDK message for Msg/DissociateRecords
+// MsgDissociateRecords
 type MsgDissociateRecords struct {
 	BondId string `protobuf:"bytes,1,opt,name=bond_id,json=bondId,proto3" json:"bond_id,omitempty" json:"bondId" yaml:"bondId"`
 	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
@@ -904,7 +904,7 @@ func (m *MsgDissociateRecords) GetSigner() string {
 	return ""
 }
 
-// MsgDissociateRecordsResponse is response type for MsgDissociateRecords
+// MsgDissociateRecordsResponse
 type MsgDissociateRecordsResponse struct {
 }
 
@@ -941,7 +941,7 @@ func (m *MsgDissociateRecordsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgDissociateRecordsResponse proto.InternalMessageInfo
 
-// MsgReAssociateRecords is SDK message for Msg/ReAssociateRecords
+// MsgReAssociateRecords
 type MsgReAssociateRecords struct {
 	NewBondId string `protobuf:"bytes,1,opt,name=new_bond_id,json=newBondId,proto3" json:"new_bond_id,omitempty" json:"newBondId" yaml:"newBondId"`
 	OldBondId string `protobuf:"bytes,2,opt,name=old_bond_id,json=oldBondId,proto3" json:"old_bond_id,omitempty" json:"oldBondId" yaml:"oldBondId"`
@@ -1002,7 +1002,7 @@ func (m *MsgReAssociateRecords) GetSigner() string {
 	return ""
 }
 
-// MsgReAssociateRecordsResponse is response type for MsgReAssociateRecords
+// MsgReAssociateRecordsResponse
 type MsgReAssociateRecordsResponse struct {
 }
 
@@ -1147,9 +1147,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// SetRecord will records a new record with given payload and bond id
+	// SetRecord records a new record with given payload and bond id
 	SetRecord(ctx context.Context, in *MsgSetRecord, opts ...grpc.CallOption) (*MsgSetRecordResponse, error)
-	// Renew Record will renew the expire record
+	// Renew Record renews an expired record
 	RenewRecord(ctx context.Context, in *MsgRenewRecord, opts ...grpc.CallOption) (*MsgRenewRecordResponse, error)
 	// AssociateBond
 	AssociateBond(ctx context.Context, in *MsgAssociateBond, opts ...grpc.CallOption) (*MsgAssociateBondResponse, error)
@@ -1269,9 +1269,9 @@ func (c *msgClient) SetAuthorityBond(ctx context.Context, in *MsgSetAuthorityBon
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// SetRecord will records a new record with given payload and bond id
+	// SetRecord records a new record with given payload and bond id
 	SetRecord(context.Context, *MsgSetRecord) (*MsgSetRecordResponse, error)
-	// Renew Record will renew the expire record
+	// Renew Record renews an expired record
 	RenewRecord(context.Context, *MsgRenewRecord) (*MsgRenewRecordResponse, error)
 	// AssociateBond
 	AssociateBond(context.Context, *MsgAssociateBond) (*MsgAssociateBondResponse, error)

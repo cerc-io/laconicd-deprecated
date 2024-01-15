@@ -4,15 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"sort"
 	"time"
 
 	errorsmod "cosmossdk.io/errors"
-	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
-	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
-	"github.com/cerc-io/laconicd/x/registry/helpers"
-	"github.com/cerc-io/laconicd/x/registry/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -21,7 +16,18 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/gibson042/canonicaljson-go"
+	cid "github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/tendermint/tendermint/libs/log"
+
+	auctionkeeper "github.com/cerc-io/laconicd/x/auction/keeper"
+	bondkeeper "github.com/cerc-io/laconicd/x/bond/keeper"
+	"github.com/cerc-io/laconicd/x/registry/helpers"
+	"github.com/cerc-io/laconicd/x/registry/types"
 )
 
 var (
@@ -100,6 +106,10 @@ func NewKeeper(cdc codec.BinaryCodec, accountKeeper auth.AccountKeeper, bankKeep
 
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return logger(ctx)
+}
+
+func logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", types.ModuleName)
 }
 
@@ -119,7 +129,8 @@ func (k Keeper) GetRecord(ctx sdk.Context, id string) (record types.Record) {
 	store := ctx.KVStore(k.storeKey)
 	result := store.Get(GetRecordIndexKey(id))
 	k.cdc.MustUnmarshal(result, &record)
-	return recordObjToRecord(store, record)
+	decodeRecordNames(store, &record)
+	return record
 }
 
 // ListRecords - get all records.
@@ -132,20 +143,25 @@ func (k Keeper) ListRecords(ctx sdk.Context) []types.Record {
 	for ; itr.Valid(); itr.Next() {
 		bz := store.Get(itr.Key())
 		if bz != nil {
-			var obj types.Record
-			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, obj))
+			var record types.Record
+			k.cdc.MustUnmarshal(bz, &record)
+			decodeRecordNames(store, &record)
+			records = append(records, record)
 		}
 	}
 
 	return records
 }
 
+// RecordsFromAttributes gets a list of records whose attributes match all provided values
 func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.QueryListRecordsRequest_KeyValueInput, all bool) ([]types.Record, error) {
 	resultRecordIds := []string{}
 	for i, attr := range attributes {
-		val := GetAttributeValue(attr.Value)
-		attributeIndex := GetAttributesIndexKey(attr.Key, val)
+		suffix, err := QueryValueToJSON(attr.Value)
+		if err != nil {
+			return nil, err
+		}
+		attributeIndex := GetAttributesIndexKey(attr.Key, suffix)
 		recordIds, err := k.GetAttributeMapping(ctx, attributeIndex)
 		if err != nil {
 			return nil, err
@@ -164,32 +180,62 @@ func (k Keeper) RecordsFromAttributes(ctx sdk.Context, attributes []*types.Query
 			continue
 		}
 		store := ctx.KVStore(k.storeKey)
-		recordWithNames := recordObjToRecord(store, record)
-		if !all && len(recordWithNames.Names) == 0 {
+		decodeRecordNames(store, &record)
+		if !all && len(record.Names) == 0 {
 			continue
 		}
-		records = append(records, recordWithNames)
+		records = append(records, record)
 	}
 	return records, nil
 }
 
-func GetAttributeValue(input *types.QueryListRecordsRequest_ValueInput) interface{} {
-	if input.Type == "int" {
-		return input.GetInt()
+// TODO not recursive, and only should be if we want to support querying with whole sub-objects,
+// which seems unnecessary.
+func QueryValueToJSON(input *types.QueryListRecordsRequest_ValueInput) ([]byte, error) {
+	np := basicnode.Prototype.Any
+	nb := np.NewBuilder()
+
+	switch value := input.GetValue().(type) {
+	case *types.QueryListRecordsRequest_ValueInput_String_:
+		err := nb.AssignString(value.String_)
+		if err != nil {
+			return nil, err
+		}
+	case *types.QueryListRecordsRequest_ValueInput_Int:
+		err := nb.AssignInt(value.Int)
+		if err != nil {
+			return nil, err
+		}
+	case *types.QueryListRecordsRequest_ValueInput_Float:
+		err := nb.AssignFloat(value.Float)
+		if err != nil {
+			return nil, err
+		}
+	case *types.QueryListRecordsRequest_ValueInput_Boolean:
+		err := nb.AssignBool(value.Boolean)
+		if err != nil {
+			return nil, err
+		}
+	case *types.QueryListRecordsRequest_ValueInput_Link:
+		link := cidlink.Link{Cid: cid.MustParse(value.Link)}
+		err := nb.AssignLink(link)
+		if err != nil {
+			return nil, err
+		}
+	case *types.QueryListRecordsRequest_ValueInput_Array:
+		return nil, fmt.Errorf("recursive query values are not supported")
+	case *types.QueryListRecordsRequest_ValueInput_Map:
+		return nil, fmt.Errorf("recursive query values are not supported")
+	default:
+		return nil, fmt.Errorf("value has unexpected type %T", value)
 	}
-	if input.Type == "float" {
-		return input.GetFloat()
+
+	n := nb.Build()
+	var buf bytes.Buffer
+	if err := dagjson.Encode(n, &buf); err != nil {
+		return nil, fmt.Errorf("encoding value to JSON failed: %w", err)
 	}
-	if input.Type == "string" {
-		return input.GetString_()
-	}
-	if input.Type == "boolean" {
-		return input.GetBoolean()
-	}
-	if input.Type == "reference" {
-		return input.GetReference().GetId()
-	}
-	return nil
+	return buf.Bytes(), nil
 }
 
 func getIntersection(a []string, b []string) []string {
@@ -240,9 +286,9 @@ func (k Keeper) GetRecordExpiryQueue(ctx sdk.Context) []*types.ExpiryQueueRecord
 }
 
 // ProcessSetRecord creates a record.
-func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.RecordType, error) {
+func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*types.ReadableRecord, error) {
 	payload := msg.Payload.ToReadablePayload()
-	record := types.RecordType{Attributes: payload.Record, BondID: msg.BondId}
+	record := types.ReadableRecord{Attributes: payload.RecordAttributes, BondID: msg.BondId}
 
 	// Check signatures.
 	resourceSignBytes, _ := record.GetSignBytes()
@@ -262,14 +308,12 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	for _, sig := range payload.Signatures {
 		pubKey, err := legacy.PubKeyFromBytes(helpers.BytesFromBase64(sig.PubKey))
 		if err != nil {
-			fmt.Println("Error decoding pubKey from bytes: ", err)
-			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Invalid public key.")
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprint("Error decoding pubKey from bytes: ", err))
 		}
 
 		sigOK := pubKey.VerifySignature(resourceSignBytes, helpers.BytesFromBase64(sig.Sig))
 		if !sigOK {
-			fmt.Println("Signature mismatch: ", sig.PubKey)
-			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "Invalid signature.")
+			return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, fmt.Sprint("Signature mismatch: ", sig.PubKey))
 		}
 		record.Owners = append(record.Owners, pubKey.Address().String())
 	}
@@ -283,11 +327,13 @@ func (k Keeper) ProcessSetRecord(ctx sdk.Context, msg types.MsgSetRecord) (*type
 	return &record, nil
 }
 
-func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenewal bool) error {
+func (k Keeper) processRecord(ctx sdk.Context, record *types.ReadableRecord, isRenewal bool) error {
 	params := k.GetParams(ctx)
 	rent := params.RecordRent
 
-	err := k.bondKeeper.TransferCoinsToModuleAccount(ctx, record.BondID, types.RecordRentModuleAccountName, sdk.NewCoins(rent))
+	err := k.bondKeeper.TransferCoinsToModuleAccount(
+		ctx, record.BondID, types.RecordRentModuleAccountName, sdk.NewCoins(rent),
+	)
 	if err != nil {
 		return err
 	}
@@ -302,7 +348,14 @@ func (k Keeper) processRecord(ctx sdk.Context, record *types.RecordType, isRenew
 	}
 	k.PutRecord(ctx, recordObj)
 
-	if err := k.ProcessAttributes(ctx, *record); err != nil {
+	// TODO look up/validate record type here
+
+	if err := k.processAttributes(ctx, record.Attributes, record.ID, ""); err != nil {
+		return err
+	}
+
+	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, []byte(record.ExpiryTime))
+	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
 		return err
 	}
 
@@ -323,65 +376,62 @@ func (k Keeper) PutRecord(ctx sdk.Context, record types.Record) {
 	k.updateBlockChangeSetForRecord(ctx, record.Id)
 }
 
-func (k Keeper) ProcessAttributes(ctx sdk.Context, record types.RecordType) error {
-	switch record.Attributes["type"] {
-	case "ServiceProviderRegistration":
-		{
-			// #nosec G705
-			for key := range record.Attributes {
-				if key == "x500" {
-					// #nosec G705
-					for x500Key, x500Val := range record.Attributes[key].(map[string]interface{}) {
-						indexKey := GetAttributesIndexKey(fmt.Sprintf("x500%s", x500Key), x500Val)
-						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-							return err
-						}
-					}
-				} else {
-					indexKey := GetAttributesIndexKey(key, record.Attributes[key])
-					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-						return err
-					}
-				}
-			}
-		}
-	case "WebsiteRegistrationRecord", "ApplicationRecord", "ApplicationDeploymentRequest",
-		"ApplicationDeploymentRecord", "ApplicationArtifact", "ApplicationDeploymentRemovalRequest",
-		"ApplicationDeploymentRemovalRecord", "DnsRecord", "GeneralRecord":
-		{
-			// #nosec G705
-			for key := range record.Attributes {
-				attr := record.Attributes[key]
-				if reflect.Slice == reflect.TypeOf(attr).Kind() {
-					av := attr.([]interface{})
-					for i := range av {
-						indexKey := GetAttributesIndexKey(key, av[i])
-						if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-							return err
-						}
-					}
-				} else {
-					indexKey := GetAttributesIndexKey(key, attr)
-					if err := k.SetAttributeMapping(ctx, indexKey, record.ID); err != nil {
-						return err
-					}
-				}
-			}
-		}
-	default:
-		return fmt.Errorf("unsupported record type %s", record.Attributes["type"])
-	}
-
-	expiryTimeKey := GetAttributesIndexKey(ExpiryTimeAttributeName, record.ExpiryTime)
-	if err := k.SetAttributeMapping(ctx, expiryTimeKey, record.ID); err != nil {
+func (k Keeper) processAttributes(ctx sdk.Context, attrs types.AttributeMap, id string, prefix string) error {
+	np := basicnode.Prototype.Map
+	nb := np.NewBuilder()
+	encAttrs, err := canonicaljson.Marshal(attrs)
+	if err != nil {
 		return err
 	}
+	if len(attrs) == 0 {
+		encAttrs = []byte("{}")
+	}
+	err = dagjson.Decode(nb, bytes.NewReader(encAttrs))
+	if err != nil {
+		return fmt.Errorf("failed to decode attributes: %w", err)
+	}
+	n := nb.Build()
+	if n.Kind() != ipld.Kind_Map {
+		return fmt.Errorf("record attributes must be a map, not %T", n.Kind())
+	}
 
+	return k.processAttributeMap(ctx, n, id, prefix)
+}
+
+func (k Keeper) processAttributeMap(ctx sdk.Context, n ipld.Node, id string, prefix string) error {
+	for it := n.MapIterator(); !it.Done(); {
+		//nolint:misspell
+		keynode, valuenode, err := it.Next()
+		if err != nil {
+			return err
+		}
+		key, err := keynode.AsString()
+		if err != nil {
+			return err
+		}
+
+		if valuenode.Kind() == ipld.Kind_Map {
+			err := k.processAttributeMap(ctx, valuenode, id, key)
+			if err != nil {
+				return err
+			}
+		} else {
+			var buf bytes.Buffer
+			if err := dagjson.Encode(valuenode, &buf); err != nil {
+				return err
+			}
+			value := buf.Bytes()
+			indexKey := GetAttributesIndexKey(prefix+key, value)
+			if err := k.SetAttributeMapping(ctx, indexKey, id); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
-func GetAttributesIndexKey(key string, value interface{}) []byte {
-	keyString := fmt.Sprintf("%s=%s", key, value)
+func GetAttributesIndexKey(key string, suffix []byte) []byte {
+	keyString := fmt.Sprintf("%s=%s", key, suffix)
 	return append(PrefixAttributesIndex, []byte(keyString)...)
 }
 
@@ -393,8 +443,6 @@ func (k Keeper) SetAttributeMapping(ctx sdk.Context, key []byte, recordID string
 		if err != nil {
 			return fmt.Errorf("cannot unmarshal byte array, error, %w", err)
 		}
-	} else {
-		recordIds = []string{}
 	}
 	recordIds = append(recordIds, recordID)
 	bz, err := json.Marshal(recordIds)
@@ -415,7 +463,7 @@ func (k Keeper) GetAttributeMapping(ctx sdk.Context, key []byte) ([]string, erro
 
 	var recordIds []string
 	if err := json.Unmarshal(store.Get(key), &recordIds); err != nil {
-		return nil, fmt.Errorf("cannont unmarshal byte array, error, %w", err)
+		return nil, fmt.Errorf("cannot unmarshal byte array, error, %w", err)
 	}
 
 	return recordIds, nil
@@ -593,7 +641,7 @@ func (k Keeper) GetModuleBalances(ctx sdk.Context) []*types.AccountBalance {
 	return balances
 }
 
-func recordObjToRecord(store sdk.KVStore, record types.Record) types.Record {
+func decodeRecordNames(store sdk.KVStore, record *types.Record) {
 	reverseNameIndexKey := GetCIDToNamesIndexKey(record.Id)
 
 	if store.Has(reverseNameIndexKey) {
@@ -604,6 +652,4 @@ func recordObjToRecord(store sdk.KVStore, record types.Record) types.Record {
 
 		record.Names = names
 	}
-
-	return record
 }

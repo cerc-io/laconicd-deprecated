@@ -2,7 +2,6 @@ package types
 
 import (
 	errorsmod "cosmossdk.io/errors"
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -14,13 +13,11 @@ var (
 	_ sdk.Msg = &MsgDissociateBond{}
 	_ sdk.Msg = &MsgDissociateRecords{}
 	_ sdk.Msg = &MsgReAssociateRecords{}
-
-	_ cdctypes.UnpackInterfacesMessage = &MsgSetRecord{}
 )
 
 // NewMsgSetRecord is the constructor function for MsgSetRecord.
-func NewMsgSetRecord(payload Payload, bondID string, signer sdk.AccAddress) MsgSetRecord {
-	return MsgSetRecord{
+func NewMsgSetRecord(payload Payload, bondID string, signer sdk.AccAddress) *MsgSetRecord {
+	return &MsgSetRecord{
 		Payload: payload,
 		BondId:  bondID,
 		Signer:  signer.String(),
@@ -59,12 +56,6 @@ func (msg MsgSetRecord) GetSigners() []sdk.AccAddress {
 func (msg MsgSetRecord) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(&msg)
 	return sdk.MustSortJSON(bz)
-}
-
-// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (msg MsgSetRecord) UnpackInterfaces(unpacker cdctypes.AnyUnpacker) error {
-	var attr Attributes
-	return unpacker.UnpackAny(msg.Payload.Record.Attributes, &attr)
 }
 
 // NewMsgRenewRecord is the constructor function for MsgRenewRecord.

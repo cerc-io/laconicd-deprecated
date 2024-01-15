@@ -16,8 +16,8 @@ var (
 )
 
 // NewMsgSetName is the constructor function for MsgSetName.
-func NewMsgSetName(crn string, cid string, signer sdk.AccAddress) MsgSetName {
-	return MsgSetName{
+func NewMsgSetName(crn string, cid string, signer sdk.AccAddress) *MsgSetName {
+	return &MsgSetName{
 		Crn:    crn,
 		Cid:    cid,
 		Signer: signer.String(),

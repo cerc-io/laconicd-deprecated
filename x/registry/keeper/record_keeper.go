@@ -39,14 +39,14 @@ func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string)
 	name := k.GetAuctionToAuthorityMapping(ctx, auctionID)
 	if name == "" {
 		// We don't know about this auction, ignore.
-		ctx.Logger().Info(fmt.Sprintf("Ignoring auction notification, name mapping not found: %s", auctionID))
+		logger(ctx).Info(fmt.Sprintf("Ignoring auction notification, name mapping not found: %s", auctionID))
 		return
 	}
 
 	store := ctx.KVStore(k.storeKey)
 	if !HasNameAuthority(store, name) {
 		// We don't know about this authority, ignore.
-		ctx.Logger().Info(fmt.Sprintf("Ignoring auction notification, authority not found: %s", auctionID))
+		logger(ctx).Info(fmt.Sprintf("Ignoring auction notification, authority not found: %s", auctionID))
 		return
 	}
 
@@ -71,12 +71,12 @@ func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string)
 			// Can be used to check if names are older than the authority itself (stale names).
 			authority.Height = uint64(ctx.BlockHeight())
 
-			ctx.Logger().Info(fmt.Sprintf("Winner selected, marking authority as active: %s", name))
+			logger(ctx).Info(fmt.Sprintf("Winner selected, marking authority as active: %s", name))
 		} else {
 			// Mark as expired.
 			authority.Status = types.AuthorityExpired
 
-			ctx.Logger().Info(fmt.Sprintf("No winner, marking authority as expired: %s", name))
+			logger(ctx).Info(fmt.Sprintf("No winner, marking authority as expired: %s", name))
 		}
 
 		authority.AuctionId = ""
@@ -85,7 +85,7 @@ func (k RecordKeeper) OnAuctionWinnerSelected(ctx sdk.Context, auctionID string)
 		// Forget about this auction now, we no longer need it.
 		removeAuctionToAuthorityMapping(store, auctionID)
 	} else {
-		ctx.Logger().Info(fmt.Sprintf("Ignoring auction notification, status: %s", auctionObj.Status))
+		logger(ctx).Info(fmt.Sprintf("Ignoring auction notification, status: %s", auctionObj.Status))
 	}
 }
 
@@ -147,9 +147,10 @@ func (k RecordKeeper) QueryRecordsByBond(ctx sdk.Context, bondID string) []types
 		cid := itr.Key()[len(bondIDPrefix):]
 		bz := store.Get(append(PrefixCIDToRecordIndex, cid...))
 		if bz != nil {
-			var obj types.Record
-			k.cdc.MustUnmarshal(bz, &obj)
-			records = append(records, recordObjToRecord(store, obj))
+			var record types.Record
+			k.cdc.MustUnmarshal(bz, &record)
+			decodeRecordNames(store, &record)
+			records = append(records, record)
 		}
 	}
 
@@ -173,7 +174,7 @@ func (k Keeper) ProcessRenewRecord(ctx sdk.Context, msg types.MsgRenewRecord) er
 		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "Renewal not required.")
 	}
 
-	recordType := record.ToRecordType()
+	recordType := record.ToReadableRecord()
 	err = k.processRecord(ctx, &recordType, true)
 	if err != nil {
 		return err

@@ -611,7 +611,7 @@ func (k Keeper) ProcessAuthorityExpiryQueue(ctx sdk.Context) {
 			k.SetNameAuthority(ctx, name, &authority)
 			k.DeleteAuthorityExpiryQueue(ctx, name, authority)
 
-			ctx.Logger().Info(fmt.Sprintf("Marking authority expired as no bond present: %s", name))
+			k.Logger(ctx).Info(fmt.Sprintf("Marking authority expired as no bond present: %s", name))
 
 			return
 		}
@@ -672,7 +672,7 @@ func (k Keeper) AuthorityExpiryQueueIterator(ctx sdk.Context, endTime time.Time)
 
 // TryTakeAuthorityRent tries to take rent from the authority bond.
 func (k Keeper) TryTakeAuthorityRent(ctx sdk.Context, name string, authority types.NameAuthority) {
-	ctx.Logger().Info(fmt.Sprintf("Trying to take rent for authority: %s", name))
+	k.Logger(ctx).Info(fmt.Sprintf("Trying to take rent for authority: %s", name))
 
 	params := k.GetParams(ctx)
 	rent := params.AuthorityRent
@@ -684,7 +684,7 @@ func (k Keeper) TryTakeAuthorityRent(ctx sdk.Context, name string, authority typ
 		k.SetNameAuthority(ctx, name, &authority)
 		k.DeleteAuthorityExpiryQueue(ctx, name, authority)
 
-		ctx.Logger().Info(fmt.Sprintf("Insufficient funds in owner account to pay authority rent, marking as expired: %s", name))
+		k.Logger(ctx).Info(fmt.Sprintf("Insufficient funds in owner account to pay authority rent, marking as expired: %s", name))
 
 		return
 	}
@@ -699,7 +699,7 @@ func (k Keeper) TryTakeAuthorityRent(ctx sdk.Context, name string, authority typ
 	k.SetNameAuthority(ctx, name, &authority)
 	k.AddBondToAuthorityIndexEntry(ctx, authority.BondId, name)
 
-	ctx.Logger().Info(fmt.Sprintf("Authority rent paid successfully: %s", name))
+	k.Logger(ctx).Info(fmt.Sprintf("Authority rent paid successfully: %s", name))
 }
 
 // ListNameAuthorityRecords - get all name authority records.

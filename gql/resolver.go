@@ -121,7 +121,7 @@ func (q queryResolver) QueryRecords(ctx context.Context, attributes []*KeyValueI
 	res, err := nsQueryClient.ListRecords(
 		context.Background(),
 		&registrytypes.QueryListRecordsRequest{
-			Attributes: parseRequestAttributes(attributes),
+			Attributes: toRPCAttributes(attributes),
 			All:        (all != nil && *all),
 		},
 	)

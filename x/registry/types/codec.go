@@ -39,65 +39,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		&MsgReAssociateRecords{},
 	)
 
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ServiceProvideRegistration",
-		(*Attributes)(nil),
-		&ServiceProviderRegistration{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.WebsiteRegistrationRecord",
-		(*Attributes)(nil),
-		&WebsiteRegistrationRecord{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ApplicationRecord",
-		(*Attributes)(nil),
-		&ApplicationRecord{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ApplicationDeploymentRequest",
-		(*Attributes)(nil),
-		&ApplicationDeploymentRequest{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ApplicationDeploymentRecord",
-		(*Attributes)(nil),
-		&ApplicationDeploymentRecord{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ApplicationArtifact",
-		(*Attributes)(nil),
-		&ApplicationArtifact{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ApplicationDeploymentRemovalRequest",
-		(*Attributes)(nil),
-		&ApplicationDeploymentRemovalRequest{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.ApplicationDeploymentRemovalRecord",
-		(*Attributes)(nil),
-		&ApplicationDeploymentRemovalRecord{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.DnsRecord",
-		(*Attributes)(nil),
-		&DnsRecord{},
-	)
-
-	registry.RegisterInterface(
-		"vulcanize.registry.v1beta1.GeneralRecord",
-		(*Attributes)(nil),
-		&GeneralRecord{},
-	)
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 

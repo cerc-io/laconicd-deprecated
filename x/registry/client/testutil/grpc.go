@@ -62,7 +62,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryWhoIs() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -182,7 +182,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryLookup() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -254,7 +254,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryRecordExpiryQueue() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -326,7 +326,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryAuthorityExpiryQueue() {
 	}
 }
 
-//nolint: all
+//nolint:all
 func (s *IntegrationTestSuite) TestGRPCQueryListRecords() {
 	val := s.network.Validators[0]
 	sr := s.Require()
@@ -435,7 +435,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryGetRecordByID() {
 				}
 				out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
 				sr.NoError(err)
-				var records []nstypes.RecordType
+				var records []nstypes.ReadableRecord
 				err = json.Unmarshal(out.Bytes(), &records)
 				sr.NoError(err)
 				return records[0].ID

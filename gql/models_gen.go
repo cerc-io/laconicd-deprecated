@@ -2,12 +2,27 @@
 
 package gql
 
+type Value interface {
+	IsValue()
+}
+
 type Account struct {
 	Address  string  `json:"address"`
 	PubKey   *string `json:"pubKey"`
 	Number   string  `json:"number"`
 	Sequence string  `json:"sequence"`
 	Balance  []*Coin `json:"balance"`
+}
+
+type ArrayValue struct {
+	Value []Value `json:"value"`
+}
+
+func (ArrayValue) IsValue() {}
+
+type Attribute struct {
+	Key   string `json:"key"`
+	Value Value  `json:"value"`
 }
 
 type Auction struct {
@@ -53,20 +68,51 @@ type Bond struct {
 	Balance []*Coin `json:"balance"`
 }
 
+type BooleanValue struct {
+	Value bool `json:"value"`
+}
+
+func (BooleanValue) IsValue() {}
+
+type BytesValue struct {
+	Value string `json:"value"`
+}
+
+func (BytesValue) IsValue() {}
+
 type Coin struct {
 	Type     string `json:"type"`
 	Quantity string `json:"quantity"`
 }
 
-type KeyValue struct {
-	Key   string `json:"key"`
-	Value *Value `json:"value"`
+type FloatValue struct {
+	Value float64 `json:"value"`
 }
+
+func (FloatValue) IsValue() {}
+
+type IntValue struct {
+	Value int `json:"value"`
+}
+
+func (IntValue) IsValue() {}
 
 type KeyValueInput struct {
 	Key   string      `json:"key"`
 	Value *ValueInput `json:"value"`
 }
+
+type LinkValue struct {
+	Value Link `json:"value"`
+}
+
+func (LinkValue) IsValue() {}
+
+type MapValue struct {
+	Value []*Attribute `json:"value"`
+}
+
+func (MapValue) IsValue() {}
 
 type NameRecord struct {
 	Latest  *NameRecordEntry   `json:"latest"`
@@ -96,22 +142,14 @@ type PeerInfo struct {
 }
 
 type Record struct {
-	ID         string      `json:"id"`
-	Names      []string    `json:"names"`
-	BondID     string      `json:"bondId"`
-	CreateTime string      `json:"createTime"`
-	ExpiryTime string      `json:"expiryTime"`
-	Owners     []string    `json:"owners"`
-	Attributes []*KeyValue `json:"attributes"`
-	References []*Record   `json:"references"`
-}
-
-type Reference struct {
-	ID string `json:"id"`
-}
-
-type ReferenceInput struct {
-	ID string `json:"id"`
+	ID         string       `json:"id"`
+	Names      []string     `json:"names"`
+	BondID     string       `json:"bondId"`
+	CreateTime string       `json:"createTime"`
+	ExpiryTime string       `json:"expiryTime"`
+	Owners     []string     `json:"owners"`
+	Attributes []*Attribute `json:"attributes"`
+	References []*Record    `json:"references"`
 }
 
 type Status struct {
@@ -124,6 +162,12 @@ type Status struct {
 	Peers      []*PeerInfo      `json:"peers"`
 	DiskUsage  string           `json:"disk_usage"`
 }
+
+type StringValue struct {
+	Value string `json:"value"`
+}
+
+func (StringValue) IsValue() {}
 
 type SyncInfo struct {
 	LatestBlockHash   string `json:"latest_block_hash"`
@@ -138,23 +182,12 @@ type ValidatorInfo struct {
 	ProposerPriority *string `json:"proposer_priority"`
 }
 
-type Value struct {
-	Null      *bool      `json:"null"`
-	Int       *int       `json:"int"`
-	Float     *float64   `json:"float"`
-	String    *string    `json:"string"`
-	Boolean   *bool      `json:"boolean"`
-	JSON      *string    `json:"json"`
-	Reference *Reference `json:"reference"`
-	Values    []*Value   `json:"values"`
-}
-
 type ValueInput struct {
-	Null      *bool           `json:"null"`
-	Int       *int            `json:"int"`
-	Float     *float64        `json:"float"`
-	String    *string         `json:"string"`
-	Boolean   *bool           `json:"boolean"`
-	Reference *ReferenceInput `json:"reference"`
-	Values    []*ValueInput   `json:"values"`
+	Int     *int             `json:"int"`
+	Float   *float64         `json:"float"`
+	String  *string          `json:"string"`
+	Boolean *bool            `json:"boolean"`
+	Link    *Link            `json:"link"`
+	Array   []*ValueInput    `json:"array"`
+	Map     []*KeyValueInput `json:"map"`
 }

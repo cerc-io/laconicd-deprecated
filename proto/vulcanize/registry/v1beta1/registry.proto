@@ -5,7 +5,6 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "google/protobuf/any.proto";
 
 option go_package = "github.com/cerc-io/laconicd/x/registry/types";
 
@@ -64,7 +63,7 @@ message Record {
   string              expiry_time = 4 [(gogoproto.moretags) = "json:\"expiryTime\" yaml:\"expiryTime\""];
   bool                deleted     = 5;
   repeated string     owners      = 6 [(gogoproto.moretags) = "json:\"owners\" yaml:\"owners\""];
-  google.protobuf.Any attributes  = 7 [(gogoproto.moretags) = "json:\"attributes\" yaml:\"attributes\""];
+  bytes               attributes  = 7 [(gogoproto.moretags) = "json:\"attributes\" yaml:\"attributes\""];
   repeated string     names       = 8 [(gogoproto.moretags) = "json:\"names\" yaml:\"names\""];
   string              type        = 9 [(gogoproto.moretags) = "json:\"types\" yaml:\"types\""];
 }

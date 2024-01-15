@@ -1,5 +1,3 @@
-# .gqlgen.yml example
-#
 # Refer to https://gqlgen.com/config/
 # for detailed .gqlgen.yml documentation.
 
@@ -12,3 +10,8 @@ model:
 resolver:
   filename: resolver.go
   type: Resolver
+
+models:
+  Link:
+    model:
+      - github.com/cerc-io/laconicd/gql.Link

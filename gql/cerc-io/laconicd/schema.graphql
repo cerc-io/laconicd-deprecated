@@ -1,12 +1,5 @@
 # Reference to another record.
-type Reference {
-  id: String! # ID of linked record.
-}
-
-# Reference to another record.
-input ReferenceInput {
-  id: String!
-}
+scalar Link
 
 # Bonds contain funds that are used to pay rent on record registration and renewal.
 type Bond {
@@ -37,44 +30,71 @@ type Account {
   balance: [Coin!] # Current balance for each coin type.
 }
 
-# Value of a given type.
-type Value {
-  null: Boolean
+# Value describes a DAG-JSON compatible value.
+union Value =
+   BooleanValue
+ | IntValue
+ | FloatValue
+ | StringValue
+ | BytesValue
+ | LinkValue
+ | ArrayValue
+ | MapValue
 
-  int: Int
-  float: Float
-  string: String
-  boolean: Boolean
-  json: String
-
-  reference: Reference
-
-  values: [Value]
+type BooleanValue {
+  value: Boolean!
 }
-# Value of a given type used as input to queries.
-input ValueInput {
-  null: Boolean
 
-  int: Int
-  float: Float
-  string: String
-  boolean: Boolean
+type IntValue {
+  value: Int!
+}
 
-  reference: ReferenceInput
+type FloatValue {
+  value: Float!
+}
 
-  values: [ValueInput]
+type StringValue {
+  value: String!
+}
+
+type BytesValue {
+  value: String!
+}
+
+type ArrayValue {
+  value: [Value]!
+}
+
+type LinkValue {
+  value: Link!
+}
+
+type MapValue {
+  value: [Attribute!]!
 }
 
 # Key/value pair.
-type KeyValue {
+type Attribute {
   key: String!
-  value: Value!
+  value: Value
+}
+
+# Value of a given type used as input to queries.
+# Note: GQL doesn't allow union input types.
+input ValueInput {
+  int: Int
+  float: Float
+  string: String
+  boolean: Boolean
+  link: Link
+  array: [ValueInput]
+  map: [KeyValueInput!]
 }
 
 # Key/value pair for inputs.
 input KeyValueInput {
   key: String!
-  value: ValueInput!
+  value: ValueInput
 }
 
 # Status information about a node (https://docs.tendermint.com/master/rpc/#/Info/status).
@@ -155,7 +175,7 @@ type Record {
   createTime: String! # Record create time.
   expiryTime: String! # Record expiry time.
   owners: [String!] # Addresses of record owners.
-  attributes: [KeyValue] # Record attributes.
+  attributes: [Attribute!] # Record attributes.
   references: [Record] # Record references.
 }
 
@@ -195,7 +215,7 @@ type Query {
   getBondsByIds(ids: [String!]): [Bond]
 
   # Query bonds.
-  queryBonds(attributes: [KeyValueInput]): [Bond]
+  queryBonds(attributes: [KeyValueInput!]): [Bond]
 
   # Query bonds by owner.
   queryBondsByOwner(ownerAddresses: [String!]): [OwnerBonds]
@@ -210,7 +230,7 @@ type Query {
   # Query records.
   queryRecords(
     # Multiple attribute conditions are in a logical AND.
-    attributes: [KeyValueInput]
+    attributes: [KeyValueInput!]
 
     # Whether to query all records, not just named ones (false by default).
     all: Boolean
