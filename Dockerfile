@@ -27,4 +27,4 @@ COPY --from=build-env /go/src/github.com/cerc-io/laconicd/build/laconicd /usr/bi
 
 WORKDIR /
 # Run laconicd by default
-ENTRYPOINT ["laconicd"]
+CMD ["laconicd"]
