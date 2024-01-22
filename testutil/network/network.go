@@ -519,6 +519,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 
 	l.Log("starting test network...")
 	for _, v := range network.Validators {
+		l.Log("starting validator:", v.Moniker)
 		err := startInProcess(cfg, v)
 		if err != nil {
 			return nil, err

@@ -72,7 +72,7 @@ ifeq ($(ENABLE_ROCKSDB),true)
   BUILD_TAGS += rocksdb_build
   test_tags += rocksdb_build
 else
-  $(warning RocksDB support is disabled; to build and test with RocksDB support, set ENABLE_ROCKSDB=true)
+  $(info RocksDB support is disabled; to build and test with RocksDB support, set ENABLE_ROCKSDB=true)
 endif
 
 # DB backend selection
@@ -145,7 +145,7 @@ docker-build:
 	# update old container
 	docker rm laconicd || true
 	# create a new container from the latest image
-	docker create --name laconic -t -i cerc-io/laconicd:latest laconicd
+	docker create --name laconic -t -i ${DOCKER_IMAGE}:${DOCKER_TAG} laconicd
 	# move the binaries to the ./build directory
 	mkdir -p ./build/
 	docker cp laconic:/usr/bin/laconicd ./build/
@@ -316,7 +316,7 @@ TEST_TARGETS := test-unit test-unit-cover test-race
 # Test runs-specific rules. To add a new test target, just add
 # a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
 # append the new rule to the TEST_TARGETS list.
-test-unit: ARGS=-timeout=10m -race
+test-unit: ARGS=-timeout=10m -race -test.v
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 test-race: ARGS=-race

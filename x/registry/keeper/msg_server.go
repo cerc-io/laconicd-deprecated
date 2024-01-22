@@ -25,11 +25,7 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		return nil, err
 	}
 
-	record, err := m.Keeper.ProcessSetRecord(ctx, types.MsgSetRecord{
-		BondId:  msg.GetBondId(),
-		Signer:  msg.GetSigner(),
-		Payload: msg.GetPayload(),
-	})
+	record, err := m.Keeper.ProcessSetRecord(ctx, *msg)
 	if err != nil {
 		return nil, err
 	}
