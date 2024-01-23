@@ -29,10 +29,12 @@ jobs:
         working-directory: laconic-sdk
         run: ./scripts/build-sdk-test-container.sh
 
-      - name: Start containers
+      - name: Start containers (auctions enabled)
         working-directory: tests/sdk_tests
+        env:
+          TEST_AUCTION_ENABLED: true
         run: docker compose up -d
 
-      - name: Run tests
+      - name: Run auction tests
         working-directory: tests/sdk_tests
-        run: ./run-tests.sh
+        run: ./run-tests.sh test:auctions
