@@ -1,0 +1,23 @@
+name: Tests
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release/**
+
+jobs:
+  test-unit:
+    # This test case doesn't work in CI, run as root.
+    env:
+      SKIP_UNIT_TESTS: TestInitConfigNonNotExistError
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+          check-latest: true
+      - uses: actions/checkout@v3
+      - name: Test
+        run: |
+          make test-unit
