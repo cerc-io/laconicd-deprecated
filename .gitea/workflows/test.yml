@@ -1,0 +1,99 @@
+name: Tests
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - release/**
+
+jobs:
+  test-unit:
+    # This test case doesn't work in CI, run as root.
+    env:
+      SKIP_UNIT_TESTS: TestInitConfigNonNotExistError
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+          check-latest: true
+      - uses: actions/checkout@v3
+      - name: Test
+        run: |
+          make test-unit
+
+  test-importer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+          check-latest: true
+      - uses: actions/checkout@v3
+      - name: test-importer
+        run: |
+          make test-import
+
+  test-rpc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+          check-latest: true
+      - uses: actions/checkout@v3
+      - name: Test rpc endpoint
+        run: |
+          make test-rpc
+
+  sdk_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Checkout laconic-sdk
+        uses: actions/checkout@v3
+        with:
+          path: "./laconic-sdk/"
+          repository: cerc-io/laconic-sdk
+          fetch-depth: 0
+          ref: main
+      - name: Environment
+        run: ls -tlh && env
+
+      - name: Build laconicd container
+        working-directory: tests/sdk_tests
+        run: ./build-laconicd-container.sh
+
+      - name: Build laconic-sdk container
+        working-directory: laconic-sdk
+        run: ./scripts/build-sdk-test-container.sh
+
+      - name: Start containers
+        working-directory: tests/sdk_tests
+        run: docker compose up -d
+
+      - name: Run tests
+        working-directory: tests/sdk_tests
+        run: ./run-tests.sh
+
+      - name: Start containers (auctions enabled)
+        working-directory: tests/sdk_tests
+        env:
+          TEST_AUCTION_ENABLED: true
+        run: docker compose up -d
+
+      - name: Run auction tests
+        working-directory: tests/sdk_tests
+        run: ./run-tests.sh test:auctions
+
+      - name: Start containers (expiry enabled)
+        working-directory: tests/sdk_tests
+        env:
+          TEST_REGISTRY_EXPIRY: true
+        run: docker compose up -d
+
+      - name: Run nameservice expiry tests
+        working-directory: tests/sdk_tests
+        run: ./run-tests.sh test:nameservice-expiry

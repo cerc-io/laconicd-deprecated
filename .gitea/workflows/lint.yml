@@ -16,23 +16,15 @@ jobs:
       # Required: setup-go, for all versions v3.0.0+ of golangci-lint
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.19
+          go-version: 1.21
           check-latest: true
       - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.2
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
       - uses: golangci/golangci-lint-action@v3.3.1
         with:
           # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: latest
           args: --timeout 10m
           github-token: ${{ secrets.github_token }}
-        # Check only if there are differences in the source code
-        if: env.GIT_DIFF
 
   python-lint:
     # For compatibility with Gitea
@@ -46,10 +38,5 @@ jobs:
       - uses: cachix/cachix-action@v12
         with:
           name: ethermint
-      - uses: technote-space/get-diff-action@v6.1.2
-        with:
-          PATTERNS: |
-            **/**.py
       - run: |
           nix-shell -I nixpkgs=./nix -p test-env --run "make lint-py"
-        if: env.GIT_DIFF

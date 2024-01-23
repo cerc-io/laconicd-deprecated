@@ -316,7 +316,7 @@ TEST_TARGETS := test-unit test-unit-cover test-race
 # Test runs-specific rules. To add a new test target, just add
 # a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
 # append the new rule to the TEST_TARGETS list.
-test-unit: ARGS=-timeout=10m -race -test.v
+test-unit: ARGS=-timeout=10m -race -test.v -skip $(SKIP_UNIT_TESTS)
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
 
 test-race: ARGS=-race
@@ -334,7 +334,7 @@ else
 endif
 
 test-import:
-	go test -run TestImporterTestSuite -v --vet=off github.com/cerc-io/laconicd/tests/importer
+	go test -run TestImporterTestSuite -timeout=20m -v --vet=off github.com/cerc-io/laconicd/tests/importer
 
 test-rpc:
 	./scripts/integration-test-all.sh -t "rpc" -q 1 -z 1 -s 2 -m "rpc" -r "true"
