@@ -35,9 +35,6 @@ jobs:
         if: env.GIT_DIFF
 
   python-lint:
-    # For compatibility with Gitea
-    env:
-      USER: root
     name: Run flake8 on python integration tests
     runs-on: ubuntu-latest
     steps:
