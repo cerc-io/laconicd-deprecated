@@ -13,7 +13,7 @@
 ##
 ## Example:
 ##
-## ❯ scripts/create-and-fund-account.sh 1000000000
+## $ scripts/create-and-fund-account.sh 1000000000
 ## {
 ##   "name": "68334d7175fd4f86befa4902657e5270",
 ##   "type": "local",
