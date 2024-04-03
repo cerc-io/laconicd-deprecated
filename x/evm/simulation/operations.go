@@ -32,11 +32,10 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-// #nosec 101
 const (
-	OpWeightMsgEthSimpleTransfer = "op_weight_msg_eth_simple_transfer"
-	OpWeightMsgEthCreateContract = "op_weight_msg_eth_create_contract"
-	OpWeightMsgEthCallContract   = "op_weight_msg_eth_call_contract"
+	OpWeightMsgEthSimpleTransfer = "op_weight_msg_eth_simple_transfer" // #nosec G101
+	OpWeightMsgEthCreateContract = "op_weight_msg_eth_create_contract" // #nosec G101
+	OpWeightMsgEthCallContract   = "op_weight_msg_eth_call_contract"   // #nosec G101
 )
 
 const (

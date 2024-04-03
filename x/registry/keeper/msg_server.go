@@ -2,9 +2,12 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/cerc-io/laconicd/x/registry/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cerc-io/laconicd/utils"
+	"github.com/cerc-io/laconicd/x/registry/types"
 )
 
 type msgServer struct {
@@ -20,6 +23,8 @@ var _ types.MsgServer = msgServer{}
 
 func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types.MsgSetRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -44,12 +49,15 @@ func (m msgServer) SetRecord(c context.Context, msg *types.MsgSetRecord) (*types
 		),
 	})
 
+	m.logTxGasConsumed(ctx, "SetRecord")
+
 	return &types.MsgSetRecordResponse{Id: record.ID}, nil
 }
 
-//nolint: all
 func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.MsgSetNameResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -71,11 +79,16 @@ func (m msgServer) SetName(c context.Context, msg *types.MsgSetName) (*types.Msg
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "SetName")
+
 	return &types.MsgSetNameResponse{}, nil
 }
 
 func (m msgServer) ReserveName(c context.Context, msg *types.MsgReserveAuthority) (*types.MsgReserveAuthorityResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -101,12 +114,16 @@ func (m msgServer) ReserveName(c context.Context, msg *types.MsgReserveAuthority
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "ReserveName")
+
 	return &types.MsgReserveAuthorityResponse{}, nil
 }
 
-//nolint: all
 func (m msgServer) SetAuthorityBond(c context.Context, msg *types.MsgSetAuthorityBond) (*types.MsgSetAuthorityBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -128,11 +145,16 @@ func (m msgServer) SetAuthorityBond(c context.Context, msg *types.MsgSetAuthorit
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "SetAuthorityBond")
+
 	return &types.MsgSetAuthorityBondResponse{}, nil
 }
 
 func (m msgServer) DeleteName(c context.Context, msg *types.MsgDeleteNameAuthority) (*types.MsgDeleteNameAuthorityResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -153,11 +175,16 @@ func (m msgServer) DeleteName(c context.Context, msg *types.MsgDeleteNameAuthori
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "DeleteName")
+
 	return &types.MsgDeleteNameAuthorityResponse{}, nil
 }
 
 func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*types.MsgRenewRecordResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -178,12 +205,16 @@ func (m msgServer) RenewRecord(c context.Context, msg *types.MsgRenewRecord) (*t
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "RenewRecord")
+
 	return &types.MsgRenewRecordResponse{}, nil
 }
 
-//nolint: all
 func (m msgServer) AssociateBond(c context.Context, msg *types.MsgAssociateBond) (*types.MsgAssociateBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -206,11 +237,16 @@ func (m msgServer) AssociateBond(c context.Context, msg *types.MsgAssociateBond)
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "AssociateBond")
+
 	return &types.MsgAssociateBondResponse{}, nil
 }
 
 func (m msgServer) DissociateBond(c context.Context, msg *types.MsgDissociateBond) (*types.MsgDissociateBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -231,11 +267,16 @@ func (m msgServer) DissociateBond(c context.Context, msg *types.MsgDissociateBon
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "DissociateBond")
+
 	return &types.MsgDissociateBondResponse{}, nil
 }
 
 func (m msgServer) DissociateRecords(c context.Context, msg *types.MsgDissociateRecords) (*types.MsgDissociateRecordsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -256,11 +297,16 @@ func (m msgServer) DissociateRecords(c context.Context, msg *types.MsgDissociate
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "DissociateRecords")
+
 	return &types.MsgDissociateRecordsResponse{}, nil
 }
 
 func (m msgServer) ReAssociateRecords(c context.Context, msg *types.MsgReAssociateRecords) (*types.MsgReAssociateRecordsResponse, error) { //nolint: all
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	_, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -282,5 +328,13 @@ func (m msgServer) ReAssociateRecords(c context.Context, msg *types.MsgReAssocia
 			sdk.NewAttribute(types.AttributeKeySigner, msg.Signer),
 		),
 	})
+
+	m.logTxGasConsumed(ctx, "ReAssociateRecords")
+
 	return &types.MsgReAssociateRecordsResponse{}, nil
+}
+
+func (m msgServer) logTxGasConsumed(ctx sdk.Context, tx string) {
+	gasConsumed := ctx.GasMeter().GasConsumed()
+	m.Keeper.Logger(ctx).Info("tx executed", "method", tx, "gas_consumed", fmt.Sprintf("%d", gasConsumed))
 }

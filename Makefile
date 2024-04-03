@@ -389,7 +389,7 @@ format-fix:
 ###############################################################################
 
 # ------
-# NOTE: Link to the tendermintdev/sdk-proto-gen docker images: 
+# NOTE: Link to the tendermintdev/sdk-proto-gen docker images:
 #       https://hub.docker.com/r/tendermintdev/sdk-proto-gen/tags
 #
 protoVer=v0.7

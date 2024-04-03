@@ -8,7 +8,6 @@ linters:
     - bodyclose
 #    - depguard # 20231120 disable until https://github.com/golangci/golangci-lint/issues/3906 is released
     - dogsled
-    - dupl
     - errcheck
     - goconst
     - gocritic

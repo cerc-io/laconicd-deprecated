@@ -2,9 +2,12 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/cerc-io/laconicd/x/bond/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cerc-io/laconicd/utils"
+	"github.com/cerc-io/laconicd/x/bond/types"
 )
 
 type msgServer struct {
@@ -20,6 +23,8 @@ var _ types.MsgServer = msgServer{}
 
 func (k msgServer) CreateBond(c context.Context, msg *types.MsgCreateBond) (*types.MsgCreateBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -42,12 +47,15 @@ func (k msgServer) CreateBond(c context.Context, msg *types.MsgCreateBond) (*typ
 		),
 	})
 
+	k.logTxGasConsumed(ctx, "CreateBond")
+
 	return &types.MsgCreateBondResponse{}, nil
 }
 
-//nolint: all
 func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*types.MsgRefillBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -72,12 +80,15 @@ func (k msgServer) RefillBond(c context.Context, msg *types.MsgRefillBond) (*typ
 		),
 	})
 
+	k.logTxGasConsumed(ctx, "RefillBond")
+
 	return &types.MsgRefillBondResponse{}, nil
 }
 
-//nolint: all
 func (k msgServer) WithdrawBond(c context.Context, msg *types.MsgWithdrawBond) (*types.MsgWithdrawBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -102,11 +113,15 @@ func (k msgServer) WithdrawBond(c context.Context, msg *types.MsgWithdrawBond) (
 		),
 	})
 
+	k.logTxGasConsumed(ctx, "WithdrawBond")
+
 	return &types.MsgWithdrawBondResponse{}, nil
 }
 
 func (k msgServer) CancelBond(c context.Context, msg *types.MsgCancelBond) (*types.MsgCancelBondResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
+
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
 		return nil, err
@@ -129,5 +144,12 @@ func (k msgServer) CancelBond(c context.Context, msg *types.MsgCancelBond) (*typ
 		),
 	})
 
+	k.logTxGasConsumed(ctx, "CancelBond")
+
 	return &types.MsgCancelBondResponse{}, nil
+}
+
+func (k msgServer) logTxGasConsumed(ctx sdk.Context, tx string) {
+	gasConsumed := ctx.GasMeter().GasConsumed()
+	k.Keeper.Logger(ctx).Info("tx executed", "method", tx, "gas_consumed", fmt.Sprintf("%d", gasConsumed))
 }

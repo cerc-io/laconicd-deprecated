@@ -2,9 +2,11 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/cerc-io/laconicd/utils"
 	"github.com/cerc-io/laconicd/x/auction/types"
 )
 
@@ -20,6 +22,7 @@ var _ types.MsgServer = msgServer{}
 
 func (s msgServer) CreateAuction(c context.Context, msg *types.MsgCreateAuction) (*types.MsgCreateAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
 
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
@@ -46,13 +49,15 @@ func (s msgServer) CreateAuction(c context.Context, msg *types.MsgCreateAuction)
 		),
 	})
 
+	s.logTxGasConsumed(ctx, "CreateAuction")
+
 	return &types.MsgCreateAuctionResponse{Auction: resp}, nil
 }
 
 // CommitBid is the command for committing a bid
-//nolint: all
 func (s msgServer) CommitBid(c context.Context, msg *types.MsgCommitBid) (*types.MsgCommitBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
 
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
@@ -77,13 +82,15 @@ func (s msgServer) CommitBid(c context.Context, msg *types.MsgCommitBid) (*types
 		),
 	})
 
+	s.logTxGasConsumed(ctx, "CommitBid")
+
 	return &types.MsgCommitBidResponse{Bid: resp}, nil
 }
 
-//RevealBid is the command for revealing a bid
-//nolint: all
+// RevealBid is the command for revealing a bid
 func (s msgServer) RevealBid(c context.Context, msg *types.MsgRevealBid) (*types.MsgRevealBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+	ctx = *utils.CtxWithCustomKVGasConfig(&ctx)
 
 	signerAddress, err := sdk.AccAddressFromBech32(msg.Signer)
 	if err != nil {
@@ -108,5 +115,12 @@ func (s msgServer) RevealBid(c context.Context, msg *types.MsgRevealBid) (*types
 		),
 	})
 
+	s.logTxGasConsumed(ctx, "RevealBid")
+
 	return &types.MsgRevealBidResponse{Auction: resp}, nil
+}
+
+func (s msgServer) logTxGasConsumed(ctx sdk.Context, tx string) {
+	gasConsumed := ctx.GasMeter().GasConsumed()
+	s.Keeper.Logger(ctx).Info("tx executed", "method", tx, "gas_consumed", fmt.Sprintf("%d", gasConsumed))
 }

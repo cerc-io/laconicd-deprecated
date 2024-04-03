@@ -94,11 +94,10 @@ func (s *websocketsServer) Start() {
 
 	go func() {
 		var err error
-		/* #nosec G114 -- http functions have no support for timeouts */
 		if s.certFile == "" || s.keyFile == "" {
-			err = http.ListenAndServe(s.wsAddr, ws)
+			err = http.ListenAndServe(s.wsAddr, ws) /* #nosec G114 -- http functions have no support for timeouts */
 		} else {
-			err = http.ListenAndServeTLS(s.wsAddr, s.certFile, s.keyFile, ws)
+			err = http.ListenAndServeTLS(s.wsAddr, s.certFile, s.keyFile, ws) // #nosec G114
 		}
 
 		if err != nil {

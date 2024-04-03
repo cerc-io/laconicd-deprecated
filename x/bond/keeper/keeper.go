@@ -14,6 +14,7 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 // prefixIDToBondIndex is the prefix for ID -> Bond index in the KVStore.
@@ -60,6 +61,11 @@ func NewKeeper(cdc codec.BinaryCodec,
 		usageKeepers:  usageKeepers,
 		paramSubspace: ps,
 	}
+}
+
+// Logger returns a module-specific logger.
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", types.ModuleName)
 }
 
 // Generates Bond ID -> Bond index key.
